@@ -11,30 +11,60 @@
 <style>
 /* CSS Variables */
 :root {
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
+    --bg: #fafbfc;
+    --bg-secondary: #ffffff;
+    --bg-light: #f8fafc;
+    --text: #0f172a;
+    --text-light: #64748b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --border: #e2e8f0;
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --primary-glow: rgba(37, 99, 235, 0.2);
+    --success: #10b981;
+    --error: #ef4444;
+    --nav-bg: rgba(255, 255, 255, 0.85);
+    --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --card: #ffffff;
     --radius: 12px;
     --radius-lg: 16px;
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Light Theme */
-[data-theme="light"] {
-    --bg: #f8f9fa;
-    --card: #ffffff;
-    --text: #212529;
-    --text-secondary: #6c757d;
-    --border: #dee2e6;
+body.dark {
+    --bg: #0a0e1a;
+    --bg-secondary: #1a1f2e;
+    --bg-light: #1e293b;
+    --text: #f1f5f9;
+    --text-light: #cbd5e1;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border: #2d3748;
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --primary-glow: rgba(59, 130, 246, 0.25);
+    --nav-bg: rgba(26, 31, 46, 0.85);
+    --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --card: #1a1f2e;
 }
 
-/* Dark Theme */
+/* Keep backward compatibility */
+[data-theme="light"] {
+    --bg: #fafbfc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+}
+
 [data-theme="dark"] {
-    --bg: #0a0a0a;
-    --card: #1f1f1f;
-    --text: #ffffff;
-    --text-secondary: #a0a0a0;
-    --border: rgba(255, 255, 255, 0.1);
+    --bg: #0a0e1a;
+    --card: #1a1f2e;
+    --text: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --border: #2d3748;
 }
 
 /* Base Styles */
@@ -50,13 +80,28 @@ html, body {
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg);
+    background: linear-gradient(135deg, var(--bg-light), var(--bg));
     color: var(--text);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 1rem;
+    padding-top: 80px;
     transition: var(--transition);
+    min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+    pointer-events: none;
 }
 
 .login-container {
@@ -153,42 +198,107 @@ body {
     text-decoration: underline;
 }
 
-/* Theme Toggle Button */
-.theme-toggle {
-    position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    padding: 0.5rem;
-    border-radius: var(--radius);
+/* Mobile Bottom Navigation */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text);
-    cursor: pointer;
-    font-size: 1.25rem;
-    transition: var(--transition);
+    border-top: 1px solid var(--border);
+    z-index: 50;
+    padding: 0.5rem;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.theme-toggle:hover {
-    background: var(--bg);
-    color: var(--primary);
+.mobile-nav-items {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.75rem;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.mobile-nav-item:active { transform: scale(0.95); }
+.mobile-nav-item.active { color: var(--primary); background: rgba(99, 102, 241, 0.1); }
+.mobile-nav-item i { font-size: 1.25rem; }
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .nav-links { display: none !important; }
+    .mobile-nav { display: block; }
+    body { 
+        padding-bottom: 68px;
+        padding-top: 60px;
+    }
+    nav { 
+        height: 58px; 
+        padding: 0.875rem 1rem !important; 
+    }
+    .theme-toggle { 
+        width: 36px; 
+        height: 36px; 
+        font-size: 1rem !important; 
+    }
+    
+    .login-container {
+        padding: 1rem;
+    }
+    
+    .login-card {
+        padding: 2rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-nav-item span { font-size: 0.625rem; }
+    .mobile-nav-item i { font-size: 1.125rem; }
+    .login-card {
+        padding: 1.5rem 1rem;
+    }
 }
 </style>
 </head>
-<body data-theme="light">
-
-<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-    <i class="ri-moon-line" id="themeIcon"></i>
-</button>
+<body>
+    <!-- Navigation Header -->
+    <nav style="position: fixed; top: 0; width: 100%; padding: 0.75rem 1.5rem; background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; transition: all 0.3s ease;">
+        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+            <a href="/index.html" style="font-size: 1.25rem; font-weight: 800; color: var(--primary); text-decoration: none;">SEOTIZE</a>
+            <ul class="nav-links" style="display: flex; list-style: none; gap: 1.5rem;">
+                <li><a href="/index.html" style="text-decoration: none; color: var(--text); font-weight: 500; transition: color 0.2s ease; font-size: 0.9rem;">Home</a></li>
+                <li><a href="/index.html#features" style="text-decoration: none; color: var(--text); font-weight: 500; transition: color 0.2s ease; font-size: 0.9rem;">Features</a></li>
+                <li><a href="/blogs.html" style="text-decoration: none; color: var(--text); font-weight: 500; transition: color 0.2s ease; font-size: 0.9rem;">Blog</a></li>
+            </ul>
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <button class="theme-toggle" onclick="toggleTheme()" style="background: var(--bg-light); border: 1px solid var(--border); padding: 0.4rem; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; color: var(--text); font-size: 0.9rem;" aria-label="Toggle theme">
+                    🌙
+                </button>
+            </div>
+        </div>
+    </nav>
 
 <div class="login-container">
     <div class="login-card">
         <div class="login-header">
             <div class="logo">
                 <i class="ri-user-star-line"></i>
-                <span>SEOTIZE</span>
+                <span>SEOTIZE Partner</span>
             </div>
-            <h1 class="login-title">Partner Program</h1>
-            <p class="login-subtitle">Access your dashboard to manage tasks and track earnings.</p>
+            <h1 class="login-title">SEO Community Portal</h1>
+            <p class="login-subtitle">Join our global network boosting website rankings through real user engagement.</p>
         </div>
 
         <a href="https://api.seotize.net/login_partner/google" class="google-btn">
@@ -200,6 +310,32 @@ body {
         </div>
     </div>
 </div>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="mobile-nav">
+    <div class="mobile-nav-items">
+        <a href="/index.html" class="mobile-nav-item">
+            <i class="ri-home-5-line"></i>
+            <span>Home</span>
+        </a>
+        <a href="/index.html#features" class="mobile-nav-item">
+            <i class="ri-flashlight-line"></i>
+            <span>Features</span>
+        </a>
+        <a href="/blogs.html" class="mobile-nav-item">
+            <i class="ri-article-line"></i>
+            <span>Blog</span>
+        </a>
+        <a href="/partner/index.html" class="mobile-nav-item">
+            <i class="ri-user-star-line"></i>
+            <span>Partner</span>
+        </a>
+        <a href="#" class="mobile-nav-item active">
+            <i class="ri-login-box-line"></i>
+            <span>Login</span>
+        </a>
+    </div>
+</nav>
 
 <script>
     // --- Session Management ---
@@ -219,30 +355,54 @@ body {
             window.location.href = 'https://partner.seotize.net/dashboard'; // Adjust if your partner dashboard URL is different
         }
 
-        // Initialize theme after checking session
+        // Initialize theme and mobile nav after checking session
         initializeTheme();
+        initMobileNav();
     });
 
     // --- Theme Management ---
     function initializeTheme() {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.body.setAttribute('data-theme', savedTheme);
-        updateThemeIcon(savedTheme);
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark');
+            document.body.setAttribute('data-theme', 'dark');
+            updateThemeIcon('dark');
+        } else {
+            document.body.setAttribute('data-theme', 'light');
+            updateThemeIcon('light');
+        }
     }
 
     function toggleTheme() {
-        const currentTheme = document.body.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        document.body.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        updateThemeIcon(newTheme);
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+        const theme = isDark ? 'dark' : 'light';
+        document.body.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        updateThemeIcon(theme);
     }
 
     function updateThemeIcon(theme) {
-        const icon = document.getElementById('themeIcon');
-        if (icon) {
-            icon.className = theme === 'light' ? 'ri-moon-line' : 'ri-sun-line';
+        const themeBtn = document.querySelector('.theme-toggle');
+        if (themeBtn) {
+            themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
         }
+    }
+    
+    // Initialize mobile navigation active state
+    function initMobileNav() {
+        const currentPath = window.location.pathname;
+        const mobileItems = document.querySelectorAll('.mobile-item');
+        
+        mobileItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href === '#' || currentPath.includes('partner')) {
+                // Keep partner item active on partner pages
+                if (item.querySelector('.ri-user-star-line')) {
+                    item.classList.add('active');
+                }
+            }
+        });
     }
 </script>
 
