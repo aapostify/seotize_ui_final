@@ -297,8 +297,8 @@ body::before {
                 <i class="ri-user-star-line"></i>
                 <span>SEOTIZE Partner</span>
             </div>
-            <h1 class="login-title">SEO Community Portal</h1>
-            <p class="login-subtitle">Join our global network boosting website rankings through real user engagement.</p>
+            <h1 class="login-title">Partner Login</h1>
+            <p class="login-subtitle">Sign in to access your dashboard and start earning by helping websites improve their SEO through real user engagement.</p>
         </div>
 
         <a href="https://api.seotize.net/login_partner/google" class="google-btn">
@@ -352,7 +352,7 @@ body::before {
 
         // If a token exists, the user is likely already logged in. Redirect to the dashboard.
         if (partnerToken) {
-            window.location.href = 'https://partner.seotize.net/dashboard'; // Adjust if your partner dashboard URL is different
+            window.location.href = '/partner/dashboard.html';
         }
 
         // Initialize theme and mobile nav after checking session
