@@ -521,8 +521,12 @@ body:not(.dark) .nav-btn {
     background:transparent;
     cursor:pointer;
 }
+body.dark .mobile-item{
+    color:var(--text-light);
+}
 .mobile-item:active{transform:scale(0.95)}
-.mobile-item.active{color:var(--primary);background:var(--primary-glow)}
+.mobile-item.active{color:var(--primary);background:rgba(37,99,235,0.1)}
+body.dark .mobile-item.active{color:var(--primary);background:rgba(59,130,246,0.15)}
 .mobile-item i{font-size:1.375rem}
 
 /* Extra small screens - single column footer */
