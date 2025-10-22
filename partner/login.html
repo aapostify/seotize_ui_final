@@ -4,466 +4,1065 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Partner Login | SEOTIZE</title>
-
+    <meta name="description" content="Sign in to SEOTIZE Partners and start earning money by completing SEO tasks from anywhere in the world.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
 <style>
-/* CSS Variables */
+/* ===========================
+   CSS VARIABLES & RESET
+   =========================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
 :root {
     --bg: #fafbfc;
     --bg-secondary: #ffffff;
-    --bg-light: #f8fafc;
+    --bg-tertiary: #f1f5f9;
     --text: #0f172a;
     --text-light: #64748b;
-    --text-secondary: #64748b;
     --text-muted: #94a3b8;
     --border: #e2e8f0;
-    --primary: #2563eb;
-    --primary-dark: #1e40af;
-    --primary-glow: rgba(37, 99, 235, 0.2);
+    --primary: #10b981;
+    --primary-dark: #059669;
+    --primary-light: #34d399;
+    --primary-glow: rgba(16, 185, 129, 0.2);
+    --secondary: #2563eb;
     --success: #10b981;
-    --error: #ef4444;
-    --nav-bg: rgba(255, 255, 255, 0.85);
     --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-    --card: #ffffff;
+    --gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --nav-bg: rgba(255, 255, 255, 0.95);
     --radius: 12px;
-    --radius-lg: 16px;
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --radius-lg: 20px;
 }
 
 body.dark {
     --bg: #0a0e1a;
     --bg-secondary: #1a1f2e;
-    --bg-light: #1e293b;
+    --bg-tertiary: #2a2f3e;
     --text: #f1f5f9;
     --text-light: #cbd5e1;
-    --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
     --border: #2d3748;
-    --primary: #3b82f6;
-    --primary-dark: #2563eb;
-    --primary-glow: rgba(59, 130, 246, 0.25);
-    --nav-bg: rgba(26, 31, 46, 0.85);
+    --nav-bg: rgba(26, 31, 46, 0.95);
     --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    --card: #1a1f2e;
-}
-
-/* Keep backward compatibility */
-[data-theme="light"] {
-    --bg: #fafbfc;
-    --card: #ffffff;
-    --text: #0f172a;
-    --text-secondary: #64748b;
-    --border: #e2e8f0;
-}
-
-[data-theme="dark"] {
-    --bg: #0a0e1a;
-    --card: #1a1f2e;
-    --text: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --border: #2d3748;
-}
-
-/* Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    --primary-glow: rgba(16, 185, 129, 0.3);
 }
 
 html, body {
     height: 100%;
+    overflow: hidden;
 }
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: linear-gradient(135deg, var(--bg-light), var(--bg));
+    background: var(--bg);
     color: var(--text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    padding-top: 80px;
-    transition: var(--transition);
-    min-height: 100vh;
-    position: relative;
+    transition: background 0.3s ease, color 0.3s ease;
+    -webkit-font-smoothing: antialiased;
 }
 
-body::before {
-    content: '';
-    position: absolute;
+/* ===========================
+   NAVIGATION
+   =========================== */
+nav {
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
-    pointer-events: none;
+    height: 65px;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    display: flex;
+    align-items: center;
 }
 
-.login-container {
+.nav-container {
+    max-width: 1400px;
     width: 100%;
-    max-width: 420px;
-}
-
-.login-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 2.5rem 2rem;
-    box-shadow: var(--shadow-xl);
-    text-align: center;
-    animation: fadeIn 0.5s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.login-header {
-    margin-bottom: 2rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .logo {
+    font-size: 1.5rem;
+    font-weight: 900;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-icon {
+    font-size: 1.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-menu a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.nav-menu a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: width 0.3s ease;
+}
+
+.nav-menu a:hover {
+    color: var(--primary);
+}
+
+.nav-menu a:hover::after {
+    width: 100%;
+}
+
+.theme-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
-    font-size: 2rem;
-    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.25rem;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: var(--card-shadow);
+}
+
+/* ===========================
+   PAGE LAYOUT
+   =========================== */
+.page-wrapper {
+    display: flex;
+    height: calc(100vh - 65px);
+    margin-top: 65px;
+    overflow: hidden;
+}
+
+/* ===========================
+   HERO SECTION
+   =========================== */
+.hero-section {
+    flex: 1;
+    background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+    top: -150px;
+    right: -150px;
+    animation: float 15s ease-in-out infinite;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+    bottom: -100px;
+    left: -100px;
+    animation: float 20s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-30px, 30px) rotate(180deg); }
+}
+
+.hero-content {
+    text-align: center;
+    max-width: 520px;
+    position: relative;
+    z-index: 2;
+    padding: 2rem;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 50px;
     color: var(--primary);
-    text-decoration: none;
-    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    animation: fadeInDown 0.8s ease;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-icon {
+    font-size: 5rem;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 8px 20px rgba(16, 185, 129, 0.3));
+    animation: bounce 3s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.hero-title {
+    font-size: 2.75rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    line-height: 1.7;
+    animation: fadeIn 1.2s ease;
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1.25rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: 0 8px 20px var(--primary-glow);
+}
+
+.stat-number {
+    font-size: 1.75rem;
+    font-weight: 900;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* ===========================
+   LOGIN SECTION
+   =========================== */
+.login-section {
+    flex: 1;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+}
+
+.login-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: var(--card-shadow);
+    margin: 1.5rem;
+    animation: slideInRight 0.8s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.login-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--gradient);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 8px 24px var(--primary-glow);
 }
 
 .login-title {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.875rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.5px;
     color: var(--text);
 }
 
 .login-subtitle {
     font-size: 1rem;
-    color: var(--text-secondary);
-    margin-top: 0.5rem;
+    color: var(--text-light);
+    line-height: 1.6;
 }
 
+.login-benefits {
+    margin: 2rem 0 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: all 0.3s ease;
+}
+
+.benefit-item:hover {
+    border-color: var(--primary);
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.benefit-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.125rem;
+    flex-shrink: 0;
+}
+
+.benefit-text {
+    font-size: 0.9375rem;
+    color: var(--text);
+    font-weight: 500;
+}
+
+/* ===========================
+   GOOGLE SIGN-IN BUTTON (Enhanced)
+   =========================== */
 .google-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
+    gap: 0.875rem;
     width: 100%;
-    padding: 0.75rem 1.5rem;
-    border: 1px solid var(--border);
+    padding: 1.125rem 1.5rem;
+    background: var(--gradient);
+    color: white;
+    border: none;
     border-radius: var(--radius);
-    background: var(--card);
-    color: var(--text);
     font-size: 1rem;
-    font-weight: 500;
+    font-weight: 700;
     text-decoration: none;
     cursor: pointer;
-    transition: var(--transition);
-    margin-top: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 20px var(--primary-glow);
+}
+
+.google-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.google-btn:hover::before {
+    left: 100%;
 }
 
 .google-btn:hover {
-    background: var(--bg);
-    border-color: var(--primary);
-    color: var(--primary);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(16, 185, 129, 0.4);
 }
 
-.google-btn img {
+.google-btn:active {
+    transform: translateY(-1px);
+}
+
+.google-btn .btn-icon {
     width: 24px;
     height: 24px;
+    background: white;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.google-btn .btn-text {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 2rem 0;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.divider span {
+    padding: 0 1rem;
+    font-weight: 500;
 }
 
 .login-footer {
-    margin-top: 2.5rem;
+    text-align: center;
     font-size: 0.875rem;
-    color: var(--text-secondary);
+    color: var(--text-light);
+    line-height: 1.6;
 }
 
 .login-footer a {
     color: var(--primary);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .login-footer a:hover {
     text-decoration: underline;
 }
 
-/* Navigation */
-nav {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    padding: 0.75rem 1.5rem;
-    background: var(--nav-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-    z-index: 100;
-    transition: all 0.3s ease;
-}
-
-nav > div {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
+.back-link {
+    display: inline-flex;
     align-items: center;
-}
-
-.nav-logo {
-    font-size: 1.25rem;
-    font-weight: 800;
+    gap: 0.5rem;
     color: var(--primary);
     text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: all 0.3s ease;
+    margin-top: 1.5rem;
 }
 
-.nav-links {
-    display: flex;
-    list-style: none;
-    gap: 1.5rem;
+.back-link:hover {
+    gap: 0.75rem;
 }
 
-.nav-links a {
-    text-decoration: none;
-    color: var(--text);
-    font-weight: 500;
-    transition: color 0.2s ease;
-    font-size: 0.9rem;
-}
-
-.nav-links a:hover {
-    color: var(--primary);
-}
-
-.theme-toggle {
-    background: var(--bg-light);
-    border: 1px solid var(--border);
-    padding: 0.4rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: var(--text);
-    font-size: 0.9rem;
-}
-
-.theme-toggle:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--card-shadow);
-    border-color: var(--primary);
-}
-
-/* Mobile Bottom Navigation */
+/* ===========================
+   MOBILE BOTTOM NAV
+   =========================== */
 .mobile-nav {
     display: none;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background: var(--card);
+    height: 68px;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid var(--border);
-    z-index: 50;
+    z-index: 100;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-items {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    max-width: 600px;
+    height: 100%;
+    margin: 0 auto;
     padding: 0.5rem;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.mobile-nav-items {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.mobile-nav-item {
+.mobile-item {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 0.25rem;
-    padding: 0.5rem;
-    color: var(--text-secondary);
+    padding: 0.375rem;
+    color: var(--text-light);
     text-decoration: none;
     font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 10px;
     transition: all 0.3s ease;
-    border-radius: 8px;
-    cursor: pointer;
 }
 
-.mobile-nav-item:active { transform: scale(0.95); }
-.mobile-nav-item.active { color: var(--primary); background: rgba(99, 102, 241, 0.1); }
-.mobile-nav-item i { font-size: 1.25rem; }
+.mobile-item:active {
+    transform: scale(0.95);
+}
 
-/* Mobile styles */
-@media (max-width: 768px) {
-    .nav-links { display: none !important; }
-    .mobile-nav { display: block; }
-    body { 
-        padding-bottom: 68px;
-        padding-top: 60px;
-    }
-    nav { 
-        height: 58px; 
-        padding: 0.875rem 1rem !important; 
-    }
-    .theme-toggle { 
-        width: 36px; 
-        height: 36px; 
-        font-size: 1rem !important; 
+.mobile-item.active {
+    color: var(--primary);
+    background: var(--primary-glow);
+}
+
+.mobile-item i {
+    font-size: 1.375rem;
+}
+
+/* ===========================
+   RESPONSIVE - TABLET
+   =========================== */
+@media (max-width: 1024px) {
+    .hero-title {
+        font-size: 2.25rem;
     }
     
-    .login-container {
-        padding: 1rem;
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .hero-stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+}
+
+/* ===========================
+   RESPONSIVE - MOBILE
+   =========================== */
+@media (max-width: 768px) {
+    nav {
+        height: 58px;
+    }
+    
+    .nav-container {
+        padding: 0 1rem;
+    }
+    
+    .logo {
+        font-size: 1.25rem;
+    }
+    
+    .nav-menu {
+        display: none;
+    }
+    
+    .theme-toggle {
+        width: 38px;
+        height: 38px;
+        font-size: 1.1rem;
+    }
+    
+    .page-wrapper {
+        margin-top: 58px;
+        height: calc(100vh - 58px - 68px);
+        flex-direction: column;
+    }
+    
+    .hero-section {
+        display: none;
+    }
+    
+    .login-section {
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     .login-card {
         padding: 2rem 1.5rem;
+        margin: 1rem;
+        max-width: 100%;
+        border: none;
+        box-shadow: none;
+    }
+    
+    .login-header {
+        margin-bottom: 2rem;
+    }
+    
+    .login-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 1.75rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    .login-title {
+        font-size: 1.625rem;
+    }
+    
+    .login-subtitle {
+        font-size: 0.9375rem;
+    }
+    
+    .login-benefits {
+        margin: 1.75rem 0 2rem;
+    }
+    
+    .google-btn {
+        padding: 1.125rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .mobile-nav {
+        display: block;
     }
 }
 
 @media (max-width: 480px) {
-    .mobile-nav-item span { font-size: 0.625rem; }
-    .mobile-nav-item i { font-size: 1.125rem; }
     .login-card {
         padding: 1.5rem 1rem;
+        margin: 0.75rem;
+    }
+    
+    .login-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
+    }
+    
+    .login-title {
+        font-size: 1.5rem;
+    }
+    
+    .login-subtitle {
+        font-size: 0.875rem;
+    }
+    
+    .benefit-item {
+        padding: 0.75rem 0.875rem;
+    }
+    
+    .benefit-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 1rem;
+    }
+    
+    .benefit-text {
+        font-size: 0.875rem;
+    }
+    
+    .google-btn {
+        padding: 1rem 1.25rem;
+        font-size: 0.9375rem;
+    }
+    
+    .mobile-items {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.25rem;
+    }
+    
+    .mobile-item {
+        font-size: 0.65rem;
+        gap: 0.15rem;
+        padding: 0.25rem;
+    }
+    
+    .mobile-item i {
+        font-size: 1.2rem;
+    }
+}
+
+/* ===========================
+   LANDSCAPE MOBILE
+   =========================== */
+@media (max-width: 768px) and (orientation: landscape) {
+    .login-card {
+        padding: 1.5rem;
+    }
+    
+    .login-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .login-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 1rem;
+    }
+    
+    .login-benefits {
+        margin: 1.25rem 0 1.5rem;
+        gap: 0.75rem;
+    }
+    
+    .benefit-item {
+        padding: 0.625rem 0.875rem;
     }
 }
 </style>
 </head>
 <body>
-    <!-- Navigation Header -->
+    <!-- Navigation -->
     <nav>
-        <div>
-            <a href="/index.html" class="nav-logo">SEOTIZE</a>
-            <ul class="nav-links">
-                <li><a href="/index.html">Main Website</a></li>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">💼</span>
+                <span>SEOTIZE Partners</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="../index.html">Main Website</a></li>
                 <li><a href="index.html">Partners</a></li>
-                <li><a href="/blogs.html">Blog</a></li>
+                <li><a href="../blogs.html">Blog</a></li>
             </ul>
-            <div style="display: flex; gap: 0.75rem; align-items: center;">
-                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                    🌙
-                </button>
-            </div>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <span id="themeIcon">🌙</span>
+            </button>
         </div>
     </nav>
 
-<div class="login-container">
-    <div class="login-card">
-        <div class="login-header">
-            <div class="logo">
-                <i class="ri-user-star-line"></i>
-                <span>SEOTIZE Partner</span>
+    <div class="page-wrapper">
+        <!-- Hero Section (Desktop Only) -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="ri-shield-check-line"></i>
+                    <span>Trusted by 10,000+ Partners Worldwide</span>
+                </div>
+                <div class="hero-icon">💰</div>
+                <h1 class="hero-title">Start Earning Today</h1>
+                <p class="hero-subtitle">Join thousands of partners earning money by completing simple SEO tasks from anywhere in the world.</p>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">10K+</div>
+                        <div class="stat-label">Active Partners</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">$500K+</div>
+                        <div class="stat-label">Paid Out</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24-48h</div>
+                        <div class="stat-label">Fast Payouts</div>
+                    </div>
+                </div>
             </div>
-            <h1 class="login-title">Partner Portal</h1>
-            <p class="login-subtitle">Join our global network earning through real user engagement tasks.</p>
-        </div>
+        </section>
 
-        <a href="https://api.seotize.net/login_partner/google" class="google-btn">
-            <span>🌐 Sign in with Google</span>
-        </a>
+        <!-- Login Section -->
+        <section class="login-section">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="login-icon">
+                        <i class="ri-user-star-fill"></i>
+                    </div>
+                    <h1 class="login-title">Partner Login</h1>
+                    <p class="login-subtitle">Sign in to access your partner dashboard and start earning</p>
+                </div>
 
-        <div class="login-footer">
-            <p>By signing in, you agree to our <a href="https://seotize.net/terms">Terms of Service</a> and <a href="https://seotize.net/privacy">Privacy Policy</a>.</p>
-        </div>
+                <div class="login-benefits">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">💵</div>
+                        <div class="benefit-text">Earn money on your schedule</div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">🌍</div>
+                        <div class="benefit-text">Work from anywhere</div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">⚡</div>
+                        <div class="benefit-text">Fast USDT payouts</div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">🔒</div>
+                        <div class="benefit-text">No KYC required</div>
+                    </div>
+                </div>
+
+                <a href="https://api.seotize.net/login_partner/google" class="google-btn">
+                    <span class="btn-icon">🌐</span>
+                    <span class="btn-text">Continue with Google</span>
+                </a>
+
+                <div class="divider">
+                    <span>Secure & Fast Login</span>
+                </div>
+
+                <div class="login-footer">
+                    <p>By signing in, you agree to our <a href="https://seotize.net/terms" target="_blank">Terms of Service</a> and <a href="https://seotize.net/privacy" target="_blank">Privacy Policy</a>.</p>
+                    <a href="index.html" class="back-link">
+                        <i class="ri-arrow-left-line"></i>
+                        <span>Back to Partner Info</span>
+                    </a>
+                </div>
+            </div>
+        </section>
     </div>
-</div>
 
-<!-- Mobile Bottom Navigation -->
-<nav class="mobile-nav">
-    <div class="mobile-nav-items">
-        <a href="/index.html" class="mobile-nav-item">
-            <i class="ri-home-5-line"></i>
-            <span>Home</span>
-        </a>
-        <a href="index.html" class="mobile-nav-item">
-            <i class="ri-user-star-line"></i>
-            <span>Partners</span>
-        </a>
-        <a href="/blogs.html" class="mobile-nav-item">
-            <i class="ri-article-line"></i>
-            <span>Blog</span>
-        </a>
-        <a href="#" class="mobile-nav-item active">
-            <i class="ri-login-box-line"></i>
-            <span>Login</span>
-        </a>
-    </div>
-</nav>
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav">
+        <div class="mobile-items">
+            <a href="../index.html" class="mobile-item">
+                <i class="ri-home-5-line"></i>
+                <span>Home</span>
+            </a>
+            <a href="index.html" class="mobile-item">
+                <i class="ri-user-star-line"></i>
+                <span>Partners</span>
+            </a>
+            <a href="../blogs.html" class="mobile-item">
+                <i class="ri-article-line"></i>
+                <span>Blog</span>
+            </a>
+            <a href="login.html" class="mobile-item active">
+                <i class="ri-login-box-line"></i>
+                <span>Login</span>
+            </a>
+        </div>
+    </nav>
 
-<script>
-    // --- Session Management ---
-    document.addEventListener('DOMContentLoaded', () => {
-        // Function to get a cookie by name
+    <script>
+        // --- Theme Management ---
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                updateThemeIcon('dark');
+            } else {
+                updateThemeIcon('light');
+            }
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            const theme = isDark ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+            updateThemeIcon(theme);
+        }
+
+        function updateThemeIcon(theme) {
+            const themeIcon = document.getElementById('themeIcon');
+            if (themeIcon) {
+                themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+            }
+        }
+
+        // --- Session Check ---
         function getCookie(name) {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
 
-        // Check for an existing partner session token
-        const partnerToken = getCookie('session_token_partner');
+        // --- GSAP Animations ---
+        function initAnimations() {
+            if (window.innerWidth > 768) {
+                // Hero animations
+                gsap.from('.hero-badge', {
+                    opacity: 0,
+                    y: -20,
+                    duration: 0.8,
+                    ease: "power3.out"
+                });
 
-        // If a token exists, the user is likely already logged in. Redirect to the dashboard.
-        if (partnerToken) {
-            window.location.href = 'https://partner.seotize.net/dashboard';
+                gsap.from('.hero-icon', {
+                    opacity: 0,
+                    scale: 0.5,
+                    duration: 1,
+                    delay: 0.2,
+                    ease: "elastic.out(1, 0.5)"
+                });
+
+                gsap.from('.hero-title', {
+                    opacity: 0,
+                    y: 30,
+                    duration: 0.8,
+                    delay: 0.4,
+                    ease: "power3.out"
+                });
+
+                gsap.from('.hero-subtitle', {
+                    opacity: 0,
+                    y: 20,
+                    duration: 0.8,
+                    delay: 0.6,
+                    ease: "power3.out"
+                });
+
+                gsap.from('.stat-item', {
+                    opacity: 0,
+                    y: 20,
+                    duration: 0.6,
+                    delay: 0.8,
+                    stagger: 0.1,
+                    ease: "power3.out"
+                });
+            }
+
+            // Login card animations
+            gsap.from('.login-icon', {
+                opacity: 0,
+                scale: 0.5,
+                duration: 0.8,
+                ease: "elastic.out(1, 0.5)"
+            });
+
+            gsap.from('.login-title', {
+                opacity: 0,
+                y: 20,
+                duration: 0.6,
+                delay: 0.2,
+                ease: "power3.out"
+            });
+
+            gsap.from('.login-subtitle', {
+                opacity: 0,
+                y: 20,
+                duration: 0.6,
+                delay: 0.3,
+                ease: "power3.out"
+            });
+
+            gsap.from('.benefit-item', {
+                opacity: 0,
+                x: -30,
+                duration: 0.6,
+                delay: 0.4,
+                stagger: 0.1,
+                ease: "power3.out"
+            });
+
+            gsap.from('.google-btn', {
+                opacity: 0,
+                y: 20,
+                duration: 0.6,
+                delay: 0.8,
+                ease: "power3.out"
+            });
         }
 
-        // Initialize theme and mobile nav after checking session
-        initializeTheme();
-        initMobileNav();
-    });
+        // --- Initialize on Page Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for existing partner session
+            const partnerToken = getCookie('session_token_partner');
+            if (partnerToken) {
+                window.location.href = 'https://partner.seotize.net/dashboard';
+                return;
+            }
 
-    // --- Theme Management ---
-    function initializeTheme() {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark');
-            document.body.setAttribute('data-theme', 'dark');
-            updateThemeIcon('dark');
-        } else {
-            document.body.setAttribute('data-theme', 'light');
-            updateThemeIcon('light');
-        }
-    }
-
-    function toggleTheme() {
-        document.body.classList.toggle('dark');
-        const isDark = document.body.classList.contains('dark');
-        const theme = isDark ? 'dark' : 'light';
-        document.body.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-        updateThemeIcon(theme);
-    }
-
-    function updateThemeIcon(theme) {
-        const themeBtn = document.querySelector('.theme-toggle');
-        if (themeBtn) {
-            themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
-        }
-    }
-    
-    // Initialize mobile navigation active state
-    function initMobileNav() {
-        const currentPath = window.location.pathname;
-        const mobileItems = document.querySelectorAll('.mobile-nav-item');
-        
-        mobileItems.forEach(item => {
-            const href = item.getAttribute('href');
-            if (href === '#' || currentPath.includes('login')) {
-                if (item.querySelector('.ri-login-box-line')) {
-                    item.classList.add('active');
-                }
+            // Initialize theme and animations
+            initializeTheme();
+            
+            // Initialize GSAP animations if available
+            if (typeof gsap !== 'undefined') {
+                initAnimations();
             }
         });
-    }
-</script>
-
+    </script>
 </body>
 </html>
