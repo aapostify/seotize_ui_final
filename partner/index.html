@@ -127,6 +127,7 @@ nav {
     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
     color: white;
     font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Desktop Menu */
@@ -144,6 +145,10 @@ nav {
     font-size: 0.9375rem;
     transition: color 0.3s ease;
     position: relative;
+}
+
+.nav-menu a.active {
+    color: var(--primary);
 }
 
 .nav-menu a::after {
@@ -1191,11 +1196,11 @@ body.dark .footer {
             </a>
             
             <ul class="nav-menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="#how-it-works">How It Works</a></li>
-                <li><a href="#earning">Earning</a></li>
-                <li><a href="#payouts">Payouts</a></li>
-                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#" class="nav-link" data-section="home">Home</a></li>
+                <li><a href="#how-it-works" class="nav-link" data-section="how-it-works">How It Works</a></li>
+                <li><a href="#earning" class="nav-link" data-section="earning">Earning</a></li>
+                <li><a href="#payouts" class="nav-link" data-section="payouts">Payouts</a></li>
+                <li><a href="#faq" class="nav-link" data-section="faq">FAQ</a></li>
             </ul>
             
             <div class="nav-actions">
@@ -1575,11 +1580,11 @@ body.dark .footer {
     <!-- Mobile Bottom Navigation -->
     <div class="mobile-nav">
         <div class="mobile-items">
-            <a href="index.html" class="mobile-item">
+            <a href="#" class="mobile-item" data-section="home">
                 <i class="ri-home-5-line"></i>
                 <span>Home</span>
             </a>
-            <a href="#how-it-works" class="mobile-item">
+            <a href="#how-it-works" class="mobile-item" data-section="how-it-works">
                 <i class="ri-information-line"></i>
                 <span>How It Works</span>
             </a>
@@ -1672,12 +1677,19 @@ body.dark .footer {
             }
         }
 
-        // Smooth Scrolling
+        // Smooth Scrolling and Active State
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
+                e.preventDefault();
                 const href = this.getAttribute('href');
-                if (href !== '#') {
-                    e.preventDefault();
+                
+                if (href === '#' || href === '') {
+                    // Scroll to top for home
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                } else {
                     const target = document.querySelector(href);
                     if (target) {
                         const offset = 80;
@@ -1690,31 +1702,67 @@ body.dark .footer {
                 }
             });
         });
+        
+        // Update Active States for Desktop Nav
+        function updateActiveStates() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = ['how-it-works', 'earning', 'payouts', 'faq'];
+            let current = 'home';
+            
+            if (window.pageYOffset > 100) {
+                sections.forEach(sectionId => {
+                    const section = document.getElementById(sectionId);
+                    if (section) {
+                        const sectionTop = section.offsetTop;
+                        if (window.pageYOffset >= sectionTop - 200) {
+                            current = sectionId;
+                        }
+                    }
+                });
+            }
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                const section = link.getAttribute('data-section');
+                if (section === current) {
+                    link.classList.add('active');
+                }
+            });
+        }
 
         // Update Mobile Nav Active State
-        const sections = ['how-it-works', 'earning', 'faq'];
         const mobileItems = document.querySelectorAll('.mobile-item');
 
         window.addEventListener('scroll', () => {
-            let current = '';
+            updateActiveStates();
             
-            sections.forEach(sectionId => {
-                const section = document.getElementById(sectionId);
-                if (section) {
-                    const sectionTop = section.offsetTop;
-                    if (window.pageYOffset >= sectionTop - 200) {
-                        current = sectionId;
+            const sections = ['how-it-works', 'earning', 'faq'];
+            let current = 'home';
+            
+            if (window.pageYOffset > 100) {
+                sections.forEach(sectionId => {
+                    const section = document.getElementById(sectionId);
+                    if (section) {
+                        const sectionTop = section.offsetTop;
+                        if (window.pageYOffset >= sectionTop - 200) {
+                            current = sectionId;
+                        }
                     }
-                }
-            });
+                });
+            }
             
             mobileItems.forEach(item => {
                 item.classList.remove('active');
-                const href = item.getAttribute('href');
-                if (href === `#${current}`) {
+                const section = item.getAttribute('data-section');
+                if (section === current) {
                     item.classList.add('active');
                 }
             });
+        });
+        
+        // Set home as active on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateActiveStates();
         });
 
         // GSAP Animations
