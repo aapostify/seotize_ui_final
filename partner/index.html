@@ -119,15 +119,15 @@ nav {
     font-size: 1.75rem;
     width: 32px;
     height: 32px;
-    background: var(--gradient);
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
-    color: white;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     font-weight: 800;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Desktop Menu */
@@ -1169,9 +1169,17 @@ body.dark .footer {
             grid-template-columns: repeat(5, 1fr);
         }
     .mobile-item {
-        font-size: 0.65rem;
+        font-size: 0.625rem;
         gap: 0.15rem;
         padding: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .mobile-item span {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .mobile-item i { font-size: 1.2rem; }
     
@@ -1588,11 +1596,11 @@ body.dark .footer {
                 <i class="ri-information-line"></i>
                 <span>How It Works</span>
             </a>
-            <a href="#earning" class="mobile-item">
+            <a href="#earning" class="mobile-item" data-section="earning">
                 <i class="ri-money-dollar-circle-line"></i>
                 <span>Earning</span>
             </a>
-            <a href="#faq" class="mobile-item">
+            <a href="#faq" class="mobile-item" data-section="faq">
                 <i class="ri-question-line"></i>
                 <span>FAQ</span>
             </a>
