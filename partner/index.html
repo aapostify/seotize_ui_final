@@ -117,7 +117,12 @@ nav {
 
 .logo-icon {
     font-size: 1.75rem;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.3));
+    display: inline-block;
 }
 
 /* Desktop Menu */
@@ -236,7 +241,7 @@ nav {
 }
 
 /* ===========================
-   HERO SECTION
+   HERO SECTION (SLIDER)
    =========================== */
 .hero {
     min-height: 100vh;
@@ -265,9 +270,28 @@ nav {
     50% { transform: translate(-30px, 30px) rotate(180deg); }
 }
 
+.hero-slider {
+    width: 100%;
+    position: relative;
+}
+
+.hero-slide {
+    display: none;
+    animation: fadeIn 0.6s ease;
+}
+
+.hero-slide.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .hero-content {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 2.5rem;
     position: relative;
     z-index: 2;
@@ -282,6 +306,12 @@ nav {
     display: inline-block;
     margin-bottom: 1rem;
     filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.3));
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
 .hero h1 {
@@ -350,6 +380,54 @@ nav {
     border: 3px solid var(--border);
 }
 
+.slider-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.slider-dots {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.slider-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.slider-dot.active {
+    background: var(--primary);
+    transform: scale(1.3);
+}
+
+.slider-arrow {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text);
+    font-size: 1.25rem;
+}
+
+.slider-arrow:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
 /* ===========================
    HOW IT WORKS
    =========================== */
@@ -414,6 +492,39 @@ nav {
 .step-card p {
     color: var(--text-light);
     line-height: 1.7;
+    margin-bottom: 1rem;
+}
+
+.step-benefits {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    text-align: left;
+}
+
+.step-benefits li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--success);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.step-benefits li::before {
+    content: '✓';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border-radius: 50%;
+    font-weight: 700;
+    flex-shrink: 0;
 }
 
 /* ===========================
@@ -630,6 +741,100 @@ nav {
 }
 
 /* ===========================
+   GROW YOUR WEBSITE SECTION
+   =========================== */
+.grow-website {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.grow-website::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+}
+
+.grow-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.grow-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 8px 16px rgba(16, 185, 129, 0.3));
+}
+
+.grow-content h2 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.grow-content p {
+    font-size: 1.25rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    line-height: 1.7;
+}
+
+.grow-features {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.grow-feature {
+    background: var(--bg);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.grow-feature:hover {
+    transform: translateX(8px);
+    border-color: var(--primary);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.1);
+}
+
+.grow-feature-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.grow-feature-text h4 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+}
+
+.grow-feature-text p {
+    font-size: 0.9375rem;
+    color: var(--text-light);
+    margin: 0;
+}
+
+/* ===========================
    FINAL CTA
    =========================== */
 .final-cta {
@@ -705,32 +910,37 @@ body.dark .footer {
     grid-template-columns: 1fr;
     gap: 2.5rem;
     margin-bottom: 2.5rem;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.footer h3 {
+.footer-column h3 {
     font-size: 1.125rem;
     font-weight: 700;
     margin-bottom: 1rem;
     color: white;
 }
 
-.footer ul {
+.footer-column ul {
     list-style: none;
 }
 
-.footer li {
+.footer-column li {
     margin: 0.5rem 0;
 }
 
-.footer a {
+.footer-column a {
     color: #94a3b8;
     text-decoration: none;
     font-size: 0.9375rem;
     transition: color 0.3s ease;
+    display: inline-block;
 }
 
-.footer a:hover {
+.footer-column a:hover {
     color: white;
+    transform: translateX(4px);
 }
 
 .footer-bottom {
@@ -741,6 +951,8 @@ body.dark .footer {
     align-items: center;
     gap: 1.5rem;
     text-align: center;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .footer-bottom p {
@@ -792,7 +1004,7 @@ body.dark .footer {
 
 .mobile-items {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 0.5rem;
     max-width: 600px;
     height: 100%;
@@ -844,6 +1056,7 @@ body.dark .footer {
     
     .hero-buttons {
         flex-direction: row;
+        justify-content: center;
     }
     
     .cta-buttons {
@@ -852,6 +1065,10 @@ body.dark .footer {
     }
     
     .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .grow-features {
         grid-template-columns: repeat(2, 1fr);
     }
 }
@@ -911,6 +1128,14 @@ body.dark .footer {
         flex-direction: row;
         justify-content: space-between;
     }
+    
+    .grow-features {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .grow-content h2 {
+        font-size: 3rem;
+    }
 }
 
 /* ===========================
@@ -925,13 +1150,25 @@ body.dark .footer {
     .hero p { font-size: 1rem; }
     .hero-emoji { font-size: 3rem; }
     
-    .mobile-items { gap: 0.25rem; }
+    .mobile-items { 
+        gap: 0.25rem;
+        grid-template-columns: repeat(4, 1fr);
+    }
     .mobile-item {
         font-size: 0.65rem;
         gap: 0.15rem;
         padding: 0.25rem;
     }
     .mobile-item i { font-size: 1.2rem; }
+    
+    .grow-content h2 { font-size: 2rem; }
+    .grow-content p { font-size: 1rem; }
+    .grow-icon { font-size: 3.5rem; }
+    
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
 }
 </style>
 </head>
@@ -939,13 +1176,12 @@ body.dark .footer {
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
-            <a href="../index.html" class="logo">
+            <a href="index.html" class="logo">
                 <span class="logo-icon">🎯</span>
                 <span>SEOTIZE</span>
             </a>
             
             <ul class="nav-menu">
-                <li><a href="../index.html">Main Website</a></li>
                 <li><a href="#how-it-works">How It Works</a></li>
                 <li><a href="#earning">Earning</a></li>
                 <li><a href="#payouts">Payouts</a></li>
@@ -964,28 +1200,95 @@ body.dark .footer {
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Hero Section with Slider -->
     <section class="hero">
         <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <div class="hero-emoji">💰</div>
-                    <h1>Earn Money with SEOTIZE Partners</h1>
-                    <p>Work from anywhere, complete simple SEO tasks, and earn money on your own schedule. Join our global partner network today.</p>
-                    <div class="hero-buttons">
-                        <a href="login.html" class="cta">
-                            <span>Start Earning Now</span>
-                            <i class="ri-arrow-right-line"></i>
-                        </a>
-                        <a href="#how-it-works" class="cta secondary">
-                            <span>Learn How</span>
-                            <i class="ri-play-circle-line"></i>
-                        </a>
+            <div class="hero-slider">
+                <!-- Slide 1: How It Works -->
+                <div class="hero-slide active" id="slide-1">
+                    <div class="hero-content">
+                        <div class="hero-text">
+                            <div class="hero-emoji">💰</div>
+                            <h1>Earn Money with SEOTIZE Partners</h1>
+                            <p>Work from anywhere, complete simple SEO tasks, and earn money on your own schedule. Join our global partner network today.</p>
+                            <div class="hero-buttons">
+                                <a href="login.html" class="cta">
+                                    <span>Start Earning Now</span>
+                                    <i class="ri-arrow-right-line"></i>
+                                </a>
+                                <a href="#how-it-works" class="cta secondary">
+                                    <span>Learn How</span>
+                                    <i class="ri-play-circle-line"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hero-image-wrapper">
+                            <img src="https://image-api.seotize.net/image-cdn/97cd3337-ae40-4239-8d26-bf17f34721cc" alt="Partner Dashboard" class="hero-image">
+                        </div>
                     </div>
                 </div>
-                
-                <div class="hero-image-wrapper">
-                    <img src="https://image-api.seotize.net/image-cdn/97cd3337-ae40-4239-8d26-bf17f34721cc" alt="Partner Dashboard" class="hero-image">
+
+                <!-- Slide 2: Earning Methods -->
+                <div class="hero-slide" id="slide-2">
+                    <div class="hero-content">
+                        <div class="hero-text">
+                            <div class="hero-emoji">🔍</div>
+                            <h1>What You'll Be Doing</h1>
+                            <p>Search for specific keywords on Google, visit target websites naturally, and help improve their search rankings. Simple tasks, real earnings.</p>
+                            <div class="hero-buttons">
+                                <a href="login.html" class="cta">
+                                    <span>Join Now</span>
+                                    <i class="ri-arrow-right-line"></i>
+                                </a>
+                                <a href="#earning" class="cta secondary">
+                                    <span>View Tasks</span>
+                                    <i class="ri-search-line"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hero-image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop" alt="Task Completion" class="hero-image">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Payouts -->
+                <div class="hero-slide" id="slide-3">
+                    <div class="hero-content">
+                        <div class="hero-text">
+                            <div class="hero-emoji">⚡</div>
+                            <h1>Fast & Secure Payouts</h1>
+                            <p>Get paid quickly via USDT (BEP20) with no minimum withdrawal. Your earnings are processed within 24-48 hours directly to your wallet.</p>
+                            <div class="hero-buttons">
+                                <a href="login.html" class="cta">
+                                    <span>Get Started</span>
+                                    <i class="ri-arrow-right-line"></i>
+                                </a>
+                                <a href="#payouts" class="cta secondary">
+                                    <span>Learn More</span>
+                                    <i class="ri-wallet-3-line"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hero-image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&h=400&fit=crop" alt="Secure Payments" class="hero-image">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slider Controls -->
+                <div class="slider-controls">
+                    <button class="slider-arrow" onclick="prevSlide()" aria-label="Previous slide">
+                        <i class="ri-arrow-left-s-line"></i>
+                    </button>
+                    <div class="slider-dots">
+                        <span class="slider-dot active" onclick="goToSlide(0)"></span>
+                        <span class="slider-dot" onclick="goToSlide(1)"></span>
+                        <span class="slider-dot" onclick="goToSlide(2)"></span>
+                    </div>
+                    <button class="slider-arrow" onclick="nextSlide()" aria-label="Next slide">
+                        <i class="ri-arrow-right-s-line"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1002,7 +1305,12 @@ body.dark .footer {
                     <div class="step-number">1</div>
                     <div class="step-icon">📝</div>
                     <h3>Sign Up Free</h3>
-                    <p>Create your free account in minutes. No fees, no hidden costs. Start with instant access to available tasks.</p>
+                    <p>Create your free account in minutes. No fees, no hidden costs, no KYC verification needed.</p>
+                    <ul class="step-benefits">
+                        <li>No KYC required</li>
+                        <li>No credit card needed</li>
+                        <li>Instant access to tasks</li>
+                    </ul>
                 </div>
                 
                 <div class="step-card">
@@ -1010,13 +1318,23 @@ body.dark .footer {
                     <div class="step-icon">🔍</div>
                     <h3>Complete Tasks</h3>
                     <p>Browse available SEO tasks, choose what works for you, and complete them following simple instructions.</p>
+                    <ul class="step-benefits">
+                        <li>Simple Google searches</li>
+                        <li>Natural website visits</li>
+                        <li>No technical skills needed</li>
+                    </ul>
                 </div>
                 
                 <div class="step-card">
                     <div class="step-number">3</div>
                     <div class="step-icon">💳</div>
                     <h3>Get Paid</h3>
-                    <p>Withdraw your earnings via USDT (BEP20) with fast processing times. Minimum withdrawal starts at just $10.</p>
+                    <p>Withdraw your earnings via USDT (BEP20) with fast processing times and no minimum withdrawal limit.</p>
+                    <ul class="step-benefits">
+                        <li>No minimum withdrawal</li>
+                        <li>24-48 hour processing</li>
+                        <li>100% secure payouts</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -1077,8 +1395,8 @@ body.dark .footer {
                 
                 <div class="payout-card">
                     <div class="payout-icon">🔒</div>
-                    <h3>100% Secure</h3>
-                    <p>Your payments are protected with enterprise-grade security. All transactions are encrypted and verified.</p>
+                    <h3>No Minimum Withdrawal</h3>
+                    <p>Withdraw anytime with no minimum balance required. Your payments are protected with enterprise-grade security.</p>
                 </div>
             </div>
         </div>
@@ -1107,7 +1425,7 @@ body.dark .footer {
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>All you need is a device with internet access and the ability to use Google. No special skills or experience required. We provide detailed instructions for every task.</p>
+                        <p>All you need is a device with internet access and the ability to use Google. No special skills, KYC verification, or credit card required. We provide detailed instructions for every task.</p>
                     </div>
                 </div>
                 
@@ -1117,7 +1435,7 @@ body.dark .footer {
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>Withdraw via USDT (BEP20) with a minimum of $10. Payouts are processed within 24-48 hours. You'll need a valid BEP20 wallet address to receive payments.</p>
+                        <p>Withdraw via USDT (BEP20) with no minimum withdrawal amount. Payouts are processed within 24-48 hours. You'll need a valid BEP20 wallet address to receive payments.</p>
                     </div>
                 </div>
                 
@@ -1127,7 +1445,7 @@ body.dark .footer {
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>Absolutely not! Joining SEOTIZE Partners is completely free. There are no registration fees, membership costs, or hidden charges. You only earn money.</p>
+                        <p>Absolutely not! Joining SEOTIZE Partners is completely free. There are no registration fees, membership costs, KYC requirements, or hidden charges. You only earn money.</p>
                     </div>
                 </div>
                 
@@ -1140,6 +1458,53 @@ body.dark .footer {
                         <p>Yes! SEOTIZE Partners is available globally. You can work from anywhere with an internet connection, on your own schedule, whenever tasks are available.</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Grow Your Website Section -->
+    <section class="section grow-website">
+        <div class="container">
+            <div class="grow-content">
+                <div class="grow-icon">🚀</div>
+                <h2>Have a Website? Let's Make It Grow!</h2>
+                <p>If you own a website and want to boost your SEO rankings, increase visibility, and dominate search results, SEOTIZE's main platform is here for you.</p>
+                
+                <div class="grow-features">
+                    <div class="grow-feature">
+                        <div class="grow-feature-icon">📈</div>
+                        <div class="grow-feature-text">
+                            <h4>Real User Engagement</h4>
+                            <p>Get authentic traffic from real users worldwide</p>
+                        </div>
+                    </div>
+                    <div class="grow-feature">
+                        <div class="grow-feature-icon">⚡</div>
+                        <div class="grow-feature-text">
+                            <h4>Lightning-Fast CDN</h4>
+                            <p>Host images with blazing-fast global delivery</p>
+                        </div>
+                    </div>
+                    <div class="grow-feature">
+                        <div class="grow-feature-icon">🤖</div>
+                        <div class="grow-feature-text">
+                            <h4>AI-Powered Content</h4>
+                            <p>Generate SEO-optimized articles automatically</p>
+                        </div>
+                    </div>
+                    <div class="grow-feature">
+                        <div class="grow-feature-icon">📊</div>
+                        <div class="grow-feature-text">
+                            <h4>Higher Rankings</h4>
+                            <p>Climb to the top of search results faster</p>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="../index.html" class="cta" style="margin-top: 2rem;">
+                    <span>Explore SEOTIZE Platform</span>
+                    <i class="ri-arrow-right-line"></i>
+                </a>
             </div>
         </div>
     </section>
@@ -1168,7 +1533,7 @@ body.dark .footer {
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
-                <div>
+                <div class="footer-column">
                     <h3>Partners</h3>
                     <ul>
                         <li><a href="#how-it-works">How It Works</a></li>
@@ -1177,7 +1542,7 @@ body.dark .footer {
                         <li><a href="login.html">Join Now</a></li>
                     </ul>
                 </div>
-                <div>
+                <div class="footer-column">
                     <h3>Support</h3>
                     <ul>
                         <li><a href="login.html">Help Center</a></li>
@@ -1186,7 +1551,7 @@ body.dark .footer {
                         <li><a href="login.html">Contact Support</a></li>
                     </ul>
                 </div>
-                <div>
+                <div class="footer-column">
                     <h3>Platform</h3>
                     <ul>
                         <li><a href="../index.html">SEOTIZE Main</a></li>
@@ -1195,7 +1560,7 @@ body.dark .footer {
                         <li><a href="../blogs.html">Blog</a></li>
                     </ul>
                 </div>
-                <div>
+                <div class="footer-column">
                     <h3>Legal</h3>
                     <ul>
                         <li><a href="../index.html">Terms of Service</a></li>
@@ -1220,13 +1585,9 @@ body.dark .footer {
     <!-- Mobile Bottom Navigation -->
     <div class="mobile-nav">
         <div class="mobile-items">
-            <a href="../index.html" class="mobile-item">
-                <i class="ri-home-5-line"></i>
-                <span>Home</span>
-            </a>
-            <a href="#how-it-works" class="mobile-item active">
-                <i class="ri-user-star-line"></i>
-                <span>Partners</span>
+            <a href="#how-it-works" class="mobile-item">
+                <i class="ri-information-line"></i>
+                <span>How It Works</span>
             </a>
             <a href="#earning" class="mobile-item">
                 <i class="ri-money-dollar-circle-line"></i>
@@ -1244,6 +1605,46 @@ body.dark .footer {
     </div>
 
     <script>
+        // Hero Slider
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.hero-slide');
+        const dots = document.querySelectorAll('.slider-dot');
+        let slideInterval;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        function goToSlide(n) {
+            showSlide(n);
+            resetAutoSlide();
+        }
+
+        function startAutoSlide() {
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function resetAutoSlide() {
+            clearInterval(slideInterval);
+            startAutoSlide();
+        }
+
+        // Start auto-slide on load
+        startAutoSlide();
+
         // Theme Toggle
         function toggleTheme() {
             document.body.classList.toggle('dark');
@@ -1301,7 +1702,7 @@ body.dark .footer {
         const mobileItems = document.querySelectorAll('.mobile-item');
 
         window.addEventListener('scroll', () => {
-            let current = 'how-it-works';
+            let current = '';
             
             sections.forEach(sectionId => {
                 const section = document.getElementById(sectionId);
@@ -1328,6 +1729,22 @@ body.dark .footer {
         document.addEventListener('DOMContentLoaded', () => {
             loadTheme();
             
+            // Hero animations
+            gsap.from('.hero-text', {
+                opacity: 0,
+                y: 30,
+                duration: 1,
+                ease: "power3.out"
+            });
+
+            gsap.from('.hero-image', {
+                opacity: 0,
+                scale: 0.9,
+                duration: 1,
+                delay: 0.3,
+                ease: "power3.out"
+            });
+            
             // Animate cards on scroll
             gsap.utils.toArray('.step-card, .method-card, .payout-card').forEach((card, i) => {
                 gsap.from(card, {
@@ -1353,6 +1770,30 @@ body.dark .footer {
                     delay: i * 0.1,
                     scrollTrigger: {
                         trigger: item,
+                        start: 'top 90%'
+                    }
+                });
+            });
+
+            // Grow Website Section
+            gsap.from('.grow-content', {
+                opacity: 0,
+                y: 50,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: '.grow-website',
+                    start: 'top 80%'
+                }
+            });
+
+            gsap.utils.toArray('.grow-feature').forEach((feature, i) => {
+                gsap.from(feature, {
+                    opacity: 0,
+                    x: -30,
+                    duration: 0.6,
+                    delay: i * 0.1,
+                    scrollTrigger: {
+                        trigger: feature,
                         start: 'top 90%'
                     }
                 });
