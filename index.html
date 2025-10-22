@@ -1095,31 +1095,62 @@
             }
 
             .section {
-                height: calc(100vh - 126px);
-                min-height: calc(100vh - 126px);
+                height: auto;
+                min-height: auto;
+                padding: 3rem 0;
+                padding-top: 4rem;
+                padding-bottom: 4rem;
+            }
+
+            .section:first-of-type {
+                padding-top: calc(58px + 2rem);
+                min-height: 100vh;
             }
 
             .hero-container {
                 grid-template-columns: 1fr;
                 gap: 2rem;
-                padding: 0 1.5rem;
+                padding: 2rem 1.5rem;
             }
 
             .hero h1 {
                 font-size: 2rem;
+                margin-bottom: 1rem;
             }
 
             .hero p {
                 font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .hero img {
+                max-height: 300px;
+                object-fit: cover;
             }
 
             .hero-controls {
-                bottom: 1rem;
+                bottom: 1.5rem;
+                padding: 0.5rem 1rem;
+            }
+
+            .features {
+                padding: 3rem 1rem;
+            }
+
+            .section-title {
+                font-size: 1.875rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .section-subtitle {
+                font-size: 1rem;
+                margin-bottom: 2rem;
             }
 
             .features-container {
                 flex-direction: column;
                 height: auto;
+                gap: 1.5rem;
             }
 
             .features-sidebar {
@@ -1155,7 +1186,8 @@
 
             .feature-details {
                 padding: 2rem 1.5rem;
-                min-height: 400px;
+                min-height: auto;
+                max-height: none;
             }
 
             .feature-details-header h2 {
@@ -1170,12 +1202,22 @@
                 font-size: 1rem;
             }
 
+            .blog {
+                padding: 3rem 1rem;
+            }
+
+            .blog-subtitle {
+                font-size: 1rem;
+                margin-bottom: 2rem;
+            }
+
             .carousel-container {
-                padding: 1rem 0;
+                padding: 2rem 0;
             }
 
             .carousel {
-                min-height: 350px;
+                min-height: 380px;
+                margin-bottom: 1rem;
             }
 
             .blog-item {
@@ -1196,13 +1238,24 @@
                 font-size: 1.25rem;
             }
 
+            .blog-cta {
+                margin-top: 2rem;
+            }
+
+            .pricing {
+                padding: 3rem 1rem;
+            }
+
             .pricing-container {
                 height: auto;
+                padding-right: 0;
+                overflow-y: visible;
             }
 
             .pricing-grid {
                 grid-template-columns: 1fr;
-                gap: 1rem;
+                gap: 1.5rem;
+                padding-bottom: 1rem;
             }
 
             .pricing-grid.task-pricing {
@@ -1214,7 +1267,8 @@
             }
 
             .pricing-card .price {
-                font-size: 2rem;
+                font-size: 2.25rem;
+                margin: 0.75rem 0;
             }
 
             .pricing-type-toggle {
@@ -1258,25 +1312,45 @@
                 transform: translateY(-8px) scale(1);
             }
 
+            .partner {
+                padding: 3rem 1rem;
+            }
+
             .partner-container {
                 grid-template-columns: 1fr;
-                gap: 2rem;
+                gap: 2.5rem;
             }
 
             .partner-content h2 {
-                font-size: 1.75rem;
+                font-size: 1.875rem;
+                margin-bottom: 1.25rem;
             }
 
             .partner-content p {
                 font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .partner-features {
+                margin-bottom: 1.5rem;
             }
 
             .partner-features li {
                 font-size: 0.9rem;
+                padding: 0.625rem 0.875rem;
+            }
+
+            .partner-image {
+                max-height: 250px;
+                object-fit: cover;
             }
 
             .scroll-indicator {
                 display: none;
+            }
+
+            .footer {
+                padding: 3rem 1.5rem 6rem;
             }
 
             .footer-grid {
@@ -1287,6 +1361,16 @@
             .footer-bottom {
                 flex-direction: column;
                 text-align: center;
+            }
+
+            .cta {
+                padding: 0.875rem 1.75rem;
+                font-size: 0.95rem;
+            }
+
+            .feature-cta-btn {
+                padding: 0.875rem 1.75rem;
+                font-size: 0.95rem;
             }
 
             .mobile-nav {
@@ -1341,9 +1425,45 @@
             .mobile-item i {
                 font-size: 1.375rem;
             }
+
+            body {
+                padding-bottom: 68px;
+            }
         }
 
         @media (max-width: 480px) {
+            .section {
+                padding: 2.5rem 0;
+            }
+
+            .section:first-of-type {
+                padding-top: calc(58px + 1.5rem);
+            }
+
+            .hero-container {
+                padding: 1.5rem 1rem;
+                gap: 1.5rem;
+            }
+
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .features,
+            .blog,
+            .pricing,
+            .partner {
+                padding: 2.5rem 0.75rem;
+            }
+
+            .footer {
+                padding: 2.5rem 1rem 5rem;
+            }
+
             .footer-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 1.5rem;
@@ -1365,6 +1485,19 @@
 
             .partner-stats {
                 grid-template-columns: 1fr;
+            }
+
+            .blog-item {
+                width: 260px;
+            }
+
+            .blog-item.prev,
+            .blog-item.next {
+                transform: scale(0.75) translateX(-200px);
+            }
+
+            .blog-item.next {
+                transform: scale(0.75) translateX(200px);
             }
         }
     </style>
