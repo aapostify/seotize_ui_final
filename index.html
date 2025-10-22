@@ -1050,7 +1050,7 @@
         /* Responsive */
         @media (max-width: 768px) {
             nav {
-                height: 58px;
+                height: 60px;
             }
 
             .nav-container {
@@ -1072,133 +1072,145 @@
             }
 
             .get-started-btn {
-                padding: 0.45rem 1rem;
+                padding: 0.5rem 1rem;
                 font-size: 0.8rem;
             }
 
             .section {
                 min-height: auto;
                 height: auto;
-                padding: 3rem 1rem;
+                padding: 4rem 1.25rem;
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
+                justify-content: flex-start;
             }
 
             .hero {
                 height: auto;
-                min-height: 100vh;
+                min-height: calc(100vh - 60px);
+                padding: 2rem 1.25rem 3rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .hero-container {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
-                padding: 1.5rem 1rem;
+                gap: 2rem;
+                padding: 0;
                 max-height: none;
                 overflow-y: visible;
                 display: flex;
-                flex-direction: column-reverse;
+                flex-direction: column;
             }
 
             .hero-container > div:first-child {
-                order: 2;
-            }
-
-            .hero-container > div:last-child {
                 order: 1;
             }
 
+            .hero-container > div:last-child {
+                order: 2;
+            }
+
             .hero h1 {
-                font-size: 2rem;
+                font-size: 1.85rem;
                 margin-bottom: 1rem;
+                line-height: 1.25;
             }
 
             .hero p {
-                font-size: 1rem;
+                font-size: 0.95rem;
                 margin-bottom: 1.5rem;
+                line-height: 1.6;
             }
 
             .hero img {
-                max-height: 300px;
+                width: 100%;
+                height: auto;
+                max-height: 280px;
                 object-fit: cover;
+                border-radius: 16px;
             }
 
             .hero-controls {
-                bottom: 5rem;
+                bottom: 1rem;
                 padding: 0.5rem 1rem;
                 gap: 0.75rem;
             }
 
             .hero-dot {
-                width: 6px;
-                height: 6px;
+                width: 7px;
+                height: 7px;
             }
 
             .hero-arrow {
-                width: 28px;
-                height: 28px;
-                font-size: 0.75rem;
+                width: 30px;
+                height: 30px;
+                font-size: 0.875rem;
             }
 
             .features {
-                padding: 3rem 1rem;
+                padding: 4rem 1.25rem;
                 min-height: auto;
             }
 
             .section-title {
-                font-size: 1.75rem;
+                font-size: 1.85rem;
                 margin-bottom: 0.75rem;
                 line-height: 1.3;
             }
 
             .section-subtitle {
                 font-size: 0.95rem;
-                margin-bottom: 2rem;
-                line-height: 1.5;
-                padding: 0 1rem;
+                margin-bottom: 2.5rem;
+                line-height: 1.6;
+                padding: 0;
             }
 
             .features-container {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
-                padding-bottom: 1rem;
+                gap: 1.25rem;
+                padding-bottom: 0;
             }
 
             .feature-card {
-                padding: 1.75rem;
+                padding: 1.5rem;
                 border-radius: 16px;
-                gap: 1.25rem;
+                gap: 1rem;
+                min-height: auto;
+            }
+
+            .feature-card:hover {
+                transform: translateY(-4px);
             }
 
             .feature-card-icon {
-                font-size: 3rem;
+                font-size: 2.5rem;
+                margin-bottom: 0;
             }
 
             .feature-card-title {
-                font-size: 1.25rem;
+                font-size: 1.15rem;
+                line-height: 1.3;
             }
 
             .feature-card-description {
-                font-size: 0.95rem;
+                font-size: 0.9rem;
                 line-height: 1.6;
             }
 
             .feature-card-badge {
-                top: 1.25rem;
-                right: 1.25rem;
-                padding: 0.4rem 0.8rem;
+                position: static;
+                display: inline-block;
+                opacity: 1;
                 font-size: 0.7rem;
+                padding: 0.35rem 0.75rem;
+                margin-top: 0.5rem;
             }
 
             .pricing {
-                padding: 1.5rem 1rem;
-                overflow-y: auto;
-            }
-
-            .pricing > div {
-                display: flex;
-                flex-direction: column;
-                height: 100%;
+                padding: 4rem 1.25rem;
+                min-height: auto;
             }
 
             .pricing-container {
@@ -1209,101 +1221,130 @@
             }
 
             .pricing-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 0.75rem;
-                padding-bottom: 1rem;
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+                padding-bottom: 0;
+            }
+
+            .pricing-grid.has-free {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-grid.has-free .pricing-card:first-child {
+                grid-column: auto;
+                max-width: 100%;
+                margin: 0;
             }
 
             .pricing-grid.has-free .pricing-card:last-child {
-                grid-column: 1 / -1;
+                grid-column: auto;
                 max-width: 100%;
             }
 
             .pricing-card {
-                padding: 1rem;
-                font-size: 0.85rem;
+                padding: 1.5rem;
+                font-size: 1rem;
+                border-radius: 16px;
             }
 
             .pricing-card h3 {
-                font-size: 1.1rem;
-                margin-bottom: 0.25rem;
+                font-size: 1.35rem;
+                margin-bottom: 0.5rem;
             }
 
             .pricing-card .price {
-                font-size: 1.75rem;
-                margin: 0.5rem 0;
+                font-size: 2.5rem;
+                margin: 0.75rem 0;
             }
 
             .pricing-card .price span {
-                font-size: 0.75rem;
-            }
-
-            .pricing-features li {
-                padding: 0.4rem 0;
-                font-size: 0.75rem;
-                line-height: 1.3;
-            }
-
-            .pricing-features li i {
                 font-size: 0.9rem;
             }
 
+            .pricing-features {
+                margin: 1.25rem 0;
+            }
+
+            .pricing-features li {
+                padding: 0.65rem 0;
+                font-size: 0.85rem;
+                line-height: 1.5;
+                gap: 0.5rem;
+            }
+
+            .pricing-features li i {
+                font-size: 1rem;
+            }
+
             .popular-badge {
-                font-size: 0.65rem;
-                padding: 0.35rem 0.75rem;
+                font-size: 0.7rem;
+                padding: 0.4rem 0.85rem;
             }
 
             .pricing-card .cta {
-                padding: 0.65rem 1rem;
-                font-size: 0.8rem;
+                padding: 0.85rem 1.5rem;
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
             }
 
             .pricing-type-toggle {
-                width: calc(100% - 2rem);
+                width: 100%;
                 max-width: 100%;
                 flex-direction: row;
                 gap: 0.25rem;
-                margin: 0 1rem 1rem;
+                margin: 0 0 1.5rem;
             }
 
             .pricing-type-toggle button {
                 flex: 1;
-                padding: 0.65rem 0.75rem;
-                font-size: 0.8rem;
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
             }
 
             .pricing-toggle {
-                width: calc(100% - 2rem);
+                width: 100%;
                 max-width: 100%;
-                flex-direction: row;
-                gap: 0.25rem;
-                margin: 0 1rem 1rem;
-                flex-wrap: wrap;
+                flex-direction: column;
+                gap: 0.5rem;
+                margin: 0 0 2rem;
+                padding: 0;
+                background: transparent;
             }
 
             .pricing-toggle button {
-                flex: 1;
-                min-width: calc(33.33% - 0.2rem);
-                padding: 0.65rem 0.5rem;
-                font-size: 0.75rem;
+                flex: none;
+                width: 100%;
+                min-width: auto;
+                padding: 0.85rem 1.25rem;
+                font-size: 0.9rem;
             }
 
             .pricing-toggle button .save-badge {
-                display: block;
-                margin-left: 0;
-                margin-top: 0.15rem;
+                display: inline-block;
+                margin-left: 0.5rem;
+                margin-top: 0;
+            }
+
+            .pricing-toggle button.active {
+                transform: translateY(0) scale(1);
+            }
+
+            .pricing-toggle button:hover:not(.active) {
+                transform: translateY(0);
             }
 
             .pricing-card.popular {
                 transform: scale(1);
+                border-width: 2px;
             }
 
             .pricing-card.popular:hover {
-                transform: translateY(-8px) scale(1);
+                transform: translateY(-4px) scale(1);
             }
 
             .blog {
-                padding: 3rem 1rem;
+                padding: 4rem 1.25rem;
+                min-height: auto;
             }
 
             .blog .cta {
@@ -1312,21 +1353,22 @@
             }
 
             .blog-subtitle {
-                font-size: 1rem;
-                margin-bottom: 2rem;
+                font-size: 0.95rem;
+                margin-bottom: 2.5rem;
+                line-height: 1.6;
             }
 
             .carousel-container {
-                padding: 2rem 0;
+                padding: 1.5rem 0;
             }
 
             .carousel {
-                min-height: 320px;
-                margin-bottom: 1rem;
+                min-height: 340px;
+                margin-bottom: 1.5rem;
             }
 
             .blog-item {
-                width: 260px;
+                width: 280px;
                 cursor: pointer;
                 pointer-events: auto;
             }
@@ -1337,122 +1379,137 @@
 
             .blog-item.prev {
                 opacity: 0;
-                transform: scale(0.7) translateX(-200px);
+                transform: scale(0.75) translateX(-220px);
                 pointer-events: none;
             }
 
             .blog-item.next {
                 opacity: 0;
-                transform: scale(0.7) translateX(200px);
+                transform: scale(0.75) translateX(220px);
                 pointer-events: none;
             }
 
             .blog-item img {
-                height: 150px;
+                height: 160px;
             }
 
             .blog-info {
-                padding: 1rem;
+                padding: 1.25rem;
             }
 
             .blog-title {
-                font-size: 0.9rem;
+                font-size: 0.95rem;
                 -webkit-line-clamp: 2;
+                margin-bottom: 0.5rem;
+            }
+
+            .blog-date {
+                font-size: 0.8rem;
             }
 
             .nav-btn {
-                width: 36px;
-                height: 36px;
-                font-size: 1.1rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
             }
 
             .prev-btn {
-                left: -18px;
+                left: -20px;
             }
 
             .next-btn {
-                right: -18px;
+                right: -20px;
             }
 
             .blog-cta {
-                margin-top: 1.5rem;
+                margin-top: 2rem;
             }
 
             .blog-cta .cta {
-                font-size: 0.85rem;
-                padding: 0.75rem 1.25rem;
+                font-size: 0.9rem;
+                padding: 0.85rem 1.5rem;
             }
 
             .partner {
-                padding: 3rem 1rem;
+                padding: 4rem 1.25rem;
                 min-height: auto;
             }
 
             .partner-container {
                 grid-template-columns: 1fr;
-                gap: 2rem;
+                gap: 2.5rem;
                 display: flex;
                 flex-direction: column;
             }
 
             .partner-image {
                 width: 100%;
-                max-height: 250px;
+                height: auto;
+                max-height: 280px;
                 object-fit: cover;
                 border-radius: 16px;
-                order: -1;
-            }
-
-            .partner-content {
                 order: 1;
             }
 
+            .partner-content {
+                order: 2;
+            }
+
             .partner-content h2 {
-                font-size: 1.75rem;
+                font-size: 1.85rem;
                 margin-bottom: 1rem;
                 line-height: 1.3;
             }
 
             .partner-content p {
                 font-size: 0.95rem;
-                margin-bottom: 1.5rem;
-                line-height: 1.6;
+                margin-bottom: 1.75rem;
+                line-height: 1.65;
             }
 
             .partner-stats {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 0.75rem;
-                margin-bottom: 1.5rem;
+                margin-bottom: 1.75rem;
             }
 
             .partner-stat {
-                padding: 1rem 0.75rem;
+                padding: 1rem 0.5rem;
+                border-radius: 10px;
             }
 
             .partner-stat-value {
                 font-size: 1.5rem;
+                margin-bottom: 0.35rem;
             }
 
             .partner-stat-label {
                 font-size: 0.75rem;
+                line-height: 1.3;
             }
 
             .partner-features {
-                margin-bottom: 1.5rem;
-                gap: 0.75rem;
+                margin-bottom: 1.75rem;
+                gap: 0.65rem;
             }
 
             .partner-features li {
-                font-size: 0.9rem;
-                padding: 0.65rem 0.85rem;
+                font-size: 0.85rem;
+                padding: 0.75rem 0.85rem;
+                line-height: 1.5;
+                border-radius: 8px;
+            }
+
+            .partner-features li:hover {
+                transform: translateX(0);
             }
 
             .partner-features li i {
-                font-size: 1.1rem;
+                font-size: 1.15rem;
             }
 
             .partner-content .cta {
-                padding: 1rem 1.75rem;
+                padding: 0.95rem 2rem;
                 font-size: 0.95rem;
                 width: 100%;
                 justify-content: center;
@@ -1463,27 +1520,43 @@
             }
 
             .footer {
-                padding: 3rem 1.5rem 5rem;
+                padding: 3rem 1.25rem 5.5rem;
+                margin-top: 2rem;
             }
 
             .footer-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 2rem;
+                margin-bottom: 2.5rem;
+            }
+
+            .footer h3 {
+                font-size: 1rem;
+                margin-bottom: 0.85rem;
+            }
+
+            .footer li {
+                margin: 0.45rem 0;
+            }
+
+            .footer a {
+                font-size: 0.85rem;
             }
 
             .footer-bottom {
                 flex-direction: column;
                 text-align: center;
+                gap: 1.25rem;
+            }
+
+            .footer-bottom p {
+                font-size: 0.85rem;
             }
 
             .cta {
-                padding: 0.875rem 1.75rem;
-                font-size: 0.95rem;
-            }
-
-            .feature-cta-btn {
-                padding: 0.875rem 1.75rem;
-                font-size: 0.95rem;
+                padding: 0.85rem 1.5rem;
+                font-size: 0.9rem;
+                border-radius: 10px;
             }
 
             .mobile-nav {
@@ -1492,20 +1565,20 @@
                 bottom: 0;
                 left: 0;
                 right: 0;
-                height: 68px;
+                height: 65px;
                 background: var(--nav-bg);
                 backdrop-filter: blur(20px);
                 -webkit-backdrop-filter: blur(20px);
                 border-top: 1px solid var(--border);
                 z-index: 100;
-                padding: 0.625rem 0.875rem;
-                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+                padding: 0.5rem 0.75rem;
+                box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
             }
 
             .mobile-items {
                 display: grid;
                 grid-template-columns: repeat(5, 1fr);
-                gap: 0.5rem;
+                gap: 0.35rem;
                 max-width: 600px;
                 height: 100%;
                 margin: 0 auto;
@@ -1517,17 +1590,17 @@
                 align-items: center;
                 justify-content: center;
                 gap: 0.25rem;
-                padding: 0.375rem;
+                padding: 0.35rem;
                 color: var(--text-light);
                 text-decoration: none;
-                font-size: 0.75rem;
-                font-weight: 500;
-                border-radius: 8px;
-                transition: all 0.3s ease;
+                font-size: 0.7rem;
+                font-weight: 600;
+                border-radius: 10px;
+                transition: all 0.25s ease;
             }
 
             .mobile-item:active {
-                transform: scale(0.95);
+                transform: scale(0.92);
             }
 
             .mobile-item.active {
@@ -1536,22 +1609,11 @@
             }
 
             .mobile-item i {
-                font-size: 1.375rem;
+                font-size: 1.4rem;
             }
 
             body {
-                padding-bottom: 68px;
-            }
-
-            .hero img {
-                max-height: 250px;
-                width: 100%;
-                object-fit: cover;
-            }
-
-            .cta {
-                padding: 0.75rem 1.5rem;
-                font-size: 0.875rem;
+                padding-bottom: 65px;
             }
         }
 
@@ -1816,63 +1878,242 @@
         }
 
         @media (max-width: 768px) {
-            .feature-modal-content,
-            .blog-modal-content {
-                margin: 1rem;
+            .feature-modal {
+                padding: 1.25rem;
+            }
+
+            .feature-modal-content {
                 padding: 2rem 1.5rem;
+                border-radius: 20px;
+                max-width: 100%;
+            }
+
+            .feature-modal-header {
+                flex-direction: row;
+                align-items: center;
+                gap: 1.25rem;
+                margin-bottom: 1.5rem;
+                padding-bottom: 1.25rem;
+            }
+
+            .feature-modal-icon {
+                font-size: 3rem;
+            }
+
+            .feature-modal-title {
+                font-size: 1.5rem;
+                line-height: 1.3;
+            }
+
+            .feature-modal-subtitle {
+                font-size: 1rem;
+            }
+
+            .feature-modal-description {
+                font-size: 1rem;
+                line-height: 1.7;
+                margin-bottom: 1.5rem;
+            }
+
+            .feature-modal-image {
+                border-radius: 14px;
+                margin-bottom: 1.25rem;
+            }
+
+            .feature-modal-features li {
+                padding: 0.85rem;
+                font-size: 0.9rem;
+                margin-bottom: 0.65rem;
+            }
+
+            .feature-modal-features li i {
+                font-size: 1.35rem;
+            }
+
+            .feature-modal-close {
+                width: 38px;
+                height: 38px;
+                font-size: 1.35rem;
+            }
+
+            .blog-modal {
+                padding: 1.25rem;
+            }
+
+            .blog-modal-content {
+                border-radius: 20px;
+                max-width: 100%;
+            }
+
+            .blog-modal-image {
+                height: 220px;
+            }
+
+            .blog-modal-body {
+                padding: 1.75rem;
+            }
+
+            .blog-modal-title {
+                font-size: 1.4rem;
+                line-height: 1.4;
+                margin-bottom: 0.85rem;
+            }
+
+            .blog-modal-date {
+                font-size: 0.85rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .blog-modal-excerpt {
+                font-size: 0.95rem;
+                line-height: 1.65;
+                margin-bottom: 1.35rem;
+            }
+
+            .blog-modal-cta {
+                padding: 0.9rem 1.75rem;
+                font-size: 0.9rem;
+            }
+
+            .blog-modal-close {
+                width: 38px;
+                height: 38px;
+                font-size: 1.35rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .feature-modal-content {
+                padding: 1.75rem 1.25rem;
             }
 
             .feature-modal-header {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .feature-modal-icon {
+                font-size: 2.75rem;
             }
 
             .feature-modal-title {
-                font-size: 1.5rem;
-            }
-
-            .blog-modal-title {
                 font-size: 1.35rem;
             }
 
-            .blog-modal-image {
-                height: 200px;
+            .feature-modal-subtitle {
+                font-size: 0.95rem;
+            }
+
+            .feature-modal-description {
+                font-size: 0.95rem;
+            }
+
+            .feature-modal-features li {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+
+            .blog-modal-body {
+                padding: 1.5rem;
+            }
+
+            .blog-modal-title {
+                font-size: 1.25rem;
+            }
+
+            .blog-modal-excerpt {
+                font-size: 0.9rem;
+            }
+
+            .blog-modal-cta {
+                padding: 0.85rem 1.5rem;
+                font-size: 0.85rem;
             }
         }
 
         @media (max-width: 480px) {
             .section {
-                padding: 2rem 0.75rem;
+                padding: 3rem 1rem;
                 min-height: auto;
                 height: auto;
             }
 
+            .hero {
+                padding: 1.5rem 1rem 2.5rem;
+                min-height: calc(100vh - 60px);
+            }
+
             .hero-container {
-                padding: 1.5rem 1rem;
-                gap: 1.5rem;
+                padding: 0;
+                gap: 1.75rem;
             }
 
             .hero h1 {
-                font-size: 1.5rem;
+                font-size: 1.65rem;
+                margin-bottom: 0.85rem;
             }
 
             .hero p {
                 font-size: 0.9rem;
+                margin-bottom: 1.25rem;
+                line-height: 1.55;
+            }
+
+            .hero img {
+                max-height: 240px;
+                border-radius: 14px;
+            }
+
+            .hero-controls {
+                bottom: 0.75rem;
+                padding: 0.4rem 0.85rem;
+                gap: 0.65rem;
             }
 
             .section-title {
-                font-size: 1.35rem;
-                margin-bottom: 0.5rem;
+                font-size: 1.65rem;
+                margin-bottom: 0.65rem;
             }
 
             .section-subtitle {
-                font-size: 0.85rem;
-                margin-bottom: 1rem;
+                font-size: 0.9rem;
+                margin-bottom: 2rem;
+                line-height: 1.55;
+            }
+
+            .features {
+                padding: 3rem 1rem;
+            }
+
+            .features-container {
+                gap: 1rem;
+            }
+
+            .feature-card {
+                padding: 1.35rem;
+                border-radius: 14px;
+            }
+
+            .feature-card-icon {
+                font-size: 2.35rem;
+            }
+
+            .feature-card-title {
+                font-size: 1.1rem;
+            }
+
+            .feature-card-description {
+                font-size: 0.875rem;
+            }
+
+            .pricing {
+                padding: 3rem 1rem;
             }
 
             .pricing-grid {
                 grid-template-columns: 1fr;
-                gap: 0.65rem;
+                gap: 1rem;
             }
 
             .pricing-container {
@@ -1880,80 +2121,192 @@
             }
 
             .pricing-card {
-                padding: 0.85rem;
+                padding: 1.35rem;
+                border-radius: 14px;
             }
 
             .pricing-card h3 {
-                font-size: 1rem;
-            }
-
-            .pricing-card .price {
-                font-size: 1.5rem;
-            }
-
-            .pricing-features li {
-                font-size: 0.7rem;
-            }
-
-            .partner-stats {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 0.5rem;
-            }
-
-            .partner-stat {
-                padding: 0.75rem 0.5rem;
-            }
-
-            .partner-stat-value {
                 font-size: 1.25rem;
             }
 
-            .blog-item {
-                width: 240px;
+            .pricing-card .price {
+                font-size: 2.25rem;
+                margin: 0.65rem 0;
             }
 
-            .blog-item.prev,
-            .blog-item.next {
+            .pricing-card .price span {
+                font-size: 0.85rem;
+            }
+
+            .pricing-features li {
+                font-size: 0.8rem;
+                padding: 0.6rem 0;
+            }
+
+            .pricing-features li i {
+                font-size: 0.95rem;
+            }
+
+            .pricing-card .cta {
+                padding: 0.8rem 1.35rem;
+                font-size: 0.85rem;
+            }
+
+            .pricing-type-toggle button {
+                padding: 0.7rem 0.85rem;
+                font-size: 0.8rem;
+            }
+
+            .pricing-toggle button {
+                padding: 0.8rem 1.15rem;
+                font-size: 0.85rem;
+            }
+
+            .blog {
+                padding: 3rem 1rem;
+            }
+
+            .blog-item {
+                width: 260px;
+            }
+
+            .blog-item.prev {
                 opacity: 0;
-                transform: scale(0.5) translateX(-120px);
+                transform: scale(0.65) translateX(-180px);
                 pointer-events: none;
             }
 
             .blog-item.next {
                 opacity: 0;
-                transform: scale(0.5) translateX(120px);
+                transform: scale(0.65) translateX(180px);
                 pointer-events: none;
             }
 
             .blog-item img {
-                height: 120px;
+                height: 140px;
+            }
+
+            .blog-info {
+                padding: 1.15rem;
             }
 
             .blog-title {
+                font-size: 0.9rem;
+            }
+
+            .blog-date {
+                font-size: 0.75rem;
+            }
+
+            .nav-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 1.15rem;
+            }
+
+            .prev-btn {
+                left: -19px;
+            }
+
+            .next-btn {
+                right: -19px;
+            }
+
+            .blog-cta .cta {
                 font-size: 0.85rem;
+                padding: 0.8rem 1.35rem;
+            }
+
+            .partner {
+                padding: 3rem 1rem;
+            }
+
+            .partner-content h2 {
+                font-size: 1.65rem;
+            }
+
+            .partner-content p {
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+
+            .partner-stats {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.65rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .partner-stat {
+                padding: 0.85rem 0.4rem;
+            }
+
+            .partner-stat-value {
+                font-size: 1.35rem;
+            }
+
+            .partner-stat-label {
+                font-size: 0.7rem;
+            }
+
+            .partner-features li {
+                font-size: 0.8rem;
+                padding: 0.7rem 0.75rem;
+            }
+
+            .partner-features li i {
+                font-size: 1.05rem;
+            }
+
+            .partner-content .cta {
+                padding: 0.9rem 1.75rem;
+                font-size: 0.9rem;
             }
 
             .footer {
-                padding: 2.5rem 1rem 5rem;
+                padding: 2.5rem 1rem 5.5rem;
             }
 
             .footer-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 1.5rem;
+                gap: 1.75rem;
+                margin-bottom: 2rem;
+            }
+
+            .footer h3 {
+                font-size: 0.95rem;
+            }
+
+            .footer a {
+                font-size: 0.8rem;
+            }
+
+            .footer-bottom p {
+                font-size: 0.8rem;
+            }
+
+            .social-links a {
+                width: 34px;
+                height: 34px;
+                font-size: 1.05rem;
             }
 
             .mobile-items {
-                gap: 0.25rem;
+                gap: 0.3rem;
             }
 
             .mobile-item {
                 font-size: 0.65rem;
-                gap: 0.15rem;
-                padding: 0.25rem;
+                gap: 0.2rem;
+                padding: 0.3rem;
             }
 
             .mobile-item i {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
+            }
+
+            .cta {
+                padding: 0.8rem 1.35rem;
+                font-size: 0.85rem;
             }
         }
     </style>
