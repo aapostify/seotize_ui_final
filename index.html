@@ -10,2582 +10,229 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         :root {
-            --bg: #fafbfc;
-            --bg-secondary: #ffffff;
-            --text: #0f172a;
-            --text-light: #64748b;
-            --text-muted: #94a3b8;
-            --border: #e2e8f0;
-            --primary: #2563eb;
-            --primary-dark: #1e40af;
-            --primary-glow: rgba(37, 99, 235, 0.2);
-            --success: #10b981;
-            --nav-bg: rgba(255, 255, 255, 0.85);
-            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-            --bg-dark: #1a1f2e;
+            --bg: #fafbfc; --bg-secondary: #ffffff; --text: #0f172a; --text-light: #64748b;
+            --text-muted: #94a3b8; --border: #e2e8f0; --primary: #2563eb; --primary-dark: #1e40af;
+            --primary-glow: rgba(37, 99, 235, 0.2); --success: #10b981; --nav-bg: rgba(255, 255, 255, 0.85);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.06); --bg-dark: #1a1f2e;
         }
-
+        
         body.dark {
-            --bg: #0a0e1a;
-            --bg-secondary: #1a1f2e;
-            --text: #f1f5f9;
-            --text-light: #cbd5e1;
-            --text-muted: #94a3b8;
-            --border: #2d3748;
-            --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --primary-glow: rgba(59, 130, 246, 0.25);
-            --nav-bg: rgba(26, 31, 46, 0.85);
-            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            --bg-dark: #000000;
+            --bg: #0a0e1a; --bg-secondary: #1a1f2e; --text: #f1f5f9; --text-light: #cbd5e1;
+            --text-muted: #94a3b8; --border: #2d3748; --primary: #3b82f6; --primary-dark: #2563eb;
+            --primary-glow: rgba(59, 130, 246, 0.25); --nav-bg: rgba(26, 31, 46, 0.85);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); --bg-dark: #000000;
         }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Removed scroll-snap to allow free scrolling to footer */
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            transition: background 0.3s ease, color 0.3s ease;
-            -webkit-font-smoothing: antialiased;
-        }
-
+        
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; -webkit-font-smoothing: antialiased; }
+        
         /* Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 65px;
-            background: var(--nav-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-decoration: none;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-menu {
-            display: flex;
-            align-items: center;
-            gap: 1.75rem;
-            list-style: none;
-        }
-
-        .nav-menu a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .nav-menu a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--primary);
-            transition: width 0.3s ease;
-        }
-
-        .nav-menu a:hover::after {
-            width: 100%;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.875rem;
-        }
-
-        .get-started-btn {
-            padding: 0.5rem 1.125rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .get-started-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px var(--primary-glow);
-        }
-
-        .theme-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-            color: var(--text);
-        }
-
-        .theme-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--card-shadow);
-            border-color: var(--primary);
-        }
-
+        nav { position: fixed; top: 0; left: 0; right: 0; height: 65px; background: var(--nav-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; display: flex; align-items: center; }
+        .nav-container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); text-decoration: none; letter-spacing: -0.5px; }
+        .nav-menu { display: flex; align-items: center; gap: 1.75rem; list-style: none; }
+        .nav-menu a { color: var(--text-light); text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: color 0.2s; }
+        .nav-menu a:hover { color: var(--primary); }
+        .nav-actions { display: flex; align-items: center; gap: 0.875rem; }
+        .get-started-btn { padding: 0.5rem 1.125rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 10px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .get-started-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--primary-glow); }
+        .theme-btn { width: 40px; height: 40px; border-radius: 10px; background: var(--bg-secondary); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; font-size: 1.2rem; color: var(--text); }
+        .theme-btn:hover { transform: translateY(-2px); box-shadow: var(--card-shadow); border-color: var(--primary); }
+        
         /* Sections */
-        .section {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            padding: 6rem 2rem;
-        }
-
-        @media (max-width: 768px) {
-            .section {
-                min-height: 100vh;
-            }
-
-            .section > div {
-                max-width: 100%;
-            }
-        }
-
-        /* Hero Section with Slider */
-        .hero {
-            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%);
-            position: relative;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
-            top: -150px;
-            right: -150px;
-            animation: float 10s ease-in-out infinite;
-            z-index: 1;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-25px, 25px); }
-        }
-
-        .hero-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transform: translateX(50px);
-            transition: all 0.6s ease;
-            z-index: 2;
-        }
-
-        .hero-slide.active {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .hero-container {
-            max-width: 1400px;
-            width: 100%;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .hero h1 {
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1.2;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-light);
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        .cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1rem;
-            box-shadow: 0 10px 25px var(--primary-glow);
-            transition: all 0.3s ease;
-        }
-
-        .cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 35px var(--primary-glow);
-        }
-
-        .hero img {
-            width: 100%;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-        }
-
-        .hero-controls {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            background: var(--bg-secondary);
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-            z-index: 10;
-        }
-
-        .hero-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--border);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .hero-dot.active {
-            background: var(--primary);
-            transform: scale(1.25);
-        }
-
-        .hero-arrow {
-            width: 32px;
-            height: 32px;
-            border: none;
-            border-radius: 50%;
-            background: var(--bg);
-            cursor: pointer;
-            font-size: 0.875rem;
-            color: var(--text);
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .hero-arrow:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Features Section - Redesigned for Mobile */
-        .features {
-            background: var(--bg);
-            padding: 0 2rem;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .section-subtitle {
-            text-align: center;
-            font-size: 1.125rem;
-            color: var(--text-light);
-            margin-bottom: 3rem;
-        }
-
-        .features-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            padding-bottom: 2rem;
-        }
-
-        .feature-card {
-            background: var(--bg-secondary);
-            padding: 2rem;
-            border-radius: 20px;
-            border: 2px solid var(--border);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, var(--primary-glow) 0%, transparent 60%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            pointer-events: none;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--primary);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-        }
-
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-
-        .feature-card-icon {
-            font-size: 3.5rem;
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
-
-        .feature-card-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text);
-            margin: 0;
-            line-height: 1.3;
-        }
-
-        .feature-card-description {
-            font-size: 1rem;
-            color: var(--text-light);
-            line-height: 1.7;
-            margin: 0;
-        }
-
-        .feature-card-badge {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: var(--primary);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .feature-card:hover .feature-card-badge {
-            opacity: 1;
-        }
-
-        /* Pricing Section - Cloudflare Style */
-        .pricing {
-            background: var(--bg-secondary);
-            padding: 0 2rem;
-        }
-
-        .pricing-frequency-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 3rem;
-        }
-
-        .frequency-label {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .save-tag {
-            display: inline-block;
-            background: var(--success);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-left: 0.5rem;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 56px;
-            height: 30px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--border);
-            transition: 0.4s;
-            border-radius: 30px;
-        }
-
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .toggle-slider {
-            background-color: var(--primary);
-        }
-
-        input:checked + .toggle-slider:before {
-            transform: translateX(26px);
-        }
-
-        .pricing-grid-new {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .pricing-type-toggle {
-            display: inline-flex;
-            justify-content: center;
-            gap: 0.25rem;
-            margin-bottom: 2rem;
-            background: var(--bg);
-            padding: 0.375rem;
-            border-radius: 16px;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-            border: 1px solid var(--border);
-            display: flex;
-        }
-
-        .pricing-type-toggle button {
-            padding: 0.875rem 2.5rem;
-            border: none;
-            background: transparent;
-            color: var(--text-light);
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-            position: relative;
-        }
-
-        .pricing-type-toggle button.active {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            box-shadow: 0 4px 12px var(--primary-glow);
-            transform: scale(1.02);
-        }
-
-        .pricing-toggle {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            background: transparent;
-            padding: 0;
-            border-radius: 0;
-            width: 100%;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .pricing-toggle button {
-            flex: 1;
-            padding: 1.25rem 2rem;
-            border: 2px solid var(--border);
-            background: var(--bg-secondary);
-            color: var(--text-light);
-            font-weight: 600;
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            font-size: 1rem;
-            white-space: nowrap;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .pricing-toggle button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            transition: left 0.4s ease;
-            z-index: -1;
-        }
-
-        .pricing-toggle button.active {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 8px 24px var(--primary-glow);
-            transform: translateY(-4px) scale(1.05);
-        }
-
-        .pricing-toggle button.active::before {
-            left: 0;
-        }
-
-        .pricing-toggle button:hover:not(.active) {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .pricing-toggle button .save-badge {
-            display: inline-block;
-            background: var(--success);
-            color: white;
-            font-size: 0.7rem;
-            padding: 0.15rem 0.5rem;
-            border-radius: 8px;
-            margin-left: 0.375rem;
-            font-weight: 700;
-        }
-
-        .pricing-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            overflow-y: visible;
-            padding-right: 0;
-        }
-
-        .pricing-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .pricing-container::-webkit-scrollbar-track {
-            background: var(--bg);
-            border-radius: 10px;
-        }
-
-        .pricing-container::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .pricing-grid.has-free {
-            grid-template-columns: repeat(3, 1fr);
-            grid-auto-rows: auto;
-        }
-
-        .pricing-grid.has-free .pricing-card:first-child {
-            grid-column: 1 / -1;
-            max-width: 400px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .pricing-card {
-            background: var(--bg-secondary);
-            border: 2px solid var(--border);
-            border-radius: 20px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .pricing-card-new {
-            background: var(--bg);
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .pricing-card-new:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-            border-color: var(--primary);
-        }
-
-        .pricing-card-new.featured {
-            border-color: var(--primary);
-            border-width: 3px;
-            box-shadow: 0 15px 35px var(--primary-glow);
-            transform: scale(1.03);
-        }
-
-        .pricing-card-new.featured:hover {
-            transform: translateY(-5px) scale(1.03);
-        }
-
-        .plan-badge {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .plan-header-new {
-            text-align: center;
-            padding-bottom: 1.5rem;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .plan-name {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--text);
-            margin-bottom: 0.5rem;
-        }
-
-        .plan-description {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .plan-price {
-            text-align: center;
-            padding: 1.5rem 0;
-        }
-
-        .price-amount {
-            font-size: 3rem;
-            font-weight: 900;
-            color: var(--primary);
-            line-height: 1;
-        }
-
-        .price-period {
-            font-size: 1rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            margin-top: 0.5rem;
-        }
-
-        .price-billing {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-top: 0.5rem;
-        }
-
-        .plan-features-new {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            flex: 1;
-        }
-
-        .plan-features-new li {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            font-size: 0.9rem;
-            color: var(--text-light);
-            line-height: 1.5;
-        }
-
-        .plan-features-new li i {
-            color: var(--success);
-            font-size: 1.2rem;
-            flex-shrink: 0;
-            margin-top: 0.1rem;
-        }
-
-        .feature-info-btn {
-            background: none;
-            border: none;
-            color: var(--primary);
-            cursor: pointer;
-            padding: 0;
-            font-size: 1rem;
-            margin-left: 0.25rem;
-            transition: transform 0.2s ease;
-        }
-
-        .feature-info-btn:hover {
-            transform: scale(1.2);
-        }
-
-        .plan-cta-new {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
-
-        .plan-cta-new:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px var(--primary-glow);
-        }
-
-        .plan-cta-new.secondary {
-            background: var(--bg-secondary);
-            color: var(--text);
-            border: 2px solid var(--border);
-        }
-
-        .plan-cta-new.secondary:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .pricing-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-            border-color: var(--primary);
-        }
-
-        .pricing-card.popular {
-            border-color: var(--primary);
-            box-shadow: 0 20px 40px var(--primary-glow);
-            transform: scale(1.05);
-        }
-
-        .pricing-card.popular:hover {
-            transform: translateY(-8px) scale(1.05);
-        }
-
-        .popular-badge {
-            position: absolute;
-            top: -12px;
-            right: 20px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 0.5rem 1.25rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .pricing-card h3 {
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            color: var(--text);
-        }
-
-        .pricing-card .price {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin: 1rem 0;
-            line-height: 1;
-        }
-
-        .pricing-card .price span {
-            font-size: 1rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .pricing-features {
-            list-style: none;
-            margin: 1.5rem 0;
-            flex: 1;
-        }
-
-        .pricing-features li {
-            padding: 0.625rem 0;
-            color: var(--text-light);
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .pricing-features li i {
-            color: var(--success);
-            font-size: 1.125rem;
-            margin-top: 0.15rem;
-            flex-shrink: 0;
-        }
-
-        /* Blog Section */
-        .blog {
-            background: var(--bg);
-            padding: 0 2rem;
-        }
-
-        .blog-subtitle {
-            text-align: center;
-            font-size: 1.125rem;
-            color: var(--text-light);
-            margin-bottom: 3rem;
-        }
-
-        .carousel-container {
-            position: relative;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 0;
-        }
-
-        .carousel {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-            min-height: 400px;
-            position: relative;
-        }
-
-        .blog-item {
-            background: var(--bg-secondary);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            transition: all 0.4s ease;
-            position: absolute;
-            width: 300px;
-        }
-
-        .blog-item.hidden {
-            opacity: 0;
-            transform: scale(0.8) translateX(0);
-            pointer-events: none;
-        }
-
-        .blog-item.prev {
-            opacity: 0.5;
-            transform: scale(0.85) translateX(-350px);
-            z-index: 1;
-        }
-
-        .blog-item.active {
-            opacity: 1;
-            transform: scale(1) translateX(0);
-            z-index: 2;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .blog-item.next {
-            opacity: 0.5;
-            transform: scale(0.85) translateX(350px);
-            z-index: 1;
-        }
-
-        .blog-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .blog-info {
-            padding: 1.5rem;
-        }
-
-        .blog-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 0.75rem;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .blog-date {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
-
-        .nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: var(--bg-secondary);
-            border: 2px solid var(--border);
-            color: var(--text);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        .prev-btn {
-            left: -24px;
-        }
-
-        .next-btn {
-            right: -24px;
-        }
-
-        .blog-cta {
-            text-align: center;
-            margin-top: 3rem;
-        }
-
-        /* Partner Section - Complete Redesign */
-        .partner {
-            background: var(--bg-secondary);
-            padding: 0 2rem;
-        }
-
-        .partner-container-new {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .partner-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .partner-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 3rem;
-            align-items: start;
-        }
-
-        .partner-main-card {
-            background: var(--bg);
-            border: 2px solid var(--border);
-            border-radius: 24px;
-            padding: 3rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-        }
-
-        .partner-main-card:hover {
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-            transform: translateY(-5px);
-        }
-
-        .partner-card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .partner-icon {
-            font-size: 3rem;
-            line-height: 1;
-        }
-
-        .partner-card-header h3 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--text);
-            margin: 0;
-        }
-
-        .partner-description {
-            font-size: 1.125rem;
-            color: var(--text-light);
-            line-height: 1.7;
-            margin-bottom: 2rem;
-        }
-
-        .partner-stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .partner-stat-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.5rem;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .partner-stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            border-color: var(--primary);
-        }
-
-        .stat-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 0.25rem;
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .partner-benefits {
-            margin-bottom: 2rem;
-        }
-
-        .partner-benefits h4 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 1rem;
-        }
-
-        .benefits-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .benefits-list li {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 1rem;
-            color: var(--text-light);
-            padding: 0.75rem;
-            background: var(--bg-secondary);
-            border-radius: 10px;
-            border-left: 3px solid var(--success);
-            transition: all 0.3s ease;
-        }
-
-        .benefits-list li:hover {
-            transform: translateX(5px);
-            background: var(--primary-glow);
-        }
-
-        .benefits-list li i {
-            color: var(--success);
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .partner-cta {
-            width: 100%;
-            justify-content: center;
-            padding: 1.25rem 2rem;
-            font-size: 1.125rem;
-        }
-
-        .partner-visual {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .partner-image-wrapper {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .partner-dashboard-img {
-            width: 100%;
-            height: auto;
-            display: block;
-            border-radius: 20px;
-        }
-
-        .partner-overlay-stats {
-            position: absolute;
-            bottom: 1.5rem;
-            left: 1.5rem;
-            right: 1.5rem;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 1.5rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        .overlay-stat {
-            text-align: center;
-        }
-
-        .overlay-stat-value {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 0.25rem;
-        }
-
-        .overlay-stat-label {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .partner-testimonial {
-            background: var(--bg);
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-        }
-
-        .testimonial-stars {
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-        }
-
-        .testimonial-text {
-            font-size: 1rem;
-            color: var(--text-light);
-            line-height: 1.7;
-            margin-bottom: 1rem;
-            font-style: italic;
-        }
-
-        .testimonial-author {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .testimonial-author strong {
-            color: var(--text);
-            font-weight: 600;
-        }
-
-        /* Old partner container - keep for compatibility */
-        .partner-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-            height: 100%;
-        }
-
-        .partner-content h2 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .partner-content p {
-            font-size: 1.125rem;
-            color: var(--text-light);
-            margin-bottom: 2rem;
-            line-height: 1.7;
-        }
-
-        .partner-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .partner-stat {
-            text-align: center;
-            padding: 1.5rem;
-            background: var(--bg);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
-        }
-
-        .partner-stat:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            border-color: var(--primary);
-        }
-
-        .partner-stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .partner-stat-label {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
-
-        .partner-features {
-            list-style: none;
-            margin-bottom: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .partner-features li {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 1rem;
-            color: var(--text-light);
-            padding: 0.75rem 1rem;
-            background: var(--bg);
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
-        }
-
-        .partner-features li:hover {
-            transform: translateX(5px);
-            border-color: var(--primary);
-        }
-
-        .partner-features li i {
-            color: var(--success);
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .partner-image {
-            width: 100%;
-            border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
+        .section { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; padding: 6rem 2rem; }
+        
+        /* Hero */
+        .hero { background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%); position: relative; }
+        .hero::before { content: ''; position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%); top: -150px; right: -150px; animation: float 10s ease-in-out infinite; z-index: 1; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-25px, 25px); } }
+        .hero-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateX(50px); transition: all 0.6s; z-index: 2; }
+        .hero-slide.active { opacity: 1; transform: translateX(0); }
+        .hero-container { max-width: 1400px; width: 100%; padding: 0 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; margin-bottom: 1.5rem; background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }
+        .hero p { font-size: 1.1rem; color: var(--text-light); margin-bottom: 2rem; line-height: 1.6; }
+        .cta { display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 1rem; box-shadow: 0 10px 25px var(--primary-glow); transition: all 0.3s; }
+        .cta:hover { transform: translateY(-2px); box-shadow: 0 15px 35px var(--primary-glow); }
+        .hero img { width: 100%; border-radius: 20px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); }
+        .hero-controls { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 1rem; background: var(--bg-secondary); padding: 0.75rem 1.5rem; border-radius: 50px; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); border: 1px solid var(--border); z-index: 10; }
+        .hero-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); cursor: pointer; transition: all 0.2s; }
+        .hero-dot.active { background: var(--primary); transform: scale(1.25); }
+        .hero-arrow { width: 32px; height: 32px; border: none; border-radius: 50%; background: var(--bg); cursor: pointer; font-size: 0.875rem; color: var(--text); transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .hero-arrow:hover { background: var(--primary); color: white; }
+        
+        /* Features */
+        .features { background: var(--bg); }
+        .section-title { text-align: center; font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .section-subtitle { text-align: center; font-size: 1.125rem; color: var(--text-light); margin-bottom: 3rem; }
+        .features-container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .feature-card { background: var(--bg-secondary); padding: 2rem; border-radius: 20px; border: 2px solid var(--border); transition: all 0.4s; cursor: pointer; display: flex; flex-direction: column; gap: 1rem; position: relative; overflow: hidden; }
+        .feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary-glow) 0%, transparent 60%); opacity: 0; transition: opacity 0.4s; pointer-events: none; }
+        .feature-card:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12); }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-card-icon { font-size: 3rem; line-height: 1; }
+        .feature-card-title { font-size: 1.3rem; font-weight: 700; color: var(--text); margin: 0; line-height: 1.3; }
+        .feature-card-description { font-size: 0.95rem; color: var(--text-light); line-height: 1.6; margin: 0; }
+        .feature-card-badge { position: absolute; top: 1rem; right: 1rem; background: var(--primary); color: white; padding: 0.4rem 0.8rem; border-radius: 15px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; opacity: 0; transition: opacity 0.3s; }
+        .feature-card:hover .feature-card-badge { opacity: 1; }
+        
+        /* Pricing */
+        .pricing { background: var(--bg-secondary); }
+        .pricing-type-toggle { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; background: var(--bg); padding: 0.5rem; border-radius: 16px; width: fit-content; margin-left: auto; margin-right: auto; border: 1px solid var(--border); }
+        .pricing-type-toggle button { padding: 0.875rem 2rem; border: none; background: transparent; color: var(--text-light); font-weight: 600; border-radius: 12px; cursor: pointer; transition: all 0.3s; font-size: 1rem; }
+        .pricing-type-toggle button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 4px 12px var(--primary-glow); }
+        .pricing-toggle { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 2rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .pricing-toggle button { flex: 1; padding: 1rem 2rem; border: 2px solid var(--border); background: var(--bg-secondary); color: var(--text-light); font-weight: 600; border-radius: 16px; cursor: pointer; transition: all 0.4s; font-size: 1rem; }
+        .pricing-toggle button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-color: var(--primary); box-shadow: 0 8px 24px var(--primary-glow); transform: translateY(-4px); }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; max-width: 1400px; margin: 0 auto; }
+        .pricing-card { background: var(--bg); border: 2px solid var(--border); border-radius: 20px; padding: 2rem; transition: all 0.3s; position: relative; display: flex; flex-direction: column; }
+        .pricing-card:hover { transform: translateY(-8px); box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); border-color: var(--primary); }
+        .pricing-card.popular { border-color: var(--primary); box-shadow: 0 20px 40px var(--primary-glow); transform: scale(1.02); }
+        .pricing-card.popular:hover { transform: translateY(-8px) scale(1.02); }
+        .popular-badge { position: absolute; top: -12px; right: 20px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 0.5rem 1.25rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .pricing-card h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text); }
+        .pricing-card .price { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin: 1rem 0; line-height: 1; }
+        .pricing-card .price span { font-size: 1rem; color: var(--text-muted); font-weight: 500; }
+        .pricing-features { list-style: none; margin: 1.5rem 0; flex: 1; }
+        .pricing-features li { padding: 0.625rem 0; color: var(--text-light); display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.9rem; line-height: 1.5; }
+        .pricing-features li i { color: var(--success); font-size: 1.125rem; margin-top: 0.15rem; flex-shrink: 0; }
+        
+        /* Blog */
+        .blog { background: var(--bg); }
+        .carousel-container { position: relative; max-width: 1200px; margin: 0 auto; padding: 2rem 0; }
+        .carousel { display: flex; align-items: center; justify-content: center; gap: 1.5rem; min-height: 400px; position: relative; }
+        .blog-item { background: var(--bg-secondary); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); transition: all 0.4s; position: absolute; width: 300px; }
+        .blog-item.hidden { opacity: 0; transform: scale(0.8); pointer-events: none; }
+        .blog-item.prev { opacity: 0.5; transform: scale(0.85) translateX(-350px); z-index: 1; }
+        .blog-item.active { opacity: 1; transform: scale(1) translateX(0); z-index: 2; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); }
+        .blog-item.next { opacity: 0.5; transform: scale(0.85) translateX(350px); z-index: 1; }
+        .blog-item img { width: 100%; height: 200px; object-fit: cover; }
+        .blog-info { padding: 1.5rem; }
+        .blog-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 0.75rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .blog-date { font-size: 0.875rem; color: var(--text-muted); }
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: var(--bg-secondary); border: 2px solid var(--border); color: var(--text); font-size: 1.5rem; cursor: pointer; transition: all 0.3s; z-index: 10; display: flex; align-items: center; justify-content: center; }
+        .nav-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-50%) scale(1.1); }
+        .prev-btn { left: -24px; }
+        .next-btn { right: -24px; }
+        .blog-cta { text-align: center; margin-top: 3rem; }
+        
+        /* Partner */
+        .partner { background: var(--bg-secondary); }
+        .partner-container { max-width: 1400px; margin: 0 auto; }
+        .partner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+        .partner-image-wrapper { position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15); }
+        .partner-image { width: 100%; height: auto; display: block; border-radius: 20px; }
+        .partner-overlay-stats { position: absolute; bottom: 1.5rem; left: 1.5rem; right: 1.5rem; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); border-radius: 16px; padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .overlay-stat { text-align: center; }
+        .overlay-stat-value { font-size: 1.75rem; font-weight: 800; color: white; margin-bottom: 0.25rem; }
+        .overlay-stat-label { font-size: 0.8rem; color: rgba(255, 255, 255, 0.8); }
+        .partner-content h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1.5rem; background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .partner-content p { font-size: 1.125rem; color: var(--text-light); margin-bottom: 2rem; line-height: 1.7; }
+        .partner-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .partner-stat { text-align: center; padding: 1.5rem; background: var(--bg); border-radius: 12px; border: 1px solid var(--border); transition: all 0.3s; }
+        .partner-stat:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); border-color: var(--primary); }
+        .partner-stat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .partner-stat-value { font-size: 1.75rem; font-weight: 800; color: var(--primary); margin-bottom: 0.25rem; }
+        .partner-stat-label { font-size: 0.875rem; color: var(--text-muted); }
+        .partner-features { list-style: none; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
+        .partner-features li { display: flex; align-items: center; gap: 0.75rem; font-size: 1rem; color: var(--text-light); padding: 0.75rem 1rem; background: var(--bg); border-radius: 10px; border: 1px solid var(--border); transition: all 0.3s; }
+        .partner-features li:hover { transform: translateX(5px); border-color: var(--primary); }
+        .partner-features li i { color: var(--success); font-size: 1.25rem; flex-shrink: 0; }
+        
         /* Footer */
-        .footer {
-            padding: 4rem 2rem 2rem;
-            background: var(--bg-dark);
-            color: #f1f5f9;
-            margin-top: 4rem;
-        }
-
-        body.dark .footer {
-            background: #000000;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 3rem;
-            margin-bottom: 3rem;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .footer h3 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #ffffff;
-        }
-
-        .footer ul {
-            list-style: none;
-        }
-
-        .footer li {
-            margin: 0.5rem 0;
-        }
-
-        .footer a {
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-
-        .footer a:hover {
-            color: #ffffff;
-        }
-
-        .footer-bottom {
-            padding-top: 2rem;
-            border-top: 1px solid #334155;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .footer-bottom p {
-            color: #94a3b8;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .social-links a {
-            width: 36px;
-            height: 36px;
-            background: #334155;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 1.125rem;
-        }
-
-        .social-links a:hover {
-            background: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        /* Scroll Indicator */
-        .scroll-indicator {
-            position: fixed;
-            right: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            z-index: 50;
-        }
-
-        .scroll-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--border);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .scroll-dot.active {
-            background: var(--primary);
-            transform: scale(1.5);
-        }
-
+        .footer { padding: 4rem 2rem 2rem; background: var(--bg-dark); color: rgba(255, 255, 255, 0.8); }
+        .footer-grid { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 3rem; margin-bottom: 3rem; }
+        .footer h3 { color: white; font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem; }
+        .footer ul { list-style: none; }
+        .footer ul li { margin-bottom: 0.75rem; }
+        .footer ul li a { color: rgba(255, 255, 255, 0.7); text-decoration: none; transition: color 0.2s; font-size: 0.9rem; }
+        .footer ul li a:hover { color: var(--primary); }
+        .footer-bottom { max-width: 1400px; margin: 0 auto; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center; }
+        .social-links { display: flex; gap: 1rem; }
+        .social-links a { width: 40px; height: 40px; border-radius: 10px; background: rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; text-decoration: none; transition: all 0.3s; }
+        .social-links a:hover { background: var(--primary); transform: translateY(-3px); }
+        
         /* Mobile Navigation */
-        .mobile-nav {
-            display: none;
-        }
-
+        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--nav-bg); backdrop-filter: blur(20px); border-top: 1px solid var(--border); padding: 0.75rem 0; z-index: 100; }
+        .mobile-items { display: flex; justify-content: space-around; align-items: center; }
+        .mobile-item { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.5rem; color: var(--text-light); text-decoration: none; font-size: 0.75rem; transition: color 0.2s; }
+        .mobile-item.active { color: var(--primary); }
+        .mobile-item i { font-size: 1.5rem; }
+        
+        /* Modals */
+        .feature-modal, .blog-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; overflow-y: auto; }
+        .feature-modal.active, .blog-modal.active { display: flex; }
+        .feature-modal-content, .blog-modal-content { background: var(--bg-secondary); border-radius: 20px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; animation: modalSlide 0.4s ease; }
+        .feature-modal-close, .blog-modal-close { position: absolute; top: 1rem; right: 1rem; width: 40px; height: 40px; border: none; background: var(--bg); border-radius: 50%; font-size: 1.5rem; cursor: pointer; color: var(--text); transition: all 0.3s; z-index: 10; }
+        .feature-modal-close:hover, .blog-modal-close:hover { background: var(--primary); color: white; transform: rotate(90deg); }
+        #featureModalBody, #blogModalBody { padding: 2rem; }
+        .feature-modal-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .feature-modal-icon { font-size: 3rem; }
+        .feature-modal-title { font-size: 1.75rem; font-weight: 800; color: var(--text); margin: 0; }
+        .feature-modal-subtitle { font-size: 1rem; color: var(--text-muted); margin-top: 0.25rem; }
+        .feature-modal-image { width: 100%; border-radius: 16px; margin-bottom: 1.5rem; }
+        .feature-modal-description { font-size: 1rem; color: var(--text-light); line-height: 1.7; margin-bottom: 1.5rem; }
+        .feature-modal-features { list-style: none; margin-bottom: 2rem; }
+        .feature-modal-features li { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; padding: 0.75rem; background: var(--bg); border-radius: 10px; }
+        .feature-modal-features li i { color: var(--success); font-size: 1.25rem; flex-shrink: 0; margin-top: 0.1rem; }
+        .blog-modal-image { width: 100%; height: 250px; object-fit: cover; border-radius: 16px 16px 0 0; }
+        .blog-modal-title { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 1rem; }
+        @keyframes modalSlide { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
         /* Responsive */
-        @media (min-width: 769px) and (max-width: 1200px) {
-            .features-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .pricing-grid-new {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .partner-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 1024px) {
+            .nav-menu { display: none; }
+            .hero-container, .partner-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .features-container { grid-template-columns: repeat(2, 1fr); }
+            .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: repeat(2, 1fr); }
         }
-
+        
         @media (max-width: 768px) {
-            nav {
-                height: 58px;
-            }
-
-            .nav-container {
-                padding: 0 1rem;
-            }
-
-            .logo {
-                font-size: 1.25rem;
-            }
-
-            .theme-btn {
-                width: 38px;
-                height: 38px;
-                font-size: 1.1rem;
-            }
-
-            .nav-menu {
-                display: none;
-            }
-
-            .get-started-btn {
-                padding: 0.45rem 1rem;
-                font-size: 0.8rem;
-            }
-
-            .section {
-                min-height: auto;
-                height: auto;
-                padding: 3rem 1rem;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-            }
-
-            .hero {
-                height: auto;
-                min-height: 100vh;
-            }
-
-            .hero-container {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-                padding: 2rem 1rem;
-                max-height: none;
-                overflow-y: visible;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .hero-container > div:first-child {
-                order: 1;
-            }
-
-            .hero-container > div:last-child {
-                order: 2;
-            }
-
-            .hero h1 {
-                font-size: 2rem;
-                margin-bottom: 1rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .hero img {
-                max-height: 280px;
-                width: 100%;
-                object-fit: cover;
-                border-radius: 16px;
-            }
-
-            .hero-controls {
-                bottom: 1.5rem;
-                padding: 0.5rem 1rem;
-                gap: 0.75rem;
-            }
-
-            .hero-dot {
-                width: 6px;
-                height: 6px;
-            }
-
-            .hero-arrow {
-                width: 28px;
-                height: 28px;
-                font-size: 0.75rem;
-            }
-
-            .features {
-                padding: 3rem 1rem;
-                min-height: auto;
-            }
-
-            .section-title {
-                font-size: 1.75rem;
-                margin-bottom: 0.75rem;
-                line-height: 1.3;
-            }
-
-            .section-subtitle {
-                font-size: 0.95rem;
-                margin-bottom: 2rem;
-                line-height: 1.5;
-                padding: 0 1rem;
-            }
-
-            .features-container {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1.5rem;
-                padding-bottom: 1rem;
-            }
-
-            .feature-card {
-                padding: 1.75rem;
-                border-radius: 16px;
-                gap: 1.25rem;
-            }
-
-            .feature-card-icon {
-                font-size: 3rem;
-            }
-
-            .feature-card-title {
-                font-size: 1.25rem;
-            }
-
-            .feature-card-description {
-                font-size: 0.95rem;
-                line-height: 1.6;
-            }
-
-            .feature-card-badge {
-                top: 1.25rem;
-                right: 1.25rem;
-                padding: 0.4rem 0.8rem;
-                font-size: 0.7rem;
-            }
-
-            .pricing {
-                padding: 1.5rem 1rem;
-                overflow-y: auto;
-            }
-
-            .pricing > div {
-                display: flex;
-                flex-direction: column;
-                height: 100%;
-            }
-
-            .pricing-container {
-                height: auto;
-                max-height: none;
-                padding-right: 0;
-                overflow-y: visible;
-            }
-
-            .pricing-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 0.75rem;
-                padding-bottom: 1rem;
-            }
-
-            .pricing-grid.has-free .pricing-card:last-child {
-                grid-column: 1 / -1;
-                max-width: 100%;
-            }
-
-            .pricing-card {
-                padding: 1rem;
-                font-size: 0.85rem;
-            }
-
-            .pricing-card h3 {
-                font-size: 1.1rem;
-                margin-bottom: 0.25rem;
-            }
-
-            .pricing-card .price {
-                font-size: 1.75rem;
-                margin: 0.5rem 0;
-            }
-
-            .pricing-card .price span {
-                font-size: 0.75rem;
-            }
-
-            .pricing-features li {
-                padding: 0.4rem 0;
-                font-size: 0.75rem;
-                line-height: 1.3;
-            }
-
-            .pricing-features li i {
-                font-size: 0.9rem;
-            }
-
-            .popular-badge {
-                font-size: 0.65rem;
-                padding: 0.35rem 0.75rem;
-            }
-
-            .pricing-card .cta {
-                padding: 0.65rem 1rem;
-                font-size: 0.8rem;
-            }
-
-            .pricing-type-toggle {
-                width: calc(100% - 2rem);
-                max-width: 100%;
-                flex-direction: row;
-                gap: 0.25rem;
-                margin: 0 1rem 1rem;
-            }
-
-            .pricing-type-toggle button {
-                flex: 1;
-                padding: 0.65rem 0.75rem;
-                font-size: 0.8rem;
-            }
-
-            .pricing-toggle {
-                width: calc(100% - 2rem);
-                max-width: 100%;
-                flex-direction: row;
-                gap: 0.25rem;
-                margin: 0 1rem 1rem;
-                flex-wrap: wrap;
-            }
-
-            .pricing-toggle button {
-                flex: 1;
-                min-width: calc(33.33% - 0.2rem);
-                padding: 0.65rem 0.5rem;
-                font-size: 0.75rem;
-            }
-
-            .pricing-toggle button .save-badge {
-                display: block;
-                margin-left: 0;
-                margin-top: 0.15rem;
-            }
-
-            .pricing-card.popular {
-                transform: scale(1);
-            }
-
-            .pricing-card.popular:hover {
-                transform: translateY(-8px) scale(1);
-            }
-
-            .blog {
-                padding: 3rem 1rem;
-            }
-
-            .blog .cta {
-                pointer-events: auto;
-                cursor: pointer;
-            }
-
-            .blog-subtitle {
-                font-size: 1rem;
-                margin-bottom: 2rem;
-            }
-
-            .carousel-container {
-                padding: 2rem 0;
-            }
-
-            .carousel {
-                min-height: 320px;
-                margin-bottom: 1rem;
-            }
-
-            .blog-item {
-                width: 260px;
-                cursor: pointer;
-                pointer-events: auto;
-            }
-
-            .blog-item.active {
-                pointer-events: auto;
-            }
-
-            .blog-item.prev {
-                opacity: 0;
-                transform: scale(0.7) translateX(-200px);
-                pointer-events: none;
-            }
-
-            .blog-item.next {
-                opacity: 0;
-                transform: scale(0.7) translateX(200px);
-                pointer-events: none;
-            }
-
-            .blog-item img {
-                height: 150px;
-            }
-
-            .blog-info {
-                padding: 1rem;
-            }
-
-            .blog-title {
-                font-size: 0.9rem;
-                -webkit-line-clamp: 2;
-            }
-
-            .nav-btn {
-                width: 36px;
-                height: 36px;
-                font-size: 1.1rem;
-            }
-
-            .prev-btn {
-                left: -18px;
-            }
-
-            .next-btn {
-                right: -18px;
-            }
-
-            .blog-cta {
-                margin-top: 1.5rem;
-            }
-
-            .blog-cta .cta {
-                font-size: 0.85rem;
-                padding: 0.75rem 1.25rem;
-            }
-
-            .pricing-grid-new {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-
-            .pricing-card-new {
-                padding: 1.5rem;
-            }
-
-            .pricing-card-new.featured {
-                transform: scale(1);
-            }
-
-            .pricing-card-new.featured:hover {
-                transform: translateY(-5px) scale(1);
-            }
-
-            .plan-name {
-                font-size: 1.25rem;
-            }
-
-            .price-amount {
-                font-size: 2.25rem;
-            }
-
-            .plan-features-new li {
-                font-size: 0.85rem;
-            }
-
-            .pricing-frequency-toggle {
-                flex-direction: column;
-                gap: 0.75rem;
-            }
-
-            .partner {
-                padding: 3rem 1rem;
-                min-height: auto;
-            }
-
-            .partner-container-new {
-                padding: 0;
-            }
-
-            .partner-grid {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .partner-main-card {
-                padding: 2rem 1.5rem;
-            }
-
-            .partner-card-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.75rem;
-            }
-
-            .partner-card-header h3 {
-                font-size: 1.5rem;
-            }
-
-            .partner-icon {
-                font-size: 2.5rem;
-            }
-
-            .partner-description {
-                font-size: 1rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .partner-stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.75rem;
-            }
-
-            .partner-stat-card {
-                padding: 1rem;
-            }
-
-            .stat-value {
-                font-size: 1.35rem;
-            }
-
-            .stat-label {
-                font-size: 0.75rem;
-            }
-
-            .benefits-list li {
-                font-size: 0.9rem;
-                padding: 0.65rem;
-            }
-
-            .partner-overlay-stats {
-                bottom: 1rem;
-                left: 1rem;
-                right: 1rem;
-                padding: 1rem;
-                gap: 1rem;
-            }
-
-            .overlay-stat-value {
-                font-size: 1.35rem;
-            }
-
-            .overlay-stat-label {
-                font-size: 0.7rem;
-            }
-
-            .partner-testimonial {
-                padding: 1.5rem;
-            }
-
-            .testimonial-text {
-                font-size: 0.9rem;
-            }
-
-            .partner-container {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .partner-image {
-                width: 100%;
-                max-height: 250px;
-                object-fit: cover;
-                border-radius: 16px;
-                order: -1;
-            }
-
-            .partner-content {
-                order: 1;
-            }
-
-            .partner-content h2 {
-                font-size: 1.75rem;
-                margin-bottom: 1rem;
-                line-height: 1.3;
-            }
-
-            .partner-content p {
-                font-size: 0.95rem;
-                margin-bottom: 1.5rem;
-                line-height: 1.6;
-            }
-
-            .partner-stats {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 0.75rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .partner-stat {
-                padding: 1rem 0.75rem;
-            }
-
-            .partner-stat-value {
-                font-size: 1.5rem;
-            }
-
-            .partner-stat-label {
-                font-size: 0.75rem;
-            }
-
-            .partner-features {
-                margin-bottom: 1.5rem;
-                gap: 0.75rem;
-            }
-
-            .partner-features li {
-                font-size: 0.9rem;
-                padding: 0.65rem 0.85rem;
-            }
-
-            .partner-features li i {
-                font-size: 1.1rem;
-            }
-
-            .partner-content .cta {
-                padding: 1rem 1.75rem;
-                font-size: 0.95rem;
-                width: 100%;
-                justify-content: center;
-            }
-
-            .scroll-indicator {
-                display: none;
-            }
-
-            .footer {
-                padding: 3rem 1.5rem 5rem;
-            }
-
-            .footer-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 2rem;
-            }
-
-            .footer-bottom {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .cta {
-                padding: 0.875rem 1.75rem;
-                font-size: 0.95rem;
-            }
-
-            .feature-cta-btn {
-                padding: 0.875rem 1.75rem;
-                font-size: 0.95rem;
-            }
-
-            .mobile-nav {
-                display: block;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                height: 68px;
-                background: var(--nav-bg);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                border-top: 1px solid var(--border);
-                z-index: 100;
-                padding: 0.625rem 0.875rem;
-                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
-            }
-
-            .mobile-items {
-                display: grid;
-                grid-template-columns: repeat(5, 1fr);
-                gap: 0.5rem;
-                max-width: 600px;
-                height: 100%;
-                margin: 0 auto;
-            }
-
-            .mobile-item {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 0.25rem;
-                padding: 0.375rem;
-                color: var(--text-light);
-                text-decoration: none;
-                font-size: 0.75rem;
-                font-weight: 500;
-                border-radius: 8px;
-                transition: all 0.3s ease;
-            }
-
-            .mobile-item:active {
-                transform: scale(0.95);
-            }
-
-            .mobile-item.active {
-                color: var(--primary);
-                background: var(--primary-glow);
-            }
-
-            .mobile-item i {
-                font-size: 1.375rem;
-            }
-
-            body {
-                padding-bottom: 68px;
-            }
-
-            .hero img {
-                max-height: 250px;
-                width: 100%;
-                object-fit: cover;
-            }
-
-            .cta {
-                padding: 0.75rem 1.5rem;
-                font-size: 0.875rem;
-            }
+            .section { padding: 4rem 1.5rem; }
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            .section-title { font-size: 2rem; }
+            .section-subtitle { font-size: 1rem; }
+            .features-container { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .feature-card { padding: 1.5rem; }
+            .feature-card-icon { font-size: 2.5rem; }
+            .feature-card-title { font-size: 1.1rem; }
+            .feature-card-description { font-size: 0.85rem; }
+            .pricing-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .partner-grid { grid-template-columns: 1fr; }
+            .partner-grid .partner-image-wrapper { order: -1; }
+            .partner-stats { grid-template-columns: repeat(2, 1fr); }
+            .mobile-nav { display: block; }
+            .footer { padding-bottom: 6rem; }
+            .blog-item { width: 280px; }
+            .blog-item.prev { transform: scale(0.8) translateX(-300px); }
+            .blog-item.next { transform: scale(0.8) translateX(300px); }
         }
-
-        /* Feature Modal */
-        .feature-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            padding: 2rem;
-            overflow-y: auto;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .feature-modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .feature-modal-content {
-            background: var(--bg-secondary);
-            border-radius: 24px;
-            padding: 3rem;
-            max-width: 800px;
-            width: 100%;
-            position: relative;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.4s ease;
-        }
-
-        .feature-modal-close {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--bg);
-            border: 2px solid var(--border);
-            color: var(--text);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .feature-modal-close:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: rotate(90deg);
-        }
-
-        .feature-modal-header {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .feature-modal-icon {
-            font-size: 4rem;
-            line-height: 1;
-        }
-
-        .feature-modal-title {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--text);
-            margin: 0;
-        }
-
-        .feature-modal-subtitle {
-            font-size: 1.125rem;
-            color: var(--primary);
-            margin: 0.5rem 0 0 0;
-            font-weight: 600;
-        }
-
-        .feature-modal-description {
-            font-size: 1.125rem;
-            color: var(--text-light);
-            line-height: 1.8;
-            margin-bottom: 2rem;
-        }
-
-        .feature-modal-features {
-            list-style: none;
-            margin-bottom: 2rem;
-        }
-
-        .feature-modal-features li {
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            background: var(--bg);
-            border-radius: 12px;
-            border-left: 4px solid var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            color: var(--text-light);
-            transition: all 0.3s ease;
-        }
-
-        .feature-modal-features li:hover {
-            transform: translateX(8px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-modal-features li i {
-            color: var(--success);
-            font-size: 1.5rem;
-        }
-
-        .feature-modal-image {
-            width: 100%;
-            border-radius: 16px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Blog Modal */
-        .blog-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            padding: 2rem;
-            overflow-y: auto;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .blog-modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .blog-modal-content {
-            background: var(--bg-secondary);
-            border-radius: 24px;
-            padding: 0;
-            max-width: 700px;
-            width: 100%;
-            position: relative;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.4s ease;
-            overflow: hidden;
-        }
-
-        .blog-modal-close {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .blog-modal-close:hover {
-            background: var(--primary);
-            border-color: var(--primary);
-            transform: rotate(90deg);
-        }
-
-        .blog-modal-image {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-        }
-
-        .blog-modal-body {
-            padding: 2rem;
-        }
-
-        .blog-modal-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 1rem;
-            line-height: 1.4;
-        }
-
-        .blog-modal-date {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .blog-modal-date i {
-            color: var(--primary);
-        }
-
-        .blog-modal-excerpt {
-            font-size: 1rem;
-            color: var(--text-light);
-            line-height: 1.7;
-            margin-bottom: 1.5rem;
-        }
-
-        .blog-modal-cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .blog-modal-cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px var(--primary-glow);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from { 
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to { 
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .feature-modal-content,
-            .blog-modal-content {
-                margin: 1rem;
-                padding: 2rem 1.5rem;
-            }
-
-            .feature-modal-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .feature-modal-title {
-                font-size: 1.5rem;
-            }
-
-            .blog-modal-title {
-                font-size: 1.35rem;
-            }
-
-            .blog-modal-image {
-                height: 200px;
-            }
-        }
-
+        
         @media (max-width: 480px) {
-            .section {
-                padding: 2rem 0.75rem;
-                min-height: auto;
-                height: auto;
-            }
-
-            .hero-container {
-                padding: 1.5rem 1rem;
-                gap: 1.5rem;
-            }
-
-            .hero h1 {
-                font-size: 1.5rem;
-            }
-
-            .hero p {
-                font-size: 0.9rem;
-            }
-
-            .section-title {
-                font-size: 1.35rem;
-                margin-bottom: 0.5rem;
-            }
-
-            .section-subtitle {
-                font-size: 0.85rem;
-                margin-bottom: 1rem;
-            }
-
-            .pricing-grid {
-                grid-template-columns: 1fr;
-                gap: 0.65rem;
-            }
-
-            .pricing-grid-new {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .pricing-container {
-                max-height: none;
-            }
-
-            .pricing-card {
-                padding: 0.85rem;
-            }
-
-            .pricing-card h3 {
-                font-size: 1rem;
-            }
-
-            .pricing-card .price {
-                font-size: 1.5rem;
-            }
-
-            .pricing-features li {
-                font-size: 0.7rem;
-            }
-
-            .pricing-card-new {
-                padding: 1.25rem;
-            }
-
-            .plan-name {
-                font-size: 1.1rem;
-            }
-
-            .price-amount {
-                font-size: 2rem;
-            }
-
-            .plan-features-new li {
-                font-size: 0.8rem;
-            }
-
-            .partner-stats {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 0.5rem;
-            }
-
-            .partner-stat {
-                padding: 0.75rem 0.5rem;
-            }
-
-            .partner-stat-value {
-                font-size: 1.25rem;
-            }
-
-            .partner-stats-grid {
-                grid-template-columns: 1fr;
-                gap: 0.65rem;
-            }
-
-            .partner-stat-card {
-                padding: 0.85rem;
-            }
-
-            .stat-value {
-                font-size: 1.25rem;
-            }
-
-            .blog-item {
-                width: 240px;
-            }
-
-            .blog-item.prev,
-            .blog-item.next {
-                opacity: 0;
-                transform: scale(0.5) translateX(-120px);
-                pointer-events: none;
-            }
-
-            .blog-item.next {
-                opacity: 0;
-                transform: scale(0.5) translateX(120px);
-                pointer-events: none;
-            }
-
-            .blog-item img {
-                height: 120px;
-            }
-
-            .blog-title {
-                font-size: 0.85rem;
-            }
-
-            .features-container {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .footer {
-                padding: 2.5rem 1rem 5rem;
-            }
-
-            .footer-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1.5rem;
-            }
-
-            .mobile-items {
-                gap: 0.25rem;
-            }
-
-            .mobile-item {
-                font-size: 0.65rem;
-                gap: 0.15rem;
-                padding: 0.25rem;
-            }
-
-            .mobile-item i {
-                font-size: 1.2rem;
-            }
+            .section { padding: 3rem 1rem; }
+            .hero h1 { font-size: 1.75rem; }
+            .section-title { font-size: 1.75rem; }
+            .features-container { grid-template-columns: 1fr; gap: 1rem; }
+            .feature-card { padding: 1.25rem; }
+            .feature-card-icon { font-size: 2.25rem; }
+            .feature-card-title { font-size: 1rem; }
+            .pricing-type-toggle button { padding: 0.75rem 1.5rem; font-size: 0.9rem; }
+            .pricing-toggle button { padding: 0.875rem 1.5rem; font-size: 0.9rem; }
+            .partner-stats { grid-template-columns: 1fr; gap: 0.75rem; }
+            .partner-stat { padding: 1rem; }
+            .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .footer-bottom { flex-direction: column; gap: 1rem; }
+            .blog-item { width: 260px; }
+            .blog-item.prev, .blog-item.next { opacity: 0; pointer-events: none; }
+            .feature-modal-content, .blog-modal-content { margin: 1rem; max-height: 85vh; }
+            #featureModalBody, #blogModalBody { padding: 1.5rem; }
+            .feature-modal-header { flex-direction: column; align-items: flex-start; }
+            .feature-modal-icon { font-size: 2.5rem; }
+            .feature-modal-title { font-size: 1.5rem; }
         }
     </style>
 </head>
@@ -2611,12 +258,10 @@
         </div>
     </nav>
 
-    <div class="scroll-indicator" id="scrollIndicator"></div>
-
-    <!-- Hero Section with Slider -->
+    <!-- Hero Section -->
     <section id="home" class="section hero"></section>
 
-    <!-- Features Section - Redesigned -->
+    <!-- Features Section -->
     <section id="features" class="section features">
         <div style="max-width: 1400px; width: 100%; margin: 0 auto;">
             <h2 class="section-title">Powerful SEO Features</h2>
@@ -2625,23 +270,28 @@
         </div>
     </section>
 
-    <!-- Pricing Section - Cloudflare Style Redesign -->
+    <!-- Pricing Section -->
     <section id="pricing" class="section pricing">
         <div style="max-width: 1400px; width: 100%; margin: 0 auto;">
             <h2 class="section-title">Simple, Transparent Pricing</h2>
-            <p class="section-subtitle">SEOTIZE is currently on a <strong>Free</strong> plan. Choose the perfect plan for your needs.</p>
+            <p class="section-subtitle">Choose the perfect plan for your needs</p>
             
-            <div class="pricing-frequency-toggle">
-                <div class="frequency-label">Monthly</div>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="billingToggle" onchange="toggleBillingFrequency()" checked>
-                    <span class="toggle-slider"></span>
-                </label>
-                <div class="frequency-label">Annual <span class="save-tag">Save up to 20%</span></div>
+            <div class="pricing-type-toggle">
+                <button class="active" onclick="showPricingType('hosting')">Hosting Plans</button>
+                <button onclick="showPricingType('task')">Task Pricing</button>
             </div>
             
-            <div class="pricing-container">
-                <div class="pricing-grid-new" id="pricingGridNew"></div>
+            <div id="hostingPricing">
+                <div class="pricing-toggle">
+                    <button class="active" onclick="setPeriod('3month')">3 Months</button>
+                    <button onclick="setPeriod('6month')">6 Months <span class="save-badge">Save 10%</span></button>
+                    <button onclick="setPeriod('12month')">12 Months <span class="save-badge">Save 20%</span></button>
+                </div>
+                <div class="pricing-grid" id="hostingGrid"></div>
+            </div>
+            
+            <div id="taskPricing" style="display: none;">
+                <div class="pricing-grid" id="taskGrid"></div>
             </div>
         </div>
     </section>
@@ -2650,104 +300,84 @@
     <section id="blog" class="section blog">
         <div style="max-width: 1400px; width: 100%; margin: 0 auto;">
             <h2 class="section-title">Latest SEO Insights</h2>
-            <p class="blog-subtitle">Stay ahead with the latest SEO trends and insights</p>
-
-            <div class="carousel-container" id="carouselContainer">
+            <p class="section-subtitle">Stay ahead with the latest SEO trends and insights</p>
+            <div class="carousel-container">
                 <div class="carousel" id="carousel"></div>
-                <button class="nav-btn prev-btn" onclick="prevBlog()" aria-label="Previous blog">‹</button>
-                <button class="nav-btn next-btn" onclick="nextBlog()" aria-label="Next blog">›</button>
+                <button class="nav-btn prev-btn" onclick="prevBlog()">‹</button>
+                <button class="nav-btn next-btn" onclick="nextBlog()">›</button>
             </div>
-
             <div class="blog-cta">
                 <a href="blogs.html" class="cta">View All Articles</a>
             </div>
         </div>
     </section>
 
-    <!-- Partner Section - Complete Redesign -->
+    <!-- Partner Section -->
     <section id="partner" class="section partner">
-        <div class="partner-container-new">
-            <div class="partner-header">
-                <h2 class="section-title">Join Our Global Partner Network</h2>
-                <p class="section-subtitle">Earn money while helping websites grow through real user engagement</p>
-            </div>
+        <div class="partner-container">
+            <h2 class="section-title" style="text-align: center; grid-column: 1 / -1; margin-bottom: 2rem;">Join Our Global Partner Network</h2>
+            <p class="section-subtitle" style="text-align: center; grid-column: 1 / -1; margin-bottom: 3rem; margin-top: -1rem;">Earn money while helping websites grow through real user engagement</p>
             
             <div class="partner-grid">
-                <div class="partner-main-card">
-                    <div class="partner-card-header">
-                        <div class="partner-icon">🌟</div>
-                        <h3>Become a Partner</h3>
-                    </div>
-                    <p class="partner-description">Join thousands of partners worldwide earning money by completing SEO tasks. Work on your schedule, from anywhere in the world.</p>
-                    
-                    <div class="partner-stats-grid">
-                        <div class="partner-stat-card">
-                            <div class="stat-icon">💰</div>
-                            <div class="stat-value">$0.10-$0.20</div>
-                            <div class="stat-label">Per Task</div>
+                <div class="partner-image-wrapper">
+                    <img src="https://image-api.seotize.net/image-cdn/97cd3337-ae40-4239-8d26-bf17f34721cc" alt="Partner Dashboard" class="partner-image">
+                    <div class="partner-overlay-stats">
+                        <div class="overlay-stat">
+                            <div class="overlay-stat-value">$12,450</div>
+                            <div class="overlay-stat-label">Earned This Month</div>
                         </div>
-                        <div class="partner-stat-card">
-                            <div class="stat-icon">🌍</div>
-                            <div class="stat-value">150+</div>
-                            <div class="stat-label">Countries</div>
-                        </div>
-                        <div class="partner-stat-card">
-                            <div class="stat-icon">⏱️</div>
-                            <div class="stat-value">24/7</div>
-                            <div class="stat-label">Availability</div>
-                        </div>
-                        <div class="partner-stat-card">
-                            <div class="stat-icon">⚡</div>
-                            <div class="stat-value">Instant</div>
-                            <div class="stat-label">Payouts</div>
+                        <div class="overlay-stat">
+                            <div class="overlay-stat-value">2,341</div>
+                            <div class="overlay-stat-label">Tasks Completed</div>
                         </div>
                     </div>
+                </div>
+                
+                <div class="partner-content">
+                    <h2>Become a Partner</h2>
+                    <p>Join thousands of partners worldwide earning money by completing SEO tasks. Work on your schedule, from anywhere in the world.</p>
                     
-                    <div class="partner-benefits">
-                        <h4>Partner Benefits</h4>
-                        <ul class="benefits-list">
-                            <li><i class="ri-check-double-line"></i><span>Competitive rates with performance bonuses</span></li>
-                            <li><i class="ri-check-double-line"></i><span>Work from anywhere, anytime</span></li>
-                            <li><i class="ri-check-double-line"></i><span>Fast USDT (BEP20) payouts</span></li>
-                            <li><i class="ri-check-double-line"></i><span>Real-time dashboard and analytics</span></li>
-                            <li><i class="ri-check-double-line"></i><span>No experience required - full training provided</span></li>
-                            <li><i class="ri-check-double-line"></i><span>Secure and reliable platform</span></li>
-                        </ul>
+                    <div class="partner-stats">
+                        <div class="partner-stat">
+                            <div class="partner-stat-icon">💰</div>
+                            <div class="partner-stat-value">$0.10-$0.20</div>
+                            <div class="partner-stat-label">Per Task</div>
+                        </div>
+                        <div class="partner-stat">
+                            <div class="partner-stat-icon">🌍</div>
+                            <div class="partner-stat-value">150+</div>
+                            <div class="partner-stat-label">Countries</div>
+                        </div>
+                        <div class="partner-stat">
+                            <div class="partner-stat-icon">⏱️</div>
+                            <div class="partner-stat-value">24/7</div>
+                            <div class="partner-stat-label">Availability</div>
+                        </div>
+                        <div class="partner-stat">
+                            <div class="partner-stat-icon">⚡</div>
+                            <div class="partner-stat-value">Instant</div>
+                            <div class="partner-stat-label">Payouts</div>
+                        </div>
                     </div>
                     
-                    <a href="partner/" class="cta partner-cta">
+                    <ul class="partner-features">
+                        <li><i class="ri-check-double-line"></i><span>Competitive rates with performance bonuses</span></li>
+                        <li><i class="ri-check-double-line"></i><span>Work from anywhere, anytime</span></li>
+                        <li><i class="ri-check-double-line"></i><span>Fast USDT (BEP20) payouts</span></li>
+                        <li><i class="ri-check-double-line"></i><span>Real-time dashboard and analytics</span></li>
+                        <li><i class="ri-check-double-line"></i><span>No experience required - full training provided</span></li>
+                    </ul>
+                    
+                    <a href="partner/" class="cta">
                         <span>Start Earning Today</span>
                         <i class="ri-arrow-right-line"></i>
                     </a>
-                </div>
-                
-                <div class="partner-visual">
-                    <div class="partner-image-wrapper">
-                        <img src="https://image-api.seotize.net/image-cdn/97cd3337-ae40-4239-8d26-bf17f34721cc" alt="Partner Dashboard" class="partner-dashboard-img">
-                        <div class="partner-overlay-stats">
-                            <div class="overlay-stat">
-                                <div class="overlay-stat-value">$12,450</div>
-                                <div class="overlay-stat-label">Earned This Month</div>
-                            </div>
-                            <div class="overlay-stat">
-                                <div class="overlay-stat-value">2,341</div>
-                                <div class="overlay-stat-label">Tasks Completed</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="partner-testimonial">
-                        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-                        <p class="testimonial-text">"I've been earning consistently with SEOTIZE for 6 months. The tasks are easy, payments are fast, and the support team is amazing!"</p>
-                        <div class="testimonial-author">
-                            <strong>Sarah K.</strong> - Partner since 2024
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer class="footer">
         <div class="footer-grid">
             <div>
@@ -2786,14 +416,15 @@
         <div class="footer-bottom">
             <p>© 2025 SEOTIZE. All rights reserved.</p>
             <div class="social-links">
-                <a href="#" aria-label="Email"><i class="ri-mail-line"></i></a>
-                <a href="#" aria-label="Twitter"><i class="ri-twitter-x-line"></i></a>
-                <a href="#" aria-label="LinkedIn"><i class="ri-linkedin-line"></i></a>
-                <a href="#" aria-label="Discord"><i class="ri-discord-line"></i></a>
+                <a href="#"><i class="ri-mail-line"></i></a>
+                <a href="#"><i class="ri-twitter-x-line"></i></a>
+                <a href="#"><i class="ri-linkedin-line"></i></a>
+                <a href="#"><i class="ri-discord-line"></i></a>
             </div>
         </div>
     </footer>
 
+    <!-- Mobile Navigation -->
     <div class="mobile-nav">
         <div class="mobile-items">
             <a href="index.html" class="mobile-item active">
@@ -2838,265 +469,66 @@
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
-        // Data Structure - Optimized and Organized
         const appData = {
             heroSlides: [
-                {
-                    title: "AI-Powered SEO Platform",
-                    description: "Boost search rankings with intelligent automation and real user engagement from 150+ countries.",
-                    cta: "Start Free Trial",
-                    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop"
-                },
-                {
-                    title: "Real User Engagement",
-                    description: "Get authentic traffic from real users who search and interact with your content naturally.",
-                    cta: "Get Real Traffic",
-                    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop"
-                },
-                {
-                    title: "AI Content Generation",
-                    description: "Create unlimited SEO-optimized content with advanced AI technology that ranks higher.",
-                    cta: "Generate Content",
-                    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop"
-                }
+                { title: "AI-Powered SEO Platform", description: "Boost search rankings with intelligent automation and real user engagement from 150+ countries.", cta: "Start Free Trial", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop" },
+                { title: "Real User Engagement", description: "Get authentic traffic from real users who search and interact with your content naturally.", cta: "Get Real Traffic", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop" },
+                { title: "AI Content Generation", description: "Create unlimited SEO-optimized content with advanced AI technology that ranks higher.", cta: "Generate Content", image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop" }
             ],
             features: [
-                {
-                    icon: '🚀', 
-                    title: 'Real User Engagement', 
-                    subtitle: 'The SEO Game Changer',
-                    description: 'Take control of your SEO with real user-driven growth! Seotize ensures that every click, visit, and interaction comes from actual users, not bots—boosting your website\'s credibility and ranking.',
-                    features: [
-                        'Users search for your target keywords',
-                        'They visit and interact with your website',
-                        'Your rankings naturally improve over time',
-                        'Higher trust from search engines = more traffic!'
-                    ],
-                    image: 'https://image-api.seotize.net/image-cdn/5d93bcdd-8834-442f-8e88-390594c781a7',
-                    cta: 'Start Growing Now'
-                },
-                {
-                    icon: '🌍', 
-                    title: 'Lightning-Fast Image Hosting & CDN', 
-                    subtitle: 'Global Speed Revolution',
-                    description: 'Say goodbye to slow-loading images! Seotize provides an almost-free image hosting service that ensures your visuals load instantly, anywhere in the world.',
-                    features: [
-                        'Ultra-Fast CDN – Images stored worldwide',
-                        'Automatic Optimization – Best format for speed & SEO',
-                        'On-the-Fly Processing – Resize, compress, rotate',
-                        'Advanced Analytics – Track views and performance'
-                    ],
-                    image: 'https://image-api.seotize.net/image-cdn/97cd3337-ae40-4239-8d26-bf17f34721cc',
-                    cta: 'Try CDN Free'
-                },
-                {
-                    icon: '🆓', 
-                    title: 'Lifetime Free Hosting & Flexible Services', 
-                    subtitle: 'Supporting Small Businesses',
-                    description: 'At Seotize, we believe in supporting small businesses. Enjoy our lifetime free trial with up to 100 images or articles hosted completely free. No hidden fees, no surprises.',
-                    features: [
-                        'Lifetime Free Tools – SVG placeholders, image hosting',
-                        'Task-Based Pricing – You choose how much to pay!',
-                        'Scalable & Cost-Friendly – Grows with your business',
-                        'No Credit Card Required – Start today',
-                        'Flexible Payment Options – Cards, PayPal, crypto'
-                    ],
-                    image: 'https://image-api.seotize.net/image-cdn/a1515beb-2812-47e4-b3a0-07910bf76f04',
-                    cta: 'Start Free Trial'
-                },
-                {
-                    icon: '📊', 
-                    title: 'AI-Driven Analytics & Automated Content', 
-                    subtitle: 'Intelligent Automation',
-                    description: 'Seotize transforms the way you grow your website with AI-powered analytics, fully automated content generation, and smart scheduling tools.',
-                    features: [
-                        'Real-Time SEO Analytics – Deep insights and recommendations',
-                        'AI-Generated Content – Fully optimized articles with images',
-                        'Automated Weekly Scheduler – Hands-free content flow',
-                        'Set & Forget Optimization – Consistent quality content'
-                    ],
-                    image: 'https://image-api.seotize.net/image-cdn/1b8c38a1-4c4d-451c-ac6c-7c8220858621',
-                    cta: 'Try AI Tools'
-                },
-                {
-                    icon: '🔐', 
-                    title: 'Enterprise-Grade Security & Privacy', 
-                    subtitle: 'Protected & Compliant',
-                    description: 'Your data security is our priority. Seotize implements bank-level encryption, GDPR compliance, and advanced security measures to protect your content and user data.',
-                    features: [
-                        'SSL/TLS Encryption – All data transmitted securely',
-                        'GDPR & Privacy Compliant – Full data protection',
-                        'Regular Security Audits – Proactive threat detection',
-                        'Automatic Backups – Never lose your content'
-                    ],
-                    image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&h=400&fit=crop',
-                    cta: 'Learn More'
-                },
-                {
-                    icon: '🎯', 
-                    title: 'Advanced Keyword Tracking & Reporting', 
-                    subtitle: 'Data-Driven Decisions',
-                    description: 'Monitor your SEO performance with precision. Track keyword rankings, analyze competitor strategies, and receive actionable insights to stay ahead of the competition.',
-                    features: [
-                        'Real-Time Rank Tracking – Monitor position changes daily',
-                        'Competitor Analysis – See what works for others',
-                        'Custom Reports – Beautiful, shareable dashboards',
-                        'Historical Data – Track long-term progress'
-                    ],
-                    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop',
-                    cta: 'Track Rankings'
-                }
+                { icon: '🚀', title: 'Real User Engagement', subtitle: 'The SEO Game Changer', description: 'Take control of your SEO with real user-driven growth! Seotize ensures that every click, visit, and interaction comes from actual users, not bots—boosting your website\'s credibility and ranking.', features: ['Users search for your target keywords', 'They visit and interact with your website', 'Your rankings naturally improve over time', 'Higher trust from search engines = more traffic!'], image: 'https://image-api.seotize.net/image-cdn/5d93bcdd-8834-442f-8e88-390594c781a7', cta: 'Start Growing Now' },
+                { icon: '🌍', title: 'Lightning-Fast Image Hosting & CDN', subtitle: 'Global Speed Revolution', description: 'Say goodbye to slow-loading images! Seotize provides an almost-free image hosting service that ensures your visuals load instantly, anywhere in the world.', features: ['Ultra-Fast CDN – Images stored worldwide', 'Automatic Optimization – Best format for speed & SEO', 'On-the-Fly Processing – Resize, compress, rotate', 'Advanced Analytics – Track views and performance'], image: 'https://image-api.seotize.net/image-cdn/97cd3337-ae40-4239-8d26-bf17f34721cc', cta: 'Try CDN Free' },
+                { icon: '🆓', title: 'Lifetime Free Hosting & Flexible Services', subtitle: 'Supporting Small Businesses', description: 'At Seotize, we believe in supporting small businesses. Enjoy our lifetime free trial with up to 100 images or articles hosted completely free. No hidden fees, no surprises.', features: ['Lifetime Free Tools – SVG placeholders, image hosting', 'Task-Based Pricing – You choose how much to pay!', 'Scalable & Cost-Friendly – Grows with your business', 'No Credit Card Required – Start today', 'Flexible Payment Options – Cards, PayPal, crypto'], image: 'https://image-api.seotize.net/image-cdn/a1515beb-2812-47e4-b3a0-07910bf76f04', cta: 'Start Free Trial' },
+                { icon: '📊', title: 'AI-Driven Analytics & Automated Content', subtitle: 'Intelligent Automation', description: 'Seotize transforms the way you grow your website with AI-powered analytics, fully automated content generation, and smart scheduling tools.', features: ['Real-Time SEO Analytics – Deep insights and recommendations', 'AI-Generated Content – Fully optimized articles with images', 'Automated Weekly Scheduler – Hands-free content flow', 'Set & Forget Optimization – Consistent quality content'], image: 'https://image-api.seotize.net/image-cdn/1b8c38a1-4c4d-451c-ac6c-7c8220858621', cta: 'Try AI Tools' },
+                { icon: '🔐', title: 'Enterprise-Grade Security & Privacy', subtitle: 'Protected & Compliant', description: 'Your data security is our priority. Seotize implements bank-level encryption, GDPR compliance, and advanced security measures to protect your content and user data.', features: ['SSL/TLS Encryption – All data transmitted securely', 'GDPR & Privacy Compliant – Full data protection', 'Regular Security Audits – Proactive threat detection', 'Automatic Backups – Never lose your content'], image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&h=400&fit=crop', cta: 'Learn More' },
+                { icon: '🎯', title: 'Advanced Keyword Tracking & Reporting', subtitle: 'Data-Driven Decisions', description: 'Monitor your SEO performance with precision. Track keyword rankings, analyze competitor strategies, and receive actionable insights to stay ahead of the competition.', features: ['Real-Time Rank Tracking – Monitor position changes daily', 'Competitor Analysis – See what works for others', 'Custom Reports – Beautiful, shareable dashboards', 'Historical Data – Track long-term progress'], image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop', cta: 'Track Rankings' }
             ],
             hostingPlans: {
-                free: {
-                    name: 'Free',
-                    price: {'3month': 0, '6month': 0, '12month': 0},
-                    limits: {articles: 30, images: 100},
-                    features: ['30 articles hosted', '100 images stored', 'Basic CDN access', 'Community support', 'Basic analytics']
-                },
-                basic: {
-                    name: 'Basic',
-                    price: {'3month': 10, '6month': 18, '12month': 32},
-                    limits: {articles: 200, images: 1000},
-                    features: ['200 articles hosted', '1,000 images stored', 'Fast CDN delivery', 'Email support', 'Standard analytics', 'Custom domain']
-                },
-                professional: {
-                    name: 'Professional',
-                    price: {'3month': 25, '6month': 45, '12month': 80},
-                    limits: {articles: 600, images: 4000},
-                    features: ['600 articles hosted', '4,000 images stored', 'Premium CDN delivery', 'Priority support', 'Advanced analytics', 'Custom domain', 'API access', 'Real user engagement'],
-                    popular: true
-                },
-                enterprise: {
-                    name: 'Enterprise',
-                    price: {'3month': 50, '6month': 90, '12month': 160},
-                    limits: {articles: 2000, images: 20000},
-                    features: ['2,000 articles hosted', '20,000 images stored', 'Ultra-fast CDN worldwide', '24/7 dedicated support', 'Full analytics suite', 'Multiple custom domains', 'Full API access', 'Premium user engagement', 'White-label options']
-                }
+                free: { name: 'Free', price: { '3month': 0, '6month': 0, '12month': 0 }, features: ['30 articles hosted', '100 images stored', 'Basic CDN access', 'Community support', 'Basic analytics'] },
+                basic: { name: 'Basic', price: { '3month': 10, '6month': 18, '12month': 32 }, features: ['200 articles hosted', '1,000 images stored', 'Fast CDN delivery', 'Email support', 'Standard analytics', 'Custom domain'] },
+                professional: { name: 'Professional', price: { '3month': 25, '6month': 45, '12month': 80 }, features: ['600 articles hosted', '4,000 images stored', 'Premium CDN delivery', 'Priority support', 'Advanced analytics', 'Custom domain', 'API access'], popular: true },
+                enterprise: { name: 'Enterprise', price: { '3month': 50, '6month': 90, '12month': 160 }, features: ['2,000 articles hosted', '20,000 images stored', 'Ultra-fast CDN worldwide', '24/7 dedicated support', 'Full analytics suite', 'Multiple custom domains', 'Full API access'] }
             },
             taskPricing: {
-                basic: {
-                    name: 'Basic',
-                    price: 0.10,
-                    limits: 1,
-                    features: ['$0.10 per task', '1 concurrent task', 'Standard processing speed', 'Email support', 'Basic task analytics']
-                },
-                standard: {
-                    name: 'Standard',
-                    price: 0.12,
-                    limits: 3,
-                    features: ['$0.12 per task', '3 concurrent tasks', 'Fast processing speed', 'Priority support', 'Advanced task analytics', 'Task scheduling'],
-                    popular: true
-                },
-                premium: {
-                    name: 'Premium',
-                    price: 0.15,
-                    limits: 5,
-                    features: ['$0.15 per task', '5 concurrent tasks', 'Ultra-fast processing', '24/7 dedicated support', 'Full task analytics', 'Advanced scheduling', 'API access', 'Priority queue']
-                }
+                basic: { name: 'Basic', price: 0.10, locations: 1, features: ['$0.10 per click', '1 concurrent location', 'Standard processing speed', 'Email support', 'Basic task analytics'] },
+                standard: { name: 'Standard', price: 0.12, locations: 3, features: ['$0.12 per click', '3 concurrent locations', 'Fast processing speed', 'Priority support', 'Advanced task analytics', 'Task scheduling'], popular: true },
+                premium: { name: 'Premium', price: 0.15, locations: 5, features: ['$0.15 per click', '5 concurrent locations', 'Ultra-fast processing', '24/7 dedicated support', 'Full task analytics', 'Advanced scheduling', 'API access', 'Priority queue'] }
             },
             blogs: [
-                {
-                    title: 'Evolving SEO Paradigms in 2024: Harnessing Quantum Algorithms and Decentralized Technologies',
-                    image: 'https://image-api.seotize.net/image-cdn/b11f730f-d6bd-4cf1-846e-78961db79b45',
-                    date: 'Oct 22, 2025'
-                },
-                {
-                    title: 'From Pixels to Purpose: How AI and Advanced Analytics Are Crafting Hyper-Personalized Digital Consumer Experiences in 2024',
-                    image: 'https://image-api.seotize.net/image-cdn/399da592-9bb1-4655-8eec-6ab488788e14',
-                    date: 'Oct 22, 2025'
-                },
-                {
-                    title: 'AI-Enhanced Voice Search and SEO: Shaping Interactive User Engagement in 2024 and Beyond',
-                    image: 'https://image-api.seotize.net/image-cdn/57283774-45ce-45f4-856a-3ad902e4ff9e',
-                    date: 'Oct 22, 2025'
-                },
-                {
-                    title: 'Human-Centric SEO: Crafting Personalized User Experiences with AI Insights for 2024',
-                    image: 'https://image-api.seotize.net/image-cdn/d9931244-101f-44cb-9861-7b55baa259ed',
-                    date: 'Oct 22, 2025'
-                },
-                {
-                    title: 'The Rise of Green Tech in SEO: Bridging Sustainability and Innovation in Digital Marketing for 2025',
-                    image: 'https://image-api.seotize.net/image-cdn/c10daef1-16b7-4b36-afa0-6a245fdad32e',
-                    date: 'Oct 22, 2025'
-                },
-                {
-                    title: 'Achieving Sustainable SEO in 2024: Integrating Green Technologies and Ethical Digital Strategies',
-                    image: 'https://image-api.seotize.net/image-cdn/084c84ed-e635-43d5-aeb0-78656d86843e',
-                    date: 'Oct 22, 2025'
-                }
-            ],
-            partnerData: {
-                stats: [
-                    { value: '$0.10+', label: 'Per Task' },
-                    { value: '150+', label: 'Countries' },
-                    { value: '24/7', label: 'Availability' }
-                ],
-                features: [
-                    'Competitive Rates - Earn $0.10 to $0.20 per task',
-                    'Work From Anywhere Worldwide',
-                    'Quick Payouts via USDT (BEP20)',
-                    'Real-Time Dashboard & Analytics',
-                    'Meaningful SEO Impact Tasks',
-                    'Secure & Reliable Platform'
-                ]
-            }
+                { title: 'Evolving SEO Paradigms in 2024: Harnessing Quantum Algorithms and Decentralized Technologies', image: 'https://image-api.seotize.net/image-cdn/b11f730f-d6bd-4cf1-846e-78961db79b45', date: 'Oct 22, 2025' },
+                { title: 'From Pixels to Purpose: How AI and Advanced Analytics Are Crafting Hyper-Personalized Digital Consumer Experiences in 2024', image: 'https://image-api.seotize.net/image-cdn/399da592-9bb1-4655-8eec-6ab488788e14', date: 'Oct 22, 2025' },
+                { title: 'AI-Enhanced Voice Search and SEO: Shaping Interactive User Engagement in 2024 and Beyond', image: 'https://image-api.seotize.net/image-cdn/57283774-45ce-45f4-856a-3ad902e4ff9e', date: 'Oct 22, 2025' },
+                { title: 'Human-Centric SEO: Crafting Personalized User Experiences with AI Insights for 2024', image: 'https://image-api.seotize.net/image-cdn/d9931244-101f-44cb-9861-7b55baa259ed', date: 'Oct 22, 2025' },
+                { title: 'The Rise of Green Tech in SEO: Bridging Sustainability and Innovation in Digital Marketing for 2025', image: 'https://image-api.seotize.net/image-cdn/c10daef1-16b7-4b36-afa0-6a245fdad32e', date: 'Oct 22, 2025' },
+                { title: 'Achieving Sustainable SEO in 2024: Integrating Green Technologies and Ethical Digital Strategies', image: 'https://image-api.seotize.net/image-cdn/084c84ed-e635-43d5-aeb0-78656d86843e', date: 'Oct 22, 2025' }
+            ]
         };
 
-        let currentHero = 0;
-        let currentFeature = 0;
-        let currentBlog = 0;
-        let currentPricingType = 'hosting';
-        let currentHostingPeriod = '3month';
+        let currentHero = 0, currentBlog = 0, currentPeriod = '3month';
 
-        // Initialize App
         document.addEventListener('DOMContentLoaded', () => {
             loadTheme();
             initializeHero();
             initializeFeatures();
             initializePricing();
             initializeBlogs();
-            initializeScrollIndicator();
-            initializeMobileNav();
             startAutoSliders();
         });
 
-        // Hero Slider
         function initializeHero() {
             const hero = document.getElementById('home');
             appData.heroSlides.forEach((slide, i) => {
                 const div = document.createElement('div');
                 div.className = `hero-slide ${i === 0 ? 'active' : ''}`;
-                div.innerHTML = `
-                    <div class="hero-container">
-                        <div>
-                            <h1>${slide.title}</h1>
-                            <p>${slide.description}</p>
-                            <a href="connect.html" class="cta">
-                                <span>${slide.cta}</span>
-                                <i class="ri-arrow-right-line"></i>
-                            </a>
-                        </div>
-                        <div>
-                            <img src="${slide.image}" alt="${slide.title}" loading="lazy">
-                        </div>
-                    </div>
-                `;
+                div.innerHTML = `<div class="hero-container"><div><h1>${slide.title}</h1><p>${slide.description}</p><a href="connect.html" class="cta"><span>${slide.cta}</span><i class="ri-arrow-right-line"></i></a></div><div><img src="${slide.image}" alt="${slide.title}" loading="lazy"></div></div>`;
                 hero.appendChild(div);
             });
-
             const controls = document.createElement('div');
             controls.className = 'hero-controls';
-            controls.innerHTML = `
-                <button class="hero-arrow" onclick="prevHero()" aria-label="Previous slide"><i class="ri-arrow-left-s-line"></i></button>
-                <div id="hero-dots"></div>
-                <button class="hero-arrow" onclick="nextHero()" aria-label="Next slide"><i class="ri-arrow-right-s-line"></i></button>
-            `;
+            controls.innerHTML = `<button class="hero-arrow" onclick="prevHero()"><i class="ri-arrow-left-s-line"></i></button><div id="hero-dots"></div><button class="hero-arrow" onclick="nextHero()"><i class="ri-arrow-right-s-line"></i></button>`;
             hero.appendChild(controls);
-
             const dots = document.getElementById('hero-dots');
-            appData.heroSlides.forEach((slide, i) => {
+            appData.heroSlides.forEach((_, i) => {
                 const dot = document.createElement('div');
                 dot.className = `hero-dot ${i === 0 ? 'active' : ''}`;
                 dot.onclick = () => { currentHero = i; updateHero(); };
@@ -3105,498 +537,123 @@
         }
 
         function updateHero() {
-            document.querySelectorAll('.hero-slide').forEach((slide, i) => {
-                slide.classList.toggle('active', i === currentHero);
-            });
-            document.querySelectorAll('.hero-dot').forEach((dot, i) => {
-                dot.classList.toggle('active', i === currentHero);
-            });
+            document.querySelectorAll('.hero-slide').forEach((s, i) => s.classList.toggle('active', i === currentHero));
+            document.querySelectorAll('.hero-dot').forEach((d, i) => d.classList.toggle('active', i === currentHero));
         }
 
-        function nextHero() {
-            currentHero = (currentHero + 1) % appData.heroSlides.length;
-            updateHero();
-        }
+        function nextHero() { currentHero = (currentHero + 1) % appData.heroSlides.length; updateHero(); }
+        function prevHero() { currentHero = currentHero === 0 ? appData.heroSlides.length - 1 : currentHero - 1; updateHero(); }
 
-        function prevHero() {
-            currentHero = currentHero === 0 ? appData.heroSlides.length - 1 : currentHero - 1;
-            updateHero();
-        }
-
-        // Features - Redesigned
         function initializeFeatures() {
-            const container = document.getElementById('featuresContainer');
-            container.innerHTML = appData.features.map((feature, index) => `
-                <div class="feature-card" data-index="${index}" onclick="openFeatureModal(${index})">
-                    <div class="feature-card-badge">Click for Details</div>
-                    <div class="feature-card-icon">${feature.icon}</div>
-                    <h3 class="feature-card-title">${feature.title}</h3>
-                    <p class="feature-card-description">${feature.subtitle}</p>
-                </div>
-            `).join('');
-
-            // Animate cards on scroll
-            gsap.fromTo('.feature-card', 
-                {opacity: 0, y: 40}, 
-                {
-                    opacity: 1, 
-                    y: 0, 
-                    duration: 0.6, 
-                    stagger: 0.15,
-                    scrollTrigger: {
-                        trigger: '.features-container',
-                        start: 'top 80%'
-                    }
-                }
-            );
+            document.getElementById('featuresContainer').innerHTML = appData.features.map((f, i) => `<div class="feature-card" onclick="openFeatureModal(${i})"><div class="feature-card-badge">Click for Details</div><div class="feature-card-icon">${f.icon}</div><h3 class="feature-card-title">${f.title}</h3><p class="feature-card-description">${f.subtitle}</p></div>`).join('');
+            gsap.fromTo('.feature-card', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, scrollTrigger: { trigger: '.features-container', start: 'top 80%' } });
         }
 
-        // Feature Modal Functions
         function openFeatureModal(index) {
-            const feature = appData.features[index];
-            const modal = document.getElementById('featureModal');
-            const modalBody = document.getElementById('featureModalBody');
-            
-            const featuresHTML = feature.features.map(f => `
-                <li><i class="ri-check-double-line"></i><span>${f}</span></li>
-            `).join('');
-            
-            modalBody.innerHTML = `
-                <div class="feature-modal-header">
-                    <div class="feature-modal-icon">${feature.icon}</div>
-                    <div>
-                        <h2 class="feature-modal-title">${feature.title}</h2>
-                        <p class="feature-modal-subtitle">${feature.subtitle}</p>
-                    </div>
-                </div>
-                <img src="${feature.image}" alt="${feature.title}" class="feature-modal-image">
-                <p class="feature-modal-description">${feature.description}</p>
-                <ul class="feature-modal-features">
-                    ${featuresHTML}
-                </ul>
-                <a href="connect.html" class="cta">
-                    <span>${feature.cta}</span>
-                    <i class="ri-arrow-right-line"></i>
-                </a>
-            `;
-            
-            modal.classList.add('active');
+            const f = appData.features[index];
+            document.getElementById('featureModalBody').innerHTML = `<div class="feature-modal-header"><div class="feature-modal-icon">${f.icon}</div><div><h2 class="feature-modal-title">${f.title}</h2><p class="feature-modal-subtitle">${f.subtitle}</p></div></div><img src="${f.image}" alt="${f.title}" class="feature-modal-image"><p class="feature-modal-description">${f.description}</p><ul class="feature-modal-features">${f.features.map(ft => `<li><i class="ri-check-double-line"></i><span>${ft}</span></li>`).join('')}</ul><a href="connect.html" class="cta"><span>${f.cta}</span><i class="ri-arrow-right-line"></i></a>`;
+            document.getElementById('featureModal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
         function closeFeatureModal() {
-            const modal = document.getElementById('featureModal');
-            modal.classList.remove('active');
+            document.getElementById('featureModal').classList.remove('active');
             document.body.style.overflow = '';
         }
 
-        // Blog Modal Functions
+        function initializePricing() {
+            renderHostingPricing();
+            renderTaskPricing();
+        }
+
+        function renderHostingPricing() {
+            const grid = document.getElementById('hostingGrid');
+            grid.innerHTML = Object.entries(appData.hostingPlans).map(([key, plan]) => `
+                <div class="pricing-card ${plan.popular ? 'popular' : ''}">
+                    ${plan.popular ? '<div class="popular-badge">Most Popular</div>' : ''}
+                    <h3>${plan.name}</h3>
+                    <div class="price">$${plan.price[currentPeriod]}<span>/${currentPeriod === '3month' ? '3mo' : currentPeriod === '6month' ? '6mo' : 'year'}</span></div>
+                    <ul class="pricing-features">${plan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
+                    <a href="connect.html" class="cta">${plan.name === 'Free' ? 'Get Started' : 'Upgrade Now'}</a>
+                </div>
+            `).join('');
+        }
+
+        function renderTaskPricing() {
+            const grid = document.getElementById('taskGrid');
+            grid.innerHTML = Object.entries(appData.taskPricing).map(([key, plan]) => `
+                <div class="pricing-card ${plan.popular ? 'popular' : ''}">
+                    ${plan.popular ? '<div class="popular-badge">Most Popular</div>' : ''}
+                    <h3>${plan.name}</h3>
+                    <div class="price">$${plan.price.toFixed(2)}<span>/click</span></div>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">Up to ${plan.locations} concurrent location${plan.locations > 1 ? 's' : ''}</p>
+                    <ul class="pricing-features">${plan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
+                    <a href="connect.html" class="cta">Get Started</a>
+                </div>
+            `).join('');
+        }
+
+        function showPricingType(type) {
+            document.querySelectorAll('.pricing-type-toggle button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('hostingPricing').style.display = type === 'hosting' ? 'block' : 'none';
+            document.getElementById('taskPricing').style.display = type === 'task' ? 'block' : 'none';
+        }
+
+        function setPeriod(period) {
+            currentPeriod = period;
+            document.querySelectorAll('.pricing-toggle button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            renderHostingPricing();
+        }
+
+        function initializeBlogs() {
+            const carousel = document.getElementById('carousel');
+            appData.blogs.forEach((blog, i) => {
+                const div = document.createElement('div');
+                div.className = `blog-item ${i === 0 ? 'active' : i === 1 ? 'next' : 'hidden'}`;
+                div.innerHTML = `<img src="${blog.image}" alt="${blog.title}"><div class="blog-info"><div class="blog-title">${blog.title}</div><div class="blog-date">${blog.date}</div></div>`;
+                div.onclick = () => openBlogModal(i);
+                carousel.appendChild(div);
+            });
+        }
+
+        function updateBlogs() {
+            const items = document.querySelectorAll('.blog-item');
+            items.forEach((item, i) => {
+                item.className = 'blog-item';
+                if (i === currentBlog) item.classList.add('active');
+                else if (i === (currentBlog - 1 + appData.blogs.length) % appData.blogs.length) item.classList.add('prev');
+                else if (i === (currentBlog + 1) % appData.blogs.length) item.classList.add('next');
+                else item.classList.add('hidden');
+            });
+        }
+
+        function nextBlog() { currentBlog = (currentBlog + 1) % appData.blogs.length; updateBlogs(); }
+        function prevBlog() { currentBlog = (currentBlog - 1 + appData.blogs.length) % appData.blogs.length; updateBlogs(); }
+
         function openBlogModal(index) {
             const blog = appData.blogs[index];
-            const modal = document.getElementById('blogModal');
-            const modalBody = document.getElementById('blogModalBody');
-            
-            modalBody.innerHTML = `
-                <img src="${blog.image}" alt="${blog.title}" class="blog-modal-image">
-                <div class="blog-modal-body">
-                    <h2 class="blog-modal-title">${blog.title}</h2>
-                    <div class="blog-modal-date">
-                        <i class="ri-calendar-line"></i>
-                        <span>${blog.date}</span>
-                    </div>
-                    <p class="blog-modal-excerpt">
-                        This article explores cutting-edge SEO strategies and insights to help you stay ahead 
-                        in the ever-evolving digital landscape. Discover actionable tips, expert analysis, 
-                        and proven techniques to boost your online presence.
-                    </p>
-                    <a href="blogs.html" class="blog-modal-cta">
-                        <span>Read Full Article</span>
-                        <i class="ri-arrow-right-line"></i>
-                    </a>
-                </div>
-            `;
-            
-            modal.classList.add('active');
+            document.getElementById('blogModalBody').innerHTML = `<img src="${blog.image}" alt="${blog.title}" class="blog-modal-image"><h2 class="blog-modal-title">${blog.title}</h2><div class="blog-date" style="margin-bottom: 1.5rem;">${blog.date}</div><p style="color: var(--text-light); line-height: 1.7;">This is a preview of the blog article. Click below to read the full article.</p><a href="blogs.html" class="cta" style="margin-top: 1.5rem;">Read Full Article</a>`;
+            document.getElementById('blogModal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
         function closeBlogModal() {
-            const modal = document.getElementById('blogModal');
-            modal.classList.remove('active');
+            document.getElementById('blogModal').classList.remove('active');
             document.body.style.overflow = '';
         }
 
-        // Close modals on clicking outside or pressing Escape
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('feature-modal')) {
-                closeFeatureModal();
-            }
-            if (e.target.classList.contains('blog-modal')) {
-                closeBlogModal();
-            }
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeFeatureModal();
-                closeBlogModal();
-            }
-        });
-
-        // Pricing - Cloudflare Style
-        let isAnnual = true;
-
-        function initializePricing() {
-            createCloudflareStylePricing(isAnnual);
+        function startAutoSliders() {
+            setInterval(nextHero, 5000);
+            setInterval(nextBlog, 4000);
         }
 
-        function toggleBillingFrequency() {
-            isAnnual = document.getElementById('billingToggle').checked;
-            createCloudflareStylePricing(isAnnual);
-        }
-
-        function createCloudflareStylePricing(annual) {
-            const grid = document.getElementById('pricingGridNew');
-            grid.innerHTML = '';
-
-            const plans = [
-                {
-                    name: 'Free',
-                    description: 'Perfect for getting started',
-                    monthlyPrice: 0,
-                    annualPrice: 0,
-                    isCurrent: true,
-                    features: [
-                        { text: 'Unmetered application layer DDoS protection', info: 'Unlimited and unmetered application-layer (layer 7) DDoS attack mitigation.' },
-                        { text: 'IP-based rate limiting', info: 'Limit the number of requests from certain IP addresses.' },
-                        { text: 'Protect against high severity vulnerabilities with WAF', info: 'The automatic Free Managed Ruleset protects against highest severity threats.' },
-                        { text: 'Detect and challenge common bots only', info: 'Challenge easy-to-detect bad bots from popular cloud providers.' },
-                        { text: 'Universal SSL certificate', info: 'Free universal SSL/TLS certificates for your site.' },
-                        { text: 'Fast, easy-to-use DNS', info: 'Authoritative DNS with fastest response time and DDoS mitigation.' },
-                        { text: 'Global CDN', info: 'Improve performance by delivering content on the global Cloudflare network.' },
-                        { text: '70 Cloudflare Rules', info: 'Modify requests and responses with Cloudflare Rules.' },
-                        { text: '5 WAF Rules', info: 'Customize how Cloudflare WAF protects your application.' }
-                    ]
-                },
-                {
-                    name: 'Pro',
-                    description: 'Most popular',
-                    monthlyPrice: 20,
-                    annualPrice: 240,
-                    isFeatured: true,
-                    features: [
-                        { text: 'Defend against common attacks with WAF', info: 'Protect against common threats like XSS and SQLi with the OWASP Core Ruleset.' },
-                        { text: 'Protect against zero-day threats with WAF', info: 'Mitigate zero-day (new) threats with the Cloudflare Managed Ruleset.' },
-                        { text: 'Detect and challenge easy-to-detect bots', info: 'Block and challenge bad bots with Super Bot Fight Mode.' },
-                        { text: 'Prioritized loading of key site assets', info: 'Prioritize which site resources are loaded first server-side.' },
-                        { text: 'Intelligent caching for WordPress', info: 'Optimize your WordPress site with Automatic Platform Optimization (APO).' },
-                        { text: 'One-click image optimizations', info: 'Automatically reduce image sizes with Polish and Mirage.' },
-                        { text: 'Cache analytics for CDN optimization', info: 'Review assets that cannot be served by the Cloudflare cache.' },
-                        { text: '225 Cloudflare Rules', info: 'Modify requests and responses with Cloudflare Rules.' },
-                        { text: '20 WAF Rules', info: 'Customize how Cloudflare WAF protects your specific application.' }
-                    ]
-                },
-                {
-                    name: 'Business',
-                    description: 'For growing businesses',
-                    monthlyPrice: 200,
-                    annualPrice: 2400,
-                    features: [
-                        { text: 'Protect against unknown vulnerabilities with WAF', info: 'Detect and stop attacks that bypass existing security with WAF Attack Score Lite.' },
-                        { text: 'PCI and SOC 2 Type II compliance', info: 'Cloudflare WAF and CDN are PCI compliant solutions.' },
-                        { text: 'Detect malicious 3rd-party scripts', info: 'Protect visitors from client-side attacks with Page Shield.' },
-                        { text: 'Custom SSL certificates', info: 'Use your own SSL certificates rather than Cloudflare\'s universal SSL.' },
-                        { text: 'Detect and challenge sophisticated bots', info: 'Block or challenge bots with machine learning.' },
-                        { text: 'Custom nameservers', info: 'Use Cloudflare DNS without using Cloudflare-branded nameservers.' },
-                        { text: '100% uptime guarantee (SLA)', info: 'Cloudflare commits to serving your content 100% of the time.' },
-                        { text: '450 Cloudflare Rules', info: 'Advanced request and response modification.' },
-                        { text: '100 WAF Rules', info: 'Comprehensive WAF customization.' }
-                    ]
-                },
-                {
-                    name: 'Enterprise',
-                    description: 'Advanced security & performance',
-                    monthlyPrice: 'Custom',
-                    annualPrice: 'Custom',
-                    features: [
-                        { text: 'Advanced WAF and rate limiting', info: 'Enhance protection with account-level WAF and advanced rate limiting.' },
-                        { text: 'Advanced DDoS protection', info: 'Advanced DDoS Protection learns your traffic profile.' },
-                        { text: 'API Gateway', info: 'Discover, secure, and manage your public APIs using machine learning.' },
-                        { text: 'Enterprise bot management', info: 'Detect complex bots using behavioral anomaly detection and machine learning.' },
-                        { text: 'Logs', info: 'Get detailed logs of metadata generated by Cloudflare products.' },
-                        { text: 'Single-Sign-On (SSO) support', info: 'Allow secure access to the Cloudflare dashboard.' },
-                        { text: 'Customer Success support', info: 'Get a designated Customer Success Manager and onboarding help.' },
-                        { text: '2,700 Cloudflare Rules', info: 'Maximum flexibility for request and response modification.' },
-                        { text: '1,000 WAF Rules', info: 'Enterprise-level WAF customization.' }
-                    ]
-                }
-            ];
-
-            plans.forEach(plan => {
-                const card = document.createElement('div');
-                card.className = `pricing-card-new ${plan.isFeatured ? 'featured' : ''}`;
-
-                const price = typeof plan.monthlyPrice === 'number' 
-                    ? (annual ? `$${plan.annualPrice}` : `$${plan.monthlyPrice}`)
-                    : plan.monthlyPrice;
-
-                const period = typeof plan.monthlyPrice === 'number'
-                    ? (annual ? '/year' : '/month')
-                    : '';
-
-                const billing = typeof plan.monthlyPrice === 'number' && annual && plan.annualPrice > 0
-                    ? `Billed annually ($${(plan.annualPrice / 12).toFixed(2)}/month)`
-                    : '';
-
-                const featuresHTML = plan.features.map(f => `
-                    <li>
-                        <i class="ri-check-double-line"></i>
-                        <span>${f.text}</span>
-                    </li>
-                `).join('');
-
-                card.innerHTML = `
-                    ${plan.isFeatured ? '<div class="plan-badge">Most Popular</div>' : ''}
-                    ${plan.isCurrent ? '<div class="plan-badge" style="background: var(--success);">Current Plan</div>' : ''}
-                    <div class="plan-header-new">
-                        <div class="plan-name">${plan.name}</div>
-                        <div class="plan-description">${plan.description}</div>
-                    </div>
-                    <div class="plan-price">
-                        <div class="price-amount">${price}</div>
-                        ${period ? `<div class="price-period">PER ${annual ? 'YEAR' : 'MONTH'}</div>` : ''}
-                        ${billing ? `<div class="price-billing">${billing}</div>` : ''}
-                    </div>
-                    <ul class="plan-features-new">
-                        ${featuresHTML}
-                    </ul>
-                    <a href="connect.html" class="plan-cta-new ${plan.isCurrent ? 'secondary' : ''}">
-                        <span>${plan.isCurrent ? 'Current Plan' : (typeof plan.monthlyPrice === 'number' && plan.monthlyPrice === 0 ? 'Get Started Free' : (typeof plan.monthlyPrice === 'number' ? 'Upgrade Now' : 'Contact Sales'))}</span>
-                        <i class="ri-arrow-right-line"></i>
-                    </a>
-                `;
-
-                grid.appendChild(card);
-            });
-
-            gsap.fromTo('.pricing-card-new', 
-                {opacity: 0, y: 30}, 
-                {opacity: 1, y: 0, duration: 0.6, stagger: 0.1}
-            );
-        }
-
-        function createHostingCards(period) {
-            const grid = document.getElementById('pricingGrid');
-            grid.innerHTML = '';
-            grid.className = 'pricing-grid has-free';
-
-            // Reorder: basic, professional, enterprise first, then free
-            const orderedPlans = ['basic', 'professional', 'enterprise', 'free'];
-
-            orderedPlans.forEach((key) => {
-                const plan = appData.hostingPlans[key];
-                const card = document.createElement('div');
-                card.className = `pricing-card ${plan.popular ? 'popular' : ''}`;
-
-                const price = plan.price[period];
-                const periodLabel = period === '3month' ? '3 months' : period === '6month' ? '6 months' : '12 months';
-
-                const featuresHTML = plan.features.map(f => `
-                    <li><i class="ri-check-line"></i> <span>${f}</span></li>
-                `).join('');
-
-                card.innerHTML = `
-                    ${plan.popular ? '<div class="popular-badge">Most Popular</div>' : ''}
-                    <h3>${plan.name}</h3>
-                    <div class="price">$${price}<span>/${periodLabel}</span></div>
-                    <ul class="pricing-features">
-                        ${featuresHTML}
-                    </ul>
-                    <a href="connect.html" class="cta" style="width: 100%; text-align: center; justify-content: center;">
-                        <span>${price === 0 ? 'Get Started Free' : 'Get Started'}</span>
-                        <i class="ri-arrow-right-line"></i>
-                    </a>
-                `;
-
-                grid.appendChild(card);
-            });
-
-            gsap.fromTo('.pricing-card', 
-                {opacity: 0, y: 30}, 
-                {opacity: 1, y: 0, duration: 0.6, stagger: 0.1}
-            );
-        }
-
-        function createTaskCards() {
-            const grid = document.getElementById('pricingGrid');
-            grid.innerHTML = '';
-            grid.className = 'pricing-grid task-pricing';
-
-            Object.entries(appData.taskPricing).forEach(([key, plan]) => {
-                const card = document.createElement('div');
-                card.className = `pricing-card ${plan.popular ? 'popular' : ''}`;
-
-                const featuresHTML = plan.features.map(f => `
-                    <li><i class="ri-check-line"></i> <span>${f}</span></li>
-                `).join('');
-
-                card.innerHTML = `
-                    ${plan.popular ? '<div class="popular-badge">Most Popular</div>' : ''}
-                    <h3>${plan.name}</h3>
-                    <div class="price">$${plan.price.toFixed(2)}<span>/task</span></div>
-                    <ul class="pricing-features">
-                        ${featuresHTML}
-                    </ul>
-                    <a href="connect.html" class="cta" style="width: 100%; text-align: center; justify-content: center;">
-                        <span>Start Paying Per Task</span>
-                        <i class="ri-arrow-right-line"></i>
-                    </a>
-                `;
-
-                grid.appendChild(card);
-            });
-
-            gsap.fromTo('.pricing-card', 
-                {opacity: 0, y: 30}, 
-                {opacity: 1, y: 0, duration: 0.6, stagger: 0.1}
-            );
-        }
-
-        function togglePricingType(type) {
-            currentPricingType = type;
-
-            document.querySelectorAll('.pricing-type-toggle button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            const hostingToggle = document.getElementById('hostingToggle');
-            if (type === 'hosting') {
-                hostingToggle.style.display = 'flex';
-                createHostingCards(currentHostingPeriod);
-            } else {
-                hostingToggle.style.display = 'none';
-                createTaskCards();
-            }
-        }
-
-        function toggleHostingPeriod(period) {
-            currentHostingPeriod = period;
-
-            document.querySelectorAll('.pricing-toggle button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            createHostingCards(period);
-        }
-
-        // Blogs
-        function initializeBlogs() {
-            const carousel = document.getElementById('carousel');
-            carousel.innerHTML = '';
-
-            appData.blogs.forEach((blog, index) => {
-                const item = document.createElement('div');
-                let className = 'blog-item';
-                
-                if (index === currentBlog) className += ' active';
-                else if (index === (currentBlog - 1 + appData.blogs.length) % appData.blogs.length) className += ' prev';
-                else if (index === (currentBlog + 1) % appData.blogs.length) className += ' next';
-                else className += ' hidden';
-
-                item.className = className;
-                item.innerHTML = `
-                    <img src="${blog.image}" alt="${blog.title}" loading="lazy">
-                    <div class="blog-info">
-                        <div class="blog-title">${blog.title}</div>
-                        <div class="blog-date">${blog.date}</div>
-                    </div>
-                `;
-                item.onclick = () => openBlogModal(index);
-                item.style.cursor = 'pointer';
-                carousel.appendChild(item);
-            });
-        }
-
-        function updateBlog() {
-            appData.blogs.forEach((blog, index) => {
-                const items = document.querySelectorAll('.blog-item');
-                let className = 'blog-item';
-                
-                if (index === currentBlog) className += ' active';
-                else if (index === (currentBlog - 1 + appData.blogs.length) % appData.blogs.length) className += ' prev';
-                else if (index === (currentBlog + 1) % appData.blogs.length) className += ' next';
-                else className += ' hidden';
-
-                if (items[index]) items[index].className = className;
-            });
-        }
-
-        function nextBlog() {
-            currentBlog = (currentBlog + 1) % appData.blogs.length;
-            updateBlog();
-        }
-
-        function prevBlog() {
-            currentBlog = (currentBlog - 1 + appData.blogs.length) % appData.blogs.length;
-            updateBlog();
-        }
-
-        // Scroll Indicator
-        function initializeScrollIndicator() {
-            const indicator = document.getElementById('scrollIndicator');
-            const sections = ['home', 'features', 'pricing', 'blog', 'partner'];
-
-            sections.forEach((id, index) => {
-                const dot = document.createElement('div');
-                dot.className = `scroll-dot ${index === 0 ? 'active' : ''}`;
-                dot.onclick = () => {
-                    document.getElementById(id).scrollIntoView({behavior: 'smooth'});
-                };
-                indicator.appendChild(dot);
-            });
-
-            window.addEventListener('scroll', updateActiveSection);
-        }
-
-        function updateActiveSection() {
-            const sections = document.querySelectorAll('.section');
-            const scrollDots = document.querySelectorAll('.scroll-dot');
-
-            sections.forEach((section, index) => {
-                const rect = section.getBoundingClientRect();
-                if (rect.top >= -100 && rect.top <= 100) {
-                    scrollDots.forEach(dot => dot.classList.remove('active'));
-                    if (scrollDots[index]) scrollDots[index].classList.add('active');
-                }
-            });
-        }
-
-        // Mobile Navigation
-        function initializeMobileNav() {
-            document.querySelectorAll('.mobile-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    const href = this.getAttribute('href');
-                    if (href && href.startsWith('#')) {
-                        e.preventDefault();
-                        document.querySelectorAll('.mobile-item').forEach(i => i.classList.remove('active'));
-                        this.classList.add('active');
-                        const target = document.querySelector(href);
-                        if (target) {
-                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                    }
-                });
-            });
-        }
-
-        // Theme Toggle
         function toggleTheme() {
             document.body.classList.toggle('dark');
-            const isDark = document.body.classList.contains('dark');
-            document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            const icon = document.getElementById('themeIcon');
+            icon.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
         }
 
         function loadTheme() {
@@ -3606,11 +663,8 @@
             }
         }
 
-        // Auto Sliders
-        function startAutoSliders() {
-            setInterval(nextHero, 5000);
-            setInterval(nextBlog, 5000);
-        }
+        document.getElementById('featureModal').addEventListener('click', e => { if (e.target.id === 'featureModal') closeFeatureModal(); });
+        document.getElementById('blogModal').addEventListener('click', e => { if (e.target.id === 'blogModal') closeBlogModal(); });
     </script>
 </body>
 </html>
