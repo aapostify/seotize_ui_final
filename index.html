@@ -371,7 +371,7 @@
             max-width: 1400px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
             padding-bottom: 2rem;
         }
@@ -454,10 +454,88 @@
             opacity: 1;
         }
 
-        /* Pricing Section */
+        /* Pricing Section - Cloudflare Style */
         .pricing {
             background: var(--bg-secondary);
             padding: 0 2rem;
+        }
+
+        .pricing-frequency-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .frequency-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .save-tag {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 0.5rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 56px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .pricing-grid-new {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .pricing-type-toggle {
@@ -618,6 +696,165 @@
             position: relative;
             display: flex;
             flex-direction: column;
+        }
+
+        .pricing-card-new {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .pricing-card-new:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+            border-color: var(--primary);
+        }
+
+        .pricing-card-new.featured {
+            border-color: var(--primary);
+            border-width: 3px;
+            box-shadow: 0 15px 35px var(--primary-glow);
+            transform: scale(1.03);
+        }
+
+        .pricing-card-new.featured:hover {
+            transform: translateY(-5px) scale(1.03);
+        }
+
+        .plan-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .plan-header-new {
+            text-align: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .plan-price {
+            text-align: center;
+            padding: 1.5rem 0;
+        }
+
+        .price-amount {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .price-period {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .price-billing {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        .plan-features-new {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .plan-features-new li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .plan-features-new li i {
+            color: var(--success);
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .feature-info-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 0;
+            font-size: 1rem;
+            margin-left: 0.25rem;
+            transition: transform 0.2s ease;
+        }
+
+        .feature-info-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .plan-cta-new {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .plan-cta-new:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--primary-glow);
+        }
+
+        .plan-cta-new.secondary {
+            background: var(--bg-secondary);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .plan-cta-new.secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         .pricing-card:hover {
@@ -824,12 +1061,239 @@
             margin-top: 3rem;
         }
 
-        /* Partner Section - Redesigned */
+        /* Partner Section - Complete Redesign */
         .partner {
             background: var(--bg-secondary);
             padding: 0 2rem;
         }
 
+        .partner-container-new {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .partner-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .partner-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .partner-main-card {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .partner-main-card:hover {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .partner-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .partner-icon {
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .partner-card-header h3 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .partner-description {
+            font-size: 1.125rem;
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .partner-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .partner-stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .partner-stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .partner-benefits {
+            margin-bottom: 2rem;
+        }
+
+        .partner-benefits h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+
+        .benefits-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .benefits-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            color: var(--text-light);
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            border-left: 3px solid var(--success);
+            transition: all 0.3s ease;
+        }
+
+        .benefits-list li:hover {
+            transform: translateX(5px);
+            background: var(--primary-glow);
+        }
+
+        .benefits-list li i {
+            color: var(--success);
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .partner-cta {
+            width: 100%;
+            justify-content: center;
+            padding: 1.25rem 2rem;
+            font-size: 1.125rem;
+        }
+
+        .partner-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .partner-image-wrapper {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .partner-dashboard-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 20px;
+        }
+
+        .partner-overlay-stats {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .overlay-stat {
+            text-align: center;
+        }
+
+        .overlay-stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+
+        .overlay-stat-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .partner-testimonial {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .testimonial-stars {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-text {
+            font-size: 1rem;
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .testimonial-author strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* Old partner container - keep for compatibility */
         .partner-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -1048,6 +1512,20 @@
         }
 
         /* Responsive */
+        @media (min-width: 769px) and (max-width: 1200px) {
+            .features-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pricing-grid-new {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .partner-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
             nav {
                 height: 58px;
@@ -1092,20 +1570,20 @@
 
             .hero-container {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
-                padding: 1.5rem 1rem;
+                gap: 2rem;
+                padding: 2rem 1rem;
                 max-height: none;
                 overflow-y: visible;
                 display: flex;
-                flex-direction: column-reverse;
+                flex-direction: column;
             }
 
             .hero-container > div:first-child {
-                order: 2;
+                order: 1;
             }
 
             .hero-container > div:last-child {
-                order: 1;
+                order: 2;
             }
 
             .hero h1 {
@@ -1119,12 +1597,14 @@
             }
 
             .hero img {
-                max-height: 300px;
+                max-height: 280px;
+                width: 100%;
                 object-fit: cover;
+                border-radius: 16px;
             }
 
             .hero-controls {
-                bottom: 5rem;
+                bottom: 1.5rem;
                 padding: 0.5rem 1rem;
                 gap: 0.75rem;
             }
@@ -1159,7 +1639,7 @@
             }
 
             .features-container {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
                 gap: 1.5rem;
                 padding-bottom: 1rem;
             }
@@ -1383,9 +1863,121 @@
                 padding: 0.75rem 1.25rem;
             }
 
+            .pricing-grid-new {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .pricing-card-new {
+                padding: 1.5rem;
+            }
+
+            .pricing-card-new.featured {
+                transform: scale(1);
+            }
+
+            .pricing-card-new.featured:hover {
+                transform: translateY(-5px) scale(1);
+            }
+
+            .plan-name {
+                font-size: 1.25rem;
+            }
+
+            .price-amount {
+                font-size: 2.25rem;
+            }
+
+            .plan-features-new li {
+                font-size: 0.85rem;
+            }
+
+            .pricing-frequency-toggle {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
             .partner {
                 padding: 3rem 1rem;
                 min-height: auto;
+            }
+
+            .partner-container-new {
+                padding: 0;
+            }
+
+            .partner-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .partner-main-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .partner-card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .partner-card-header h3 {
+                font-size: 1.5rem;
+            }
+
+            .partner-icon {
+                font-size: 2.5rem;
+            }
+
+            .partner-description {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .partner-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .partner-stat-card {
+                padding: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.35rem;
+            }
+
+            .stat-label {
+                font-size: 0.75rem;
+            }
+
+            .benefits-list li {
+                font-size: 0.9rem;
+                padding: 0.65rem;
+            }
+
+            .partner-overlay-stats {
+                bottom: 1rem;
+                left: 1rem;
+                right: 1rem;
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .overlay-stat-value {
+                font-size: 1.35rem;
+            }
+
+            .overlay-stat-label {
+                font-size: 0.7rem;
+            }
+
+            .partner-testimonial {
+                padding: 1.5rem;
+            }
+
+            .testimonial-text {
+                font-size: 0.9rem;
             }
 
             .partner-container {
@@ -1875,6 +2467,11 @@
                 gap: 0.65rem;
             }
 
+            .pricing-grid-new {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
             .pricing-container {
                 max-height: none;
             }
@@ -1895,6 +2492,22 @@
                 font-size: 0.7rem;
             }
 
+            .pricing-card-new {
+                padding: 1.25rem;
+            }
+
+            .plan-name {
+                font-size: 1.1rem;
+            }
+
+            .price-amount {
+                font-size: 2rem;
+            }
+
+            .plan-features-new li {
+                font-size: 0.8rem;
+            }
+
             .partner-stats {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 0.5rem;
@@ -1905,6 +2518,19 @@
             }
 
             .partner-stat-value {
+                font-size: 1.25rem;
+            }
+
+            .partner-stats-grid {
+                grid-template-columns: 1fr;
+                gap: 0.65rem;
+            }
+
+            .partner-stat-card {
+                padding: 0.85rem;
+            }
+
+            .stat-value {
                 font-size: 1.25rem;
             }
 
@@ -1931,6 +2557,11 @@
 
             .blog-title {
                 font-size: 0.85rem;
+            }
+
+            .features-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
             }
 
             .footer {
@@ -1994,25 +2625,23 @@
         </div>
     </section>
 
-    <!-- Pricing Section - Moved before Blog -->
+    <!-- Pricing Section - Cloudflare Style Redesign -->
     <section id="pricing" class="section pricing">
         <div style="max-width: 1400px; width: 100%; margin: 0 auto;">
             <h2 class="section-title">Simple, Transparent Pricing</h2>
-            <p class="section-subtitle">Choose between subscription plans or pay-per-task</p>
+            <p class="section-subtitle">SEOTIZE is currently on a <strong>Free</strong> plan. Choose the perfect plan for your needs.</p>
             
-            <div class="pricing-type-toggle">
-                <button class="active" onclick="togglePricingType('hosting')">Hosting Plans</button>
-                <button onclick="togglePricingType('task')">Pay-Per-Task</button>
-            </div>
-            
-            <div class="pricing-toggle" id="hostingToggle">
-                <button class="active" onclick="toggleHostingPeriod('3month')">3 Months</button>
-                <button onclick="toggleHostingPeriod('6month')">6 Months <span class="save-badge">-10%</span></button>
-                <button onclick="toggleHostingPeriod('12month')">12 Months <span class="save-badge">-20%</span></button>
+            <div class="pricing-frequency-toggle">
+                <div class="frequency-label">Monthly</div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="billingToggle" onchange="toggleBillingFrequency()" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <div class="frequency-label">Annual <span class="save-tag">Save up to 20%</span></div>
             </div>
             
             <div class="pricing-container">
-                <div class="pricing-grid" id="pricingGrid"></div>
+                <div class="pricing-grid-new" id="pricingGridNew"></div>
             </div>
         </div>
     </section>
@@ -2035,44 +2664,87 @@
         </div>
     </section>
 
-    <!-- Partner Section - Redesigned with Partner Data -->
+    <!-- Partner Section - Complete Redesign -->
     <section id="partner" class="section partner">
-        <div class="partner-container">
-            <div class="partner-content">
-                <h2>Join Our Partner Program</h2>
-                <p>Become part of our global network helping websites achieve better search rankings through real user engagement. Earn money while contributing to SEO success.</p>
-                
-                <div class="partner-stats" id="partnerStats">
-                    <div class="partner-stat">
-                        <div class="partner-stat-value">$0.10+</div>
-                        <div class="partner-stat-label">Per Task</div>
-                    </div>
-                    <div class="partner-stat">
-                        <div class="partner-stat-value">150+</div>
-                        <div class="partner-stat-label">Countries</div>
-                    </div>
-                    <div class="partner-stat">
-                        <div class="partner-stat-value">24/7</div>
-                        <div class="partner-stat-label">Availability</div>
-                    </div>
-                </div>
-                
-                <ul class="partner-features" id="partnerFeatures">
-                    <li><i class="ri-check-line"></i><span>Competitive Rates - Earn $0.10 to $0.20 per task</span></li>
-                    <li><i class="ri-check-line"></i><span>Work From Anywhere Worldwide</span></li>
-                    <li><i class="ri-check-line"></i><span>Quick Payouts via USDT (BEP20)</span></li>
-                    <li><i class="ri-check-line"></i><span>Real-Time Dashboard & Analytics</span></li>
-                    <li><i class="ri-check-line"></i><span>Meaningful SEO Impact Tasks</span></li>
-                    <li><i class="ri-check-line"></i><span>Secure & Reliable Platform</span></li>
-                </ul>
-                
-                <a href="partner/" class="cta">
-                    <span>Start Earning Now</span>
-                    <i class="ri-arrow-right-line"></i>
-                </a>
+        <div class="partner-container-new">
+            <div class="partner-header">
+                <h2 class="section-title">Join Our Global Partner Network</h2>
+                <p class="section-subtitle">Earn money while helping websites grow through real user engagement</p>
             </div>
             
-            <img src="https://image-api.seotize.net/image-cdn/97cd3337-ae40-4239-8d26-bf17f34721cc" alt="Partner Dashboard" class="partner-image">
+            <div class="partner-grid">
+                <div class="partner-main-card">
+                    <div class="partner-card-header">
+                        <div class="partner-icon">🌟</div>
+                        <h3>Become a Partner</h3>
+                    </div>
+                    <p class="partner-description">Join thousands of partners worldwide earning money by completing SEO tasks. Work on your schedule, from anywhere in the world.</p>
+                    
+                    <div class="partner-stats-grid">
+                        <div class="partner-stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-value">$0.10-$0.20</div>
+                            <div class="stat-label">Per Task</div>
+                        </div>
+                        <div class="partner-stat-card">
+                            <div class="stat-icon">🌍</div>
+                            <div class="stat-value">150+</div>
+                            <div class="stat-label">Countries</div>
+                        </div>
+                        <div class="partner-stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-value">24/7</div>
+                            <div class="stat-label">Availability</div>
+                        </div>
+                        <div class="partner-stat-card">
+                            <div class="stat-icon">⚡</div>
+                            <div class="stat-value">Instant</div>
+                            <div class="stat-label">Payouts</div>
+                        </div>
+                    </div>
+                    
+                    <div class="partner-benefits">
+                        <h4>Partner Benefits</h4>
+                        <ul class="benefits-list">
+                            <li><i class="ri-check-double-line"></i><span>Competitive rates with performance bonuses</span></li>
+                            <li><i class="ri-check-double-line"></i><span>Work from anywhere, anytime</span></li>
+                            <li><i class="ri-check-double-line"></i><span>Fast USDT (BEP20) payouts</span></li>
+                            <li><i class="ri-check-double-line"></i><span>Real-time dashboard and analytics</span></li>
+                            <li><i class="ri-check-double-line"></i><span>No experience required - full training provided</span></li>
+                            <li><i class="ri-check-double-line"></i><span>Secure and reliable platform</span></li>
+                        </ul>
+                    </div>
+                    
+                    <a href="partner/" class="cta partner-cta">
+                        <span>Start Earning Today</span>
+                        <i class="ri-arrow-right-line"></i>
+                    </a>
+                </div>
+                
+                <div class="partner-visual">
+                    <div class="partner-image-wrapper">
+                        <img src="https://image-api.seotize.net/image-cdn/97cd3337-ae40-4239-8d26-bf17f34721cc" alt="Partner Dashboard" class="partner-dashboard-img">
+                        <div class="partner-overlay-stats">
+                            <div class="overlay-stat">
+                                <div class="overlay-stat-value">$12,450</div>
+                                <div class="overlay-stat-label">Earned This Month</div>
+                            </div>
+                            <div class="overlay-stat">
+                                <div class="overlay-stat-value">2,341</div>
+                                <div class="overlay-stat-label">Tasks Completed</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="partner-testimonial">
+                        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                        <p class="testimonial-text">"I've been earning consistently with SEOTIZE for 6 months. The tasks are easy, payments are fast, and the support team is amazing!"</p>
+                        <div class="testimonial-author">
+                            <strong>Sarah K.</strong> - Partner since 2024
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -2245,6 +2917,34 @@
                     ],
                     image: 'https://image-api.seotize.net/image-cdn/1b8c38a1-4c4d-451c-ac6c-7c8220858621',
                     cta: 'Try AI Tools'
+                },
+                {
+                    icon: '🔐', 
+                    title: 'Enterprise-Grade Security & Privacy', 
+                    subtitle: 'Protected & Compliant',
+                    description: 'Your data security is our priority. Seotize implements bank-level encryption, GDPR compliance, and advanced security measures to protect your content and user data.',
+                    features: [
+                        'SSL/TLS Encryption – All data transmitted securely',
+                        'GDPR & Privacy Compliant – Full data protection',
+                        'Regular Security Audits – Proactive threat detection',
+                        'Automatic Backups – Never lose your content'
+                    ],
+                    image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&h=400&fit=crop',
+                    cta: 'Learn More'
+                },
+                {
+                    icon: '🎯', 
+                    title: 'Advanced Keyword Tracking & Reporting', 
+                    subtitle: 'Data-Driven Decisions',
+                    description: 'Monitor your SEO performance with precision. Track keyword rankings, analyze competitor strategies, and receive actionable insights to stay ahead of the competition.',
+                    features: [
+                        'Real-Time Rank Tracking – Monitor position changes daily',
+                        'Competitor Analysis – See what works for others',
+                        'Custom Reports – Beautiful, shareable dashboards',
+                        'Historical Data – Track long-term progress'
+                    ],
+                    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop',
+                    cta: 'Track Rankings'
                 }
             ],
             hostingPlans: {
@@ -2543,9 +3243,146 @@
             }
         });
 
-        // Pricing
+        // Pricing - Cloudflare Style
+        let isAnnual = true;
+
         function initializePricing() {
-            createHostingCards(currentHostingPeriod);
+            createCloudflareStylePricing(isAnnual);
+        }
+
+        function toggleBillingFrequency() {
+            isAnnual = document.getElementById('billingToggle').checked;
+            createCloudflareStylePricing(isAnnual);
+        }
+
+        function createCloudflareStylePricing(annual) {
+            const grid = document.getElementById('pricingGridNew');
+            grid.innerHTML = '';
+
+            const plans = [
+                {
+                    name: 'Free',
+                    description: 'Perfect for getting started',
+                    monthlyPrice: 0,
+                    annualPrice: 0,
+                    isCurrent: true,
+                    features: [
+                        { text: 'Unmetered application layer DDoS protection', info: 'Unlimited and unmetered application-layer (layer 7) DDoS attack mitigation.' },
+                        { text: 'IP-based rate limiting', info: 'Limit the number of requests from certain IP addresses.' },
+                        { text: 'Protect against high severity vulnerabilities with WAF', info: 'The automatic Free Managed Ruleset protects against highest severity threats.' },
+                        { text: 'Detect and challenge common bots only', info: 'Challenge easy-to-detect bad bots from popular cloud providers.' },
+                        { text: 'Universal SSL certificate', info: 'Free universal SSL/TLS certificates for your site.' },
+                        { text: 'Fast, easy-to-use DNS', info: 'Authoritative DNS with fastest response time and DDoS mitigation.' },
+                        { text: 'Global CDN', info: 'Improve performance by delivering content on the global Cloudflare network.' },
+                        { text: '70 Cloudflare Rules', info: 'Modify requests and responses with Cloudflare Rules.' },
+                        { text: '5 WAF Rules', info: 'Customize how Cloudflare WAF protects your application.' }
+                    ]
+                },
+                {
+                    name: 'Pro',
+                    description: 'Most popular',
+                    monthlyPrice: 20,
+                    annualPrice: 240,
+                    isFeatured: true,
+                    features: [
+                        { text: 'Defend against common attacks with WAF', info: 'Protect against common threats like XSS and SQLi with the OWASP Core Ruleset.' },
+                        { text: 'Protect against zero-day threats with WAF', info: 'Mitigate zero-day (new) threats with the Cloudflare Managed Ruleset.' },
+                        { text: 'Detect and challenge easy-to-detect bots', info: 'Block and challenge bad bots with Super Bot Fight Mode.' },
+                        { text: 'Prioritized loading of key site assets', info: 'Prioritize which site resources are loaded first server-side.' },
+                        { text: 'Intelligent caching for WordPress', info: 'Optimize your WordPress site with Automatic Platform Optimization (APO).' },
+                        { text: 'One-click image optimizations', info: 'Automatically reduce image sizes with Polish and Mirage.' },
+                        { text: 'Cache analytics for CDN optimization', info: 'Review assets that cannot be served by the Cloudflare cache.' },
+                        { text: '225 Cloudflare Rules', info: 'Modify requests and responses with Cloudflare Rules.' },
+                        { text: '20 WAF Rules', info: 'Customize how Cloudflare WAF protects your specific application.' }
+                    ]
+                },
+                {
+                    name: 'Business',
+                    description: 'For growing businesses',
+                    monthlyPrice: 200,
+                    annualPrice: 2400,
+                    features: [
+                        { text: 'Protect against unknown vulnerabilities with WAF', info: 'Detect and stop attacks that bypass existing security with WAF Attack Score Lite.' },
+                        { text: 'PCI and SOC 2 Type II compliance', info: 'Cloudflare WAF and CDN are PCI compliant solutions.' },
+                        { text: 'Detect malicious 3rd-party scripts', info: 'Protect visitors from client-side attacks with Page Shield.' },
+                        { text: 'Custom SSL certificates', info: 'Use your own SSL certificates rather than Cloudflare\\'s universal SSL.' },
+                        { text: 'Detect and challenge sophisticated bots', info: 'Block or challenge bots with machine learning.' },
+                        { text: 'Custom nameservers', info: 'Use Cloudflare DNS without using Cloudflare-branded nameservers.' },
+                        { text: '100% uptime guarantee (SLA)', info: 'Cloudflare commits to serving your content 100% of the time.' },
+                        { text: '450 Cloudflare Rules', info: 'Advanced request and response modification.' },
+                        { text: '100 WAF Rules', info: 'Comprehensive WAF customization.' }
+                    ]
+                },
+                {
+                    name: 'Enterprise',
+                    description: 'Advanced security & performance',
+                    monthlyPrice: 'Custom',
+                    annualPrice: 'Custom',
+                    features: [
+                        { text: 'Advanced WAF and rate limiting', info: 'Enhance protection with account-level WAF and advanced rate limiting.' },
+                        { text: 'Advanced DDoS protection', info: 'Advanced DDoS Protection learns your traffic profile.' },
+                        { text: 'API Gateway', info: 'Discover, secure, and manage your public APIs using machine learning.' },
+                        { text: 'Enterprise bot management', info: 'Detect complex bots using behavioral anomaly detection and machine learning.' },
+                        { text: 'Logs', info: 'Get detailed logs of metadata generated by Cloudflare products.' },
+                        { text: 'Single-Sign-On (SSO) support', info: 'Allow secure access to the Cloudflare dashboard.' },
+                        { text: 'Customer Success support', info: 'Get a designated Customer Success Manager and onboarding help.' },
+                        { text: '2,700 Cloudflare Rules', info: 'Maximum flexibility for request and response modification.' },
+                        { text: '1,000 WAF Rules', info: 'Enterprise-level WAF customization.' }
+                    ]
+                }
+            ];
+
+            plans.forEach(plan => {
+                const card = document.createElement('div');
+                card.className = `pricing-card-new ${plan.isFeatured ? 'featured' : ''}`;
+
+                const price = typeof plan.monthlyPrice === 'number' 
+                    ? (annual ? `$${plan.annualPrice}` : `$${plan.monthlyPrice}`)
+                    : plan.monthlyPrice;
+
+                const period = typeof plan.monthlyPrice === 'number'
+                    ? (annual ? '/year' : '/month')
+                    : '';
+
+                const billing = typeof plan.monthlyPrice === 'number' && annual && plan.annualPrice > 0
+                    ? `Billed annually ($${(plan.annualPrice / 12).toFixed(2)}/month)`
+                    : '';
+
+                const featuresHTML = plan.features.map(f => `
+                    <li>
+                        <i class="ri-check-double-line"></i>
+                        <span>${f.text}</span>
+                    </li>
+                `).join('');
+
+                card.innerHTML = `
+                    ${plan.isFeatured ? '<div class="plan-badge">Most Popular</div>' : ''}
+                    ${plan.isCurrent ? '<div class="plan-badge" style="background: var(--success);">Current Plan</div>' : ''}
+                    <div class="plan-header-new">
+                        <div class="plan-name">${plan.name}</div>
+                        <div class="plan-description">${plan.description}</div>
+                    </div>
+                    <div class="plan-price">
+                        <div class="price-amount">${price}</div>
+                        ${period ? `<div class="price-period">PER ${annual ? 'YEAR' : 'MONTH'}</div>` : ''}
+                        ${billing ? `<div class="price-billing">${billing}</div>` : ''}
+                    </div>
+                    <ul class="plan-features-new">
+                        ${featuresHTML}
+                    </ul>
+                    <a href="connect.html" class="plan-cta-new ${plan.isCurrent ? 'secondary' : ''}">
+                        <span>${plan.isCurrent ? 'Current Plan' : (typeof plan.monthlyPrice === 'number' && plan.monthlyPrice === 0 ? 'Get Started Free' : (typeof plan.monthlyPrice === 'number' ? 'Upgrade Now' : 'Contact Sales'))}</span>
+                        <i class="ri-arrow-right-line"></i>
+                    </a>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            gsap.fromTo('.pricing-card-new', 
+                {opacity: 0, y: 30}, 
+                {opacity: 1, y: 0, duration: 0.6, stagger: 0.1}
+            );
         }
 
         function createHostingCards(period) {
