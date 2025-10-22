@@ -7,381 +7,1048 @@
     <meta name="description" content="Join SEOTIZE Partners and earn money by completing SEO tasks, searching keywords on Google, and helping businesses grow. Start earning today with flexible payouts.">
     <meta name="keywords" content="earn money online, SEO tasks, paid searches, keyword research jobs, work from home, flexible income">
     <link rel="canonical" href="https://seotize.com/partners">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{
-    --bg:#ffffff;--bg-light:#f8fafc;--bg-dark:#0f172a;
-    --text:#1e293b;--text-light:#64748b;--text-muted:#94a3b8;
-    --border:#e2e8f0;--primary:#2563eb;--secondary:#059669;
-    --card-bg:#ffffff;--nav-bg:rgba(255,255,255,0.95);
-    --success:#10b981;--warning:#f59e0b;--accent:#8b5cf6
-}
-body.dark{
-    --bg:#0f172a;--bg-light:#1e293b;
-    --text:#f1f5f9;--text-light:#cbd5e1;--text-muted:#94a3b8;
-    --border:#334155;--card-bg:#1e293b;--nav-bg:rgba(15,23,42,0.95)
-}
-body{
-    font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);
-    line-height:1.6;transition:all .3s ease
+/* ===========================
+   RESET & BASE STYLES
+   =========================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* ─────────────  Navigation  ───────────── */
-nav{
-    position:fixed;top:0;width:100%;padding:1rem 2rem;
-    background:var(--nav-bg);backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--border);z-index:100;transition:all .3s ease
+:root {
+    --bg: #fafbfc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --text: #0f172a;
+    --text-light: #64748b;
+    --text-muted: #94a3b8;
+    --border: #e2e8f0;
+    --primary: #10b981;
+    --primary-dark: #059669;
+    --primary-light: #34d399;
+    --secondary: #2563eb;
+    --accent: #8b5cf6;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --nav-bg: rgba(255, 255, 255, 0.95);
 }
-nav>div{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-.logo{
-    font-size:1.5rem;font-weight:800;
-    background:linear-gradient(135deg,var(--success),var(--secondary));
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    text-decoration:none
-}
-.nav-links{display:flex;list-style:none;gap:2rem}
-.nav-links a{text-decoration:none;color:var(--text);font-weight:500;transition:color .2s ease}
-.nav-links a:hover{color:var(--primary)}
-.nav-actions{display:flex;gap:1rem;align-items:center}
-.login-btn{
-    background:linear-gradient(135deg,var(--success),var(--secondary));color:#fff;
-    padding:.5rem 1.25rem;border-radius:6px;text-decoration:none;font-weight:500;transition:all .2s ease
-}
-.login-btn:hover{transform:translateY(-2px)}
-.theme-toggle{
-    background:var(--bg-light);border:1px solid var(--border);
-    padding:.5rem;border-radius:6px;cursor:pointer;transition:all .2s ease;color:var(--text)
-}
-.theme-toggle:hover{transform:scale(1.05)}
 
-/* Mobile Menu Toggle */
-.mobile-menu-toggle {
-    display: none;
-    background: var(--bg-light);
-    border: 1px solid var(--border);
-    padding: 0.5rem;
-    border-radius: 6px;
-    cursor: pointer;
+body.dark {
+    --bg: #0a0e1a;
+    --bg-secondary: #1a1f2e;
+    --bg-tertiary: #2a2f3e;
+    --text: #f1f5f9;
+    --text-light: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border: #2d3748;
+    --nav-bg: rgba(26, 31, 46, 0.95);
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
     color: var(--text);
-    font-size: 1.2rem;
-    transition: all 0.2s ease;
+    line-height: 1.6;
+    transition: background 0.3s ease, color 0.3s ease;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
-.mobile-menu-toggle:hover {
-    transform: scale(1.05);
-}
-
-/* Mobile Menu */
-.mobile-menu {
+/* ===========================
+   NAVIGATION (MOBILE-FIRST)
+   =========================== */
+nav {
     position: fixed;
     top: 0;
-    left: -100%;
-    width: 80%;
-    height: 100vh;
-    background: var(--card-bg);
-    border-right: 1px solid var(--border);
-    transition: left 0.3s ease;
-    z-index: 200;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.nav-container {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 900;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-icon {
+    font-size: 1.75rem;
+    filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.3));
+}
+
+/* Desktop Menu */
+.nav-menu {
+    display: none;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-menu a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.nav-menu a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: width 0.3s ease;
+}
+
+.nav-menu a:hover {
+    color: var(--primary);
+}
+
+.nav-menu a:hover::after {
+    width: 100%;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.nav-btn {
+    padding: 0.625rem 1.25rem;
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.theme-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.25rem;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+}
+
+/* Mobile Hamburger Menu */
+.mobile-menu-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 10px;
+    transition: all 0.3s ease;
+    justify-content: center;
+    align-items: center;
+}
+
+.mobile-menu-btn span {
+    width: 20px;
+    height: 2px;
+    background: var(--text);
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.mobile-menu-btn.active span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+
+.mobile-menu-btn.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-menu-btn.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu {
+    position: fixed;
+    top: 65px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-secondary);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 999;
+    overflow-y: auto;
     padding: 2rem;
 }
 
 .mobile-menu.active {
-    left: 0;
-}
-
-.mobile-menu-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
-.mobile-menu-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--text);
-    cursor: pointer;
+    transform: translateX(0);
 }
 
 .mobile-menu-links {
     list-style: none;
-}
-
-.mobile-menu-links li {
-    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .mobile-menu-links a {
-    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg);
+    border-radius: 12px;
     color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: 2px solid var(--border);
+}
+
+.mobile-menu-links a:hover,
+.mobile-menu-links a:active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: translateX(8px);
+}
+
+.mobile-menu-links i {
+    font-size: 1.5rem;
+}
+
+/* ===========================
+   SECTIONS & CONTAINERS
+   =========================== */
+.section {
+    padding: 4rem 1.5rem;
+    position: relative;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.section-subtitle {
+    text-align: center;
     font-size: 1.125rem;
-    font-weight: 500;
-    display: block;
-    padding: 0.5rem 0;
-    transition: color 0.3s ease;
+    color: var(--text-light);
+    margin-bottom: 3rem;
+    line-height: 1.6;
 }
 
-.mobile-menu-links a:hover {
+/* ===========================
+   HERO SECTION
+   =========================== */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 6rem;
+    padding-bottom: 2rem;
+    background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+    top: -100px;
+    right: -100px;
+    animation: float 15s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-30px, 30px) rotate(180deg); }
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-text {
+    text-align: center;
+}
+
+.hero-emoji {
+    font-size: 4rem;
+    display: inline-block;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.3));
+}
+
+.hero h1 {
+    font-size: 2.25rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero p {
+    font-size: 1.125rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    line-height: 1.7;
+}
+
+.hero-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
+}
+
+.cta.secondary {
+    background: transparent;
     color: var(--primary);
+    border: 2px solid var(--primary);
+    box-shadow: none;
 }
 
-.mobile-overlay {
-    position: fixed;
+.cta.secondary:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.hero-image {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    border: 3px solid var(--border);
+}
+
+/* Live Stats Bar */
+.stats-bar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    box-shadow: var(--card-shadow);
+}
+
+.stat {
+    text-align: center;
+    padding: 1rem;
+    background: var(--bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.stat-emoji {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.stat-number {
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* ===========================
+   HOW IT WORKS
+   =========================== */
+.how-it-works {
+    background: var(--bg-secondary);
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.step-card {
+    background: var(--bg);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    transition: all 0.4s ease;
+    position: relative;
+    text-align: center;
+}
+
+.step-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
+    border-color: var(--primary);
+}
+
+.step-number {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+    background: var(--gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: white;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+.step-icon {
+    font-size: 3.5rem;
+    display: inline-block;
+    margin: 1rem auto 1.5rem;
+    filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.2));
+}
+
+.step-card h3 {
+    font-size: 1.375rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.step-card p {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+.step-reward {
+    background: var(--gradient);
+    color: white;
+    padding: 0.625rem 1.25rem;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    display: inline-block;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* ===========================
+   EARNING METHODS
+   =========================== */
+.earning-methods {
+    background: var(--bg);
+}
+
+.methods-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.method-card {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.method-card::before {
+    content: '';
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 150;
-    opacity: 0;
-    visibility: hidden;
+    right: 0;
+    height: 4px;
+    background: var(--gradient);
+}
+
+.method-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
+    border-color: var(--primary);
+}
+
+.method-icon {
+    font-size: 3rem;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.2));
+}
+
+.method-card h3 {
+    font-size: 1.375rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.method-card p {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+.earning-range {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.earning-box {
+    background: var(--bg);
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid var(--border);
+}
+
+.earning-amount {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+}
+
+.earning-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.method-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.method-features li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-light);
+    font-size: 0.9375rem;
+}
+
+.method-features li::before {
+    content: '💰';
+    font-size: 1.25rem;
+    filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.2));
+}
+
+/* ===========================
+   LIVE DASHBOARD
+   =========================== */
+.live-dashboard {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.live-dashboard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+}
+
+.live-dashboard .section-title,
+.live-dashboard .section-subtitle {
+    color: white;
+    background: white;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.dashboard-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    padding: 2rem;
+    border-radius: 20px;
+    text-align: center;
+    transition: all 0.4s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.dashboard-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.dashboard-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-label {
+    font-size: 1rem;
+    opacity: 0.9;
+    font-weight: 600;
+}
+
+.live-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.375rem 0.875rem;
+    border-radius: 30px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    margin-top: 1rem;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* ===========================
+   PAYOUT METHODS
+   =========================== */
+.payout-methods {
+    background: var(--bg-secondary);
+}
+
+.payout-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.payout-card {
+    background: var(--bg);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    text-align: center;
+    transition: all 0.4s ease;
+    position: relative;
+}
+
+.payout-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
+    border-color: var(--primary);
+}
+
+.popular-badge {
+    position: absolute;
+    top: -12px;
+    right: 1rem;
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: white;
+    padding: 0.375rem 0.875rem;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+.payout-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.2));
+}
+
+.payout-card h3 {
+    font-size: 1.375rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+}
+
+.payout-min {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+/* ===========================
+   FAQ SECTION
+   =========================== */
+.faq {
+    background: var(--bg);
+}
+
+.faq-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.faq-item {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
-.mobile-overlay.active {
-    opacity: 1;
-    visibility: visible;
+.faq-item.active {
+    border-color: var(--primary);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
 }
 
-/* ─────────────  Hero  ───────────── */
-.hero{
-    min-height:100vh;position:relative;overflow:hidden;
-    background:linear-gradient(135deg,var(--bg-light),var(--bg));
-    display:flex;align-items:center;padding:6rem 2rem 2rem
-}
-.hero-container{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
-.hero h1{
-    font-size:clamp(2.5rem,5vw,3.5rem);font-weight:800;margin-bottom:1.5rem;
-    background:linear-gradient(135deg,var(--success),var(--secondary));
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
-}
-.hero p{font-size:1.125rem;color:var(--text-light);margin-bottom:2rem}
-.cta{
-    display:inline-block;padding:1rem 2rem;
-    background:linear-gradient(135deg,var(--success),var(--secondary));color:#fff;
-    text-decoration:none;border-radius:8px;font-weight:600;
-    box-shadow:0 10px 15px rgba(16,185,129,.3);transition:all .2s ease;
-    margin-right:1rem
-}
-.cta:hover{transform:translateY(-2px)}
-.cta.secondary{
-    background:linear-gradient(135deg,var(--primary),var(--accent));
-    box-shadow:0 10px 15px rgba(37,99,235,.3)
-}
-.hero img{width:100%;border-radius:12px;box-shadow:0 20px 25px rgba(0,0,0,.1)}
-
-/* Stats Bar */
-.stats-bar{
-    position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
-    background:var(--card-bg);padding:1rem 2rem;border-radius:50px;
-    box-shadow:0 10px 15px rgba(0,0,0,.1);border:1px solid var(--border);
-    display:flex;gap:2rem;align-items:center
-}
-.stat{text-align:center}
-.stat-number{font-size:1.5rem;font-weight:800;color:var(--success)}
-.stat-label{font-size:.875rem;color:var(--text-muted)}
-
-/* ─────────────  How It Works  ───────────── */
-.how-it-works{padding:6rem 2rem;background:var(--bg)}
-.container{max-width:1200px;margin:0 auto}
-.section-title{
-    text-align:center;font-size:2.5rem;font-weight:800;margin-bottom:1rem;
-    background:linear-gradient(135deg,var(--text),var(--primary));
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
-}
-.section-subtitle{text-align:center;font-size:1.125rem;color:var(--text-light);margin-bottom:4rem}
-.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem}
-.step-card{
-    background:var(--card-bg);padding:2rem;border-radius:12px;border:1px solid var(--border);
-    transition:all .3s ease;position:relative;text-align:center
-}
-.step-card:hover{transform:translateY(-4px);box-shadow:0 20px 25px rgba(0,0,0,.1);border-color:var(--success)}
-.step-number{
-    position:absolute;top:-15px;left:50%;transform:translateX(-50%);
-    width:40px;height:40px;background:linear-gradient(135deg,var(--success),var(--secondary));
-    border-radius:50%;display:flex;align-items:center;justify-content:center;
-    font-size:1.25rem;font-weight:800;color:#fff
-}
-.step-icon{
-    width:60px;height:60px;background:linear-gradient(135deg,var(--success),var(--secondary));
-    border-radius:12px;display:flex;align-items:center;justify-content:center;
-    font-size:2rem;color:#fff;margin:1rem auto 1.5rem
-}
-.step-card h3{font-size:1.25rem;font-weight:700;margin-bottom:1rem;color:var(--text)}
-.step-card p{color:var(--text-light);margin-bottom:1rem}
-.step-reward{
-    background:linear-gradient(135deg,var(--success),var(--secondary));
-    color:#fff;padding:.5rem 1rem;border-radius:20px;font-weight:600;
-    display:inline-block;font-size:.875rem
+.faq-question {
+    width: 100%;
+    padding: 1.5rem;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
 }
 
-/* ─────────────  Earning Methods  ───────────── */
-.earning-methods{padding:6rem 2rem;background:var(--bg-light)}
-.methods-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:2rem}
-.method-card{
-    background:var(--card-bg);padding:2rem;border-radius:12px;border:1px solid var(--border);
-    transition:all .3s ease;position:relative;overflow:hidden
-}
-.method-card::before{
-    content:'';position:absolute;top:0;left:0;right:0;height:4px;
-    background:linear-gradient(135deg,var(--success),var(--secondary))
-}
-.method-card:hover{transform:translateY(-4px);box-shadow:0 20px 25px rgba(0,0,0,.1)}
-.method-icon{
-    width:60px;height:60px;background:linear-gradient(135deg,var(--success),var(--secondary));
-    border-radius:12px;display:flex;align-items:center;justify-content:center;
-    font-size:2rem;color:#fff;margin-bottom:1.5rem
-}
-.method-card h3{font-size:1.25rem;font-weight:700;margin-bottom:1rem;color:var(--text)}
-.method-card p{color:var(--text-light);margin-bottom:1.5rem}
-.earning-range{
-    display:flex;justify-content:space-between;align-items:center;
-    background:var(--bg-light);padding:1rem;border-radius:8px;margin-bottom:1rem
-}
-.earning-amount{font-size:1.5rem;font-weight:800;color:var(--success)}
-.earning-label{color:var(--text-muted);font-size:.875rem}
-.method-features{list-style:none}
-.method-features li{
-    padding:.5rem 0;color:var(--text-light);display:flex;align-items:center;gap:.75rem
-}
-.method-features li::before{content:'💰';font-size:1rem}
-
-/* ─────────────  Live Dashboard  ───────────── */
-.live-dashboard{
-    padding:6rem 2rem;background:var(--bg-dark);color:#fff;
-    position:relative;overflow:hidden
-}
-.live-dashboard::before{
-    content:'';position:absolute;top:0;left:0;right:0;bottom:0;
-    background:
-        radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(5, 150, 105, 0.1) 0%, transparent 50%);
-    pointer-events:none
-}
-.dashboard-grid{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;
-    position:relative;z-index:2
-}
-.dashboard-card{
-    background:rgba(255,255,255,.05);backdrop-filter:blur(20px);
-    border:1px solid rgba(255,255,255,.1);padding:2rem;border-radius:12px;
-    transition:all .3s ease;text-align:center
-}
-.dashboard-card:hover{transform:translateY(-4px);background:rgba(255,255,255,.08)}
-.dashboard-icon{
-    font-size:2.5rem;margin-bottom:1rem;display:block
-}
-.dashboard-value{
-    font-size:2rem;font-weight:800;margin-bottom:.5rem;
-    background:linear-gradient(135deg,var(--success),#fff);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
-}
-.dashboard-label{color:rgba(255,255,255,.7);font-size:.875rem}
-.live-indicator{
-    display:inline-flex;align-items:center;gap:.5rem;
-    background:rgba(16,185,129,.2);color:var(--success);
-    padding:.25rem .75rem;border-radius:20px;font-size:.75rem;font-weight:600;
-    margin-top:1rem
-}
-.live-dot{
-    width:6px;height:6px;background:var(--success);border-radius:50%;
-    animation:pulse 2s infinite
+.faq-question:hover {
+    background: var(--bg);
 }
 
-/* ─────────────  Payout Methods  ───────────── */
-.payout-methods{padding:6rem 2rem;background:var(--bg)}
-.payout-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem}
-.payout-card{
-    background:var(--card-bg);padding:2rem;border-radius:12px;border:1px solid var(--border);
-    transition:all .3s ease;text-align:center;position:relative
-}
-.payout-card:hover{transform:translateY(-4px);box-shadow:0 20px 25px rgba(0,0,0,.1);border-color:var(--success)}
-.payout-icon{font-size:3rem;margin-bottom:1rem;display:block}
-.payout-card h3{font-size:1.125rem;font-weight:700;margin-bottom:.5rem;color:var(--text)}
-.payout-min{color:var(--success);font-weight:600;font-size:.875rem}
-.popular-badge{
-    position:absolute;top:-10px;right:-10px;
-    background:linear-gradient(135deg,var(--warning),#f97316);
-    color:#fff;padding:.25rem .75rem;border-radius:20px;
-    font-size:.75rem;font-weight:600;transform:rotate(12deg)
+.faq-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+    color: var(--primary);
+    flex-shrink: 0;
 }
 
-/* ─────────────  FAQ Section  ───────────── */
-.faq{padding:6rem 2rem;background:var(--bg-light)}
-.faq-grid{display:grid;gap:1rem;max-width:800px;margin:0 auto}
-.faq-item{
-    background:var(--card-bg);border:1px solid var(--border);border-radius:8px;
-    overflow:hidden;transition:all .3s ease
-}
-.faq-question{
-    padding:1.5rem;background:none;border:none;width:100%;text-align:left;
-    font-size:1.125rem;font-weight:600;color:var(--text);
-    cursor:pointer;display:flex;justify-content:space-between;align-items:center;
-    transition:all .3s ease
-}
-.faq-question:hover{background:var(--bg-light)}
-.faq-icon{
-    font-size:1.25rem;transition:transform .3s ease;color:var(--success)
-}
-.faq-item.active .faq-icon{transform:rotate(45deg)}
-.faq-answer{
-    max-height:0;overflow:hidden;transition:max-height .3s ease;
-    padding:0 1.5rem;color:var(--text-light)
-}
-.faq-item.active .faq-answer{max-height:300px;padding:0 1.5rem 1.5rem}
-
-/* ─────────────  CTA Section  ───────────── */
-.final-cta{
-    padding:6rem 2rem;background:linear-gradient(135deg,var(--success),var(--secondary));
-    color:#fff;text-align:center;position:relative;overflow:hidden
-}
-.final-cta::before{
-    content:'';position:absolute;top:0;left:0;right:0;bottom:0;
-    background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-    opacity:.5
-}
-.final-cta h2{
-    font-size:2.5rem;font-weight:800;margin-bottom:1rem;position:relative;z-index:2
-}
-.final-cta p{
-    font-size:1.25rem;margin-bottom:2rem;opacity:.9;position:relative;z-index:2
-}
-.cta-buttons{
-    display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative;z-index:2
-}
-.cta-white{
-    background:#fff;color:var(--success);
-    box-shadow:0 10px 15px rgba(0,0,0,.2)
+.faq-item.active .faq-icon {
+    transform: rotate(45deg);
 }
 
-/* ─────────────  Footer  ───────────── */
-.footer{padding:4rem 2rem 2rem;background:var(--bg-dark);color:#fff}
-.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:3rem;margin-bottom:3rem}
-.footer h3{font-size:1.125rem;font-weight:600;margin-bottom:1rem}
-.footer ul{list-style:none}
-.footer li{margin:.5rem 0}
-.footer a{color:#94a3b8;text-decoration:none;font-size:.9rem}
-.footer a:hover{color:#fff}
-.footer-bottom{
-    padding-top:2rem;border-top:1px solid #334155;
-    display:flex;justify-content:space-between;align-items:center
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0 1.5rem;
 }
-.social-links{display:flex;gap:1rem}
-.social-links a{
-    width:36px;height:36px;background:#334155;border-radius:6px;
-    display:flex;align-items:center;justify-content:center;text-decoration:none
-}
-.social-links a:hover{background:var(--success)}
 
-/* Mobile Bottom Navigation */
+.faq-item.active .faq-answer {
+    max-height: 500px;
+    padding: 0 1.5rem 1.5rem;
+}
+
+.faq-answer p {
+    color: var(--text-light);
+    line-height: 1.8;
+    font-size: 1rem;
+}
+
+/* ===========================
+   FINAL CTA
+   =========================== */
+.final-cta {
+    background: var(--gradient);
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.final-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+}
+
+.final-cta-content {
+    position: relative;
+    z-index: 2;
+}
+
+.final-cta h2 {
+    font-size: 2.25rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.final-cta p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+.cta-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.cta-white {
+    background: white;
+    color: var(--primary);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.cta-white:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ===========================
+   FOOTER
+   =========================== */
+.footer {
+    padding: 3rem 1.5rem 2rem;
+    background: #1a1f2e;
+    color: #f1f5f9;
+}
+
+body.dark .footer {
+    background: #000000;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.footer h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.footer ul {
+    list-style: none;
+}
+
+.footer li {
+    margin: 0.5rem 0;
+}
+
+.footer a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: white;
+}
+
+.footer-bottom {
+    padding-top: 2rem;
+    border-top: 1px solid #334155;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.footer-bottom p {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-links a {
+    width: 44px;
+    height: 44px;
+    background: #334155;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+    background: var(--primary);
+    transform: translateY(-4px);
+}
+
+/* ===========================
+   MOBILE BOTTOM NAV
+   =========================== */
 .mobile-nav {
-    display: none;
+    display: block;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -391,7 +1058,7 @@ nav>div{max-width:1200px;margin:0 auto;display:flex;justify-content:space-betwee
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid var(--border);
-    z-index: 100;
+    z-index: 999;
     padding: 0.625rem 0.875rem;
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
 }
@@ -415,145 +1082,311 @@ nav>div{max-width:1200px;margin:0 auto;display:flex;justify-content:space-betwee
     color: var(--text-light);
     text-decoration: none;
     font-size: 0.75rem;
-    font-weight: 500;
-    border-radius: 8px;
+    font-weight: 600;
+    border-radius: 10px;
     transition: all 0.3s ease;
 }
 
-.mobile-item:active { transform: scale(0.95); }
-.mobile-item.active { color: var(--primary); background: rgba(99, 102, 241, 0.1); }
-.mobile-item i { font-size: 1.375rem; }
-
-/* ─────────────  Animations  ───────────── */
-@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(16,185,129,.3)}50%{box-shadow:0 0 30px rgba(16,185,129,.6)}}
-
-.floating{animation:float 3s ease-in-out infinite}
-.glowing{animation:glow 2s ease-in-out infinite}
-
-/* ─────────────  Responsive  ───────────── */
-@media(max-width:768px){
-    .nav-links{display:none}
-    .mobile-menu-toggle{display:block}
-    .hero{padding-bottom:80px}
-    .hero-container{grid-template-columns:1fr;gap:2rem}
-    .steps-grid,.methods-grid,.payout-grid{grid-template-columns:1fr}
-    .dashboard-grid{grid-template-columns:repeat(2,1fr)}
-    .footer-grid{grid-template-columns:repeat(2,1fr);gap:2rem}
-    .footer-bottom{flex-direction:column;gap:1rem;text-align:center}
-    .cta-buttons{flex-direction:column;align-items:center}
-    .stats-bar{flex-direction:column;gap:1rem;padding:1rem;bottom:80px}
-    .mobile-nav{display:block}
-    body{padding-bottom:68px}
-
-    /* Mobile ordering */
-    .hero-container > div:first-child{order:2}
-    .hero-container > div:last-child{order:1}
+.mobile-item:active {
+    transform: scale(0.95);
 }
 
-@media(max-width:480px){
-    .footer-grid{grid-template-columns:1fr}
-    .dashboard-grid{grid-template-columns:1fr}
+.mobile-item.active {
+    color: var(--primary);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.mobile-item i {
+    font-size: 1.375rem;
+}
+
+/* ===========================
+   RESPONSIVE - TABLET
+   =========================== */
+@media (min-width: 640px) {
+    .section { padding: 5rem 2rem; }
+    .section-title { font-size: 2.5rem; }
+    
+    .hero h1 { font-size: 2.75rem; }
+    
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    
+    .steps-grid,
+    .methods-grid,
+    .payout-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .hero-buttons {
+        flex-direction: row;
+    }
+    
+    .cta-buttons {
+        flex-direction: row;
+        max-width: 600px;
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ===========================
+   RESPONSIVE - DESKTOP
+   =========================== */
+@media (min-width: 1024px) {
+    .section { padding: 6rem 2rem; }
+    .section-title { font-size: 3rem; }
+    
+    .nav-menu { display: flex; }
+    .mobile-menu-btn { display: none; }
+    .mobile-nav { display: none; }
+    
+    .hero {
+        padding-top: 8rem;
+    }
+    
+    .hero-content {
+        flex-direction: row;
+        align-items: center;
+        gap: 4rem;
+    }
+    
+    .hero-text {
+        flex: 1;
+        text-align: left;
+    }
+    
+    .hero-image-wrapper {
+        flex: 1;
+    }
+    
+    .hero h1 { font-size: 3.5rem; }
+    .hero p { font-size: 1.25rem; }
+    
+    .hero-buttons {
+        justify-content: flex-start;
+    }
+    
+    .stats-bar {
+        grid-template-columns: repeat(4, 1fr);
+        padding: 2rem;
+    }
+    
+    .steps-grid,
+    .payout-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    
+    .methods-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .footer-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    body {
+        padding-bottom: 0;
+    }
+}
+
+/* ===========================
+   RESPONSIVE - SMALL MOBILE
+   =========================== */
+@media (max-width: 480px) {
+    .section { padding: 3rem 1rem; }
+    .section-title { font-size: 1.75rem; }
+    .section-subtitle { font-size: 1rem; }
+    
+    .hero h1 { font-size: 2rem; }
+    .hero p { font-size: 1rem; }
+    .hero-emoji { font-size: 3rem; }
+    
     .mobile-items { gap: 0.25rem; }
-    .mobile-item { font-size: 0.65rem; gap: 0.15rem; padding: 0.25rem; }
+    .mobile-item {
+        font-size: 0.65rem;
+        gap: 0.15rem;
+        padding: 0.25rem;
+    }
     .mobile-item i { font-size: 1.2rem; }
+    
+    .stat-number { font-size: 1.5rem; }
+    .dashboard-value { font-size: 2rem; }
+}
+
+/* ===========================
+   UTILITIES & ANIMATIONS
+   =========================== */
+body {
+    padding-bottom: 68px;
+}
+
+@media (min-width: 1024px) {
+    body { padding-bottom: 0; }
+}
+
+.emoji-animate {
+    display: inline-block;
 }
 </style>
 </head>
 <body>
+    <!-- Navigation -->
     <nav>
-        <div>
-            <a href="/index.html" class="logo">SEOTIZE</a>
-            <ul class="nav-links">
+        <div class="nav-container">
+            <a href="/index.html" class="logo">
+                <span class="logo-icon">🎯</span>
+                <span>SEOTIZE</span>
+            </a>
+            
+            <ul class="nav-menu">
                 <li><a href="/index.html">Main Website</a></li>
                 <li><a href="#how-it-works">How It Works</a></li>
                 <li><a href="#earning">Earning</a></li>
                 <li><a href="#payouts">Payouts</a></li>
                 <li><a href="#faq">FAQ</a></li>
             </ul>
+            
             <div class="nav-actions">
-                <a href="login.html" class="login-btn">Partner Login</a>
-                <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+                <a href="login.html" class="nav-btn">
+                    <span>Partner Login</span>
+                    <i class="ri-arrow-right-line"></i>
+                </a>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
         </div>
     </nav>
 
+    <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
-        <div class="mobile-menu-header">
-            <span class="logo">SEOTIZE</span>
-            <button class="mobile-menu-close" onclick="toggleMobileMenu()">✕</button>
-        </div>
         <ul class="mobile-menu-links">
-            <li><a href="/index.html" onclick="toggleMobileMenu()">Main Website</a></li>
-            <li><a href="#how-it-works" onclick="toggleMobileMenu()">How It Works</a></li>
-            <li><a href="#earning" onclick="toggleMobileMenu()">Earning</a></li>
-            <li><a href="#payouts" onclick="toggleMobileMenu()">Payouts</a></li>
-            <li><a href="#faq" onclick="toggleMobileMenu()">FAQ</a></li>
-            <li><a href="login.html" onclick="toggleMobileMenu()">Partner Login</a></li>
+            <li><a href="/index.html" onclick="toggleMobileMenu()">
+                <i class="ri-home-5-line"></i>
+                <span>Main Website</span>
+            </a></li>
+            <li><a href="#how-it-works" onclick="toggleMobileMenu()">
+                <i class="ri-information-line"></i>
+                <span>How It Works</span>
+            </a></li>
+            <li><a href="#earning" onclick="toggleMobileMenu()">
+                <i class="ri-money-dollar-circle-line"></i>
+                <span>Earning Methods</span>
+            </a></li>
+            <li><a href="#payouts" onclick="toggleMobileMenu()">
+                <i class="ri-wallet-3-line"></i>
+                <span>Payouts</span>
+            </a></li>
+            <li><a href="#faq" onclick="toggleMobileMenu()">
+                <i class="ri-question-line"></i>
+                <span>FAQ</span>
+            </a></li>
+            <li><a href="login.html" onclick="toggleMobileMenu()">
+                <i class="ri-login-box-line"></i>
+                <span>Partner Login</span>
+            </a></li>
         </ul>
     </div>
-    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileMenu()"></div>
 
+    <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-container">
-            <div>
-                <h1>💰 Earn Money with SEOTIZE Partners</h1>
-                <p>Join thousands of users earning $5-50+ daily by completing simple SEO tasks, searching keywords, and helping businesses grow. No experience required!</p>
-                <a href="login.html" class="cta">Start Earning Now</a>
-                <a href="#how-it-works" class="cta secondary">Learn How</a>
-            </div>
-            <div>
-                <img src="https://media.giphy.com/media/l0MYunAI4j10uWbFm/giphy.gif" alt="Earning Money Online" class="floating">
-            </div>
-        </div>
-
-        <div class="stats-bar">
-            <div class="stat">
-                <div class="stat-number" id="activeUsers">15,847</div>
-                <div class="stat-label">Active Partners</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number" id="totalEarned">$2.3M+</div>
-                <div class="stat-label">Total Earned</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number" id="avgDaily">$27</div>
-                <div class="stat-label">Avg Daily Earning</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">150+</div>
-                <div class="stat-label">Countries</div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="hero-emoji emoji-animate">💰</div>
+                    <h1>Earn Money with SEOTIZE Partners</h1>
+                    <p>Join thousands of users earning $5-50+ daily by completing simple SEO tasks, searching keywords, and helping businesses grow. No experience required!</p>
+                    <div class="hero-buttons">
+                        <a href="login.html" class="cta">
+                            <span>Start Earning Now</span>
+                            <i class="ri-arrow-right-line"></i>
+                        </a>
+                        <a href="#how-it-works" class="cta secondary">
+                            <span>Learn How</span>
+                            <i class="ri-play-circle-line"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="stats-bar">
+                        <div class="stat">
+                            <span class="stat-emoji emoji-animate">👥</span>
+                            <div class="stat-number" id="activeUsers">15,847</div>
+                            <div class="stat-label">Active Partners</div>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-emoji emoji-animate">💵</span>
+                            <div class="stat-number" id="totalEarned">$2.3M+</div>
+                            <div class="stat-label">Total Earned</div>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-emoji emoji-animate">📊</span>
+                            <div class="stat-number" id="avgDaily">$27</div>
+                            <div class="stat-label">Avg Daily Earning</div>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-emoji emoji-animate">🌍</span>
+                            <div class="stat-number">150+</div>
+                            <div class="stat-label">Countries</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hero-image-wrapper">
+                    <img src="https://media.giphy.com/media/l0MYunAI4j10uWbFm/giphy.gif" alt="Earning Money Online" class="hero-image">
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="how-it-works" class="how-it-works">
+    <!-- How It Works -->
+    <section id="how-it-works" class="section how-it-works">
         <div class="container">
             <h2 class="section-title">How It Works</h2>
             <p class="section-subtitle">Start earning in 3 simple steps</p>
-
+            
             <div class="steps-grid">
                 <div class="step-card">
                     <div class="step-number">1</div>
-                    <div class="step-icon">📝</div>
+                    <div class="step-icon emoji-animate">📝</div>
                     <h3>Sign Up & Get Verified</h3>
                     <p>Create your free account, complete quick verification, and access your personal dashboard with available tasks.</p>
                     <div class="step-reward">Get $2 Welcome Bonus</div>
                 </div>
-
+                
                 <div class="step-card">
                     <div class="step-number">2</div>
-                    <div class="step-icon">🔍</div>
+                    <div class="step-icon emoji-animate">🔍</div>
                     <h3>Complete SEO Tasks</h3>
                     <p>Search for keywords on Google, visit websites, engage with content, and help improve real business rankings.</p>
                     <div class="step-reward">Earn $0.10 - $2.50 per task</div>
                 </div>
-
+                
                 <div class="step-card">
                     <div class="step-number">3</div>
-                    <div class="step-icon">💳</div>
+                    <div class="step-icon emoji-animate">💳</div>
                     <h3>Get Paid Instantly</h3>
                     <p>Withdraw your earnings through USDT (BEP20). Fast payouts with no minimum payout required!</p>
                     <div class="step-reward">Instant payouts available</div>
@@ -562,22 +1395,23 @@ nav>div{max-width:1200px;margin:0 auto;display:flex;justify-content:space-betwee
         </div>
     </section>
 
-    <section id="earning" class="earning-methods">
+    <!-- Earning Methods -->
+    <section id="earning" class="section earning-methods">
         <div class="container">
             <h2 class="section-title">Multiple Ways to Earn</h2>
             <p class="section-subtitle">Choose tasks that fit your schedule and skills</p>
-
+            
             <div class="methods-grid">
                 <div class="method-card">
-                    <div class="method-icon">🔍</div>
+                    <div class="method-icon emoji-animate">🔍</div>
                     <h3>Keyword Search Tasks</h3>
                     <p>Search for specific keywords on Google and interact with target websites naturally.</p>
                     <div class="earning-range">
-                        <div>
+                        <div class="earning-box">
                             <div class="earning-amount">$0.10-$0.50</div>
                             <div class="earning-label">per search</div>
                         </div>
-                        <div>
+                        <div class="earning-box">
                             <div class="earning-amount">5-10 min</div>
                             <div class="earning-label">per task</div>
                         </div>
@@ -589,17 +1423,17 @@ nav>div{max-width:1200px;margin:0 auto;display:flex;justify-content:space-betwee
                         <li>Available 24/7</li>
                     </ul>
                 </div>
-
+                
                 <div class="method-card">
-                    <div class="method-icon">👥</div>
+                    <div class="method-icon emoji-animate">👥</div>
                     <h3>User Engagement Tasks</h3>
                     <p>Spend time on websites, read content, and create authentic user engagement signals.</p>
                     <div class="earning-range">
-                        <div>
+                        <div class="earning-box">
                             <div class="earning-amount">$0.25-$1.00</div>
                             <div class="earning-label">per engagement</div>
                         </div>
-                        <div>
+                        <div class="earning-box">
                             <div class="earning-amount">10-15 min</div>
                             <div class="earning-label">per task</div>
                         </div>
@@ -611,318 +1445,331 @@ nav>div{max-width:1200px;margin:0 auto;display:flex;justify-content:space-betwee
                         <li>Higher paying tasks</li>
                     </ul>
                 </div>
-
+                
                 <div class="method-card">
-                    <div class="method-icon">📊</div>
+                    <div class="method-icon emoji-animate">📊</div>
                     <h3>Data Collection Tasks</h3>
                     <p>Help collect valuable SEO data by reporting search results and website information.</p>
                     <div class="earning-range">
-                        <div>
+                        <div class="earning-box">
                             <div class="earning-amount">$0.50-$2.50</div>
                             <div class="earning-label">per task</div>
-                            </div>
-                       <div>
-                           <div class="earning-amount">15-30 min</div>
-                           <div class="earning-label">per task</div>
-                       </div>
-                   </div>
-                   <ul class="method-features">
-                       <li>Report search rankings</li>
-                       <li>Screenshot verification</li>
-                       <li>Detailed task instructions</li>
-                       <li>Premium task rewards</li>
-                   </ul>
-               </div>
+                        </div>
+                        <div class="earning-box">
+                            <div class="earning-amount">15-30 min</div>
+                            <div class="earning-label">per task</div>
+                        </div>
+                    </div>
+                    <ul class="method-features">
+                        <li>Report search rankings</li>
+                        <li>Screenshot verification</li>
+                        <li>Detailed task instructions</li>
+                        <li>Premium task rewards</li>
+                    </ul>
+                </div>
+                
+                <div class="method-card">
+                    <div class="method-icon emoji-animate">🎯</div>
+                    <h3>Location-Based Tasks</h3>
+                    <p>Complete tasks specific to your geographic location for local SEO campaigns.</p>
+                    <div class="earning-range">
+                        <div class="earning-box">
+                            <div class="earning-amount">$1.00-$5.00</div>
+                            <div class="earning-label">per task</div>
+                        </div>
+                        <div class="earning-box">
+                            <div class="earning-amount">20-45 min</div>
+                            <div class="earning-label">per task</div>
+                        </div>
+                    </div>
+                    <ul class="method-features">
+                        <li>Local business searches</li>
+                        <li>Regional content tasks</li>
+                        <li>Higher value rewards</li>
+                        <li>Location verification bonus</li>
+                    </ul>
+                </div>
+                
+                <div class="method-card">
+                    <div class="method-icon emoji-animate">⭐</div>
+                    <h3>Bonus & Referral Program</h3>
+                    <p>Earn extra through daily bonuses, streaks, achievements, and referring friends.</p>
+                    <div class="earning-range">
+                        <div class="earning-box">
+                            <div class="earning-amount">$2-$20</div>
+                            <div class="earning-label">per referral</div>
+                        </div>
+                        <div class="earning-box">
+                            <div class="earning-amount">$1-$10</div>
+                            <div class="earning-label">daily bonus</div>
+                        </div>
+                    </div>
+                    <ul class="method-features">
+                        <li>Daily login bonuses</li>
+                        <li>Task completion streaks</li>
+                        <li>Friend referral rewards</li>
+                        <li>Achievement unlocks</li>
+                    </ul>
+                </div>
+                
+                <div class="method-card">
+                    <div class="method-icon emoji-animate">🚀</div>
+                    <h3>Premium Partner Program</h3>
+                    <p>Unlock higher-paying tasks and exclusive opportunities as a verified premium partner.</p>
+                    <div class="earning-range">
+                        <div class="earning-box">
+                            <div class="earning-amount">$5-$50</div>
+                            <div class="earning-label">per task</div>
+                        </div>
+                        <div class="earning-box">
+                            <div class="earning-amount">VIP</div>
+                            <div class="earning-label">access</div>
+                        </div>
+                    </div>
+                    <ul class="method-features">
+                        <li>Exclusive high-value tasks</li>
+                        <li>Priority task assignment</li>
+                        <li>Direct client projects</li>
+                        <li>Premium support access</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
 
-               <div class="method-card">
-                   <div class="method-icon">🎯</div>
-                   <h3>Location-Based Tasks</h3>
-                   <p>Complete tasks specific to your geographic location for local SEO campaigns.</p>
-                   <div class="earning-range">
-                       <div>
-                           <div class="earning-amount">$1.00-$5.00</div>
-                           <div class="earning-label">per task</div>
-                       </div>
-                       <div>
-                           <div class="earning-amount">20-45 min</div>
-                           <div class="earning-label">per task</div>
-                       </div>
-                   </div>
-                   <ul class="method-features">
-                       <li>Local business searches</li>
-                       <li>Regional content tasks</li>
-                       <li>Higher value rewards</li>
-                       <li>Location verification bonus</li>
-                   </ul>
-               </div>
+    <!-- Live Dashboard -->
+    <section class="section live-dashboard">
+        <div class="container">
+            <h2 class="section-title">Live Partner Dashboard</h2>
+            <p class="section-subtitle">Real-time stats from our partner network</p>
+            
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="dashboard-icon emoji-animate">🏃‍♂️</div>
+                    <div class="dashboard-value" id="liveTasks">1,247</div>
+                    <div class="dashboard-label">Active Tasks</div>
+                    <div class="live-indicator">
+                        <div class="live-dot"></div>
+                        Live Updates
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="dashboard-icon emoji-animate">💰</div>
+                    <div class="dashboard-value" id="liveEarnings">$18,432</div>
+                    <div class="dashboard-label">Earned Today</div>
+                    <div class="live-indicator">
+                        <div class="live-dot"></div>
+                        Updating Live
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="dashboard-icon emoji-animate">👥</div>
+                    <div class="dashboard-value" id="livePartners">847</div>
+                    <div class="dashboard-label">Online Now</div>
+                    <div class="live-indicator">
+                        <div class="live-dot"></div>
+                        Real-time
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="dashboard-icon emoji-animate">🎯</div>
+                    <div class="dashboard-value" id="liveCompletion">94.7%</div>
+                    <div class="dashboard-label">Success Rate</div>
+                    <div class="live-indicator">
+                        <div class="live-dot"></div>
+                        Live Stats
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-               <div class="method-card">
-                   <div class="method-icon">⭐</div>
-                   <h3>Bonus & Referral Program</h3>
-                   <p>Earn extra through daily bonuses, streaks, achievements, and referring friends.</p>
-                   <div class="earning-range">
-                       <div>
-                           <div class="earning-amount">$2-$20</div>
-                           <div class="earning-label">per referral</div>
-                       </div>
-                       <div>
-                           <div class="earning-amount">$1-$10</div>
-                           <div class="earning-label">daily bonus</div>
-                       </div>
-                   </div>
-                   <ul class="method-features">
-                       <li>Daily login bonuses</li>
-                       <li>Task completion streaks</li>
-                       <li>Friend referral rewards</li>
-                       <li>Achievement unlocks</li>
-                   </ul>
-               </div>
+    <!-- Payout Methods -->
+    <section id="payouts" class="section payout-methods">
+        <div class="container">
+            <h2 class="section-title">Flexible Payout Options</h2>
+            <p class="section-subtitle">Fast USDT (BEP20) withdrawals</p>
+            
+            <div class="payout-grid">
+                <div class="payout-card">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="payout-icon emoji-animate">₮</div>
+                    <h3>USDT (BEP20)</h3>
+                    <div class="payout-min">Min: $10.00</div>
+                </div>
+                
+                <div class="payout-card">
+                    <div class="payout-icon emoji-animate">⚡</div>
+                    <h3>Fast Processing</h3>
+                    <div class="payout-min">24-48 hours</div>
+                </div>
+                
+                <div class="payout-card">
+                    <div class="payout-icon emoji-animate">🔒</div>
+                    <h3>Secure Payments</h3>
+                    <div class="payout-min">100% Safe</div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-               <div class="method-card">
-                   <div class="method-icon">🚀</div>
-                   <h3>Premium Partner Program</h3>
-                   <p>Unlock higher-paying tasks and exclusive opportunities as a verified premium partner.</p>
-                   <div class="earning-range">
-                       <div>
-                           <div class="earning-amount">$5-$50</div>
-                           <div class="earning-label">per task</div>
-                       </div>
-                       <div>
-                           <div class="earning-amount">VIP</div>
-                           <div class="earning-label">access</div>
-                       </div>
-                   </div>
-                   <ul class="method-features">
-                       <li>Exclusive high-value tasks</li>
-                       <li>Priority task assignment</li>
-                       <li>Direct client projects</li>
-                       <li>Premium support access</li>
-                   </ul>
-               </div>
-           </div>
-       </div>
-   </section>
+    <!-- FAQ -->
+    <section id="faq" class="section faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="section-subtitle">Everything you need to know about earning with SEOTIZE</p>
+            
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>How much can I really earn per day?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Earnings vary based on time invested and task availability. Beginners typically earn $5-15 daily, while active partners can earn $25-50+ per day. Premium partners often earn $100+ daily through exclusive high-value tasks.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>What exactly do I need to do?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Tasks include searching for keywords on Google, visiting specific websites, reading content, taking screenshots, and reporting search results. All tasks come with clear instructions and are designed to create natural user engagement.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>How fast can I get paid?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Payouts are processed via USDT (BEP20) and typically take 24-48 hours. The minimum withdrawal is $10. You can request payouts anytime once you have earnings in your account.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Do I need any special skills or experience?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>No special skills required! If you can use Google and browse websites, you can complete our tasks. We provide detailed instructions for every task, and our support team is available 24/7 to help.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Is this available in my country?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>SEOTIZE Partners is available in 150+ countries worldwide. We actually prefer partners from diverse locations as it helps our clients with global SEO campaigns. Location-specific tasks often pay higher rates.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>How do I become a Premium Partner?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Premium Partner status is earned through consistent high-quality task completion, maintaining good ratings, and completing advanced verification. Premium Partners get access to exclusive $5-50 tasks and direct client projects.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Are there any fees or costs to join?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Joining SEOTIZE Partners is completely free! We never charge registration fees, monthly fees, or any other costs. You only earn money - we make money when our clients succeed through your work.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-   <section class="live-dashboard">
-       <div class="container">
-           <h2 class="section-title" style="color: white;">Live Partner Dashboard</h2>
-           <p class="section-subtitle" style="color: rgba(255,255,255,0.8);">Real-time stats from our partner network</p>
+    <!-- Final CTA -->
+    <section class="section final-cta">
+        <div class="container">
+            <div class="final-cta-content">
+                <h2>Ready to Start Earning Today?</h2>
+                <p>Join thousands of partners already earning daily income with SEOTIZE. Get your $2 welcome bonus and start your first task within minutes!</p>
+                <div class="cta-buttons">
+                    <a href="login.html" class="cta cta-white">
+                        <span>Join Partners Now</span>
+                        <i class="ri-arrow-right-line"></i>
+                    </a>
+                    <a href="#how-it-works" class="cta">
+                        <span>Learn More</span>
+                        <i class="ri-play-circle-line"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-           <div class="dashboard-grid">
-               <div class="dashboard-card">
-                   <div class="dashboard-icon">🏃‍♂️</div>
-                   <div class="dashboard-value" id="liveTasks">1,247</div>
-                   <div class="dashboard-label">Active Tasks</div>
-                   <div class="live-indicator">
-                       <div class="live-dot"></div>
-                       Live Updates
-                   </div>
-               </div>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h3>SEOTIZE Partners</h3>
+                    <ul>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#earning">Earning Methods</a></li>
+                        <li><a href="#payouts">Payout Options</a></li>
+                        <li><a href="login.html">Join Now</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="login.html">Help Center</a></li>
+                        <li><a href="login.html">Partner Guidelines</a></li>
+                        <li><a href="login.html">Task Instructions</a></li>
+                        <li><a href="login.html">Payment Help</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Platform</h3>
+                    <ul>
+                        <li><a href="/index.html">SEOTIZE Main</a></li>
+                        <li><a href="/index.html#features">Features</a></li>
+                        <li><a href="/index.html#pricing">Pricing</a></li>
+                        <li><a href="/blogs.html">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="/index.html">Terms of Service</a></li>
+                        <li><a href="/index.html">Privacy Policy</a></li>
+                        <li><a href="login.html">Payment Terms</a></li>
+                        <li><a href="login.html">Partner Agreement</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Seotize Partners. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Email">📧</a>
+                    <a href="#" aria-label="Twitter">🐦</a>
+                    <a href="#" aria-label="LinkedIn">💼</a>
+                    <a href="#" aria-label="Discord">📱</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-               <div class="dashboard-card">
-                   <div class="dashboard-icon">💰</div>
-                   <div class="dashboard-value" id="liveEarnings">$18,432</div>
-                   <div class="dashboard-label">Earned Today</div>
-                   <div class="live-indicator">
-                       <div class="live-dot"></div>
-                       Updating Live
-                   </div>
-               </div>
-
-               <div class="dashboard-card">
-                   <div class="dashboard-icon">👥</div>
-                   <div class="dashboard-value" id="livePartners">847</div>
-                   <div class="dashboard-label">Online Now</div>
-                   <div class="live-indicator">
-                       <div class="live-dot"></div>
-                       Real-time
-                   </div>
-               </div>
-
-               <div class="dashboard-card">
-                   <div class="dashboard-icon">🎯</div>
-                   <div class="dashboard-value" id="liveCompletion">94.7%</div>
-                   <div class="dashboard-label">Success Rate</div>
-                   <div class="live-indicator">
-                       <div class="live-dot"></div>
-                       Live Stats
-                   </div>
-               </div>
-           </div>
-       </div>
-   </section>
-
-   <section id="payouts" class="payout-methods">
-       <div class="container">
-           <h2 class="section-title">Flexible Payout Options</h2>
-           <p class="section-subtitle">Fast USDT (BEP20) withdrawals</p>
-
-           <div class="payout-grid">
-               <div class="payout-card">
-                   <div class="popular-badge">Most Popular</div>
-                   <div class="payout-icon">₮</div>
-                   <h3>USDT (BEP20)</h3>
-                   <div class="payout-min">Min: $10.00</div>
-               </div>
-
-               <div class="payout-card">
-                   <div class="payout-icon">⚡</div>
-                   <h3>Fast Processing</h3>
-                   <div class="payout-min">24-48 hours</div>
-               </div>
-
-               <div class="payout-card">
-                   <div class="payout-icon">🔒</div>
-                   <h3>Secure Payments</h3>
-                   <div class="payout-min">100% Safe</div>
-               </div>
-           </div>
-       </div>
-   </section>
-
-   <section id="faq" class="faq">
-       <div class="container">
-           <h2 class="section-title">Frequently Asked Questions</h2>
-           <p class="section-subtitle">Everything you need to know about earning with SEOTIZE</p>
-
-           <div class="faq-grid">
-               <div class="faq-item">
-                   <button class="faq-question" onclick="toggleFaq(this)">
-                       How much can I really earn per day?
-                       <span class="faq-icon">+</span>
-                   </button>
-                   <div class="faq-answer">
-                       <p>Earnings vary based on time invested and task availability. Beginners typically earn $5-15 daily, while active partners can earn $25-50+ per day. Premium partners often earn $100+ daily through exclusive high-value tasks.</p>
-                   </div>
-               </div>
-
-               <div class="faq-item">
-                   <button class="faq-question" onclick="toggleFaq(this)">
-                       What exactly do I need to do?
-                       <span class="faq-icon">+</span>
-                   </button>
-                   <div class="faq-answer">
-                       <p>Tasks include searching for keywords on Google, visiting specific websites, reading content, taking screenshots, and reporting search results. All tasks come with clear instructions and are designed to create natural user engagement.</p>
-                   </div>
-               </div>
-
-               <div class="faq-item">
-                   <button class="faq-question" onclick="toggleFaq(this)">
-                       How fast can I get paid?
-                       <span class="faq-icon">+</span>
-                   </button>
-                   <div class="faq-answer">
-                       <p>Payouts are processed via USDT (BEP20) and typically take 24-48 hours. The minimum withdrawal is $10. You can request payouts anytime once you have earnings in your account.</p>
-                   </div>
-               </div>
-
-               <div class="faq-item">
-                   <button class="faq-question" onclick="toggleFaq(this)">
-                       Do I need any special skills or experience?
-                       <span class="faq-icon">+</span>
-                   </button>
-                   <div class="faq-answer">
-                       <p>No special skills required! If you can use Google and browse websites, you can complete our tasks. We provide detailed instructions for every task, and our support team is available 24/7 to help.</p>
-                   </div>
-               </div>
-
-               <div class="faq-item">
-                   <button class="faq-question" onclick="toggleFaq(this)">
-                       Is this available in my country?
-                       <span class="faq-icon">+</span>
-                   </button>
-                   <div class="faq-answer">
-                       <p>SEOTIZE Partners is available in 150+ countries worldwide. We actually prefer partners from diverse locations as it helps our clients with global SEO campaigns. Location-specific tasks often pay higher rates.</p>
-                   </div>
-               </div>
-
-               <div class="faq-item">
-                   <button class="faq-question" onclick="toggleFaq(this)">
-                       How do I become a Premium Partner?
-                       <span class="faq-icon">+</span>
-                   </button>
-                   <div class="faq-answer">
-                       <p>Premium Partner status is earned through consistent high-quality task completion, maintaining good ratings, and completing advanced verification. Premium Partners get access to exclusive $5-50 tasks and direct client projects.</p>
-                   </div>
-               </div>
-
-               <div class="faq-item">
-                   <button class="faq-question" onclick="toggleFaq(this)">
-                       Are there any fees or costs to join?
-                       <span class="faq-icon">+</span>
-                   </button>
-                   <div class="faq-answer">
-                       <p>Joining SEOTIZE Partners is completely free! We never charge registration fees, monthly fees, or any other costs. You only earn money - we make money when our clients succeed through your work.</p>
-                   </div>
-               </div>
-           </div>
-       </div>
-   </section>
-
-   <section class="final-cta">
-       <div class="container">
-           <h2>Ready to Start Earning Today?</h2>
-           <p>Join thousands of partners already earning daily income with SEOTIZE. Get your $2 welcome bonus and start your first task within minutes!</p>
-           <div class="cta-buttons">
-               <a href="login.html" class="cta cta-white">Join Partners Now</a>
-               <a href="#how-it-works" class="cta">Learn More</a>
-           </div>
-       </div>
-   </section>
-
-   <footer class="footer">
-       <div class="container">
-           <div class="footer-grid">
-               <div>
-                   <h3>SEOTIZE Partners</h3>
-                   <ul>
-                       <li><a href="#how-it-works">How It Works</a></li>
-                       <li><a href="#earning">Earning Methods</a></li>
-                       <li><a href="#payouts">Payout Options</a></li>
-                       <li><a href="login.html">Join Now</a></li>
-                   </ul>
-               </div>
-               <div>
-                   <h3>Support</h3>
-                   <ul>
-                       <li><a href="login.html">Help Center</a></li>
-                       <li><a href="login.html">Partner Guidelines</a></li>
-                       <li><a href="login.html">Task Instructions</a></li>
-                       <li><a href="login.html">Payment Help</a></li>
-                   </ul>
-               </div>
-               <div>
-                   <h3>Platform</h3>
-                   <ul>
-                       <li><a href="/index.html">SEOTIZE Main</a></li>
-                       <li><a href="/index.html#features">Features</a></li>
-                       <li><a href="/index.html#pricing">Pricing</a></li>
-                       <li><a href="/blogs.html">Blog</a></li>
-                   </ul>
-               </div>
-               <div>
-                   <h3>Legal</h3>
-                   <ul>
-                       <li><a href="/index.html">Terms of Service</a></li>
-                       <li><a href="/index.html">Privacy Policy</a></li>
-                       <li><a href="login.html">Payment Terms</a></li>
-                       <li><a href="login.html">Partner Agreement</a></li>
-                   </ul>
-               </div>
-           </div>
-           <div class="footer-bottom">
-               <p>© 2024 Seotize Partners. All rights reserved.</p>
-               <div class="social-links">
-                   <a href="#" aria-label="Email">📧</a>
-                   <a href="#" aria-label="Twitter">🐦</a>
-                   <a href="#" aria-label="LinkedIn">💼</a>
-                   <a href="#" aria-label="Discord">📱</a>
-               </div>
-           </div>
-       </div>
-   </footer>
-
-    <!-- Mobile Navigation -->
+    <!-- Mobile Bottom Navigation -->
     <div class="mobile-nav">
         <div class="mobile-items">
             <a href="/index.html" class="mobile-item">
@@ -948,271 +1795,255 @@ nav>div{max-width:1200px;margin:0 auto;display:flex;justify-content:space-betwee
         </div>
     </div>
 
-<script>
-gsap.registerPlugin(ScrollTrigger, TextPlugin);
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
 
-// Animate live dashboard numbers
-function animateNumbers() {
-   // Active tasks counter
-   gsap.to("#liveTasks", {
-       textContent: () => Math.floor(Math.random() * 500) + 1000,
-       duration: 2,
-       ease: "none",
-       snap: { textContent: 1 },
-       stagger: 1
-   });
+        // Theme Toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
 
-   // Live earnings counter
-   gsap.to("#liveEarnings", {
-       textContent: () => "$" + (Math.floor(Math.random() * 5000) + 15000).toLocaleString(),
-       duration: 2,
-       ease: "none",
-       stagger: 1
-   });
-
-   // Online partners counter
-   gsap.to("#livePartners", {
-       textContent: () => Math.floor(Math.random() * 200) + 700,
-       duration: 2,
-       ease: "none",
-       snap: { textContent: 1 },
-       stagger: 1
-   });
-
-   // Success rate with variation
-   gsap.to("#liveCompletion", {
-       textContent: () => (Math.random() * 5 + 93).toFixed(1) + "%",
-       duration: 2,
-       ease: "none",
-       stagger: 1
-   });
-}
-
-// Animate hero stats
-function animateHeroStats() {
-   gsap.to("#activeUsers", {
-       textContent: () => (Math.floor(Math.random() * 1000) + 15000).toLocaleString(),
-       duration: 3,
-       ease: "none",
-       snap: { textContent: 1 }
-   });
-
-   gsap.to("#totalEarned", {
-       textContent: () => "$" + (Math.random() * 0.5 + 2.3).toFixed(1) + "M+",
-       duration: 3,
-       ease: "none"
-   });
-
-   gsap.to("#avgDaily", {
-       textContent: () => "$" + Math.floor(Math.random() * 10 + 25),
-       duration: 3,
-       ease: "none",
-       snap: { textContent: 1 }
-   });
-}
-
-// FAQ toggle functionality
-function toggleFaq(button) {
-   const faqItem = button.parentElement;
-   const isActive = faqItem.classList.contains('active');
-
-   // Close all FAQ items
-   document.querySelectorAll('.faq-item').forEach(item => {
-       item.classList.remove('active');
-   });
-
-   // Open clicked item if it wasn't active
-   if (!isActive) {
-       faqItem.classList.add('active');
-   }
-}
-
-// Mobile menu functionality
-function toggleMobileMenu() {
-   const menu = document.getElementById('mobileMenu');
-   const overlay = document.getElementById('mobileOverlay');
-   menu.classList.toggle('active');
-   overlay.classList.toggle('active');
-}
-
-// Theme toggle functionality
-function toggleTheme() {
-   document.body.classList.toggle('dark');
-   const toggle = document.querySelector('.theme-toggle');
-   const isDark = document.body.classList.contains('dark');
-   toggle.textContent = isDark ? '☀️' : '🌙';
-   localStorage.setItem('theme', isDark ? 'dark' : 'light');
-}
-
-// Load saved theme
-function loadTheme() {
-   const savedTheme = localStorage.getItem('theme');
-   if (savedTheme === 'dark') {
-       document.body.classList.add('dark');
-       document.querySelector('.theme-toggle').textContent = '☀️';
-   }
-}
-
-// Smooth scrolling for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-   anchor.addEventListener('click', function (e) {
-       e.preventDefault();
-       const target = document.querySelector(this.getAttribute('href'));
-       if (target) {
-           target.scrollIntoView({
-               behavior: 'smooth',
-               block: 'start'
-           });
-       }
-   });
-});
-
-// GSAP Animations
-function initAnimations() {
-   // Animate cards on scroll
-   gsap.utils.toArray('.step-card, .method-card, .payout-card').forEach((card, i) => {
-       gsap.from(card, {
-           opacity: 0,
-           y: 50,
-           duration: 0.8,
-           delay: i * 0.1,
-           ease: "power2.out",
-           scrollTrigger: {
-               trigger: card,
-               start: 'top 85%',
-               toggleActions: 'play none none reverse'
-           }
-       });
-   });
-
-   // Animate dashboard cards
-   gsap.utils.toArray('.dashboard-card').forEach((card, i) => {
-       gsap.from(card, {
-           opacity: 0,
-           scale: 0.8,
-           duration: 0.6,
-           delay: i * 0.1,
-           ease: "back.out(1.7)",
-           scrollTrigger: {
-               trigger: card,
-               start: 'top 85%'
-           }
-       });
-   });
-
-   // Animate FAQ items
-   gsap.utils.toArray('.faq-item').forEach((item, i) => {
-       gsap.from(item, {
-           opacity: 0,
-           x: -30,
-           duration: 0.6,
-           delay: i * 0.1,
-           scrollTrigger: {
-               trigger: item,
-               start: 'top 90%'
-           }
-       });
-   });
-
-   // Hero image floating animation
-   gsap.to('.floating', {
-       y: -20,
-       duration: 3,
-       ease: "power2.inOut",
-       yoyo: true,
-       repeat: -1
-   });
-
-   // Glowing effect for CTA buttons
-   gsap.utils.toArray('.cta').forEach(button => {
-       button.addEventListener('mouseenter', () => {
-           gsap.to(button, {
-               boxShadow: "0 15px 30px rgba(16,185,129,0.4)",
-               scale: 1.05,
-               duration: 0.3
-           });
-       });
-
-       button.addEventListener('mouseleave', () => {
-           gsap.to(button, {
-               boxShadow: "0 10px 15px rgba(16,185,129,0.3)",
-               scale: 1,
-               duration: 0.3
-           });
-       });
-   });
-}
-
-// Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-   loadTheme();
-   initAnimations();
-   animateHeroStats();
-
-   // Start live dashboard animations
-   animateNumbers();
-   setInterval(animateNumbers, 5000);
-
-   // Update hero stats periodically
-   setInterval(animateHeroStats, 10000);
-});
-
-// Navigation background on scroll
-let ticking = false;
-window.addEventListener('scroll', () => {
-   if (!ticking) {
-       requestAnimationFrame(() => {
-           const nav = document.querySelector('nav');
-           const scrolled = window.pageYOffset;
-           const opacity = Math.min(scrolled / 100, 1);
-           nav.style.backgroundColor = `rgba(${document.body.classList.contains('dark') ? '15, 23, 42' : '255, 255, 255'}, ${0.95 * opacity})`;
-           ticking = false;
-       });
-       ticking = true;
-   }
-});
-
-// Close mobile menu when clicking overlay
-document.getElementById('mobileOverlay').addEventListener('click', toggleMobileMenu);
-
-// Add some randomization to make the numbers feel more "live"
-setInterval(() => {
-   const liveElements = document.querySelectorAll('.live-indicator');
-   liveElements.forEach(element => {
-       gsap.to(element, {
-           opacity: 0.7,
-           duration: 0.5,
-           yoyo: true,
-           repeat: 1,
-           ease: "power2.inOut"
-       });
-   });
-}, 3000);
-
-// Update mobile nav active state on scroll
-const sections = ['how-it-works', 'earning', 'faq'];
-const mobileItems = document.querySelectorAll('.mobile-item');
-
-window.addEventListener('scroll', () => {
-    let current = 'how-it-works';
-    sections.forEach(sectionId => {
-        const section = document.getElementById(sectionId);
-        if (section) {
-            const sectionTop = section.offsetTop;
-            if (window.pageYOffset >= sectionTop - 200) {
-                current = sectionId;
+        // Load Theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                document.getElementById('themeIcon').textContent = '☀️';
             }
         }
-    });
-    
-    mobileItems.forEach(item => {
-        item.classList.remove('active');
-        const href = item.getAttribute('href');
-        if (href === `#${current}`) {
-            item.classList.add('active');
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const btn = document.querySelector('.mobile-menu-btn');
+            menu.classList.toggle('active');
+            btn.classList.toggle('active');
         }
-    });
-});
-</script>
+
+        // FAQ Toggle
+        function toggleFaq(button) {
+            const faqItem = button.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        }
+
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        const offset = 80;
+                        const targetPosition = target.offsetTop - offset;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                        // Close mobile menu if open
+                        if (document.getElementById('mobileMenu').classList.contains('active')) {
+                            toggleMobileMenu();
+                        }
+                    }
+                }
+            });
+        });
+
+        // Live Dashboard Animation
+        function animateLiveNumbers() {
+            // Active tasks
+            gsap.to("#liveTasks", {
+                textContent: () => Math.floor(Math.random() * 500) + 1000,
+                duration: 2,
+                ease: "none",
+                snap: { textContent: 1 }
+            });
+
+            // Live earnings
+            const earnings = Math.floor(Math.random() * 5000) + 15000;
+            gsap.to("#liveEarnings", {
+                textContent: "$" + earnings.toLocaleString(),
+                duration: 2,
+                ease: "none"
+            });
+
+            // Online partners
+            gsap.to("#livePartners", {
+                textContent: () => Math.floor(Math.random() * 200) + 700,
+                duration: 2,
+                ease: "none",
+                snap: { textContent: 1 }
+            });
+
+            // Success rate
+            gsap.to("#liveCompletion", {
+                textContent: () => (Math.random() * 5 + 93).toFixed(1) + "%",
+                duration: 2,
+                ease: "none"
+            });
+        }
+
+        // Hero Stats Animation
+        function animateHeroStats() {
+            gsap.to("#activeUsers", {
+                textContent: () => (Math.floor(Math.random() * 1000) + 15000).toLocaleString(),
+                duration: 3,
+                ease: "none",
+                snap: { textContent: 1 }
+            });
+
+            gsap.to("#totalEarned", {
+                textContent: () => "$" + (Math.random() * 0.5 + 2.3).toFixed(1) + "M+",
+                duration: 3,
+                ease: "none"
+            });
+
+            gsap.to("#avgDaily", {
+                textContent: () => "$" + Math.floor(Math.random() * 10 + 25),
+                duration: 3,
+                ease: "none",
+                snap: { textContent: 1 }
+            });
+        }
+
+        // GSAP Animations for Emojis
+        function initEmojiAnimations() {
+            const emojis = document.querySelectorAll('.emoji-animate');
+            
+            emojis.forEach((emoji, index) => {
+                // Floating animation
+                gsap.to(emoji, {
+                    y: -10,
+                    duration: 2 + (index * 0.2),
+                    ease: "power1.inOut",
+                    yoyo: true,
+                    repeat: -1
+                });
+                
+                // Rotation animation
+                gsap.to(emoji, {
+                    rotation: index % 2 === 0 ? 10 : -10,
+                    duration: 3 + (index * 0.3),
+                    ease: "power1.inOut",
+                    yoyo: true,
+                    repeat: -1
+                });
+                
+                // Scale pulse on scroll
+                gsap.from(emoji, {
+                    scale: 0.5,
+                    opacity: 0,
+                    duration: 0.8,
+                    ease: "back.out(1.7)",
+                    scrollTrigger: {
+                        trigger: emoji,
+                        start: 'top 85%',
+                        toggleActions: 'play none none reverse'
+                    }
+                });
+            });
+        }
+
+        // Card Animations
+        function initCardAnimations() {
+            gsap.utils.toArray('.step-card, .method-card, .payout-card, .dashboard-card').forEach((card, i) => {
+                gsap.from(card, {
+                    opacity: 0,
+                    y: 60,
+                    duration: 0.8,
+                    delay: i * 0.1,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 85%',
+                        toggleActions: 'play none none reverse'
+                    }
+                });
+            });
+            
+            // FAQ Items
+            gsap.utils.toArray('.faq-item').forEach((item, i) => {
+                gsap.from(item, {
+                    opacity: 0,
+                    x: -40,
+                    duration: 0.6,
+                    delay: i * 0.1,
+                    scrollTrigger: {
+                        trigger: item,
+                        start: 'top 90%'
+                    }
+                });
+            });
+        }
+
+        // Update Mobile Nav Active State
+        const sections = ['how-it-works', 'earning', 'faq'];
+        const mobileItems = document.querySelectorAll('.mobile-item');
+
+        window.addEventListener('scroll', () => {
+            let current = 'how-it-works';
+            
+            sections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    const sectionTop = section.offsetTop;
+                    if (window.pageYOffset >= sectionTop - 200) {
+                        current = sectionId;
+                    }
+                }
+            });
+            
+            mobileItems.forEach(item => {
+                item.classList.remove('active');
+                const href = item.getAttribute('href');
+                if (href === `#${current}`) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Initialize on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            initEmojiAnimations();
+            initCardAnimations();
+            animateHeroStats();
+            animateLiveNumbers();
+            
+            // Update live stats every 5 seconds
+            setInterval(animateLiveNumbers, 5000);
+            
+            // Update hero stats every 10 seconds
+            setInterval(animateHeroStats, 10000);
+        });
+
+        // Navbar scroll effect
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 100) {
+                nav.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+            
+            lastScroll = currentScroll;
+        });
+    </script>
 </body>
 </html>
