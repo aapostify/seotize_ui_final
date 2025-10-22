@@ -198,6 +198,70 @@ body::before {
     text-decoration: underline;
 }
 
+/* Navigation */
+nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+nav > div {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 500;
+    transition: color 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.nav-links a:hover {
+    color: var(--primary);
+}
+
+.theme-toggle {
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    padding: 0.4rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow);
+    border-color: var(--primary);
+}
+
 /* Mobile Bottom Navigation */
 .mobile-nav {
     display: none;
@@ -274,16 +338,16 @@ body::before {
 </head>
 <body>
     <!-- Navigation Header -->
-    <nav style="position: fixed; top: 0; width: 100%; padding: 0.75rem 1.5rem; background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; transition: all 0.3s ease;">
-        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-            <a href="/index.html" style="font-size: 1.25rem; font-weight: 800; color: var(--primary); text-decoration: none;">SEOTIZE</a>
-            <ul class="nav-links" style="display: flex; list-style: none; gap: 1.5rem;">
-                <li><a href="/index.html" style="text-decoration: none; color: var(--text); font-weight: 500; transition: color 0.2s ease; font-size: 0.9rem;">Home</a></li>
-                <li><a href="/index.html#features" style="text-decoration: none; color: var(--text); font-weight: 500; transition: color 0.2s ease; font-size: 0.9rem;">Features</a></li>
-                <li><a href="/blogs.html" style="text-decoration: none; color: var(--text); font-weight: 500; transition: color 0.2s ease; font-size: 0.9rem;">Blog</a></li>
+    <nav>
+        <div>
+            <a href="/index.html" class="nav-logo">SEOTIZE</a>
+            <ul class="nav-links">
+                <li><a href="/index.html">Main Website</a></li>
+                <li><a href="index.html">Partners</a></li>
+                <li><a href="/blogs.html">Blog</a></li>
             </ul>
             <div style="display: flex; gap: 0.75rem; align-items: center;">
-                <button class="theme-toggle" onclick="toggleTheme()" style="background: var(--bg-light); border: 1px solid var(--border); padding: 0.4rem; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; color: var(--text); font-size: 0.9rem;" aria-label="Toggle theme">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
                     🌙
                 </button>
             </div>
@@ -297,8 +361,8 @@ body::before {
                 <i class="ri-user-star-line"></i>
                 <span>SEOTIZE Partner</span>
             </div>
-            <h1 class="login-title">SEO Community Portal</h1>
-            <p class="login-subtitle">Join our global network boosting website rankings through real user engagement.</p>
+            <h1 class="login-title">Partner Portal</h1>
+            <p class="login-subtitle">Join our global network earning through real user engagement tasks.</p>
         </div>
 
         <a href="https://api.seotize.net/login_partner/google" class="google-btn">
@@ -318,17 +382,13 @@ body::before {
             <i class="ri-home-5-line"></i>
             <span>Home</span>
         </a>
-        <a href="/index.html#features" class="mobile-nav-item">
-            <i class="ri-flashlight-line"></i>
-            <span>Features</span>
+        <a href="index.html" class="mobile-nav-item">
+            <i class="ri-user-star-line"></i>
+            <span>Partners</span>
         </a>
         <a href="/blogs.html" class="mobile-nav-item">
             <i class="ri-article-line"></i>
             <span>Blog</span>
-        </a>
-        <a href="/partner/index.html" class="mobile-nav-item">
-            <i class="ri-user-star-line"></i>
-            <span>Partner</span>
         </a>
         <a href="#" class="mobile-nav-item active">
             <i class="ri-login-box-line"></i>
@@ -352,7 +412,7 @@ body::before {
 
         // If a token exists, the user is likely already logged in. Redirect to the dashboard.
         if (partnerToken) {
-            window.location.href = 'https://partner.seotize.net/dashboard'; // Adjust if your partner dashboard URL is different
+            window.location.href = 'https://partner.seotize.net/dashboard';
         }
 
         // Initialize theme and mobile nav after checking session
@@ -392,13 +452,12 @@ body::before {
     // Initialize mobile navigation active state
     function initMobileNav() {
         const currentPath = window.location.pathname;
-        const mobileItems = document.querySelectorAll('.mobile-item');
+        const mobileItems = document.querySelectorAll('.mobile-nav-item');
         
         mobileItems.forEach(item => {
             const href = item.getAttribute('href');
-            if (href === '#' || currentPath.includes('partner')) {
-                // Keep partner item active on partner pages
-                if (item.querySelector('.ri-user-star-line')) {
+            if (href === '#' || currentPath.includes('login')) {
+                if (item.querySelector('.ri-login-box-line')) {
                     item.classList.add('active');
                 }
             }
