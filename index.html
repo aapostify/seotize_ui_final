@@ -30,6 +30,7 @@
             --success: #10b981;
             --nav-bg: rgba(255, 255, 255, 0.85);
             --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            --bg-dark: #1a1f2e;
         }
 
         body.dark {
@@ -44,11 +45,11 @@
             --primary-glow: rgba(59, 130, 246, 0.25);
             --nav-bg: rgba(26, 31, 46, 0.85);
             --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            --bg-dark: #000000;
         }
 
         html {
             scroll-behavior: smooth;
-            scroll-snap-type: y mandatory;
         }
 
         body {
@@ -175,13 +176,12 @@
         /* Sections */
         .section {
             min-height: 100vh;
-            height: 100vh;
-            scroll-snap-align: start;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
+            padding: 6rem 2rem;
         }
 
         /* Hero Section with Slider */
@@ -539,136 +539,6 @@
             box-shadow: 0 15px 35px var(--primary-glow);
         }
 
-        /* Blog Section */
-        .blog {
-            background: var(--bg);
-            padding: 0 2rem;
-        }
-
-        .blog-subtitle {
-            text-align: center;
-            font-size: 1.125rem;
-            color: var(--text-light);
-            margin-bottom: 3rem;
-        }
-
-        .carousel-container {
-            position: relative;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 0;
-        }
-
-        .carousel {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-            min-height: 400px;
-            position: relative;
-        }
-
-        .blog-item {
-            background: var(--bg-secondary);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            transition: all 0.4s ease;
-            position: absolute;
-            width: 300px;
-        }
-
-        .blog-item.hidden {
-            opacity: 0;
-            transform: scale(0.8) translateX(0);
-            pointer-events: none;
-        }
-
-        .blog-item.prev {
-            opacity: 0.5;
-            transform: scale(0.85) translateX(-350px);
-            z-index: 1;
-        }
-
-        .blog-item.active {
-            opacity: 1;
-            transform: scale(1) translateX(0);
-            z-index: 2;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .blog-item.next {
-            opacity: 0.5;
-            transform: scale(0.85) translateX(350px);
-            z-index: 1;
-        }
-
-        .blog-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .blog-info {
-            padding: 1.5rem;
-        }
-
-        .blog-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 0.75rem;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .blog-date {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
-
-        .nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: var(--bg-secondary);
-            border: 2px solid var(--border);
-            color: var(--text);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        .prev-btn {
-            left: -24px;
-        }
-
-        .next-btn {
-            right: -24px;
-        }
-
-        .blog-cta {
-            text-align: center;
-            margin-top: 3rem;
-        }
-
         /* Pricing Section */
         .pricing {
             background: var(--bg-secondary);
@@ -873,7 +743,137 @@
             flex-shrink: 0;
         }
 
-        /* Partner Section - About Grid Style */
+        /* Blog Section */
+        .blog {
+            background: var(--bg);
+            padding: 0 2rem;
+        }
+
+        .blog-subtitle {
+            text-align: center;
+            font-size: 1.125rem;
+            color: var(--text-light);
+            margin-bottom: 3rem;
+        }
+
+        .carousel-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        .carousel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .blog-item {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: all 0.4s ease;
+            position: absolute;
+            width: 300px;
+        }
+
+        .blog-item.hidden {
+            opacity: 0;
+            transform: scale(0.8) translateX(0);
+            pointer-events: none;
+        }
+
+        .blog-item.prev {
+            opacity: 0.5;
+            transform: scale(0.85) translateX(-350px);
+            z-index: 1;
+        }
+
+        .blog-item.active {
+            opacity: 1;
+            transform: scale(1) translateX(0);
+            z-index: 2;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .blog-item.next {
+            opacity: 0.5;
+            transform: scale(0.85) translateX(350px);
+            z-index: 1;
+        }
+
+        .blog-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .blog-info {
+            padding: 1.5rem;
+        }
+
+        .blog-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .blog-date {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .prev-btn {
+            left: -24px;
+        }
+
+        .next-btn {
+            right: -24px;
+        }
+
+        .blog-cta {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        /* Partner Section - Redesigned */
         .partner {
             background: var(--bg-secondary);
             padding: 0 2rem;
@@ -904,6 +904,40 @@
             color: var(--text-light);
             margin-bottom: 2rem;
             line-height: 1.7;
+        }
+
+        .partner-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .partner-stat {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .partner-stat:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .partner-stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .partner-stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
         }
 
         .partner-features {
@@ -1063,10 +1097,6 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            html {
-                scroll-snap-type: none;
-            }
-
             nav {
                 height: 58px;
             }
@@ -1095,16 +1125,8 @@
             }
 
             .section {
-                height: auto;
                 min-height: auto;
-                padding: 3rem 0;
-                padding-top: 4rem;
-                padding-bottom: 4rem;
-            }
-
-            .section:first-of-type {
-                padding-top: calc(58px + 2rem);
-                min-height: 100vh;
+                padding: 3rem 1rem;
             }
 
             .hero-container {
@@ -1202,6 +1224,64 @@
                 font-size: 1rem;
             }
 
+            .pricing {
+                padding: 3rem 1rem;
+            }
+
+            .pricing-container {
+                height: auto;
+                padding-right: 0;
+                overflow-y: visible;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding-bottom: 1rem;
+            }
+
+            .pricing-card {
+                padding: 1.5rem;
+            }
+
+            .pricing-card .price {
+                font-size: 2.25rem;
+                margin: 0.75rem 0;
+            }
+
+            .pricing-type-toggle {
+                width: 100%;
+                max-width: 400px;
+                flex-direction: row;
+                gap: 0.25rem;
+            }
+
+            .pricing-type-toggle button {
+                flex: 1;
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
+
+            .pricing-toggle {
+                width: 100%;
+                max-width: 500px;
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .pricing-toggle button {
+                width: 100%;
+                padding: 0.875rem 1rem;
+            }
+
+            .pricing-card.popular {
+                transform: scale(1);
+            }
+
+            .pricing-card.popular:hover {
+                transform: translateY(-8px) scale(1);
+            }
+
             .blog {
                 padding: 3rem 1rem;
             }
@@ -1242,76 +1322,6 @@
                 margin-top: 2rem;
             }
 
-            .pricing {
-                padding: 3rem 1rem;
-            }
-
-            .pricing-container {
-                height: auto;
-                padding-right: 0;
-                overflow-y: visible;
-            }
-
-            .pricing-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-                padding-bottom: 1rem;
-            }
-
-            .pricing-grid.task-pricing {
-                grid-template-columns: 1fr;
-            }
-
-            .pricing-card {
-                padding: 1.5rem;
-            }
-
-            .pricing-card .price {
-                font-size: 2.25rem;
-                margin: 0.75rem 0;
-            }
-
-            .pricing-type-toggle {
-                width: 100%;
-                max-width: 400px;
-                flex-direction: row;
-                gap: 0.25rem;
-            }
-
-            .pricing-type-toggle button {
-                flex: 1;
-                padding: 0.75rem 1rem;
-                font-size: 0.875rem;
-            }
-
-            .pricing-toggle {
-                width: 100%;
-                max-width: 500px;
-                flex-direction: column;
-                gap: 0.25rem;
-            }
-
-            .pricing-toggle button {
-                width: 100%;
-                padding: 0.875rem 1rem;
-            }
-
-            .pricing-toggle button .save-badge {
-                display: inline-block;
-            }
-
-            .pricing-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .pricing-card.popular {
-                transform: scale(1);
-            }
-
-            .pricing-card.popular:hover {
-                transform: translateY(-8px) scale(1);
-            }
-
             .partner {
                 padding: 3rem 1rem;
             }
@@ -1329,6 +1339,23 @@
             .partner-content p {
                 font-size: 1rem;
                 margin-bottom: 1.5rem;
+            }
+
+            .partner-stats {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.75rem;
+            }
+
+            .partner-stat {
+                padding: 1rem;
+            }
+
+            .partner-stat-value {
+                font-size: 1.5rem;
+            }
+
+            .partner-stat-label {
+                font-size: 0.75rem;
             }
 
             .partner-features {
@@ -1433,11 +1460,7 @@
 
         @media (max-width: 480px) {
             .section {
-                padding: 2.5rem 0;
-            }
-
-            .section:first-of-type {
-                padding-top: calc(58px + 1.5rem);
+                padding: 2.5rem 0.75rem;
             }
 
             .hero-container {
@@ -1453,11 +1476,21 @@
                 font-size: 1.5rem;
             }
 
-            .features,
-            .blog,
-            .pricing,
-            .partner {
-                padding: 2.5rem 0.75rem;
+            .partner-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .blog-item {
+                width: 260px;
+            }
+
+            .blog-item.prev,
+            .blog-item.next {
+                transform: scale(0.75) translateX(-200px);
+            }
+
+            .blog-item.next {
+                transform: scale(0.75) translateX(200px);
             }
 
             .footer {
@@ -1482,23 +1515,6 @@
             .mobile-item i {
                 font-size: 1.2rem;
             }
-
-            .partner-stats {
-                grid-template-columns: 1fr;
-            }
-
-            .blog-item {
-                width: 260px;
-            }
-
-            .blog-item.prev,
-            .blog-item.next {
-                transform: scale(0.75) translateX(-200px);
-            }
-
-            .blog-item.next {
-                transform: scale(0.75) translateX(200px);
-            }
         }
     </style>
 </head>
@@ -1509,8 +1525,8 @@
             <ul class="nav-menu">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#features">Features</a></li>
-                <li><a href="#blog">Blog</a></li>
                 <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#blog">Blog</a></li>
             </ul>
             <div class="nav-actions">
                 <a href="connect.html" class="get-started-btn">
@@ -1541,25 +1557,7 @@
         </div>
     </section>
 
-    <!-- Blog Section -->
-    <section id="blog" class="section blog">
-        <div style="max-width: 1400px; width: 100%; margin: 0 auto;">
-            <h2 class="section-title">Latest SEO Insights</h2>
-            <p class="blog-subtitle">Stay ahead with the latest SEO trends and insights</p>
-
-            <div class="carousel-container" id="carouselContainer">
-                <div class="carousel" id="carousel"></div>
-                <button class="nav-btn prev-btn" onclick="prevBlog()" aria-label="Previous blog">‹</button>
-                <button class="nav-btn next-btn" onclick="nextBlog()" aria-label="Next blog">›</button>
-            </div>
-
-            <div class="blog-cta">
-                <a href="blogs.html" class="cta">View All Articles</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pricing Section -->
+    <!-- Pricing Section - Moved before Blog -->
     <section id="pricing" class="section pricing">
         <div style="max-width: 1400px; width: 100%; margin: 0 auto;">
             <h2 class="section-title">Simple, Transparent Pricing</h2>
@@ -1582,29 +1580,62 @@
         </div>
     </section>
 
-    <!-- Partner Section -->
+    <!-- Blog Section -->
+    <section id="blog" class="section blog">
+        <div style="max-width: 1400px; width: 100%; margin: 0 auto;">
+            <h2 class="section-title">Latest SEO Insights</h2>
+            <p class="blog-subtitle">Stay ahead with the latest SEO trends and insights</p>
+
+            <div class="carousel-container" id="carouselContainer">
+                <div class="carousel" id="carousel"></div>
+                <button class="nav-btn prev-btn" onclick="prevBlog()" aria-label="Previous blog">‹</button>
+                <button class="nav-btn next-btn" onclick="nextBlog()" aria-label="Next blog">›</button>
+            </div>
+
+            <div class="blog-cta">
+                <a href="blogs.html" class="cta">View All Articles</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partner Section - Redesigned with Partner Data -->
     <section id="partner" class="section partner">
         <div class="partner-container">
             <div class="partner-content">
-                <h2>Revolutionizing SEO</h2>
-                <p>Democratizing search optimization with AI-powered tools and real user engagement, making premium SEO accessible to everyone.</p>
+                <h2>Join Our Partner Program</h2>
+                <p>Become part of our global network helping websites achieve better search rankings through real user engagement. Earn money while contributing to SEO success.</p>
                 
-                <ul class="partner-features">
-                    <li><i class="ri-check-line"></i><span>Lifetime Free Hosting</span></li>
-                    <li><i class="ri-check-line"></i><span>Real User Engagement from 150+ Countries</span></li>
-                    <li><i class="ri-check-line"></i><span>AI Content Generation</span></li>
-                    <li><i class="ri-check-line"></i><span>Advanced Analytics & Tracking</span></li>
-                    <li><i class="ri-check-line"></i><span>24/7 Expert Support</span></li>
-                    <li><i class="ri-check-line"></i><span>Global CDN Network</span></li>
+                <div class="partner-stats" id="partnerStats">
+                    <div class="partner-stat">
+                        <div class="partner-stat-value">$0.10+</div>
+                        <div class="partner-stat-label">Per Task</div>
+                    </div>
+                    <div class="partner-stat">
+                        <div class="partner-stat-value">150+</div>
+                        <div class="partner-stat-label">Countries</div>
+                    </div>
+                    <div class="partner-stat">
+                        <div class="partner-stat-value">24/7</div>
+                        <div class="partner-stat-label">Availability</div>
+                    </div>
+                </div>
+                
+                <ul class="partner-features" id="partnerFeatures">
+                    <li><i class="ri-check-line"></i><span>Competitive Rates - Earn $0.10 to $0.20 per task</span></li>
+                    <li><i class="ri-check-line"></i><span>Work From Anywhere Worldwide</span></li>
+                    <li><i class="ri-check-line"></i><span>Quick Payouts via USDT (BEP20)</span></li>
+                    <li><i class="ri-check-line"></i><span>Real-Time Dashboard & Analytics</span></li>
+                    <li><i class="ri-check-line"></i><span>Meaningful SEO Impact Tasks</span></li>
+                    <li><i class="ri-check-line"></i><span>Secure & Reliable Platform</span></li>
                 </ul>
                 
-                <a href="connect.html" class="cta">
-                    <span>Get Started Today</span>
+                <a href="partner/" class="cta">
+                    <span>Start Earning Now</span>
                     <i class="ri-arrow-right-line"></i>
                 </a>
             </div>
             
-            <img src="https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif" alt="SEO Platform Analytics" class="partner-image">
+            <img src="https://image-api.seotize.net/image-cdn/97cd3337-ae40-4239-8d26-bf17f34721cc" alt="Partner Dashboard" class="partner-image">
         </div>
     </section>
 
@@ -1637,9 +1668,9 @@
             <div>
                 <h3>Company</h3>
                 <ul>
-                    <li><a href="#about">About</a></li>
+                    <li><a href="#partner">About</a></li>
                     <li><a href="connect.html">Contact</a></li>
-                    <li><a href="/partner">Partners</a></li>
+                    <li><a href="partner/">Partners</a></li>
                 </ul>
             </div>
         </div>
@@ -1656,7 +1687,7 @@
 
     <div class="mobile-nav">
         <div class="mobile-items">
-            <a href="#home" class="mobile-item active">
+            <a href="index.html" class="mobile-item active">
                 <i class="ri-home-5-line"></i>
                 <span>Home</span>
             </a>
@@ -1664,13 +1695,13 @@
                 <i class="ri-flashlight-line"></i>
                 <span>Features</span>
             </a>
-            <a href="#blog" class="mobile-item">
-                <i class="ri-article-line"></i>
-                <span>Blog</span>
-            </a>
             <a href="#pricing" class="mobile-item">
                 <i class="ri-price-tag-3-line"></i>
                 <span>Pricing</span>
+            </a>
+            <a href="blogs.html" class="mobile-item">
+                <i class="ri-article-line"></i>
+                <span>Blog</span>
             </a>
             <a href="connect.html" class="mobile-item">
                 <i class="ri-user-star-line"></i>
@@ -1682,138 +1713,181 @@
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
-        // Hero Slides Data
-        const heroSlides = [
-            {
-                title: "AI-Powered SEO Platform",
-                description: "Boost search rankings with intelligent automation and real user engagement from 150+ countries.",
-                cta: "Start Free Trial",
-                image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop"
+        // Data Structure - Optimized and Organized
+        const appData = {
+            heroSlides: [
+                {
+                    title: "AI-Powered SEO Platform",
+                    description: "Boost search rankings with intelligent automation and real user engagement from 150+ countries.",
+                    cta: "Start Free Trial",
+                    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop"
+                },
+                {
+                    title: "Real User Engagement",
+                    description: "Get authentic traffic from real users who search and interact with your content naturally.",
+                    cta: "Get Real Traffic",
+                    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop"
+                },
+                {
+                    title: "AI Content Generation",
+                    description: "Create unlimited SEO-optimized content with advanced AI technology that ranks higher.",
+                    cta: "Generate Content",
+                    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop"
+                }
+            ],
+            features: [
+                {
+                    icon: '🚀', 
+                    title: 'Real User Engagement', 
+                    subtitle: 'The SEO Game Changer',
+                    description: 'Take control of your SEO with real user-driven growth! Seotize ensures that every click, visit, and interaction comes from actual users, not bots—boosting your website\'s credibility and ranking.',
+                    features: [
+                        'Users search for your target keywords',
+                        'They visit and interact with your website',
+                        'Your rankings naturally improve over time',
+                        'Higher trust from search engines = more traffic!'
+                    ],
+                    image: 'https://image-api.seotize.net/image-cdn/5d93bcdd-8834-442f-8e88-390594c781a7',
+                    cta: 'Start Growing Now'
+                },
+                {
+                    icon: '🌍', 
+                    title: 'Lightning-Fast Image Hosting & CDN', 
+                    subtitle: 'Global Speed Revolution',
+                    description: 'Say goodbye to slow-loading images! Seotize provides an almost-free image hosting service that ensures your visuals load instantly, anywhere in the world.',
+                    features: [
+                        'Ultra-Fast CDN – Images stored worldwide',
+                        'Automatic Optimization – Best format for speed & SEO',
+                        'On-the-Fly Processing – Resize, compress, rotate',
+                        'Advanced Analytics – Track views and performance'
+                    ],
+                    image: 'https://image-api.seotize.net/image-cdn/97cd3337-ae40-4239-8d26-bf17f34721cc',
+                    cta: 'Try CDN Free'
+                },
+                {
+                    icon: '🆓', 
+                    title: 'Lifetime Free Hosting & Flexible Services', 
+                    subtitle: 'Supporting Small Businesses',
+                    description: 'At Seotize, we believe in supporting small businesses. Enjoy our lifetime free trial with up to 100 images or articles hosted completely free. No hidden fees, no surprises.',
+                    features: [
+                        'Lifetime Free Tools – SVG placeholders, image hosting',
+                        'Task-Based Pricing – You choose how much to pay!',
+                        'Scalable & Cost-Friendly – Grows with your business',
+                        'No Credit Card Required – Start today',
+                        'Flexible Payment Options – Cards, PayPal, crypto'
+                    ],
+                    image: 'https://image-api.seotize.net/image-cdn/a1515beb-2812-47e4-b3a0-07910bf76f04',
+                    cta: 'Start Free Trial'
+                },
+                {
+                    icon: '📊', 
+                    title: 'AI-Driven Analytics & Automated Content', 
+                    subtitle: 'Intelligent Automation',
+                    description: 'Seotize transforms the way you grow your website with AI-powered analytics, fully automated content generation, and smart scheduling tools.',
+                    features: [
+                        'Real-Time SEO Analytics – Deep insights and recommendations',
+                        'AI-Generated Content – Fully optimized articles with images',
+                        'Automated Weekly Scheduler – Hands-free content flow',
+                        'Set & Forget Optimization – Consistent quality content'
+                    ],
+                    image: 'https://image-api.seotize.net/image-cdn/1b8c38a1-4c4d-451c-ac6c-7c8220858621',
+                    cta: 'Try AI Tools'
+                }
+            ],
+            hostingPlans: {
+                free: {
+                    name: 'Free',
+                    price: {'3month': 0, '6month': 0, '12month': 0},
+                    limits: {articles: 30, images: 100},
+                    features: ['30 articles hosted', '100 images stored', 'Basic CDN access', 'Community support', 'Basic analytics']
+                },
+                basic: {
+                    name: 'Basic',
+                    price: {'3month': 10, '6month': 18, '12month': 32},
+                    limits: {articles: 200, images: 1000},
+                    features: ['200 articles hosted', '1,000 images stored', 'Fast CDN delivery', 'Email support', 'Standard analytics', 'Custom domain']
+                },
+                professional: {
+                    name: 'Professional',
+                    price: {'3month': 25, '6month': 45, '12month': 80},
+                    limits: {articles: 600, images: 4000},
+                    features: ['600 articles hosted', '4,000 images stored', 'Premium CDN delivery', 'Priority support', 'Advanced analytics', 'Custom domain', 'API access', 'Real user engagement'],
+                    popular: true
+                },
+                enterprise: {
+                    name: 'Enterprise',
+                    price: {'3month': 50, '6month': 90, '12month': 160},
+                    limits: {articles: 2000, images: 20000},
+                    features: ['2,000 articles hosted', '20,000 images stored', 'Ultra-fast CDN worldwide', '24/7 dedicated support', 'Full analytics suite', 'Multiple custom domains', 'Full API access', 'Premium user engagement', 'White-label options']
+                }
             },
-            {
-                title: "Real User Engagement",
-                description: "Get authentic traffic from real users who search and interact with your content naturally.",
-                cta: "Get Real Traffic",
-                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop"
+            taskPricing: {
+                basic: {
+                    name: 'Basic',
+                    price: 0.10,
+                    limits: 1,
+                    features: ['$0.10 per task', '1 concurrent task', 'Standard processing speed', 'Email support', 'Basic task analytics']
+                },
+                standard: {
+                    name: 'Standard',
+                    price: 0.12,
+                    limits: 3,
+                    features: ['$0.12 per task', '3 concurrent tasks', 'Fast processing speed', 'Priority support', 'Advanced task analytics', 'Task scheduling'],
+                    popular: true
+                },
+                premium: {
+                    name: 'Premium',
+                    price: 0.15,
+                    limits: 5,
+                    features: ['$0.15 per task', '5 concurrent tasks', 'Ultra-fast processing', '24/7 dedicated support', 'Full task analytics', 'Advanced scheduling', 'API access', 'Priority queue']
+                }
             },
-            {
-                title: "AI Content Generation",
-                description: "Create unlimited SEO-optimized content with advanced AI technology that ranks higher.",
-                cta: "Generate Content",
-                image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop"
-            }
-        ];
-
-        // Features Data
-        const featuresData = [
-            {
-                icon: '🚀', 
-                title: 'Real User Engagement', 
-                subtitle: 'The SEO Game Changer',
-                description: 'Take control of your SEO with real user-driven growth! Seotize ensures that every click, visit, and interaction comes from actual users, not bots—boosting your website\'s credibility and ranking.',
-                features: [
-                    'Users search for your target keywords',
-                    'They visit and interact with your website',
-                    'Your rankings naturally improve over time',
-                    'Higher trust from search engines = more traffic!'
+            blogs: [
+                {
+                    title: 'Evolving SEO Paradigms in 2024: Harnessing Quantum Algorithms and Decentralized Technologies',
+                    image: 'https://image-api.seotize.net/image-cdn/b11f730f-d6bd-4cf1-846e-78961db79b45',
+                    date: 'Oct 22, 2025'
+                },
+                {
+                    title: 'From Pixels to Purpose: How AI and Advanced Analytics Are Crafting Hyper-Personalized Digital Consumer Experiences in 2024',
+                    image: 'https://image-api.seotize.net/image-cdn/399da592-9bb1-4655-8eec-6ab488788e14',
+                    date: 'Oct 22, 2025'
+                },
+                {
+                    title: 'AI-Enhanced Voice Search and SEO: Shaping Interactive User Engagement in 2024 and Beyond',
+                    image: 'https://image-api.seotize.net/image-cdn/57283774-45ce-45f4-856a-3ad902e4ff9e',
+                    date: 'Oct 22, 2025'
+                },
+                {
+                    title: 'Human-Centric SEO: Crafting Personalized User Experiences with AI Insights for 2024',
+                    image: 'https://image-api.seotize.net/image-cdn/d9931244-101f-44cb-9861-7b55baa259ed',
+                    date: 'Oct 22, 2025'
+                },
+                {
+                    title: 'The Rise of Green Tech in SEO: Bridging Sustainability and Innovation in Digital Marketing for 2025',
+                    image: 'https://image-api.seotize.net/image-cdn/c10daef1-16b7-4b36-afa0-6a245fdad32e',
+                    date: 'Oct 22, 2025'
+                },
+                {
+                    title: 'Achieving Sustainable SEO in 2024: Integrating Green Technologies and Ethical Digital Strategies',
+                    image: 'https://image-api.seotize.net/image-cdn/084c84ed-e635-43d5-aeb0-78656d86843e',
+                    date: 'Oct 22, 2025'
+                }
+            ],
+            partnerData: {
+                stats: [
+                    { value: '$0.10+', label: 'Per Task' },
+                    { value: '150+', label: 'Countries' },
+                    { value: '24/7', label: 'Availability' }
                 ],
-                image: 'https://image-api.seotize.net/image-cdn/5d93bcdd-8834-442f-8e88-390594c781a7',
-                cta: 'Start Growing Now'
-            },
-            {
-                icon: '🌍', 
-                title: 'Lightning-Fast Image Hosting & CDN', 
-                subtitle: 'Global Speed Revolution',
-                description: 'Say goodbye to slow-loading images! Seotize provides an almost-free image hosting service that ensures your visuals load instantly, anywhere in the world.',
                 features: [
-                    'Ultra-Fast CDN – Images stored worldwide',
-                    'Automatic Optimization – Best format for speed & SEO',
-                    'On-the-Fly Processing – Resize, compress, rotate',
-                    'Advanced Analytics – Track views and performance'
-                ],
-                image: 'https://image-api.seotize.net/image-cdn/97cd3337-ae40-4239-8d26-bf17f34721cc',
-                cta: 'Try CDN Free'
-            },
-            {
-                icon: '🆓', 
-                title: 'Lifetime Free Hosting & Flexible Services', 
-                subtitle: 'Supporting Small Businesses',
-                description: 'At Seotize, we believe in supporting small businesses. Enjoy our lifetime free trial with up to 100 images or articles hosted completely free. No hidden fees, no surprises.',
-                features: [
-                    'Lifetime Free Tools – SVG placeholders, image hosting',
-                    'Task-Based Pricing – You choose how much to pay!',
-                    'Scalable & Cost-Friendly – Grows with your business',
-                    'No Credit Card Required – Start today',
-                    'Flexible Payment Options – Cards, PayPal, crypto'
-                ],
-                image: 'https://image-api.seotize.net/image-cdn/a1515beb-2812-47e4-b3a0-07910bf76f04',
-                cta: 'Start Free Trial'
-            },
-            {
-                icon: '📊', 
-                title: 'AI-Driven Analytics & Automated Content', 
-                subtitle: 'Intelligent Automation',
-                description: 'Seotize transforms the way you grow your website with AI-powered analytics, fully automated content generation, and smart scheduling tools.',
-                features: [
-                    'Real-Time SEO Analytics – Deep insights and recommendations',
-                    'AI-Generated Content – Fully optimized articles with images',
-                    'Automated Weekly Scheduler – Hands-free content flow',
-                    'Set & Forget Optimization – Consistent quality content'
-                ],
-                image: 'https://image-api.seotize.net/image-cdn/1b8c38a1-4c4d-451c-ac6c-7c8220858621',
-                cta: 'Try AI Tools'
-            }
-        ];
-
-        // Hosting Plans Data
-        const hostingPlansData = {
-            free: {
-                name: 'Free',
-                price: {'3month': 0, '6month': 0, '12month': 0},
-                limits: {articles: 30, images: 100},
-                features: ['30 articles hosted', '100 images stored', 'Basic CDN access', 'Community support', 'Basic analytics']
-            },
-            basic: {
-                name: 'Basic',
-                price: {'3month': 10, '6month': 18, '12month': 32},
-                limits: {articles: 200, images: 1000},
-                features: ['200 articles hosted', '1,000 images stored', 'Fast CDN delivery', 'Email support', 'Standard analytics', 'Custom domain']
-            },
-            professional: {
-                name: 'Professional',
-                price: {'3month': 25, '6month': 45, '12month': 80},
-                limits: {articles: 600, images: 4000},
-                features: ['600 articles hosted', '4,000 images stored', 'Premium CDN delivery', 'Priority support', 'Advanced analytics', 'Custom domain', 'API access', 'Real user engagement'],
-                popular: true
-            },
-            enterprise: {
-                name: 'Enterprise',
-                price: {'3month': 50, '6month': 90, '12month': 160},
-                limits: {articles: 2000, images: 20000},
-                features: ['2,000 articles hosted', '20,000 images stored', 'Ultra-fast CDN worldwide', '24/7 dedicated support', 'Full analytics suite', 'Multiple custom domains', 'Full API access', 'Premium user engagement', 'White-label options']
-            }
-        };
-
-        // Task-Based Pricing Data
-        const taskPricingData = {
-            basic: {
-                name: 'Basic',
-                price: 0.10,
-                limits: 1,
-                features: ['$0.10 per task', '1 concurrent task', 'Standard processing speed', 'Email support', 'Basic task analytics']
-            },
-            standard: {
-                name: 'Standard',
-                price: 0.12,
-                limits: 3,
-                features: ['$0.12 per task', '3 concurrent tasks', 'Fast processing speed', 'Priority support', 'Advanced task analytics', 'Task scheduling'],
-                popular: true
-            },
-            premium: {
-                name: 'Premium',
-                price: 0.15,
-                limits: 5,
-                features: ['$0.15 per task', '5 concurrent tasks', 'Ultra-fast processing', '24/7 dedicated support', 'Full task analytics', 'Advanced scheduling', 'API access', 'Priority queue']
+                    'Competitive Rates - Earn $0.10 to $0.20 per task',
+                    'Work From Anywhere Worldwide',
+                    'Quick Payouts via USDT (BEP20)',
+                    'Real-Time Dashboard & Analytics',
+                    'Meaningful SEO Impact Tasks',
+                    'Secure & Reliable Platform'
+                ]
             }
         };
 
@@ -1823,10 +1897,22 @@
         let currentPricingType = 'hosting';
         let currentHostingPeriod = '3month';
 
-        // Create Hero Slider
-        function createHeroSlider() {
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            initializeHero();
+            initializeFeatures();
+            initializePricing();
+            initializeBlogs();
+            initializeScrollIndicator();
+            initializeMobileNav();
+            startAutoSliders();
+        });
+
+        // Hero Slider
+        function initializeHero() {
             const hero = document.getElementById('home');
-            heroSlides.forEach((slide, i) => {
+            appData.heroSlides.forEach((slide, i) => {
                 const div = document.createElement('div');
                 div.className = `hero-slide ${i === 0 ? 'active' : ''}`;
                 div.innerHTML = `
@@ -1857,7 +1943,7 @@
             hero.appendChild(controls);
 
             const dots = document.getElementById('hero-dots');
-            heroSlides.forEach((slide, i) => {
+            appData.heroSlides.forEach((slide, i) => {
                 const dot = document.createElement('div');
                 dot.className = `hero-dot ${i === 0 ? 'active' : ''}`;
                 dot.onclick = () => { currentHero = i; updateHero(); };
@@ -1875,56 +1961,22 @@
         }
 
         function nextHero() {
-            currentHero = (currentHero + 1) % heroSlides.length;
+            currentHero = (currentHero + 1) % appData.heroSlides.length;
             updateHero();
         }
 
         function prevHero() {
-            currentHero = currentHero === 0 ? heroSlides.length - 1 : currentHero - 1;
+            currentHero = currentHero === 0 ? appData.heroSlides.length - 1 : currentHero - 1;
             updateHero();
         }
 
-        // Blog Data
-        const blogData = [
-            {
-                title: 'Evolving SEO Paradigms in 2024: Harnessing Quantum Algorithms and Decentralized Technologies',
-                image: 'https://image-api.seotize.net/image-cdn/b11f730f-d6bd-4cf1-846e-78961db79b45',
-                date: 'Oct 22, 2025'
-            },
-            {
-                title: 'From Pixels to Purpose: How AI and Advanced Analytics Are Crafting Hyper-Personalized Digital Consumer Experiences in 2024',
-                image: 'https://image-api.seotize.net/image-cdn/399da592-9bb1-4655-8eec-6ab488788e14',
-                date: 'Oct 22, 2025'
-            },
-            {
-                title: 'AI-Enhanced Voice Search and SEO: Shaping Interactive User Engagement in 2024 and Beyond',
-                image: 'https://image-api.seotize.net/image-cdn/57283774-45ce-45f4-856a-3ad902e4ff9e',
-                date: 'Oct 22, 2025'
-            },
-            {
-                title: 'Human-Centric SEO: Crafting Personalized User Experiences with AI Insights for 2024',
-                image: 'https://image-api.seotize.net/image-cdn/d9931244-101f-44cb-9861-7b55baa259ed',
-                date: 'Oct 22, 2025'
-            },
-            {
-                title: 'The Rise of Green Tech in SEO: Bridging Sustainability and Innovation in Digital Marketing for 2025',
-                image: 'https://image-api.seotize.net/image-cdn/c10daef1-16b7-4b36-afa0-6a245fdad32e',
-                date: 'Oct 22, 2025'
-            },
-            {
-                title: 'Achieving Sustainable SEO in 2024: Integrating Green Technologies and Ethical Digital Strategies',
-                image: 'https://image-api.seotize.net/image-cdn/084c84ed-e635-43d5-aeb0-78656d86843e',
-                date: 'Oct 22, 2025'
-            }
-        ];
-
-        // Create Features Sidebar and Details
-        function createFeatures() {
+        // Features
+        function initializeFeatures() {
             const sidebar = document.getElementById('featuresSidebar');
             const details = document.getElementById('featureDetails');
             sidebar.innerHTML = '';
 
-            featuresData.forEach((feature, index) => {
+            appData.features.forEach((feature, index) => {
                 const card = document.createElement('div');
                 card.className = `feature-card ${index === currentFeature ? 'active' : ''}`;
                 card.innerHTML = `
@@ -1943,7 +1995,7 @@
 
         function updateFeatureDetails() {
             const details = document.getElementById('featureDetails');
-            const feature = featuresData[currentFeature];
+            const feature = appData.features[currentFeature];
 
             const featuresHTML = feature.features.map(f => `
                 <li><i class="ri-check-line"></i><span>${f}</span></li>
@@ -1968,7 +2020,6 @@
                 </a>
             `;
 
-            // Update sidebar active state
             document.querySelectorAll('.feature-card').forEach((card, i) => {
                 card.classList.toggle('active', i === currentFeature);
             });
@@ -1979,63 +2030,17 @@
             );
         }
 
-        // Create Blog Carousel
-        function createBlogCarousel() {
-            const carousel = document.getElementById('carousel');
-            carousel.innerHTML = '';
-
-            blogData.forEach((blog, index) => {
-                const item = document.createElement('div');
-                let className = 'blog-item';
-                
-                if (index === currentBlog) className += ' active';
-                else if (index === (currentBlog - 1 + blogData.length) % blogData.length) className += ' prev';
-                else if (index === (currentBlog + 1) % blogData.length) className += ' next';
-                else className += ' hidden';
-
-                item.className = className;
-                item.innerHTML = `
-                    <img src="${blog.image}" alt="${blog.title}" loading="lazy">
-                    <div class="blog-info">
-                        <div class="blog-title">${blog.title}</div>
-                        <div class="blog-date">${blog.date}</div>
-                    </div>
-                `;
-                carousel.appendChild(item);
-            });
+        // Pricing
+        function initializePricing() {
+            createHostingCards(currentHostingPeriod);
         }
 
-        function updateBlog() {
-            blogData.forEach((blog, index) => {
-                const items = document.querySelectorAll('.blog-item');
-                let className = 'blog-item';
-                
-                if (index === currentBlog) className += ' active';
-                else if (index === (currentBlog - 1 + blogData.length) % blogData.length) className += ' prev';
-                else if (index === (currentBlog + 1) % blogData.length) className += ' next';
-                else className += ' hidden';
-
-                if (items[index]) items[index].className = className;
-            });
-        }
-
-        function nextBlog() {
-            currentBlog = (currentBlog + 1) % blogData.length;
-            updateBlog();
-        }
-
-        function prevBlog() {
-            currentBlog = (currentBlog - 1 + blogData.length) % blogData.length;
-            updateBlog();
-        }
-
-        // Pricing Functions
         function createHostingCards(period) {
             const grid = document.getElementById('pricingGrid');
             grid.innerHTML = '';
             grid.className = 'pricing-grid';
 
-            Object.entries(hostingPlansData).forEach(([key, plan]) => {
+            Object.entries(appData.hostingPlans).forEach(([key, plan]) => {
                 const card = document.createElement('div');
                 card.className = `pricing-card ${plan.popular ? 'popular' : ''}`;
 
@@ -2073,7 +2078,7 @@
             grid.innerHTML = '';
             grid.className = 'pricing-grid task-pricing';
 
-            Object.entries(taskPricingData).forEach(([key, plan]) => {
+            Object.entries(appData.taskPricing).forEach(([key, plan]) => {
                 const card = document.createElement('div');
                 card.className = `pricing-card ${plan.popular ? 'popular' : ''}`;
 
@@ -2132,10 +2137,60 @@
             createHostingCards(period);
         }
 
+        // Blogs
+        function initializeBlogs() {
+            const carousel = document.getElementById('carousel');
+            carousel.innerHTML = '';
+
+            appData.blogs.forEach((blog, index) => {
+                const item = document.createElement('div');
+                let className = 'blog-item';
+                
+                if (index === currentBlog) className += ' active';
+                else if (index === (currentBlog - 1 + appData.blogs.length) % appData.blogs.length) className += ' prev';
+                else if (index === (currentBlog + 1) % appData.blogs.length) className += ' next';
+                else className += ' hidden';
+
+                item.className = className;
+                item.innerHTML = `
+                    <img src="${blog.image}" alt="${blog.title}" loading="lazy">
+                    <div class="blog-info">
+                        <div class="blog-title">${blog.title}</div>
+                        <div class="blog-date">${blog.date}</div>
+                    </div>
+                `;
+                carousel.appendChild(item);
+            });
+        }
+
+        function updateBlog() {
+            appData.blogs.forEach((blog, index) => {
+                const items = document.querySelectorAll('.blog-item');
+                let className = 'blog-item';
+                
+                if (index === currentBlog) className += ' active';
+                else if (index === (currentBlog - 1 + appData.blogs.length) % appData.blogs.length) className += ' prev';
+                else if (index === (currentBlog + 1) % appData.blogs.length) className += ' next';
+                else className += ' hidden';
+
+                if (items[index]) items[index].className = className;
+            });
+        }
+
+        function nextBlog() {
+            currentBlog = (currentBlog + 1) % appData.blogs.length;
+            updateBlog();
+        }
+
+        function prevBlog() {
+            currentBlog = (currentBlog - 1 + appData.blogs.length) % appData.blogs.length;
+            updateBlog();
+        }
+
         // Scroll Indicator
-        function createScrollIndicator() {
+        function initializeScrollIndicator() {
             const indicator = document.getElementById('scrollIndicator');
-            const sections = ['home', 'features', 'blog', 'pricing', 'partner'];
+            const sections = ['home', 'features', 'pricing', 'blog', 'partner'];
 
             sections.forEach((id, index) => {
                 const dot = document.createElement('div');
@@ -2145,6 +2200,8 @@
                 };
                 indicator.appendChild(dot);
             });
+
+            window.addEventListener('scroll', updateActiveSection);
         }
 
         function updateActiveSection() {
@@ -2157,6 +2214,16 @@
                     scrollDots.forEach(dot => dot.classList.remove('active'));
                     if (scrollDots[index]) scrollDots[index].classList.add('active');
                 }
+            });
+        }
+
+        // Mobile Navigation
+        function initializeMobileNav() {
+            document.querySelectorAll('.mobile-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.mobile-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
             });
         }
 
@@ -2175,28 +2242,11 @@
             }
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            loadTheme();
-            createHeroSlider();
-            createFeatures();
-            createBlogCarousel();
-            createHostingCards('3month');
-            createScrollIndicator();
-
+        // Auto Sliders
+        function startAutoSliders() {
             setInterval(nextHero, 5000);
             setInterval(nextBlog, 5000);
-
-            window.addEventListener('scroll', updateActiveSection);
-        });
-
-        // Mobile nav active state
-        document.querySelectorAll('.mobile-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.mobile-item').forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
+        }
     </script>
 </body>
 </html>
