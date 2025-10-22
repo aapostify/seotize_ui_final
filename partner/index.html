@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEOTIZE Partners - Earn Money Doing SEO Tasks | Get Paid for Searches</title>
-    <meta name="description" content="Join SEOTIZE Partners and earn money by completing SEO tasks, searching keywords on Google, and helping businesses grow. Start earning today with flexible payouts.">
-    <meta name="keywords" content="earn money online, SEO tasks, paid searches, keyword research jobs, work from home, flexible income">
-    <link rel="canonical" href="https://seotize.com/partners">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>SEOTIZE Partners - Earn Money by Completing SEO Tasks</title>
+    <meta name="description" content="Join SEOTIZE Partners and earn money by completing SEO tasks. Work from anywhere, flexible schedule, instant payouts via USDT.">
+    <meta name="keywords" content="earn money online, SEO tasks, work from home, flexible income, USDT payouts">
+    <link rel="canonical" href="https://seotize.com/partner/">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -65,10 +65,15 @@ body {
     transition: background 0.3s ease, color 0.3s ease;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    padding-bottom: 68px;
+}
+
+@media (min-width: 1024px) {
+    body { padding-bottom: 0; }
 }
 
 /* ===========================
-   NAVIGATION (MOBILE-FIRST)
+   NAVIGATION
    =========================== */
 nav {
     position: fixed;
@@ -195,96 +200,6 @@ nav {
 .theme-toggle:hover {
     transform: translateY(-2px);
     border-color: var(--primary);
-}
-
-/* Mobile Hamburger Menu */
-.mobile-menu-btn {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    width: 40px;
-    height: 40px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    cursor: pointer;
-    padding: 10px;
-    transition: all 0.3s ease;
-    justify-content: center;
-    align-items: center;
-}
-
-.mobile-menu-btn span {
-    width: 20px;
-    height: 2px;
-    background: var(--text);
-    transition: all 0.3s ease;
-    border-radius: 2px;
-}
-
-.mobile-menu-btn.active span:nth-child(1) {
-    transform: rotate(45deg) translate(6px, 6px);
-}
-
-.mobile-menu-btn.active span:nth-child(2) {
-    opacity: 0;
-}
-
-.mobile-menu-btn.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(6px, -6px);
-}
-
-/* Mobile Menu Overlay */
-.mobile-menu {
-    position: fixed;
-    top: 65px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--bg-secondary);
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 999;
-    overflow-y: auto;
-    padding: 2rem;
-}
-
-.mobile-menu.active {
-    transform: translateX(0);
-}
-
-.mobile-menu-links {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.mobile-menu-links a {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: var(--bg);
-    border-radius: 12px;
-    color: var(--text);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    border: 2px solid var(--border);
-}
-
-.mobile-menu-links a:hover,
-.mobile-menu-links a:active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-    transform: translateX(8px);
-}
-
-.mobile-menu-links i {
-    font-size: 1.5rem;
 }
 
 /* ===========================
@@ -435,46 +350,6 @@ nav {
     border: 3px solid var(--border);
 }
 
-/* Live Stats Bar */
-.stats-bar {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-top: 3rem;
-    padding: 1.5rem;
-    background: var(--bg-secondary);
-    border-radius: 20px;
-    border: 2px solid var(--border);
-    box-shadow: var(--card-shadow);
-}
-
-.stat {
-    text-align: center;
-    padding: 1rem;
-    background: var(--bg);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-}
-
-.stat-emoji {
-    font-size: 2rem;
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.stat-number {
-    font-size: 1.75rem;
-    font-weight: 900;
-    color: var(--primary);
-    margin-bottom: 0.25rem;
-}
-
-.stat-label {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    font-weight: 600;
-}
-
 /* ===========================
    HOW IT WORKS
    =========================== */
@@ -538,19 +413,7 @@ nav {
 
 .step-card p {
     color: var(--text-light);
-    margin-bottom: 1.5rem;
     line-height: 1.7;
-}
-
-.step-reward {
-    background: var(--gradient);
-    color: white;
-    padding: 0.625rem 1.25rem;
-    border-radius: 30px;
-    font-weight: 700;
-    font-size: 0.875rem;
-    display: inline-block;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 /* ===========================
@@ -612,34 +475,6 @@ nav {
     line-height: 1.7;
 }
 
-.earning-range {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.earning-box {
-    background: var(--bg);
-    padding: 1rem;
-    border-radius: 12px;
-    text-align: center;
-    border: 1px solid var(--border);
-}
-
-.earning-amount {
-    font-size: 1.5rem;
-    font-weight: 900;
-    color: var(--primary);
-    margin-bottom: 0.25rem;
-}
-
-.earning-label {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    font-weight: 600;
-}
-
 .method-features {
     list-style: none;
     display: flex;
@@ -656,109 +491,17 @@ nav {
 }
 
 .method-features li::before {
-    content: '💰';
-    font-size: 1.25rem;
-    filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.2));
-}
-
-/* ===========================
-   LIVE DASHBOARD
-   =========================== */
-.live-dashboard {
-    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-    color: white;
-    position: relative;
-    overflow: hidden;
-}
-
-.live-dashboard::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-}
-
-.live-dashboard .section-title,
-.live-dashboard .section-subtitle {
-    color: white;
-    background: white;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    position: relative;
-    z-index: 2;
-}
-
-.dashboard-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    padding: 2rem;
-    border-radius: 20px;
-    text-align: center;
-    transition: all 0.4s ease;
-}
-
-.dashboard-card:hover {
-    transform: translateY(-8px);
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.4);
-}
-
-.dashboard-icon {
-    font-size: 3rem;
-    display: block;
-    margin-bottom: 1rem;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-}
-
-.dashboard-value {
-    font-size: 2.5rem;
-    font-weight: 900;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.dashboard-label {
-    font-size: 1rem;
-    opacity: 0.9;
-    font-weight: 600;
-}
-
-.live-indicator {
-    display: inline-flex;
+    content: '✓';
+    display: flex;
     align-items: center;
-    gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 0.375rem 0.875rem;
-    border-radius: 30px;
-    font-size: 0.8125rem;
-    font-weight: 700;
-    margin-top: 1rem;
-}
-
-.live-dot {
-    width: 8px;
-    height: 8px;
-    background: white;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
     border-radius: 50%;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 0.4; transform: scale(0.9); }
-    50% { opacity: 1; transform: scale(1.2); }
+    font-weight: 700;
+    flex-shrink: 0;
 }
 
 /* ===========================
@@ -781,27 +524,12 @@ nav {
     border: 2px solid var(--border);
     text-align: center;
     transition: all 0.4s ease;
-    position: relative;
 }
 
 .payout-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
     border-color: var(--primary);
-}
-
-.popular-badge {
-    position: absolute;
-    top: -12px;
-    right: 1rem;
-    background: linear-gradient(135deg, #f59e0b, #f97316);
-    color: white;
-    padding: 0.375rem 0.875rem;
-    border-radius: 30px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
 }
 
 .payout-icon {
@@ -818,10 +546,9 @@ nav {
     color: var(--text);
 }
 
-.payout-min {
-    color: var(--primary);
-    font-weight: 700;
-    font-size: 1.125rem;
+.payout-card p {
+    color: var(--text-light);
+    line-height: 1.7;
 }
 
 /* ===========================
@@ -1109,15 +836,9 @@ body.dark .footer {
     
     .hero h1 { font-size: 2.75rem; }
     
-    .stats-bar { grid-template-columns: repeat(2, 1fr); }
-    
     .steps-grid,
     .methods-grid,
     .payout-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .dashboard-grid {
         grid-template-columns: repeat(2, 1fr);
     }
     
@@ -1143,7 +864,6 @@ body.dark .footer {
     .section-title { font-size: 3rem; }
     
     .nav-menu { display: flex; }
-    .mobile-menu-btn { display: none; }
     .mobile-nav { display: none; }
     
     .hero {
@@ -1172,11 +892,6 @@ body.dark .footer {
         justify-content: flex-start;
     }
     
-    .stats-bar {
-        grid-template-columns: repeat(4, 1fr);
-        padding: 2rem;
-    }
-    
     .steps-grid,
     .payout-grid {
         grid-template-columns: repeat(3, 1fr);
@@ -1188,11 +903,6 @@ body.dark .footer {
         gap: 2rem;
     }
     
-    .dashboard-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 2rem;
-    }
-    
     .footer-grid {
         grid-template-columns: repeat(4, 1fr);
     }
@@ -1200,10 +910,6 @@ body.dark .footer {
     .footer-bottom {
         flex-direction: row;
         justify-content: space-between;
-    }
-    
-    body {
-        padding-bottom: 0;
     }
 }
 
@@ -1226,24 +932,6 @@ body.dark .footer {
         padding: 0.25rem;
     }
     .mobile-item i { font-size: 1.2rem; }
-    
-    .stat-number { font-size: 1.5rem; }
-    .dashboard-value { font-size: 2rem; }
-}
-
-/* ===========================
-   UTILITIES & ANIMATIONS
-   =========================== */
-body {
-    padding-bottom: 68px;
-}
-
-@media (min-width: 1024px) {
-    body { padding-bottom: 0; }
-}
-
-.emoji-animate {
-    display: inline-block;
 }
 </style>
 </head>
@@ -1251,13 +939,13 @@ body {
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
-            <a href="/index.html" class="logo">
+            <a href="../index.html" class="logo">
                 <span class="logo-icon">🎯</span>
                 <span>SEOTIZE</span>
             </a>
             
             <ul class="nav-menu">
-                <li><a href="/index.html">Main Website</a></li>
+                <li><a href="../index.html">Main Website</a></li>
                 <li><a href="#how-it-works">How It Works</a></li>
                 <li><a href="#earning">Earning</a></li>
                 <li><a href="#payouts">Payouts</a></li>
@@ -1272,53 +960,18 @@ body {
                 <button class="theme-toggle" onclick="toggleTheme()">
                     <span id="themeIcon">🌙</span>
                 </button>
-                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
             </div>
         </div>
     </nav>
-
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <ul class="mobile-menu-links">
-            <li><a href="/index.html" onclick="toggleMobileMenu()">
-                <i class="ri-home-5-line"></i>
-                <span>Main Website</span>
-            </a></li>
-            <li><a href="#how-it-works" onclick="toggleMobileMenu()">
-                <i class="ri-information-line"></i>
-                <span>How It Works</span>
-            </a></li>
-            <li><a href="#earning" onclick="toggleMobileMenu()">
-                <i class="ri-money-dollar-circle-line"></i>
-                <span>Earning Methods</span>
-            </a></li>
-            <li><a href="#payouts" onclick="toggleMobileMenu()">
-                <i class="ri-wallet-3-line"></i>
-                <span>Payouts</span>
-            </a></li>
-            <li><a href="#faq" onclick="toggleMobileMenu()">
-                <i class="ri-question-line"></i>
-                <span>FAQ</span>
-            </a></li>
-            <li><a href="login.html" onclick="toggleMobileMenu()">
-                <i class="ri-login-box-line"></i>
-                <span>Partner Login</span>
-            </a></li>
-        </ul>
-    </div>
 
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
-                    <div class="hero-emoji emoji-animate">💰</div>
+                    <div class="hero-emoji">💰</div>
                     <h1>Earn Money with SEOTIZE Partners</h1>
-                    <p>Join thousands of users earning $5-50+ daily by completing simple SEO tasks, searching keywords, and helping businesses grow. No experience required!</p>
+                    <p>Work from anywhere, complete simple SEO tasks, and earn money on your own schedule. Join our global partner network today.</p>
                     <div class="hero-buttons">
                         <a href="login.html" class="cta">
                             <span>Start Earning Now</span>
@@ -1329,33 +982,10 @@ body {
                             <i class="ri-play-circle-line"></i>
                         </a>
                     </div>
-                    
-                    <div class="stats-bar">
-                        <div class="stat">
-                            <span class="stat-emoji emoji-animate">👥</span>
-                            <div class="stat-number" id="activeUsers">15,847</div>
-                            <div class="stat-label">Active Partners</div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-emoji emoji-animate">💵</span>
-                            <div class="stat-number" id="totalEarned">$2.3M+</div>
-                            <div class="stat-label">Total Earned</div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-emoji emoji-animate">📊</span>
-                            <div class="stat-number" id="avgDaily">$27</div>
-                            <div class="stat-label">Avg Daily Earning</div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-emoji emoji-animate">🌍</span>
-                            <div class="stat-number">150+</div>
-                            <div class="stat-label">Countries</div>
-                        </div>
-                    </div>
                 </div>
                 
                 <div class="hero-image-wrapper">
-                    <img src="https://media.giphy.com/media/l0MYunAI4j10uWbFm/giphy.gif" alt="Earning Money Online" class="hero-image">
+                    <img src="https://image-api.seotize.net/image-cdn/97cd3337-ae40-4239-8d26-bf17f34721cc" alt="Partner Dashboard" class="hero-image">
                 </div>
             </div>
         </div>
@@ -1370,26 +1000,23 @@ body {
             <div class="steps-grid">
                 <div class="step-card">
                     <div class="step-number">1</div>
-                    <div class="step-icon emoji-animate">📝</div>
-                    <h3>Sign Up & Get Verified</h3>
-                    <p>Create your free account, complete quick verification, and access your personal dashboard with available tasks.</p>
-                    <div class="step-reward">Get $2 Welcome Bonus</div>
+                    <div class="step-icon">📝</div>
+                    <h3>Sign Up Free</h3>
+                    <p>Create your free account in minutes. No fees, no hidden costs. Start with instant access to available tasks.</p>
                 </div>
                 
                 <div class="step-card">
                     <div class="step-number">2</div>
-                    <div class="step-icon emoji-animate">🔍</div>
-                    <h3>Complete SEO Tasks</h3>
-                    <p>Search for keywords on Google, visit websites, engage with content, and help improve real business rankings.</p>
-                    <div class="step-reward">Earn $0.10 - $2.50 per task</div>
+                    <div class="step-icon">🔍</div>
+                    <h3>Complete Tasks</h3>
+                    <p>Browse available SEO tasks, choose what works for you, and complete them following simple instructions.</p>
                 </div>
                 
                 <div class="step-card">
                     <div class="step-number">3</div>
-                    <div class="step-icon emoji-animate">💳</div>
-                    <h3>Get Paid Instantly</h3>
-                    <p>Withdraw your earnings through USDT (BEP20). Fast payouts with no minimum payout required!</p>
-                    <div class="step-reward">Instant payouts available</div>
+                    <div class="step-icon">💳</div>
+                    <h3>Get Paid</h3>
+                    <p>Withdraw your earnings via USDT (BEP20) with fast processing times. Minimum withdrawal starts at just $10.</p>
                 </div>
             </div>
         </div>
@@ -1398,190 +1025,32 @@ body {
     <!-- Earning Methods -->
     <section id="earning" class="section earning-methods">
         <div class="container">
-            <h2 class="section-title">Multiple Ways to Earn</h2>
-            <p class="section-subtitle">Choose tasks that fit your schedule and skills</p>
+            <h2 class="section-title">What You'll Be Doing</h2>
+            <p class="section-subtitle">Flexible tasks that fit your schedule</p>
             
             <div class="methods-grid">
                 <div class="method-card">
-                    <div class="method-icon emoji-animate">🔍</div>
+                    <div class="method-icon">🔍</div>
                     <h3>Keyword Search Tasks</h3>
-                    <p>Search for specific keywords on Google and interact with target websites naturally.</p>
-                    <div class="earning-range">
-                        <div class="earning-box">
-                            <div class="earning-amount">$0.10-$0.50</div>
-                            <div class="earning-label">per search</div>
-                        </div>
-                        <div class="earning-box">
-                            <div class="earning-amount">5-10 min</div>
-                            <div class="earning-label">per task</div>
-                        </div>
-                    </div>
+                    <p>Search for specific keywords on Google and visit target websites naturally to help improve their search rankings.</p>
                     <ul class="method-features">
                         <li>Simple Google searches</li>
                         <li>Natural website visits</li>
                         <li>No technical skills needed</li>
-                        <li>Available 24/7</li>
+                        <li>Tasks available 24/7</li>
                     </ul>
                 </div>
                 
                 <div class="method-card">
-                    <div class="method-icon emoji-animate">👥</div>
-                    <h3>User Engagement Tasks</h3>
-                    <p>Spend time on websites, read content, and create authentic user engagement signals.</p>
-                    <div class="earning-range">
-                        <div class="earning-box">
-                            <div class="earning-amount">$0.25-$1.00</div>
-                            <div class="earning-label">per engagement</div>
-                        </div>
-                        <div class="earning-box">
-                            <div class="earning-amount">10-15 min</div>
-                            <div class="earning-label">per task</div>
-                        </div>
-                    </div>
+                    <div class="method-icon">👥</div>
+                    <h3>User Engagement</h3>
+                    <p>Spend time on websites, interact with content, and create authentic engagement signals that benefit businesses.</p>
                     <ul class="method-features">
                         <li>Read articles and content</li>
                         <li>Browse product pages</li>
-                        <li>Interact with websites</li>
-                        <li>Higher paying tasks</li>
+                        <li>Natural interaction required</li>
+                        <li>Flexible time commitment</li>
                     </ul>
-                </div>
-                
-                <div class="method-card">
-                    <div class="method-icon emoji-animate">📊</div>
-                    <h3>Data Collection Tasks</h3>
-                    <p>Help collect valuable SEO data by reporting search results and website information.</p>
-                    <div class="earning-range">
-                        <div class="earning-box">
-                            <div class="earning-amount">$0.50-$2.50</div>
-                            <div class="earning-label">per task</div>
-                        </div>
-                        <div class="earning-box">
-                            <div class="earning-amount">15-30 min</div>
-                            <div class="earning-label">per task</div>
-                        </div>
-                    </div>
-                    <ul class="method-features">
-                        <li>Report search rankings</li>
-                        <li>Screenshot verification</li>
-                        <li>Detailed task instructions</li>
-                        <li>Premium task rewards</li>
-                    </ul>
-                </div>
-                
-                <div class="method-card">
-                    <div class="method-icon emoji-animate">🎯</div>
-                    <h3>Location-Based Tasks</h3>
-                    <p>Complete tasks specific to your geographic location for local SEO campaigns.</p>
-                    <div class="earning-range">
-                        <div class="earning-box">
-                            <div class="earning-amount">$1.00-$5.00</div>
-                            <div class="earning-label">per task</div>
-                        </div>
-                        <div class="earning-box">
-                            <div class="earning-amount">20-45 min</div>
-                            <div class="earning-label">per task</div>
-                        </div>
-                    </div>
-                    <ul class="method-features">
-                        <li>Local business searches</li>
-                        <li>Regional content tasks</li>
-                        <li>Higher value rewards</li>
-                        <li>Location verification bonus</li>
-                    </ul>
-                </div>
-                
-                <div class="method-card">
-                    <div class="method-icon emoji-animate">⭐</div>
-                    <h3>Bonus & Referral Program</h3>
-                    <p>Earn extra through daily bonuses, streaks, achievements, and referring friends.</p>
-                    <div class="earning-range">
-                        <div class="earning-box">
-                            <div class="earning-amount">$2-$20</div>
-                            <div class="earning-label">per referral</div>
-                        </div>
-                        <div class="earning-box">
-                            <div class="earning-amount">$1-$10</div>
-                            <div class="earning-label">daily bonus</div>
-                        </div>
-                    </div>
-                    <ul class="method-features">
-                        <li>Daily login bonuses</li>
-                        <li>Task completion streaks</li>
-                        <li>Friend referral rewards</li>
-                        <li>Achievement unlocks</li>
-                    </ul>
-                </div>
-                
-                <div class="method-card">
-                    <div class="method-icon emoji-animate">🚀</div>
-                    <h3>Premium Partner Program</h3>
-                    <p>Unlock higher-paying tasks and exclusive opportunities as a verified premium partner.</p>
-                    <div class="earning-range">
-                        <div class="earning-box">
-                            <div class="earning-amount">$5-$50</div>
-                            <div class="earning-label">per task</div>
-                        </div>
-                        <div class="earning-box">
-                            <div class="earning-amount">VIP</div>
-                            <div class="earning-label">access</div>
-                        </div>
-                    </div>
-                    <ul class="method-features">
-                        <li>Exclusive high-value tasks</li>
-                        <li>Priority task assignment</li>
-                        <li>Direct client projects</li>
-                        <li>Premium support access</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Live Dashboard -->
-    <section class="section live-dashboard">
-        <div class="container">
-            <h2 class="section-title">Live Partner Dashboard</h2>
-            <p class="section-subtitle">Real-time stats from our partner network</p>
-            
-            <div class="dashboard-grid">
-                <div class="dashboard-card">
-                    <div class="dashboard-icon emoji-animate">🏃‍♂️</div>
-                    <div class="dashboard-value" id="liveTasks">1,247</div>
-                    <div class="dashboard-label">Active Tasks</div>
-                    <div class="live-indicator">
-                        <div class="live-dot"></div>
-                        Live Updates
-                    </div>
-                </div>
-                
-                <div class="dashboard-card">
-                    <div class="dashboard-icon emoji-animate">💰</div>
-                    <div class="dashboard-value" id="liveEarnings">$18,432</div>
-                    <div class="dashboard-label">Earned Today</div>
-                    <div class="live-indicator">
-                        <div class="live-dot"></div>
-                        Updating Live
-                    </div>
-                </div>
-                
-                <div class="dashboard-card">
-                    <div class="dashboard-icon emoji-animate">👥</div>
-                    <div class="dashboard-value" id="livePartners">847</div>
-                    <div class="dashboard-label">Online Now</div>
-                    <div class="live-indicator">
-                        <div class="live-dot"></div>
-                        Real-time
-                    </div>
-                </div>
-                
-                <div class="dashboard-card">
-                    <div class="dashboard-icon emoji-animate">🎯</div>
-                    <div class="dashboard-value" id="liveCompletion">94.7%</div>
-                    <div class="dashboard-label">Success Rate</div>
-                    <div class="live-indicator">
-                        <div class="live-dot"></div>
-                        Live Stats
-                    </div>
                 </div>
             </div>
         </div>
@@ -1590,27 +1059,26 @@ body {
     <!-- Payout Methods -->
     <section id="payouts" class="section payout-methods">
         <div class="container">
-            <h2 class="section-title">Flexible Payout Options</h2>
-            <p class="section-subtitle">Fast USDT (BEP20) withdrawals</p>
+            <h2 class="section-title">Fast & Secure Payouts</h2>
+            <p class="section-subtitle">Get paid quickly via cryptocurrency</p>
             
             <div class="payout-grid">
                 <div class="payout-card">
-                    <div class="popular-badge">Most Popular</div>
-                    <div class="payout-icon emoji-animate">₮</div>
+                    <div class="payout-icon">₮</div>
                     <h3>USDT (BEP20)</h3>
-                    <div class="payout-min">Min: $10.00</div>
+                    <p>Fast and secure cryptocurrency payments on Binance Smart Chain. Low transaction fees and quick processing.</p>
                 </div>
                 
                 <div class="payout-card">
-                    <div class="payout-icon emoji-animate">⚡</div>
+                    <div class="payout-icon">⚡</div>
                     <h3>Fast Processing</h3>
-                    <div class="payout-min">24-48 hours</div>
+                    <p>Withdrawals processed within 24-48 hours. Track your payment status in real-time from your dashboard.</p>
                 </div>
                 
                 <div class="payout-card">
-                    <div class="payout-icon emoji-animate">🔒</div>
-                    <h3>Secure Payments</h3>
-                    <div class="payout-min">100% Safe</div>
+                    <div class="payout-icon">🔒</div>
+                    <h3>100% Secure</h3>
+                    <p>Your payments are protected with enterprise-grade security. All transactions are encrypted and verified.</p>
                 </div>
             </div>
         </div>
@@ -1620,76 +1088,56 @@ body {
     <section id="faq" class="section faq">
         <div class="container">
             <h2 class="section-title">Frequently Asked Questions</h2>
-            <p class="section-subtitle">Everything you need to know about earning with SEOTIZE</p>
+            <p class="section-subtitle">Everything you need to know</p>
             
             <div class="faq-grid">
                 <div class="faq-item">
                     <button class="faq-question" onclick="toggleFaq(this)">
-                        <span>How much can I really earn per day?</span>
+                        <span>How much can I earn?</span>
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>Earnings vary based on time invested and task availability. Beginners typically earn $5-15 daily, while active partners can earn $25-50+ per day. Premium partners often earn $100+ daily through exclusive high-value tasks.</p>
+                        <p>Earnings vary based on task availability and time invested. Tasks pay between $0.10 to $0.20 per completion. The more tasks you complete, the more you earn.</p>
                     </div>
                 </div>
                 
                 <div class="faq-item">
                     <button class="faq-question" onclick="toggleFaq(this)">
-                        <span>What exactly do I need to do?</span>
+                        <span>What do I need to get started?</span>
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>Tasks include searching for keywords on Google, visiting specific websites, reading content, taking screenshots, and reporting search results. All tasks come with clear instructions and are designed to create natural user engagement.</p>
+                        <p>All you need is a device with internet access and the ability to use Google. No special skills or experience required. We provide detailed instructions for every task.</p>
                     </div>
                 </div>
                 
                 <div class="faq-item">
                     <button class="faq-question" onclick="toggleFaq(this)">
-                        <span>How fast can I get paid?</span>
+                        <span>How do I withdraw my earnings?</span>
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>Payouts are processed via USDT (BEP20) and typically take 24-48 hours. The minimum withdrawal is $10. You can request payouts anytime once you have earnings in your account.</p>
+                        <p>Withdraw via USDT (BEP20) with a minimum of $10. Payouts are processed within 24-48 hours. You'll need a valid BEP20 wallet address to receive payments.</p>
                     </div>
                 </div>
                 
                 <div class="faq-item">
                     <button class="faq-question" onclick="toggleFaq(this)">
-                        <span>Do I need any special skills or experience?</span>
+                        <span>Is there any cost to join?</span>
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>No special skills required! If you can use Google and browse websites, you can complete our tasks. We provide detailed instructions for every task, and our support team is available 24/7 to help.</p>
+                        <p>Absolutely not! Joining SEOTIZE Partners is completely free. There are no registration fees, membership costs, or hidden charges. You only earn money.</p>
                     </div>
                 </div>
                 
                 <div class="faq-item">
                     <button class="faq-question" onclick="toggleFaq(this)">
-                        <span>Is this available in my country?</span>
+                        <span>Can I work from anywhere?</span>
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>SEOTIZE Partners is available in 150+ countries worldwide. We actually prefer partners from diverse locations as it helps our clients with global SEO campaigns. Location-specific tasks often pay higher rates.</p>
-                    </div>
-                </div>
-                
-                <div class="faq-item">
-                    <button class="faq-question" onclick="toggleFaq(this)">
-                        <span>How do I become a Premium Partner?</span>
-                        <span class="faq-icon">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <p>Premium Partner status is earned through consistent high-quality task completion, maintaining good ratings, and completing advanced verification. Premium Partners get access to exclusive $5-50 tasks and direct client projects.</p>
-                    </div>
-                </div>
-                
-                <div class="faq-item">
-                    <button class="faq-question" onclick="toggleFaq(this)">
-                        <span>Are there any fees or costs to join?</span>
-                        <span class="faq-icon">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <p>Joining SEOTIZE Partners is completely free! We never charge registration fees, monthly fees, or any other costs. You only earn money - we make money when our clients succeed through your work.</p>
+                        <p>Yes! SEOTIZE Partners is available globally. You can work from anywhere with an internet connection, on your own schedule, whenever tasks are available.</p>
                     </div>
                 </div>
             </div>
@@ -1700,11 +1148,11 @@ body {
     <section class="section final-cta">
         <div class="container">
             <div class="final-cta-content">
-                <h2>Ready to Start Earning Today?</h2>
-                <p>Join thousands of partners already earning daily income with SEOTIZE. Get your $2 welcome bonus and start your first task within minutes!</p>
+                <h2>Ready to Start Earning?</h2>
+                <p>Join our partner network and start earning money today. It's free, flexible, and simple.</p>
                 <div class="cta-buttons">
                     <a href="login.html" class="cta cta-white">
-                        <span>Join Partners Now</span>
+                        <span>Join Now</span>
                         <i class="ri-arrow-right-line"></i>
                     </a>
                     <a href="#how-it-works" class="cta">
@@ -1721,7 +1169,7 @@ body {
         <div class="container">
             <div class="footer-grid">
                 <div>
-                    <h3>SEOTIZE Partners</h3>
+                    <h3>Partners</h3>
                     <ul>
                         <li><a href="#how-it-works">How It Works</a></li>
                         <li><a href="#earning">Earning Methods</a></li>
@@ -1734,24 +1182,24 @@ body {
                     <ul>
                         <li><a href="login.html">Help Center</a></li>
                         <li><a href="login.html">Partner Guidelines</a></li>
-                        <li><a href="login.html">Task Instructions</a></li>
-                        <li><a href="login.html">Payment Help</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="login.html">Contact Support</a></li>
                     </ul>
                 </div>
                 <div>
                     <h3>Platform</h3>
                     <ul>
-                        <li><a href="/index.html">SEOTIZE Main</a></li>
-                        <li><a href="/index.html#features">Features</a></li>
-                        <li><a href="/index.html#pricing">Pricing</a></li>
-                        <li><a href="/blogs.html">Blog</a></li>
+                        <li><a href="../index.html">SEOTIZE Main</a></li>
+                        <li><a href="../index.html#features">Features</a></li>
+                        <li><a href="../index.html#pricing">Pricing</a></li>
+                        <li><a href="../blogs.html">Blog</a></li>
                     </ul>
                 </div>
                 <div>
                     <h3>Legal</h3>
                     <ul>
-                        <li><a href="/index.html">Terms of Service</a></li>
-                        <li><a href="/index.html">Privacy Policy</a></li>
+                        <li><a href="../index.html">Terms of Service</a></li>
+                        <li><a href="../index.html">Privacy Policy</a></li>
                         <li><a href="login.html">Payment Terms</a></li>
                         <li><a href="login.html">Partner Agreement</a></li>
                     </ul>
@@ -1772,7 +1220,7 @@ body {
     <!-- Mobile Bottom Navigation -->
     <div class="mobile-nav">
         <div class="mobile-items">
-            <a href="/index.html" class="mobile-item">
+            <a href="../index.html" class="mobile-item">
                 <i class="ri-home-5-line"></i>
                 <span>Home</span>
             </a>
@@ -1796,8 +1244,6 @@ body {
     </div>
 
     <script>
-        gsap.registerPlugin(ScrollTrigger);
-
         // Theme Toggle
         function toggleTheme() {
             document.body.classList.toggle('dark');
@@ -1813,14 +1259,6 @@ body {
                 document.body.classList.add('dark');
                 document.getElementById('themeIcon').textContent = '☀️';
             }
-        }
-
-        // Mobile Menu Toggle
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            const btn = document.querySelector('.mobile-menu-btn');
-            menu.classList.toggle('active');
-            btn.classList.toggle('active');
         }
 
         // FAQ Toggle
@@ -1853,141 +1291,10 @@ body {
                             top: targetPosition,
                             behavior: 'smooth'
                         });
-                        // Close mobile menu if open
-                        if (document.getElementById('mobileMenu').classList.contains('active')) {
-                            toggleMobileMenu();
-                        }
                     }
                 }
             });
         });
-
-        // Live Dashboard Animation
-        function animateLiveNumbers() {
-            // Active tasks
-            gsap.to("#liveTasks", {
-                textContent: () => Math.floor(Math.random() * 500) + 1000,
-                duration: 2,
-                ease: "none",
-                snap: { textContent: 1 }
-            });
-
-            // Live earnings
-            const earnings = Math.floor(Math.random() * 5000) + 15000;
-            gsap.to("#liveEarnings", {
-                textContent: "$" + earnings.toLocaleString(),
-                duration: 2,
-                ease: "none"
-            });
-
-            // Online partners
-            gsap.to("#livePartners", {
-                textContent: () => Math.floor(Math.random() * 200) + 700,
-                duration: 2,
-                ease: "none",
-                snap: { textContent: 1 }
-            });
-
-            // Success rate
-            gsap.to("#liveCompletion", {
-                textContent: () => (Math.random() * 5 + 93).toFixed(1) + "%",
-                duration: 2,
-                ease: "none"
-            });
-        }
-
-        // Hero Stats Animation
-        function animateHeroStats() {
-            gsap.to("#activeUsers", {
-                textContent: () => (Math.floor(Math.random() * 1000) + 15000).toLocaleString(),
-                duration: 3,
-                ease: "none",
-                snap: { textContent: 1 }
-            });
-
-            gsap.to("#totalEarned", {
-                textContent: () => "$" + (Math.random() * 0.5 + 2.3).toFixed(1) + "M+",
-                duration: 3,
-                ease: "none"
-            });
-
-            gsap.to("#avgDaily", {
-                textContent: () => "$" + Math.floor(Math.random() * 10 + 25),
-                duration: 3,
-                ease: "none",
-                snap: { textContent: 1 }
-            });
-        }
-
-        // GSAP Animations for Emojis
-        function initEmojiAnimations() {
-            const emojis = document.querySelectorAll('.emoji-animate');
-            
-            emojis.forEach((emoji, index) => {
-                // Floating animation
-                gsap.to(emoji, {
-                    y: -10,
-                    duration: 2 + (index * 0.2),
-                    ease: "power1.inOut",
-                    yoyo: true,
-                    repeat: -1
-                });
-                
-                // Rotation animation
-                gsap.to(emoji, {
-                    rotation: index % 2 === 0 ? 10 : -10,
-                    duration: 3 + (index * 0.3),
-                    ease: "power1.inOut",
-                    yoyo: true,
-                    repeat: -1
-                });
-                
-                // Scale pulse on scroll
-                gsap.from(emoji, {
-                    scale: 0.5,
-                    opacity: 0,
-                    duration: 0.8,
-                    ease: "back.out(1.7)",
-                    scrollTrigger: {
-                        trigger: emoji,
-                        start: 'top 85%',
-                        toggleActions: 'play none none reverse'
-                    }
-                });
-            });
-        }
-
-        // Card Animations
-        function initCardAnimations() {
-            gsap.utils.toArray('.step-card, .method-card, .payout-card, .dashboard-card').forEach((card, i) => {
-                gsap.from(card, {
-                    opacity: 0,
-                    y: 60,
-                    duration: 0.8,
-                    delay: i * 0.1,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: card,
-                        start: 'top 85%',
-                        toggleActions: 'play none none reverse'
-                    }
-                });
-            });
-            
-            // FAQ Items
-            gsap.utils.toArray('.faq-item').forEach((item, i) => {
-                gsap.from(item, {
-                    opacity: 0,
-                    x: -40,
-                    duration: 0.6,
-                    delay: i * 0.1,
-                    scrollTrigger: {
-                        trigger: item,
-                        start: 'top 90%'
-                    }
-                });
-            });
-        }
 
         // Update Mobile Nav Active State
         const sections = ['how-it-works', 'earning', 'faq'];
@@ -2015,19 +1322,41 @@ body {
             });
         });
 
-        // Initialize on Load
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
         document.addEventListener('DOMContentLoaded', () => {
             loadTheme();
-            initEmojiAnimations();
-            initCardAnimations();
-            animateHeroStats();
-            animateLiveNumbers();
             
-            // Update live stats every 5 seconds
-            setInterval(animateLiveNumbers, 5000);
+            // Animate cards on scroll
+            gsap.utils.toArray('.step-card, .method-card, .payout-card').forEach((card, i) => {
+                gsap.from(card, {
+                    opacity: 0,
+                    y: 60,
+                    duration: 0.8,
+                    delay: i * 0.1,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 85%',
+                        toggleActions: 'play none none reverse'
+                    }
+                });
+            });
             
-            // Update hero stats every 10 seconds
-            setInterval(animateHeroStats, 10000);
+            // FAQ Items
+            gsap.utils.toArray('.faq-item').forEach((item, i) => {
+                gsap.from(item, {
+                    opacity: 0,
+                    x: -40,
+                    duration: 0.6,
+                    delay: i * 0.1,
+                    scrollTrigger: {
+                        trigger: item,
+                        start: 'top 90%'
+                    }
+                });
+            });
         });
 
         // Navbar scroll effect
