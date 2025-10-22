@@ -281,7 +281,8 @@ nav {
     font-size: 0.875rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
-    animation: fadeInDown 0.8s ease;
+    opacity: 1;
+    visibility: visible;
 }
 
 @keyframes fadeInDown {
@@ -445,6 +446,8 @@ nav {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    opacity: 1;
+    visibility: visible;
 }
 
 .benefit-item {
@@ -456,6 +459,8 @@ nav {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     transition: all 0.3s ease;
+    opacity: 1;
+    visibility: visible;
 }
 
 .benefit-item:hover {
@@ -504,6 +509,8 @@ nav {
     position: relative;
     overflow: hidden;
     box-shadow: 0 8px 20px var(--primary-glow);
+    opacity: 1;
+    visibility: visible;
 }
 
 .google-btn::before {
@@ -1038,29 +1045,32 @@ nav {
             loadTheme();
             
             // Logo icon animation - EXACTLY like partner/index.html
-            gsap.to('#logoIcon', {
-                rotation: 360,
-                duration: 1.5,
-                ease: "elastic.out(1, 0.3)",
-                repeat: -1,
-                repeatDelay: 5
-            });
+            if (typeof gsap !== 'undefined') {
+                gsap.to('#logoIcon', {
+                    rotation: 360,
+                    duration: 1.5,
+                    ease: "elastic.out(1, 0.3)",
+                    repeat: -1,
+                    repeatDelay: 5
+                });
+                
+                gsap.to('#logoIcon', {
+                    scale: 1.1,
+                    duration: 0.8,
+                    ease: "power2.inOut",
+                    repeat: -1,
+                    yoyo: true
+                });
+            }
             
-            gsap.to('#logoIcon', {
-                scale: 1.1,
-                duration: 0.8,
-                ease: "power2.inOut",
-                repeat: -1,
-                yoyo: true
-            });
-            
-            // Hero animations (desktop only)
-            if (window.innerWidth > 768) {
+            // Hero animations (desktop only) - Safe with fallback
+            if (window.innerWidth > 768 && typeof gsap !== 'undefined') {
                 gsap.from('.hero-badge', {
                     opacity: 0,
                     y: -20,
                     duration: 0.8,
-                    ease: "power3.out"
+                    ease: "power3.out",
+                    clearProps: "all"
                 });
 
                 gsap.from('.hero-icon', {
@@ -1068,7 +1078,8 @@ nav {
                     scale: 0.5,
                     duration: 1,
                     delay: 0.2,
-                    ease: "elastic.out(1, 0.5)"
+                    ease: "elastic.out(1, 0.5)",
+                    clearProps: "all"
                 });
 
                 gsap.from('.hero-title', {
@@ -1076,7 +1087,8 @@ nav {
                     y: 30,
                     duration: 0.8,
                     delay: 0.4,
-                    ease: "power3.out"
+                    ease: "power3.out",
+                    clearProps: "all"
                 });
 
                 gsap.from('.hero-subtitle', {
@@ -1084,7 +1096,8 @@ nav {
                     y: 20,
                     duration: 0.8,
                     delay: 0.6,
-                    ease: "power3.out"
+                    ease: "power3.out",
+                    clearProps: "all"
                 });
 
                 gsap.from('.stat-item', {
@@ -1093,50 +1106,58 @@ nav {
                     duration: 0.6,
                     delay: 0.8,
                     stagger: 0.1,
-                    ease: "power3.out"
+                    ease: "power3.out",
+                    clearProps: "all"
                 });
             }
 
-            // Login card animations
-            gsap.from('.login-icon', {
-                opacity: 0,
-                scale: 0.5,
-                duration: 0.8,
-                ease: "elastic.out(1, 0.5)"
-            });
+            // Login card animations - Safe with fallback
+            if (typeof gsap !== 'undefined') {
+                gsap.from('.login-icon', {
+                    opacity: 0,
+                    scale: 0.5,
+                    duration: 0.8,
+                    ease: "elastic.out(1, 0.5)",
+                    clearProps: "all"
+                });
 
-            gsap.from('.login-title', {
-                opacity: 0,
-                y: 20,
-                duration: 0.6,
-                delay: 0.2,
-                ease: "power3.out"
-            });
+                gsap.from('.login-title', {
+                    opacity: 0,
+                    y: 20,
+                    duration: 0.6,
+                    delay: 0.2,
+                    ease: "power3.out",
+                    clearProps: "all"
+                });
 
-            gsap.from('.login-subtitle', {
-                opacity: 0,
-                y: 20,
-                duration: 0.6,
-                delay: 0.3,
-                ease: "power3.out"
-            });
+                gsap.from('.login-subtitle', {
+                    opacity: 0,
+                    y: 20,
+                    duration: 0.6,
+                    delay: 0.3,
+                    ease: "power3.out",
+                    clearProps: "all"
+                });
 
-            gsap.from('.benefit-item', {
-                opacity: 0,
-                x: -30,
-                duration: 0.6,
-                delay: 0.4,
-                stagger: 0.1,
-                ease: "power3.out"
-            });
+                gsap.from('.benefit-item', {
+                    opacity: 0,
+                    x: -30,
+                    duration: 0.6,
+                    delay: 0.4,
+                    stagger: 0.1,
+                    ease: "power3.out",
+                    clearProps: "all"
+                });
 
-            gsap.from('.google-btn', {
-                opacity: 0,
-                y: 20,
-                duration: 0.6,
-                delay: 0.8,
-                ease: "power3.out"
-            });
+                gsap.from('.google-btn', {
+                    opacity: 0,
+                    y: 20,
+                    duration: 0.6,
+                    delay: 0.8,
+                    ease: "power3.out",
+                    clearProps: "all"
+                });
+            }
         });
 
         // Navbar scroll effect
