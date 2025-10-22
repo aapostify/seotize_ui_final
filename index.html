@@ -203,6 +203,7 @@
         @media (max-width: 1024px) {
             .nav-menu { display: none; }
             .hero-container, .partner-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .hero-container > div:last-child { order: -1; }
             .features-container { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
             .pricing-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
             .pricing-card { padding: 2rem; }
@@ -213,6 +214,8 @@
             .section { padding: 4rem 1.5rem; }
             .hero h1 { font-size: 2rem; }
             .hero p { font-size: 1rem; }
+            .hero-container > div:last-child { order: -1; }
+            .hero-controls { bottom: 80px; }
             .section-title { font-size: 2rem; }
             .section-subtitle { font-size: 1rem; }
             .features-container { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
@@ -326,10 +329,6 @@
                 </div>
                 <div class="pricing-grid" id="hostingGrid"></div>
                 <div class="pricing-card-mobile" id="hostingGridMobile"></div>
-                <div class="free-plan-note">
-                    <h4>🎉 Lifetime Free Plan Available!</h4>
-                    <p>Start with our completely free plan - perfect for small businesses and personal projects. Get up to 30 articles and 100 images hosted for free, forever. No credit card required, no hidden fees. Upgrade anytime as your business grows!</p>
-                </div>
             </div>
             
             <div id="taskPricing" style="display: none;">
@@ -626,7 +625,7 @@
             
             // Mobile accordion version
             mobileGrid.innerHTML = Object.entries(appData.hostingPlans).map(([key, plan], index) => `
-                <div class="pricing-card-header-mobile ${index === 0 ? 'active' : ''}" onclick="togglePricingMobile(${index}, 'hosting')">
+                <div class="pricing-card-header-mobile" onclick="togglePricingMobile(${index}, 'hosting')">
                     <div class="pricing-card-title-mobile">
                         <div>
                             <h3>${plan.name}</h3>
@@ -634,10 +633,10 @@
                         </div>
                         <div style="display: flex; align-items: center; gap: 1rem;">
                             <div class="price" style="margin: 0;">$${plan.price[currentPeriod]}<span style="font-size: 0.8rem;">/${currentPeriod === '3month' ? '3mo' : currentPeriod === '6month' ? '6mo' : 'year'}</span></div>
-                            <i class="ri-arrow-down-s-line pricing-card-toggle-icon ${index === 0 ? 'active' : ''}"></i>
+                            <i class="ri-arrow-down-s-line pricing-card-toggle-icon"></i>
                         </div>
                     </div>
-                    <div class="pricing-card-content-mobile ${index === 0 ? 'active' : ''}" id="hosting-mobile-${index}">
+                    <div class="pricing-card-content-mobile" id="hosting-mobile-${index}">
                         <ul class="pricing-features" style="margin-top: 1.5rem;">${plan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
                         <a href="connect.html" class="cta" style="width: 100%; justify-content: center; margin-top: 1rem;">${plan.name === 'Free' ? 'Get Started' : 'Upgrade Now'}</a>
                     </div>
@@ -663,7 +662,7 @@
             
             // Mobile accordion version
             mobileGrid.innerHTML = Object.entries(appData.taskPricing).map(([key, plan], index) => `
-                <div class="pricing-card-header-mobile ${index === 1 ? 'active' : ''}" onclick="togglePricingMobile(${index}, 'task')">
+                <div class="pricing-card-header-mobile" onclick="togglePricingMobile(${index}, 'task')">
                     <div class="pricing-card-title-mobile">
                         <div>
                             <h3>${plan.name}</h3>
@@ -671,10 +670,10 @@
                         </div>
                         <div style="display: flex; align-items: center; gap: 1rem;">
                             <div class="price" style="margin: 0;">$${plan.price.toFixed(2)}<span style="font-size: 0.8rem;">/click</span></div>
-                            <i class="ri-arrow-down-s-line pricing-card-toggle-icon ${index === 1 ? 'active' : ''}"></i>
+                            <i class="ri-arrow-down-s-line pricing-card-toggle-icon"></i>
                         </div>
                     </div>
-                    <div class="pricing-card-content-mobile ${index === 1 ? 'active' : ''}" id="task-mobile-${index}">
+                    <div class="pricing-card-content-mobile" id="task-mobile-${index}">
                         <p style="color: var(--text-muted); margin-top: 1rem; font-size: 0.9rem;">Up to ${plan.locations} concurrent location${plan.locations > 1 ? 's' : ''}</p>
                         <ul class="pricing-features" style="margin-top: 1rem;">${plan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
                         <a href="connect.html" class="cta" style="width: 100%; justify-content: center; margin-top: 1rem;">Get Started</a>
@@ -774,6 +773,32 @@
 
         document.getElementById('featureModal').addEventListener('click', e => { if (e.target.id === 'featureModal') closeFeatureModal(); });
         document.getElementById('blogModal').addEventListener('click', e => { if (e.target.id === 'blogModal') closeBlogModal(); });
+        
+        // Update mobile nav active state on scroll
+        const sections = ['home', 'features', 'pricing'];
+        const mobileItems = document.querySelectorAll('.mobile-item');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = sectionId;
+                    }
+                }
+            });
+            
+            mobileItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === `#${current}` || 
+                    (current === 'home' && item.getAttribute('href') === 'index.html')) {
+                    item.classList.add('active');
+                }
+            });
+        });
     </script>
 </body>
 </html>
