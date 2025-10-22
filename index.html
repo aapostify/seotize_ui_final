@@ -100,6 +100,8 @@
         .pricing-features { list-style: none; margin: 1.75rem 0; flex: 1; }
         .pricing-features li { padding: 0.75rem 0; color: var(--text-light); display: flex; align-items: flex-start; gap: 0.875rem; font-size: 0.95rem; line-height: 1.6; }
         .pricing-features li i { color: var(--success); font-size: 1.25rem; margin-top: 0.15rem; flex-shrink: 0; }
+        .pricing-card.free-plan .pricing-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem 1rem; }
+        .pricing-card.free-plan .pricing-features li { padding: 0.5rem 0; }
         .free-plan-note { max-width: 1400px; margin: 3rem auto 0; padding: 2rem; background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%); border-radius: 20px; border: 2px solid var(--border); text-align: center; }
         .free-plan-note h4 { font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 1rem; }
         .free-plan-note p { color: var(--text-light); font-size: 1.05rem; line-height: 1.7; max-width: 800px; margin: 0 auto; }
@@ -472,7 +474,7 @@
     <!-- Mobile Navigation -->
     <div class="mobile-nav">
         <div class="mobile-items">
-            <a href="index.html" class="mobile-item active">
+            <a href="#home" class="mobile-item active">
                 <i class="ri-home-5-line"></i>
                 <span>Home</span>
             </a>
@@ -620,7 +622,7 @@
             grid.innerHTML = orderedPlans.map(key => {
                 const plan = appData.hostingPlans[key];
                 return `
-                <div class="pricing-card ${plan.popular ? 'popular' : ''}">
+                <div class="pricing-card ${plan.popular ? 'popular' : ''} ${key === 'free' ? 'free-plan' : ''}">
                     ${plan.popular ? '<div class="popular-badge">Most Popular</div>' : ''}
                     <h3>${plan.name}</h3>
                     <div class="price">$${plan.price[currentPeriod]}<span>/${currentPeriod === '3month' ? '3mo' : currentPeriod === '6month' ? '6mo' : 'year'}</span></div>
@@ -630,8 +632,9 @@
                 `;
             }).join('');
             
-            // Mobile accordion version - reorder so Free comes last
-            mobileGrid.innerHTML = orderedPlans.map((key, index) => {
+            // Mobile accordion version - reorder so Free comes first
+            const mobileOrderedPlans = ['free', 'basic', 'professional', 'enterprise'];
+            mobileGrid.innerHTML = mobileOrderedPlans.map((key, index) => {
                 const plan = appData.hostingPlans[key];
                 return `
                 <div class="pricing-card-header-mobile" onclick="togglePricingMobile(${index}, 'hosting')">
@@ -801,10 +804,10 @@
                 }
             });
             
-            mobileItems.forEach(item => {
+                mobileItems.forEach(item => {
                 item.classList.remove('active');
                 if (item.getAttribute('href') === `#${current}` || 
-                    (current === 'home' && item.getAttribute('href') === 'index.html')) {
+                    (current === 'home' && item.getAttribute('href') === '#home')) {
                     item.classList.add('active');
                 }
             });
