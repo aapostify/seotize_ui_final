@@ -117,12 +117,16 @@ nav {
 
 .logo-icon {
     font-size: 1.75rem;
+    width: 32px;
+    height: 32px;
     background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.3));
-    display: inline-block;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+    color: white;
+    font-weight: 800;
 }
 
 /* Desktop Menu */
@@ -247,8 +251,7 @@ nav {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    padding-top: 6rem;
-    padding-bottom: 2rem;
+    padding: 6rem 2rem 2rem 2rem;
     background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
     position: relative;
     overflow: hidden;
@@ -1004,7 +1007,7 @@ body.dark .footer {
 
 .mobile-items {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 0.5rem;
     max-width: 600px;
     height: 100%;
@@ -1141,19 +1144,25 @@ body.dark .footer {
 /* ===========================
    RESPONSIVE - SMALL MOBILE
    =========================== */
-@media (max-width: 480px) {
-    .section { padding: 3rem 1rem; }
-    .section-title { font-size: 1.75rem; }
-    .section-subtitle { font-size: 1rem; }
-    
-    .hero h1 { font-size: 2rem; }
-    .hero p { font-size: 1rem; }
-    .hero-emoji { font-size: 3rem; }
-    
-    .mobile-items { 
-        gap: 0.25rem;
-        grid-template-columns: repeat(4, 1fr);
+    @media (max-width: 768px) {
+        .footer-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
+    
+    @media (max-width: 480px) {
+        .section { padding: 3rem 1rem; }
+        .section-title { font-size: 1.75rem; }
+        .section-subtitle { font-size: 1rem; }
+        
+        .hero h1 { font-size: 2rem; }
+        .hero p { font-size: 1rem; }
+        .hero-emoji { font-size: 3rem; }
+        
+        .mobile-items { 
+            gap: 0.25rem;
+            grid-template-columns: repeat(5, 1fr);
+        }
     .mobile-item {
         font-size: 0.65rem;
         gap: 0.15rem;
@@ -1165,10 +1174,10 @@ body.dark .footer {
     .grow-content p { font-size: 1rem; }
     .grow-icon { font-size: 3.5rem; }
     
-    .footer-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
+        .footer-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
 }
 </style>
 </head>
@@ -1177,11 +1186,12 @@ body.dark .footer {
     <nav>
         <div class="nav-container">
             <a href="index.html" class="logo">
-                <span class="logo-icon">🎯</span>
+                <span class="logo-icon" id="logoIcon">S</span>
                 <span>SEOTIZE</span>
             </a>
             
             <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
                 <li><a href="#how-it-works">How It Works</a></li>
                 <li><a href="#earning">Earning</a></li>
                 <li><a href="#payouts">Payouts</a></li>
@@ -1509,26 +1519,6 @@ body.dark .footer {
         </div>
     </section>
 
-    <!-- Final CTA -->
-    <section class="section final-cta">
-        <div class="container">
-            <div class="final-cta-content">
-                <h2>Ready to Start Earning?</h2>
-                <p>Join our partner network and start earning money today. It's free, flexible, and simple.</p>
-                <div class="cta-buttons">
-                    <a href="login.html" class="cta cta-white">
-                        <span>Join Now</span>
-                        <i class="ri-arrow-right-line"></i>
-                    </a>
-                    <a href="#how-it-works" class="cta">
-                        <span>Learn More</span>
-                        <i class="ri-play-circle-line"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -1585,6 +1575,10 @@ body.dark .footer {
     <!-- Mobile Bottom Navigation -->
     <div class="mobile-nav">
         <div class="mobile-items">
+            <a href="index.html" class="mobile-item">
+                <i class="ri-home-5-line"></i>
+                <span>Home</span>
+            </a>
             <a href="#how-it-works" class="mobile-item">
                 <i class="ri-information-line"></i>
                 <span>How It Works</span>
@@ -1728,6 +1722,23 @@ body.dark .footer {
 
         document.addEventListener('DOMContentLoaded', () => {
             loadTheme();
+            
+            // Logo icon animation
+            gsap.to('#logoIcon', {
+                rotation: 360,
+                duration: 1.5,
+                ease: "elastic.out(1, 0.3)",
+                repeat: -1,
+                repeatDelay: 5
+            });
+            
+            gsap.to('#logoIcon', {
+                scale: 1.1,
+                duration: 0.8,
+                ease: "power2.inOut",
+                repeat: -1,
+                yoyo: true
+            });
             
             // Hero animations
             gsap.from('.hero-text', {
