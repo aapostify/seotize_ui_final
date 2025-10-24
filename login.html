@@ -984,7 +984,7 @@
             try {
                 const r = await fetch(`${API}/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass, 'cf-turnstile-response': token }) });
                 const d = await r.json(); btn.classList.remove('loading'); btn.innerHTML = 'Sign In';
-                if (d.status === 'success') { setCookie('session_token', d.data.session_token, remember ? 7 : null); toast('Login successful!', 'success'); setTimeout(() => window.location.href = '/dashboard17', 1000); }
+                if (d.status === 'success') { setCookie('session_token', d.data.session_token, remember ? 7 : null); toast('Login successful!', 'success'); setTimeout(() => window.location.href = '/dashboard', 1000); }
                 else { toast(d.error?.message || 'Login failed', 'error'); token = null; if (window.turnstile) window.turnstile.reset(); }
             } catch (err) { btn.classList.remove('loading'); btn.innerHTML = 'Sign In'; toast('Network error', 'error'); token = null; if (window.turnstile) window.turnstile.reset(); }
         }
@@ -998,7 +998,7 @@
         document.getElementById('loginForm').addEventListener('submit', login);
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (getCookie('session_token')) { window.location.href = '/dashboard17'; return; }
+            if (getCookie('session_token')) { window.location.href = '/dashboard'; return; }
             loadTheme();
             if (window.innerWidth > 768) { type(); setInterval(() => { idx = (idx + 1) % texts.length; type(); }, 4000); }
         });
