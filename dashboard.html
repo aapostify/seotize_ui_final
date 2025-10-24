@@ -3107,6 +3107,17 @@ async function api(endpoint, options = {}) {
 
         const data = await response.json();
 
+        // Check if token is invalid (401 Unauthorized)
+        if (response.status === 401 || response.status === 403) {
+            // Clear invalid token
+            document.cookie = 'session_token=; path=/; Domain=.seotize.net; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            localStorage.removeItem('authToken');
+            
+            // Redirect to login
+            window.location.href = '/login.html';
+            return;
+        }
+
         if (!response.ok) {
             throw new Error(data.error?.message || data.message || 'API Error');
         }
