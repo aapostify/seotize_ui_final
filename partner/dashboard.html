@@ -2023,7 +2023,7 @@ function showModal(title, content, width = '600px') {
 async function logout() {
     document.cookie = 'session_token_partner=;path=/;domain=.seotize.net;expires=Thu, 01 Jan 1970 00:00:00 GMT';
     localStorage.removeItem('partnerAuthToken');
-    window.location.href = '/login';
+    window.location.href = '/partner/login';
 }
 
 // Close dropdown when clicking outside
