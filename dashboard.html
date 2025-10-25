@@ -3111,6 +3111,7 @@ async function api(endpoint, options = {}) {
         if (response.status === 401 || response.status === 403) {
             // Clear invalid token
             document.cookie = 'session_token=; path=/; Domain=.seotize.net; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            document.cookie = 'session_token=; path=/; Domain=seotize.net; expires=Thu, 01 Jan 1970 00:00:00 GMT';
             localStorage.removeItem('authToken');
             
             // Redirect to login
