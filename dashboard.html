@@ -3104,10 +3104,22 @@ async function api(endpoint, options = {}) {
                 ...(options.headers || {})
             }
         });
+        
+        // Check for 401/403 BEFORE parsing JSON
+        if (response.status === 401 || response.status === 403) {
+            // Clear cookies and redirect to login
+            document.cookie = 'session_token=; path=/; Domain=.seotize.net; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            localStorage.removeItem('authToken');
+            window.location.href = '/login.html';
+            return; // Stop execution
+        }
+        
         const data = await response.json();
+        
         if (!response.ok) {
             throw new Error(data.error?.message || data.message || 'API Error');
         }
+        
         return data;
     } catch (error) {
         console.error('API Error:', error);
