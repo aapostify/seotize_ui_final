@@ -3108,7 +3108,7 @@ async function api(endpoint, options = {}) {
         // Check for 401/403 BEFORE parsing JSON
         if (response.status === 401 || response.status === 403) {
             // Clear cookies and redirect to login
-            document.cookie = 'session_token=; path=/; Domain=.seotize.net; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            document.cookie = 'session_token=; path=/; Secure; SameSite=Lax; expires=Thu, 01 Jan 1970 00:00:00 GMT';
             localStorage.removeItem('authToken');
             window.location.href = '/login.html';
             return; // Stop execution
@@ -7440,7 +7440,7 @@ async function logout() {
         console.error('Logout error:', error);
     } finally {
         // Clear cookie with correct Domain attribute
-        document.cookie = 'session_token=; path=/; Domain=.seotize.net; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        document.cookie = 'session_token=; path=/; Secure; SameSite=Lax; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         localStorage.removeItem('authToken');
         window.location.href = '/login.html';
     }
