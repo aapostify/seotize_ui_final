@@ -990,7 +990,7 @@
         }
 
         function toast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = `toast ${type} show`; setTimeout(() => t.classList.remove('show'), 3000); }
-        function setCookie(n, v, d) { let e = ""; if (d) { const dt = new Date(); dt.setTime(dt.getTime() + (d * 24 * 60 * 60 * 1000)); e = "; expires=" + dt.toUTCString(); } document.cookie = n + "=" + (v || "") + e + "; path=/; SameSite=Lax; Secure"; }
+        function setCookie(n, v, d) { let e = ""; if (d) { const dt = new Date(); dt.setTime(dt.getTime() + (d * 24 * 60 * 60 * 1000)); e = "; expires=" + dt.toUTCString(); } document.cookie = n + "=" + (v || "") + e + "; path=/; Domain=.seotize.net; SameSite=Lax; Secure"; }
         function getCookie(n) { const nEQ = n + "=", ca = document.cookie.split(';'); for (let i = 0; i < ca.length; i++) { let c = ca[i]; while (c.charAt(0) == ' ') c = c.substring(1, c.length); if (c.indexOf(nEQ) == 0) return c.substring(nEQ.length, c.length); } return null; }
 
         document.getElementById('email').addEventListener('input', e => validate(e.target, 'emailIcon'));
