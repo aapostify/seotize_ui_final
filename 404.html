@@ -1,10 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>404 Not Found</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Page Not Found</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #000;
+    }
+    img {
+      max-width: 100%;
+      max-height: 100vh;
+      object-fit: contain;
+    }
+  </style>
 </head>
 <body>
-  <h1>404 - Page Not Found</h1>
+  <img id="errorImage" alt="404 Error">
+  
+  <script>
+    const images = [
+      'https://images.seotize.workers.dev/image-cdn/98414ebd-0aed-402e-841d-58cf2b1c48f6',
+      'https://images.seotize.workers.dev/image-cdn/0c3c410e-2aa8-4099-8be1-3852528e26ce',
+      'https://images.seotize.workers.dev/image-cdn/935e81ad-aa96-4b8c-94f0-791c1f143fd5',
+      'https://images.seotize.workers.dev/image-cdn/b982a2c9-a1f1-474a-9996-8a131561d359',
+      'https://images.seotize.workers.dev/image-cdn/32af8e93-b954-4846-acc1-5657cf369844',
+      'https://images.seotize.workers.dev/image-cdn/fa1e63d5-e5b2-4465-bf6b-ff35872dce8f',
+      'https://images.seotize.workers.dev/image-cdn/4b2d0b88-3119-43e4-90ad-99b1a9658107',
+      'https://images.seotize.workers.dev/image-cdn/3499e34e-6314-4b03-ad15-ff0de1c4d38b',
+      'https://images.seotize.workers.dev/image-cdn/ba3f48bb-3335-4a3f-b249-91b721286c31',
+      'https://images.seotize.workers.dev/image-cdn/2dda09c5-2171-4edc-968e-08ce7a35108d'
+    ];
+    
+    // Pick random image
+    const randomImage = images[Math.floor(Math.random() * images.length)];
+    document.getElementById('errorImage').src = randomImage;
+  </script>
 </body>
 </html>
