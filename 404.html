@@ -16,37 +16,45 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: #000;
-      gap: 30px;
+      background: #1a1a1a;
       padding: 20px;
     }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
     img {
-      max-width: 100%;
-      max-height: 70vh;
+      max-width: 90%;
+      max-height: 60vh;
       object-fit: contain;
+      border-radius: 10px;
     }
     .home-btn {
-      padding: 15px 40px;
-      font-size: 18px;
+      display: inline-block;
+      padding: 15px 50px;
+      font-size: 20px;
       font-weight: bold;
-      color: #fff;
+      color: #ffffff;
       background: #0066ff;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       text-decoration: none;
-      transition: background 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);
+      transition: all 0.3s ease;
     }
     .home-btn:hover {
       background: #0052cc;
-      box-shadow: 0 6px 20px rgba(0, 102, 255, 0.5);
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
-  <img id="errorImage" alt="404 Error">
-  <a href="/" class="home-btn">Go to Home</a>
+  <div class="container">
+    <img id="errorImage" alt="404 Error">
+    <a href="/" class="home-btn">Go to Home</a>
+  </div>
   
   <script>
     const images = [
@@ -62,7 +70,6 @@
       'https://images.seotize.workers.dev/image-cdn/2dda09c5-2171-4edc-968e-08ce7a35108d'
     ];
     
-    // Pick random image
     const randomImage = images[Math.floor(Math.random() * images.length)];
     document.getElementById('errorImage').src = randomImage;
   </script>
