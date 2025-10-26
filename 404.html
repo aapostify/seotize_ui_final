@@ -11,50 +11,47 @@
       box-sizing: border-box;
     }
     body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background: #1a1a1a;
-      padding: 20px;
-    }
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 30px;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background: #000;
+      position: relative;
     }
     img {
-      max-width: 90%;
-      max-height: 60vh;
-      object-fit: contain;
-      border-radius: 10px;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
     .home-btn {
-      display: inline-block;
-      padding: 15px 50px;
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 18px 60px;
       font-size: 20px;
-      font-weight: bold;
+      font-weight: 600;
       color: #ffffff;
-      background: #0066ff;
-      border: none;
-      border-radius: 10px;
+      background: rgba(0, 102, 255, 0.95);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50px;
       cursor: pointer;
       text-decoration: none;
       transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      z-index: 1000;
     }
     .home-btn:hover {
-      background: #0052cc;
-      transform: scale(1.05);
+      background: rgba(0, 82, 204, 0.95);
+      transform: translateX(-50%) translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 102, 255, 0.6);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <img id="errorImage" alt="404 Error">
-    <a href="/" class="home-btn">Go to Home</a>
-  </div>
+  <img id="errorImage" alt="404 Error">
+  <a href="/" class="home-btn">← Back to Home</a>
   
   <script>
     const images = [
