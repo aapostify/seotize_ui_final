@@ -1,159 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 - Page Not Found | SEOTIZE</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Inter', sans-serif;
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-      background: #0a0e1a;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .error-image {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    
-    .overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, rgba(10, 14, 26, 0.3) 0%, rgba(10, 14, 26, 0.7) 100%);
-      z-index: 1;
-    }
-    
-    .content {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      padding: 2rem;
-    }
-    
-    .error-code {
-      font-size: clamp(4rem, 12vw, 8rem);
-      font-weight: 800;
-      background: linear-gradient(135deg, #ffffff 0%, #3b82f6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      line-height: 1;
-      margin-bottom: 1rem;
-      text-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
-    }
-    
-    .error-message {
-      font-size: clamp(1.25rem, 3vw, 1.75rem);
-      color: #f1f5f9;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-    }
-    
-    .error-description {
-      font-size: clamp(0.9rem, 2vw, 1.1rem);
-      color: #cbd5e1;
-      margin-bottom: 2.5rem;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    
-    .home-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 1rem 2rem;
-      background: linear-gradient(135deg, #2563eb, #1e40af);
-      color: white;
-      text-decoration: none;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 1rem;
-      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
-      transition: all 0.3s;
-      border: none;
-      cursor: pointer;
-    }
-    
-    .home-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 35px rgba(37, 99, 235, 0.5);
-    }
-    
-    .home-btn i {
-      font-size: 1.2rem;
-    }
-    
-    @media (max-width: 768px) {
-      .content {
-        padding: 1.5rem;
-      }
-      
-      .error-description {
-        font-size: 0.95rem;
-        margin-bottom: 2rem;
-      }
-      
-      .home-btn {
-        padding: 0.875rem 1.75rem;
-        font-size: 0.95rem;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | SEOTIZE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        :root {
+            --bg: #fafbfc; --bg-secondary: #ffffff; --text: #0f172a; --text-light: #64748b;
+            --text-muted: #94a3b8; --border: #e2e8f0; --primary: #2563eb; --primary-dark: #1e40af;
+            --primary-glow: rgba(37, 99, 235, 0.2); --success: #10b981; --nav-bg: rgba(255, 255, 255, 0.85);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.06); --bg-dark: #1a1f2e;
+        }
+        
+        body.dark {
+            --bg: #0a0e1a; --bg-secondary: #1a1f2e; --text: #f1f5f9; --text-light: #cbd5e1;
+            --text-muted: #94a3b8; --border: #2d3748; --primary: #3b82f6; --primary-dark: #2563eb;
+            --primary-glow: rgba(59, 130, 246, 0.25); --nav-bg: rgba(26, 31, 46, 0.85);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); --bg-dark: #000000;
+        }
+        
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; -webkit-font-smoothing: antialiased; }
+        
+        /* Navigation */
+        nav { position: fixed; top: 0; left: 0; right: 0; height: 65px; background: var(--nav-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; display: flex; align-items: center; }
+        .nav-container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); text-decoration: none; letter-spacing: -0.5px; }
+        .nav-menu { display: flex; align-items: center; gap: 1.75rem; list-style: none; }
+        .nav-menu a { color: var(--text-light); text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: color 0.2s; }
+        .nav-menu a:hover { color: var(--primary); }
+        .nav-actions { display: flex; align-items: center; gap: 0.875rem; }
+        .get-started-btn { padding: 0.5rem 1.125rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 10px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .get-started-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--primary-glow); }
+        .theme-btn { width: 40px; height: 40px; border-radius: 10px; background: var(--bg-secondary); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; font-size: 1.2rem; color: var(--text); }
+        .theme-btn:hover { transform: translateY(-2px); box-shadow: var(--card-shadow); border-color: var(--primary); }
+        
+        /* Error Page */
+        .error-container { 
+            margin-top: 65px; 
+            min-height: calc(100vh - 65px - 250px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+            background: var(--bg);
+        }
+        
+        .error-image-wrapper {
+            max-width: 900px;
+            width: 100%;
+            margin-bottom: 2.5rem;
+        }
+        
+        .error-image {
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 10px 25px var(--primary-glow);
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px var(--primary-glow);
+        }
+        
+        /* Footer */
+        footer { background: var(--bg-secondary); padding: 4rem 2rem 2rem; border-top: 1px solid var(--border); }
+        .footer-container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; }
+        .footer-brand h3 { font-size: 1.75rem; font-weight: 800; color: var(--primary); margin-bottom: 1rem; }
+        .footer-brand p { color: var(--text-light); line-height: 1.6; margin-bottom: 1.5rem; }
+        .social-links { display: flex; gap: 0.75rem; }
+        .social-links a { width: 40px; height: 40px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text); text-decoration: none; transition: all 0.3s; }
+        .social-links a:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+        .footer-section h4 { color: var(--text); font-size: 1rem; font-weight: 700; margin-bottom: 1.25rem; }
+        .footer-section ul { list-style: none; }
+        .footer-section ul li { margin-bottom: 0.75rem; }
+        .footer-section ul li a { color: var(--text-light); text-decoration: none; transition: color 0.2s; }
+        .footer-section ul li a:hover { color: var(--primary); }
+        .footer-bottom { border-top: 1px solid var(--border); margin-top: 3rem; padding-top: 2rem; text-align: center; color: var(--text-light); font-size: 0.875rem; }
+        
+        /* Mobile Navigation */
+        .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: var(--nav-bg); backdrop-filter: blur(20px); border-top: 1px solid var(--border); z-index: 100; display: none; }
+        .mobile-nav-container { height: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 1rem; }
+        .mobile-item { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; text-decoration: none; color: var(--text-light); font-size: 0.7rem; font-weight: 600; transition: all 0.2s; padding: 0.5rem 1rem; border-radius: 12px; }
+        .mobile-item i { font-size: 1.4rem; }
+        .mobile-item.active { color: var(--primary); background: var(--primary-glow); }
+        
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .nav-actions { display: none; }
+            .mobile-nav { display: block; }
+            .error-container { min-height: calc(100vh - 65px - 70px - 250px); padding: 2rem 1rem; }
+            .footer-container { grid-template-columns: 1fr; gap: 2rem; }
+        }
+    </style>
 </head>
 <body>
-  <img id="errorImage" class="error-image" alt="404 Error">
-  <div class="overlay"></div>
-  
-  <div class="content">
-    <div class="error-code">404</div>
-    <div class="error-message">Page Not Found</div>
-    <div class="error-description">
-      The page you're looking for doesn't exist or has been moved.
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">SEOTIZE</a>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/#features">Features</a></li>
+                <li><a href="/#pricing">Pricing</a></li>
+                <li><a href="/blogs.html">Blog</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="/login.html" class="get-started-btn">Get Started</a>
+                <button class="theme-btn" onclick="toggleTheme()"><span id="themeIcon">🌙</span></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Error Container -->
+    <div class="error-container">
+        <div class="error-image-wrapper">
+            <img id="errorImage" class="error-image" alt="404 Error">
+        </div>
+        <a href="/" class="back-btn">
+            <i class="ri-arrow-left-line"></i>
+            <span>Back to Home</span>
+        </a>
     </div>
-    <a href="/" class="home-btn">
-      <span>←</span>
-      <span>Back to Home</span>
-    </a>
-  </div>
-  
-  <script>
-    const images = [
-      'https://images.seotize.workers.dev/image-cdn/98414ebd-0aed-402e-841d-58cf2b1c48f6',
-      'https://images.seotize.workers.dev/image-cdn/0c3c410e-2aa8-4099-8be1-3852528e26ce',
-      'https://images.seotize.workers.dev/image-cdn/935e81ad-aa96-4b8c-94f0-791c1f143fd5',
-      'https://images.seotize.workers.dev/image-cdn/b982a2c9-a1f1-474a-9996-8a131561d359',
-      'https://images.seotize.workers.dev/image-cdn/32af8e93-b954-4846-acc1-5657cf369844',
-      'https://images.seotize.workers.dev/image-cdn/fa1e63d5-e5b2-4465-bf6b-ff35872dce8f',
-      'https://images.seotize.workers.dev/image-cdn/4b2d0b88-3119-43e4-90ad-99b1a9658107',
-      'https://images.seotize.workers.dev/image-cdn/3499e34e-6314-4b03-ad15-ff0de1c4d38b',
-      'https://images.seotize.workers.dev/image-cdn/ba3f48bb-3335-4a3f-b249-91b721286c31',
-      'https://images.seotize.workers.dev/image-cdn/2dda09c5-2171-4edc-968e-08ce7a35108d'
-    ];
-    
-    const randomImage = images[Math.floor(Math.random() * images.length)];
-    document.getElementById('errorImage').src = randomImage;
-  </script>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>SEOTIZE</h3>
+                <p>AI-powered SEO platform helping businesses boost their online presence with cutting-edge tools and analytics.</p>
+                <div class="social-links">
+                    <a href="#"><i class="ri-twitter-x-line"></i></a>
+                    <a href="#"><i class="ri-linkedin-fill"></i></a>
+                    <a href="#"><i class="ri-github-fill"></i></a>
+                    <a href="#"><i class="ri-youtube-fill"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="/#features">Features</a></li>
+                    <li><a href="/#pricing">Pricing</a></li>
+                    <li><a href="/blogs.html">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="/connect.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy</a></li>
+                    <li><a href="#">Terms</a></li>
+                    <li><a href="#">Security</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 SEOTIZE. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav">
+        <div class="mobile-nav-container">
+            <a href="/" class="mobile-item">
+                <i class="ri-home-5-line"></i>
+                <span>Home</span>
+            </a>
+            <a href="/#features" class="mobile-item">
+                <i class="ri-grid-line"></i>
+                <span>Features</span>
+            </a>
+            <a href="/#pricing" class="mobile-item">
+                <i class="ri-price-tag-3-line"></i>
+                <span>Pricing</span>
+            </a>
+            <a href="/blogs.html" class="mobile-item">
+                <i class="ri-article-line"></i>
+                <span>Blog</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const images = [
+            'https://images.seotize.workers.dev/image-cdn/98414ebd-0aed-402e-841d-58cf2b1c48f6',
+            'https://images.seotize.workers.dev/image-cdn/0c3c410e-2aa8-4099-8be1-3852528e26ce',
+            'https://images.seotize.workers.dev/image-cdn/935e81ad-aa96-4b8c-94f0-791c1f143fd5',
+            'https://images.seotize.workers.dev/image-cdn/b982a2c9-a1f1-474a-9996-8a131561d359',
+            'https://images.seotize.workers.dev/image-cdn/32af8e93-b954-4846-acc1-5657cf369844',
+            'https://images.seotize.workers.dev/image-cdn/fa1e63d5-e5b2-4465-bf6b-ff35872dce8f',
+            'https://images.seotize.workers.dev/image-cdn/4b2d0b88-3119-43e4-90ad-99b1a9658107',
+            'https://images.seotize.workers.dev/image-cdn/3499e34e-6314-4b03-ad15-ff0de1c4d38b',
+            'https://images.seotize.workers.dev/image-cdn/ba3f48bb-3335-4a3f-b249-91b721286c31',
+            'https://images.seotize.workers.dev/image-cdn/2dda09c5-2171-4edc-968e-08ce7a35108d'
+        ];
+        
+        const randomImage = images[Math.floor(Math.random() * images.length)];
+        document.getElementById('errorImage').src = randomImage;
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const icon = document.getElementById('themeIcon');
+            icon.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        function loadTheme() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark');
+                document.getElementById('themeIcon').textContent = '☀️';
+            }
+        }
+
+        loadTheme();
+    </script>
 </body>
 </html>
