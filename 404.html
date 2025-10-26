@@ -3,55 +3,140 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 - Page Not Found</title>
+  <title>404 - Page Not Found | SEOTIZE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+    
     body {
+      font-family: 'Inter', sans-serif;
       width: 100%;
       height: 100vh;
       overflow: hidden;
-      background: #000;
+      background: #0a0e1a;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    img {
+    
+    .error-image {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
-    .home-btn {
-      position: fixed;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 18px 60px;
-      font-size: 20px;
-      font-weight: 600;
-      color: #ffffff;
-      background: rgba(0, 102, 255, 0.95);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-      z-index: 1000;
+    
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(10, 14, 26, 0.3) 0%, rgba(10, 14, 26, 0.7) 100%);
+      z-index: 1;
     }
+    
+    .content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    .error-code {
+      font-size: clamp(4rem, 12vw, 8rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 1rem;
+      text-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+    }
+    
+    .error-message {
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      color: #f1f5f9;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    
+    .error-description {
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      color: #cbd5e1;
+      margin-bottom: 2.5rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .home-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+    
     .home-btn:hover {
-      background: rgba(0, 82, 204, 0.95);
-      transform: translateX(-50%) translateY(-5px);
-      box-shadow: 0 12px 40px rgba(0, 102, 255, 0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(37, 99, 235, 0.5);
+    }
+    
+    .home-btn i {
+      font-size: 1.2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .content {
+        padding: 1.5rem;
+      }
+      
+      .error-description {
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+      }
+      
+      .home-btn {
+        padding: 0.875rem 1.75rem;
+        font-size: 0.95rem;
+      }
     }
   </style>
 </head>
 <body>
-  <img id="errorImage" alt="404 Error">
-  <a href="/" class="home-btn">← Back to Home</a>
+  <img id="errorImage" class="error-image" alt="404 Error">
+  <div class="overlay"></div>
+  
+  <div class="content">
+    <div class="error-code">404</div>
+    <div class="error-message">Page Not Found</div>
+    <div class="error-description">
+      The page you're looking for doesn't exist or has been moved.
+    </div>
+    <a href="/" class="home-btn">
+      <span>←</span>
+      <span>Back to Home</span>
+    </a>
+  </div>
   
   <script>
     const images = [
