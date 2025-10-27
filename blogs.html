@@ -1381,8 +1381,8 @@
         }
 
         async function updateKeywords() {
-            const titles = blogs.map(b => b.title);
-            const kws = getKeywords(titles);
+            const subjects = blogs.map(b => b.subject);
+            const kws = getKeywords(subjects);
             
             if (kws.length > 0 && !blogs[0]._id.startsWith('p')) {
                 try {
@@ -1427,9 +1427,18 @@
             // Match category from filter keywords based on subject
             const subjectLower = subject.toLowerCase();
             
-            // Sort keywords by count (LOWEST first) to prioritize more unique/rare categories
+            // Get all keywords that exist in the keywords object
+            const availableKeywords = Object.keys(keywords);
+            
+            // If no keywords available yet, return empty and don't show category
+            if (availableKeywords.length === 0) {
+                return '';
+            }
+            
+            // Sort keywords by count (LOWEST first) to prioritize unique/rare categories
             const sortedKeywords = Object.entries(keywords).sort((a, b) => a[1] - b[1]);
             
+            // Find the most unique keyword that exists in the subject
             for (const [keyword, count] of sortedKeywords) {
                 if (subjectLower.includes(keyword.toLowerCase())) {
                     // Capitalize first letter of keyword
@@ -1437,12 +1446,8 @@
                 }
             }
             
-            // If no keyword matches, return the most unique available keyword
-            if (sortedKeywords.length > 0) {
-                return sortedKeywords[0][0].charAt(0).toUpperCase() + sortedKeywords[0][0].slice(1);
-            }
-            
-            return 'General'; // ultimate fallback
+            // If NO keyword matches the subject, return the most unique keyword from filters
+            return sortedKeywords[0][0].charAt(0).toUpperCase() + sortedKeywords[0][0].slice(1);
         }
 
         function formatApiDate(dateString) {
@@ -1479,12 +1484,14 @@
             
             noRes.style.display = 'none';
             grid.style.display = 'grid';
-            grid.innerHTML = blogs.map(b => `
+            grid.innerHTML = blogs.map(b => {
+                const category = getCategoryFromSubject(b.subject);
+                return `
                 <div class="blog-card" onclick="openBlog('${b._id}')">
                     <img src="${b.image_url}" alt="${b.subject}" loading="lazy">
                     <div class="blog-content">
                         <div class="blog-meta">
-                            <span class="blog-category">${getCategoryFromSubject(b.subject)}</span>
+                            ${category ? `<span class="blog-category">${category}</span>` : ''}
                             <span class="blog-date"><i class="ri-calendar-line"></i> ${formatApiDate(b.creation_date)}</span>
                         </div>
                         <h3 class="blog-title">${b.subject}</h3>
@@ -1498,7 +1505,7 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
             
             gsap.fromTo('.blog-card', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 });
             renderPagination();
