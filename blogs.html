@@ -411,7 +411,8 @@
 
         .blog-meta {
             display: flex;
-            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 1rem;
             font-size: 0.85rem;
             flex-wrap: wrap;
@@ -1434,11 +1435,22 @@
         }
 
         function formatApiDate(dateString) {
-            // Format: "Mon, 27 Oct 2025 05:56:25 GMT" to "Oct 27"
+            // Format: "Mon, 27 Oct 2025 05:56:25 GMT" to "Oct 27, 2025"
             const date = new Date(dateString);
             const month = date.toLocaleDateString('en-US', { month: 'short' });
             const day = date.getDate();
-            return `${month} ${day}`;
+            const year = date.getFullYear();
+            return `${month} ${day}, ${year}`;
+        }
+
+        function formatApiTime(dateString) {
+            // Format: "Mon, 27 Oct 2025 05:56:25 GMT" to "05:56 AM"
+            const date = new Date(dateString);
+            let hours = date.getHours();
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            return `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
         }
 
         function render() {
@@ -1470,7 +1482,7 @@
                             <a href="#" class="read-more">Read More <i class="ri-arrow-right-line"></i></a>
                             <div class="blog-author">
                                 <div class="author-avatar">ST</div>
-                                <span>5 min read</span>
+                                <span>${formatApiTime(b.creation_date)}</span>
                             </div>
                         </div>
                     </div>
