@@ -1401,7 +1401,9 @@
                 <button class="filter-btn ${category === 'all' ? 'active' : ''}" onclick="setFilter('all')">
                     All Posts <span class="filter-count">${totalBlogs || '∞'}</span>
                 </button>
-                ${Object.entries(keywords).map(([k, c]) => `
+                ${Object.entries(keywords)
+                    .filter(([k, c]) => c > 0)  // Only show keywords with count > 0
+                    .map(([k, c]) => `
                     <button class="filter-btn ${category === k ? 'active' : ''}" onclick="setFilter('${k}')">
                         ${k.charAt(0).toUpperCase() + k.slice(1)} <span class="filter-count">${c}</span>
                     </button>
