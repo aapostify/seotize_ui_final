@@ -1424,14 +1424,25 @@
         }
 
         function getCategoryFromSubject(subject) {
-            // Match category from filters based on subject keywords
+            // Match category from filter keywords based on subject
             const subjectLower = subject.toLowerCase();
-            for (const [keyword] of Object.entries(keywords)) {
+            
+            // Sort keywords by count (highest first) to prioritize more common categories
+            const sortedKeywords = Object.entries(keywords).sort((a, b) => b[1] - a[1]);
+            
+            for (const [keyword, count] of sortedKeywords) {
                 if (subjectLower.includes(keyword.toLowerCase())) {
+                    // Capitalize first letter of keyword
                     return keyword.charAt(0).toUpperCase() + keyword.slice(1);
                 }
             }
-            return 'SEO'; // default fallback
+            
+            // If no keyword matches, return the first available keyword or default
+            if (sortedKeywords.length > 0) {
+                return sortedKeywords[0][0].charAt(0).toUpperCase() + sortedKeywords[0][0].slice(1);
+            }
+            
+            return 'General'; // ultimate fallback
         }
 
         function formatApiDate(dateString) {
