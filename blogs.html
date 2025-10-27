@@ -1335,12 +1335,37 @@
             { _id: 'p9', title: 'Link Building Techniques', image_url: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=400&h=300&fit=crop' }
         ];
 
-        function getKeywords(titles) {
+        function getKeywords(subjects) {
+            // Common/filler words to exclude
+            const stopWords = ['guide', 'best', 'complete', 'advanced', 'ultimate', 'modern', 
+                              'that', 'which', 'this', 'with', 'from', 'into', 'your', 'their',
+                              'will', 'better', 'brings', 'still', 'only', 'more', 'most',
+                              'when', 'where', 'what', 'how', 'why', 'does', 'have', 'been',
+                              'should', 'would', 'could', 'about', 'there', 'these', 'those'];
+            
             const words = [];
-            titles.forEach(t => words.push(...t.toLowerCase().replace(/[^\w\s]/g, ' ').split(/\s+/).filter(w => w.length > 3 && !/\d/.test(w) && !['guide', 'best', 'strategies', 'optimization', 'complete', 'advanced', 'ultimate', 'modern'].includes(w))));
+            subjects.forEach(subject => {
+                // Clean and split the subject
+                const cleaned = subject.toLowerCase()
+                    .replace(/[^\w\s]/g, ' ')  // Remove special chars
+                    .split(/\s+/)
+                    .filter(w => 
+                        w.length > 3 &&              // At least 4 characters
+                        !/^\d+$/.test(w) &&          // Not just numbers
+                        !stopWords.includes(w)       // Not in stop words
+                    );
+                words.push(...cleaned);
+            });
+            
+            // Count occurrences
             const counts = {};
             words.forEach(w => counts[w] = (counts[w] || 0) + 1);
-            return Object.entries(counts).filter(([, c]) => c >= 1).sort((a, b) => b[1] - a[1]).slice(0, 8);
+            
+            // Return top 8 keywords, sorted by frequency
+            return Object.entries(counts)
+                .filter(([word, count]) => count >= 1)  // At least 1 occurrence
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8);
         }
 
         async function loadBlogs() {
