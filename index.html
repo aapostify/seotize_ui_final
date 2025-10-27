@@ -546,14 +546,7 @@
                 standard: { name: 'Standard', price: 0.12, locations: 3, features: ['$0.12 per click', '3 concurrent locations', 'Fast processing speed', 'Priority support', 'Advanced task analytics', 'Task scheduling'], popular: true },
                 premium: { name: 'Premium', price: 0.15, locations: 5, features: ['$0.15 per click', '5 concurrent locations', 'Ultra-fast processing', '24/7 dedicated support', 'Full task analytics', 'Advanced scheduling', 'API access', 'Priority queue'] }
             },
-            blogs: [
-                { title: 'Evolving SEO Paradigms in 2024: Harnessing Quantum Algorithms and Decentralized Technologies', image: 'https://image-api.seotize.net/image-cdn/b11f730f-d6bd-4cf1-846e-78961db79b45', date: 'Oct 22, 2025' },
-                { title: 'From Pixels to Purpose: How AI and Advanced Analytics Are Crafting Hyper-Personalized Digital Consumer Experiences in 2024', image: 'https://image-api.seotize.net/image-cdn/399da592-9bb1-4655-8eec-6ab488788e14', date: 'Oct 22, 2025' },
-                { title: 'AI-Enhanced Voice Search and SEO: Shaping Interactive User Engagement in 2024 and Beyond', image: 'https://image-api.seotize.net/image-cdn/57283774-45ce-45f4-856a-3ad902e4ff9e', date: 'Oct 22, 2025' },
-                { title: 'Human-Centric SEO: Crafting Personalized User Experiences with AI Insights for 2024', image: 'https://image-api.seotize.net/image-cdn/d9931244-101f-44cb-9861-7b55baa259ed', date: 'Oct 22, 2025' },
-                { title: 'The Rise of Green Tech in SEO: Bridging Sustainability and Innovation in Digital Marketing for 2025', image: 'https://image-api.seotize.net/image-cdn/c10daef1-16b7-4b36-afa0-6a245fdad32e', date: 'Oct 22, 2025' },
-                { title: 'Achieving Sustainable SEO in 2024: Integrating Green Technologies and Ethical Digital Strategies', image: 'https://image-api.seotize.net/image-cdn/084c84ed-e635-43d5-aeb0-78656d86843e', date: 'Oct 22, 2025' }
-            ]
+            blogs: []
         };
 
         let currentHero = 0, currentBlog = 0, currentPeriod = '3month';
@@ -715,13 +708,38 @@
             renderHostingPricing();
         }
 
-        function initializeBlogs() {
+        async function initializeBlogs() {
+            try {
+                const response = await fetch('https://api.seotize.net/blogs?page=1&page_size=6');
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.data && data.data.blogs) {
+                    appData.blogs = data.data.blogs.map(blog => ({
+                        id: blog._id,
+                        title: blog.title,
+                        image: blog.image_url,
+                        date: new Date(blog.creation_date).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' 
+                        })
+                    }));
+                    
+                    renderBlogs();
+                }
+            } catch (error) {
+                console.error('Error fetching blogs:', error);
+            }
+        }
+        
+        function renderBlogs() {
             const carousel = document.getElementById('carousel');
+            carousel.innerHTML = '';
             appData.blogs.forEach((blog, i) => {
                 const div = document.createElement('div');
                 div.className = `blog-item ${i === 0 ? 'active' : i === 1 ? 'next' : 'hidden'}`;
                 div.innerHTML = `<img src="${blog.image}" alt="${blog.title}"><div class="blog-info"><div class="blog-title">${blog.title}</div><div class="blog-date">${blog.date}</div></div>`;
-                div.onclick = () => openBlogModal(i);
+                div.onclick = () => window.location.href = `https://seotize.net/blogs?id=${blog.id}`;
                 carousel.appendChild(div);
             });
         }
@@ -742,9 +760,9 @@
 
         function openBlogModal(index) {
             const blog = appData.blogs[index];
-            document.getElementById('blogModalBody').innerHTML = `<img src="${blog.image}" alt="${blog.title}" class="blog-modal-image"><h2 class="blog-modal-title">${blog.title}</h2><div class="blog-date" style="margin-bottom: 1.5rem;">${blog.date}</div><p style="color: var(--text-light); line-height: 1.7;">This is a preview of the blog article. Click below to read the full article.</p><a href="blogs.html" class="cta" style="margin-top: 1.5rem;">Read Full Article</a>`;
-            document.getElementById('blogModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
+            if (blog && blog.id) {
+                window.location.href = `https://seotize.net/blogs?id=${blog.id}`;
+            }
         }
 
         function closeBlogModal() {
