@@ -1430,9 +1430,9 @@
             // Get all keywords that exist in the keywords object
             const availableKeywords = Object.keys(keywords);
             
-            // If no keywords available yet, return empty and don't show category
+            // If no keywords available yet, use a default
             if (availableKeywords.length === 0) {
-                return '';
+                return 'SEO';
             }
             
             // Sort keywords by count (LOWEST first) to prioritize unique/rare categories
@@ -1484,14 +1484,12 @@
             
             noRes.style.display = 'none';
             grid.style.display = 'grid';
-            grid.innerHTML = blogs.map(b => {
-                const category = getCategoryFromSubject(b.subject);
-                return `
+            grid.innerHTML = blogs.map(b => `
                 <div class="blog-card" onclick="openBlog('${b._id}')">
                     <img src="${b.image_url}" alt="${b.subject}" loading="lazy">
                     <div class="blog-content">
                         <div class="blog-meta">
-                            ${category ? `<span class="blog-category">${category}</span>` : ''}
+                            <span class="blog-category">${getCategoryFromSubject(b.subject)}</span>
                             <span class="blog-date"><i class="ri-calendar-line"></i> ${formatApiDate(b.creation_date)}</span>
                         </div>
                         <h3 class="blog-title">${b.subject}</h3>
@@ -1505,7 +1503,7 @@
                         </div>
                     </div>
                 </div>
-            `}).join('');
+            `).join('');
             
             gsap.fromTo('.blog-card', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 });
             renderPagination();
