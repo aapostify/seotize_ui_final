@@ -1360,7 +1360,7 @@
                         blogs = data.data.blogs;
                         total = data.data.pagination.pages;
                         totalBlogs = data.data.pagination.total;
-                        updateKeywords();
+                        await updateKeywords(); // Wait for keywords to load before rendering
                     } else {
                         blogs = [];
                         total = 1;
@@ -1424,29 +1424,25 @@
         }
 
         function getCategoryFromSubject(subject) {
-            // Match category from filter keywords based on subject
-            const subjectLower = subject.toLowerCase();
-            
-            // Get all keywords that exist in the keywords object
-            const availableKeywords = Object.keys(keywords);
-            
-            // If no keywords available yet, use a default
-            if (availableKeywords.length === 0) {
-                return 'SEO';
+            // ONLY match keywords that are in the filter buttons (from API)
+            if (!keywords || Object.keys(keywords).length === 0) {
+                return 'SEO'; // Temporary fallback until filters load
             }
             
-            // Sort keywords by count (LOWEST first) to prioritize unique/rare categories
+            const subjectLower = subject.toLowerCase();
+            
+            // Sort by count (LOWEST first = most unique/rare)
             const sortedKeywords = Object.entries(keywords).sort((a, b) => a[1] - b[1]);
             
-            // Find the most unique keyword that exists in the subject
+            // Find the FIRST unique keyword that matches in the subject
             for (const [keyword, count] of sortedKeywords) {
+                // Check if this exact keyword exists in the subject
                 if (subjectLower.includes(keyword.toLowerCase())) {
-                    // Capitalize first letter of keyword
                     return keyword.charAt(0).toUpperCase() + keyword.slice(1);
                 }
             }
             
-            // If NO keyword matches the subject, return the most unique keyword from filters
+            // No match found - use the most unique keyword from filters
             return sortedKeywords[0][0].charAt(0).toUpperCase() + sortedKeywords[0][0].slice(1);
         }
 
