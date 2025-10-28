@@ -47,7 +47,7 @@
 
     function getEngineScriptTag() {
         const scripts = document.getElementsByTagName('script');
-        return Array.from(scripts).find(script => 
+        return Array.from(scripts).find(script =>
             script.src.includes('seotize-engine.js')
         );
     }
@@ -89,7 +89,7 @@
 
     function showLoading(title = 'Loading...') {
         if (typeof Swal === 'undefined') return;
-        
+
         Swal.fire({
             title,
             allowOutsideClick: false,
@@ -108,7 +108,7 @@
         return new Promise((resolve, reject) => {
             const checkToken = () => {
                 const responseElement = document.getElementsByName('cf-turnstile-response')[0];
-                
+
                 if (responseElement?.value) {
                     resolve(responseElement.value);
                     return;
@@ -122,7 +122,7 @@
                             checkToken();
                         }
                     });
-                    
+
                     observer.observe(domCache.body, {
                         childList: true,
                         subtree: true
@@ -131,9 +131,9 @@
                     setTimeout(checkToken, CONFIG.TIMING.POLL_INTERVAL);
                 }
             };
-            
+
             checkToken();
-            
+
             setTimeout(() => reject(new Error('Turnstile timeout')), 30000);
         });
     }
@@ -178,7 +178,7 @@
         coin.className = 'seotize-coin';
         coin.setAttribute('data-subtask-id', subtaskId);
         coin.innerHTML = '💎';
-        
+
         Object.assign(coin.style, {
             position: 'absolute',
             left: `${xPosition}px`,
@@ -191,9 +191,9 @@
             transition: 'transform 0.2s ease',
             userSelect: 'none'
         });
-        
+
         coin.addEventListener('click', () => handleCoinClick(subtaskId));
-        
+
         return coin;
     }
 
@@ -207,7 +207,7 @@
             document.body.clientHeight,
             document.documentElement.clientHeight
         );
-        
+
         const viewportWidth = window.innerWidth;
         const coinSize = CONFIG.COIN.SIZE;
         const margin = CONFIG.COIN.MIN_MARGIN;
@@ -219,7 +219,7 @@
             const sectionEnd = (i + 1) * sectionHeight;
             const y = sectionStart + (sectionEnd - sectionStart) * 0.5 + (Math.random() - 0.5) * (sectionHeight * variance);
             const x = Math.random() * (viewportWidth - coinSize - (margin * 2)) + margin;
-            
+
             positions.push({ x, y });
         }
 
@@ -228,7 +228,7 @@
 
     function renderCoins() {
         const positions = calculateCoinPositions(state.coins.length);
-        
+
         state.coins.forEach((subtaskId, index) => {
             const { x, y } = positions[index];
             const coin = createCoinElement(subtaskId, x, y);
@@ -240,14 +240,14 @@
 
     function displayNextCoin() {
         state.currentCoinIndex++;
-        
+
         if (state.currentCoinIndex >= state.coinElements.length) {
             return;
         }
 
         const coin = state.coinElements[state.currentCoinIndex];
         coin.style.display = 'block';
-        
+
         if (typeof gsap !== 'undefined') {
             gsap.from(coin, {
                 scale: 0,
@@ -276,18 +276,28 @@
         createArrowToCoin(coin);
     }
 
+    // =================================================================
+    // == THIS IS THE UPDATED FUNCTION ==
+    // =================================================================
     function createArrowToCoin(targetCoin) {
+        // Clear any existing arrow and its animation/interval
         if (state.currentArrow) {
-            if (state.arrowUpdateInterval) {
-                clearInterval(state.arrowUpdateInterval);
+            if (typeof gsap !== 'undefined') {
+                gsap.killTweensOf(state.currentArrow);
             }
             state.currentArrow.remove();
+            state.currentArrow = null;
+        }
+        if (state.arrowUpdateInterval) {
+            clearInterval(state.arrowUpdateInterval);
+            state.arrowUpdateInterval = null;
         }
 
+        // Create new arrow element
         const arrow = document.createElement('div');
         arrow.className = 'seotize-arrow';
         arrow.innerHTML = '👇';
-        
+
         Object.assign(arrow.style, {
             position: 'fixed',
             fontSize: `${CONFIG.ARROW.SIZE}px`,
@@ -296,45 +306,109 @@
             textShadow: '0 0 15px rgba(255, 215, 0, 0.8)',
             userSelect: 'none'
         });
-        
+
         domCache.body.appendChild(arrow);
         state.currentArrow = arrow;
 
+        // This function now handles all visibility logic
         const updateArrowPosition = () => {
+            if (!targetCoin || !targetCoin.parentNode) {
+                if (arrow && arrow.parentNode) {
+                    arrow.parentNode.removeChild();
+                }
+                if (state.arrowUpdateInterval) {
+                    clearInterval(state.arrowUpdateInterval);
+                    state.arrowUpdateInterval = null;
+                }
+                return;
+            }
+
             const rect = targetCoin.getBoundingClientRect();
-            const arrowWidth = arrow.offsetWidth;
-            const arrowHeight = arrow.offsetHeight;
-            const targetCenterX = rect.left + rect.width / 2;
-            const targetCenterY = rect.top + rect.height / 2;
-            
-            arrow.style.left = (targetCenterX - arrowWidth / 2) + 'px';
-            arrow.style.top = (targetCenterY - arrowHeight - CONFIG.ARROW.OFFSET) + 'px';
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            const targetX = rect.left + rect.width / 2;
+            const arrowWidth = arrow.offsetWidth || CONFIG.ARROW.SIZE;
+            const arrowHeight = arrow.offsetHeight || CONFIG.ARROW.SIZE;
+
+            const isVisible = rect.top >= 0 &&
+                               rect.bottom <= viewportHeight &&
+                               rect.left >= 0 &&
+                               rect.right <= viewportWidth;
+
+            // Stop any ongoing animation before repositioning
+            if (typeof gsap !== 'undefined') {
+                gsap.killTweensOf(arrow);
+            }
+
+            if (isVisible) {
+                // Coin is ON-SCREEN: Point down at it
+                arrow.style.top = (rect.top - CONFIG.ARROW.OFFSET) + 'px';
+                arrow.style.left = (targetX - arrowWidth / 2) + 'px';
+                arrow.innerHTML = '👇';
+                arrow.style.transform = ''; // Clear edge-pinning transforms
+                
+                // Apply bounce animation
+                gsap.to(arrow, {
+                    y: 10,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "power1.inOut",
+                    duration: 0.5
+                });
+
+            } else {
+                // Coin is OFF-SCREEN: Pin arrow to the correct edge
+                arrow.style.opacity = '1';
+                arrow.style.transform = 'translateY(0)'; // Reset transform
+
+                if (rect.bottom < 0) {
+                    // Target is ABOVE viewport
+                    arrow.style.top = '10px';
+                    arrow.style.left = (viewportWidth / 2 - arrowWidth / 2) + 'px';
+                    arrow.innerHTML = '👆';
+                    gsap.to(arrow, { y: -10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 });
+
+                } else if (rect.top > viewportHeight) {
+                    // Target is BELOW viewport
+                    arrow.style.top = (viewportHeight - arrowHeight - 10) + 'px';
+                    arrow.style.left = (viewportWidth / 2 - arrowWidth / 2) + 'px';
+                    arrow.innerHTML = '👇';
+                    gsap.to(arrow, { y: 10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 });
+
+                } else if (rect.right < 0) {
+                    // Target is to the LEFT
+                    arrow.style.top = (viewportHeight / 2 - arrowHeight / 2) + 'px';
+                    arrow.style.left = '10px';
+                    arrow.innerHTML = '👈';
+                    gsap.to(arrow, { x: -10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 });
+
+                } else if (rect.left > viewportWidth) {
+                    // Target is to the RIGHT
+                    arrow.style.top = (viewportHeight / 2 - arrowHeight / 2) + 'px';
+                    arrow.style.left = (viewportWidth - arrowWidth - 10) + 'px';
+                    arrow.innerHTML = '👉';
+                    gsap.to(arrow, { x: 10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 });
+                }
+            }
         };
 
-        updateArrowPosition();
+        updateArrowPosition(); // Run once immediately
         state.arrowUpdateInterval = setInterval(updateArrowPosition, CONFIG.ARROW.UPDATE_INTERVAL);
-
-        if (typeof gsap !== 'undefined') {
-            gsap.to(arrow, {
-                y: 10,
-                repeat: -1,
-                yoyo: true,
-                ease: "power1.inOut",
-                duration: 0.5
-            });
-        }
     }
+    // =================================================================
+    // == END OF UPDATED FUNCTION ==
+    // =================================================================
 
     async function handleCoinClick(subtaskId) {
         if (state.isProcessing) return;
-        
+
         const clickedCoin = state.coinElements[state.currentCoinIndex];
         const clickedSubtaskId = clickedCoin.getAttribute('data-subtask-id');
-        
+
         if (clickedSubtaskId !== subtaskId) return;
-        
+
         state.isProcessing = true;
-        
+
         const coinElements = document.querySelectorAll('.seotize-coin');
         coinElements.forEach(el => el.style.pointerEvents = 'none');
 
@@ -349,11 +423,14 @@
                 });
             }
 
+            // Clean up the arrow
             if (state.currentArrow) {
+                if (typeof gsap !== 'undefined') {
+                    gsap.killTweensOf(state.currentArrow);
+                }
                 state.currentArrow.remove();
                 state.currentArrow = null;
             }
-
             if (state.arrowUpdateInterval) {
                 clearInterval(state.arrowUpdateInterval);
                 state.arrowUpdateInterval = null;
@@ -389,7 +466,7 @@
                 });
 
                 const allTasksComplete = result.data?.all_tasks_complete;
-                
+
                 if (state.currentCoinIndex < state.coinElements.length - 1 && !allTasksComplete) {
                     displayNextCoin();
                     state.isProcessing = false;
@@ -409,7 +486,7 @@
                             title: 'seotize-title'
                         }
                     });
-                    
+
                     window.location.href = 'https://seotize.net/partner/dashboard';
                 }
             } else {
@@ -425,7 +502,7 @@
             });
         } finally {
             state.isProcessing = false;
-            
+
             const coinElements = document.querySelectorAll('.seotize-coin');
             coinElements.forEach(el => el.style.pointerEvents = 'auto');
         }
@@ -506,8 +583,8 @@
     async function waitForDependencies() {
         return new Promise((resolve) => {
             const checkDeps = () => {
-                if (typeof CryptoJS !== 'undefined' && 
-                    typeof Swal !== 'undefined' && 
+                if (typeof CryptoJS !== 'undefined' &&
+                    typeof Swal !== 'undefined' &&
                     typeof gsap !== 'undefined') {
                     state.dependenciesLoaded = true;
                     resolve();
@@ -522,13 +599,13 @@
     async function initializeEngine() {
         try {
             await waitForDependencies();
-            
+
             state.uniqueId = getUniqueId();
             const token = await waitForTurnstileToken();
             const data = await fetchPartnerSubtasks(state.uniqueId, token);
-            
+
             closeLoading();
-            
+
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
                 return;
             }
@@ -577,7 +654,7 @@
         div.className = 'cf-turnstile';
         div.setAttribute('data-theme', 'light');
         div.setAttribute('data-sitekey', state.systemId);
-        
+
         domCache.body.insertBefore(div, domCache.body.firstChild);
     }
 
@@ -587,7 +664,7 @@
             await loadScript(CONFIG.CDN.SWEETALERT);
             await loadScript(CONFIG.CDN.GSAP);
             await loadScript(CONFIG.CDN.TURNSTILE, true);
-            
+
             return true;
         } catch (error) {
             console.error('Failed to load dependencies:', error);
@@ -602,7 +679,7 @@
         };
 
         const engineScript = getEngineScriptTag();
-        
+
         if (!engineScript) {
             console.error('Seotize engine script not found.');
             return;
