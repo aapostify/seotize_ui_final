@@ -40,8 +40,10 @@
         .nav-container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); text-decoration: none; letter-spacing: -0.5px; }
         .nav-menu { display: flex; align-items: center; gap: 1.75rem; list-style: none; }
-        .nav-menu a { color: var(--text-light); text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: color 0.2s; }
+        .nav-menu a { color: var(--text-light); text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: all 0.2s; position: relative; }
         .nav-menu a:hover { color: var(--primary); }
+        .nav-menu a.active { color: var(--primary); }
+        .nav-menu a.active::after { content: ''; position: absolute; bottom: -8px; left: 0; right: 0; height: 2px; background: var(--primary); border-radius: 2px; }
         .nav-actions { display: flex; align-items: center; gap: 0.875rem; }
         .get-started-btn { padding: 0.5rem 1.125rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 10px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
         .get-started-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--primary-glow); }
@@ -153,6 +155,7 @@
         .prev-btn { left: -10px; }
         .next-btn { right: -10px; }
         .blog-cta { display: flex; justify-content: center; align-items: center; margin-top: auto; padding-top: 2rem; }
+        .blog-cta a { text-align: center; }
         
         /* Partner */
         .partner { background: var(--bg-secondary); }
@@ -411,7 +414,7 @@
 
     <!-- Blog Section -->
     <section id="blog" class="section blog">
-        <div style="max-width: 1400px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; height: 100%;">
+        <div style="max-width: 1400px; width: 100%; margin: 0 auto;">
             <h2 class="section-title">Latest SEO Insights</h2>
             <p class="section-subtitle">Stay ahead with the latest SEO trends and insights</p>
             <div class="carousel-container">
@@ -872,11 +875,12 @@
         document.getElementById('featureModal').addEventListener('click', e => { if (e.target.id === 'featureModal') closeFeatureModal(); });
         document.getElementById('blogModal').addEventListener('click', e => { if (e.target.id === 'blogModal') closeBlogModal(); });
         
-        // Update mobile nav active state on scroll
+        // Update nav active state on scroll (both desktop and mobile)
         const sections = ['home', 'features', 'pricing', 'blog', 'partner'];
         const mobileItems = document.querySelectorAll('.mobile-item');
+        const desktopMenuLinks = document.querySelectorAll('.nav-menu a');
         
-        window.addEventListener('scroll', () => {
+        function updateActiveNav() {
             let current = '';
             const scrollPosition = window.pageYOffset + 150; // Offset for better detection
             
@@ -892,11 +896,11 @@
                 }
             });
             
+            // Update mobile nav
             mobileItems.forEach(item => {
                 item.classList.remove('active');
                 const href = item.getAttribute('href');
                 
-                // Match section IDs with navigation links
                 if (href && href.startsWith('#')) {
                     const sectionId = href.substring(1);
                     if (sectionId === current) {
@@ -904,7 +908,25 @@
                     }
                 }
             });
-        });
+            
+            // Update desktop nav
+            desktopMenuLinks.forEach(link => {
+                link.classList.remove('active');
+                const href = link.getAttribute('href');
+                
+                if (href && href.startsWith('#')) {
+                    const sectionId = href.substring(1);
+                    if (sectionId === current) {
+                        link.classList.add('active');
+                    }
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', updateActiveNav);
+        
+        // Set initial active state on load
+        updateActiveNav();
     </script>
 </body>
 </html>
