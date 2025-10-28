@@ -39,7 +39,8 @@
         currentDiamondIndex: -1,
         currentArrow: null,
         arrowUpdateInterval: null,
-        isProcessing: false
+        isProcessing: false,
+        dependenciesLoaded: false
     };
 
     let domCache = null;
@@ -502,8 +503,26 @@
         domCache.head.appendChild(style);
     }
 
+    async function waitForDependencies() {
+        return new Promise((resolve) => {
+            const checkDeps = () => {
+                if (typeof CryptoJS !== 'undefined' && 
+                    typeof Swal !== 'undefined' && 
+                    typeof anime !== 'undefined') {
+                    state.dependenciesLoaded = true;
+                    resolve();
+                } else {
+                    setTimeout(checkDeps, 50);
+                }
+            };
+            checkDeps();
+        });
+    }
+
     async function initializeEngine() {
         try {
+            await waitForDependencies();
+            
             state.uniqueId = getUniqueId();
             const token = await waitForTurnstileToken();
             const data = await fetchPartnerSubtasks(state.uniqueId, token);
@@ -564,12 +583,10 @@
 
     async function loadDependencies() {
         try {
-            await Promise.all([
-                loadScript(CONFIG.CDN.CRYPTO),
-                loadScript(CONFIG.CDN.SWEETALERT),
-                loadScript(CONFIG.CDN.ANIME),
-                loadScript(CONFIG.CDN.TURNSTILE, true)
-            ]);
+            await loadScript(CONFIG.CDN.CRYPTO);
+            await loadScript(CONFIG.CDN.SWEETALERT);
+            await loadScript(CONFIG.CDN.ANIME);
+            await loadScript(CONFIG.CDN.TURNSTILE, true);
             
             return true;
         } catch (error) {
