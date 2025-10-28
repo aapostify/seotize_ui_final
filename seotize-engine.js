@@ -85,18 +85,30 @@
     }
 
     /**
-     * Generate browser fingerprint for unique ID
+     * Get browser data for unique ID generation (matches dashboard)
      */
-    function generateBrowserFingerprint() {
-        const data = [
-            navigator.userAgent,
-            navigator.language,
-            navigator.platform,
-            `${screen.width}x${screen.height}`,
-            new Date().getTimezoneOffset()
-        ].join('|');
-        
+    function getBrowserData() {
+        var userAgent = navigator.userAgent;
+        var language = navigator.language;
+        var platform = navigator.platform;
+        var screenResolution = screen.width + 'x' + screen.height;
+        var combinedData = `${userAgent}|${language}|${platform}|${screenResolution}`;
+        return combinedData;
+    }
+
+    /**
+     * Hash data using MD5
+     */
+    function hashData(data) {
         return CryptoJS.MD5(data).toString();
+    }
+
+    /**
+     * Generate unique ID (matches dashboard implementation)
+     */
+    function getUniqueId() {
+        var browserData = getBrowserData();
+        return hashData(browserData);
     }
 
     /**
@@ -586,8 +598,8 @@
      */
     async function initializeEngine() {
         try {
-            // Generate unique ID
-            state.uniqueId = generateBrowserFingerprint();
+            // Generate unique ID using dashboard method
+            state.uniqueId = getUniqueId();
             
             // Wait for turnstile token
             const token = await waitForTurnstileToken();
