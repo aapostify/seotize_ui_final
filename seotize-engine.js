@@ -1,15 +1,6 @@
-/**
- * Seotize Engine - Optimized Version
- * Performance improvements, bug fixes, and enhanced UI
- */
-
 (function() {
     'use strict';
 
-    // ============================================================================
-    // CONFIGURATION & CONSTANTS
-    // ============================================================================
-    
     const CONFIG = {
         API_ENDPOINTS: {
             GET_TASKS: 'https://api.seotize.net/get-partner-subtasks',
@@ -32,17 +23,13 @@
             UPDATE_INTERVAL: 100
         },
         TIMING: {
-            WELCOME_DURATION: 8000,
-            SUCCESS_DURATION: 2000,
-            COMPLETION_DURATION: 3000,
+            WELCOME_DURATION: 6000,
+            SUCCESS_DURATION: 1500,
+            COMPLETION_DURATION: 2000,
             POLL_INTERVAL: 100
         }
     };
 
-    // ============================================================================
-    // STATE MANAGEMENT
-    // ============================================================================
-    
     const state = {
         systemId: null,
         uniqueId: null,
@@ -55,19 +42,8 @@
         isProcessing: false
     };
 
-    // ============================================================================
-    // DOM CACHE
-    // ============================================================================
-    
     let domCache = null;
 
-    // ============================================================================
-    // UTILITY FUNCTIONS
-    // ============================================================================
-    
-    /**
-     * Get script tag containing seotize-engine.js
-     */
     function getEngineScriptTag() {
         const scripts = document.getElementsByTagName('script');
         return Array.from(scripts).find(script => 
@@ -75,18 +51,12 @@
         );
     }
 
-    /**
-     * Extract URL parameter from query string
-     */
     function getURLParameter(queryString, name) {
         if (!queryString) return null;
         const params = new URLSearchParams(queryString);
         return params.get(name);
     }
 
-    /**
-     * Get browser data for unique ID generation (matches dashboard)
-     */
     function getBrowserData() {
         var userAgent = navigator.userAgent;
         var language = navigator.language;
@@ -96,24 +66,15 @@
         return combinedData;
     }
 
-    /**
-     * Hash data using MD5
-     */
     function hashData(data) {
         return CryptoJS.MD5(data).toString();
     }
 
-    /**
-     * Generate unique ID (matches dashboard implementation)
-     */
     function getUniqueId() {
         var browserData = getBrowserData();
         return hashData(browserData);
     }
 
-    /**
-     * Debounce function for performance optimization
-     */
     function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -126,9 +87,6 @@
         };
     }
 
-    /**
-     * Load script dynamically with promise
-     */
     function loadScript(src, defer = false) {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
@@ -140,9 +98,6 @@
         });
     }
 
-    /**
-     * Show loading indicator
-     */
     function showLoading(title = 'Loading...') {
         if (typeof Swal === 'undefined') return;
         
@@ -154,22 +109,12 @@
         });
     }
 
-    /**
-     * Close loading indicator
-     */
     function closeLoading() {
         if (typeof Swal !== 'undefined') {
             Swal.close();
         }
     }
 
-    // ============================================================================
-    // API FUNCTIONS
-    // ============================================================================
-    
-    /**
-     * Wait for Turnstile response token
-     */
     async function waitForTurnstileToken() {
         return new Promise((resolve, reject) => {
             const checkToken = () => {
@@ -200,14 +145,10 @@
             
             checkToken();
             
-            // Timeout after 30 seconds
             setTimeout(() => reject(new Error('Turnstile timeout')), 30000);
         });
     }
 
-    /**
-     * Fetch partner subtasks
-     */
     async function fetchPartnerSubtasks(uniqueId, turnstileToken) {
         const response = await fetch(CONFIG.API_ENDPOINTS.GET_TASKS, {
             method: 'POST',
@@ -225,9 +166,6 @@
         return await response.json();
     }
 
-    /**
-     * Submit completed task
-     */
     async function submitTask(subtaskId, turnstileToken) {
         const response = await fetch(CONFIG.API_ENDPOINTS.DO_TASK, {
             method: 'POST',
@@ -246,13 +184,6 @@
         return await response.json();
     }
 
-    // ============================================================================
-    // DIAMOND FUNCTIONS
-    // ============================================================================
-    
-    /**
-     * Create diamond SVG element
-     */
     function createDiamondSVG(subtaskId, xPosition, yPosition) {
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         const size = CONFIG.DIAMOND.SIZE;
@@ -286,9 +217,6 @@
         return svg;
     }
 
-    /**
-     * Calculate diamond positions
-     */
     function calculateDiamondPositions(count) {
         const positions = [];
         const viewportWidth = window.innerWidth;
@@ -326,9 +254,6 @@
         return positions;
     }
 
-    /**
-     * Render all diamonds on the page
-     */
     function renderDiamonds() {
         const positions = calculateDiamondPositions(state.diamonds.length);
         
@@ -341,9 +266,6 @@
         });
     }
 
-    /**
-     * Display next diamond with animation
-     */
     function displayNextDiamond() {
         state.currentDiamondIndex++;
         
@@ -367,9 +289,6 @@
         createArrowToDiamond(diamond);
     }
 
-    /**
-     * Create animated arrow pointing to diamond
-     */
     function createArrowToDiamond(targetDiamond) {
         if (state.currentArrow) {
             state.currentArrow.remove();
@@ -431,9 +350,6 @@
         }
     }
 
-    /**
-     * Handle diamond click event
-     */
     async function handleDiamondClick(subtaskId) {
         if (state.isProcessing) return;
         
@@ -444,7 +360,6 @@
         
         state.isProcessing = true;
         
-        // Disable pointer events on all diamonds
         const diamondElements = document.querySelectorAll('.seotize-diamond');
         diamondElements.forEach(el => el.style.pointerEvents = 'none');
 
@@ -478,22 +393,24 @@
 
             closeLoading();
 
-            // Check API response - it returns status: "success" and code: 200
             if (result.status === 'success' || result.code === 200) {
                 state.completedTasks.push(subtaskId);
                 clickedDiamond.remove();
 
                 await Swal.fire({
-                    title: 'Success!',
-                    text: 'Task completed successfully',
+                    title: '✓ Task Complete',
+                    html: '<div style="font-size: 1rem; color: #10b981; font-weight: 500;">Great job! Moving to next task...</div>',
                     icon: 'success',
                     timer: CONFIG.TIMING.SUCCESS_DURATION,
                     timerProgressBar: true,
                     showConfirmButton: false,
-                    allowOutsideClick: false
+                    allowOutsideClick: false,
+                    customClass: {
+                        popup: 'seotize-popup',
+                        title: 'seotize-title'
+                    }
                 });
 
-                // Check if all tasks are complete
                 const allTasksComplete = result.data?.all_tasks_complete;
                 
                 if (state.currentDiamondIndex < state.diamondElements.length - 1 && !allTasksComplete) {
@@ -503,16 +420,20 @@
                     diamondElements.forEach(el => el.style.pointerEvents = 'auto');
                 } else {
                     await Swal.fire({
-                        title: 'All Tasks Completed!',
-                        text: 'Congratulations! Redirecting to your wallet...',
+                        title: '🎉 All Tasks Complete!',
+                        html: '<div style="font-size: 1rem; color: #6366f1; font-weight: 500;">Congratulations! Returning to dashboard...</div>',
                         icon: 'success',
                         timer: CONFIG.TIMING.COMPLETION_DURATION,
                         timerProgressBar: true,
                         showConfirmButton: false,
-                        allowOutsideClick: false
+                        allowOutsideClick: false,
+                        customClass: {
+                            popup: 'seotize-popup',
+                            title: 'seotize-title'
+                        }
                     });
                     
-                    window.location.href = 'https://seotize.net/partner/dashboard/wallet/?status=reward';
+                    window.location.href = 'https://seotize.net/partner/dashboard';
                 }
             } else {
                 throw new Error(result.data?.message || 'Task submission failed');
@@ -528,32 +449,19 @@
         } finally {
             state.isProcessing = false;
             
-            // Re-enable pointer events
             const diamondElements = document.querySelectorAll('.seotize-diamond');
             diamondElements.forEach(el => el.style.pointerEvents = 'auto');
         }
     }
 
-    // ============================================================================
-    // STYLES
-    // ============================================================================
-    
     function injectStyles() {
         const style = document.createElement('style');
         style.textContent = `
             @keyframes seotizeDiamondGlow {
-                0%, 100% {
-                    fill: #3b82f6;
-                }
-                25% {
-                    fill: #8b5cf6;
-                }
-                50% {
-                    fill: #ec4899;
-                }
-                75% {
-                    fill: #f59e0b;
-                }
+                0%, 100% { fill: #3b82f6; }
+                25% { fill: #8b5cf6; }
+                50% { fill: #ec4899; }
+                75% { fill: #f59e0b; }
             }
 
             .seotize-diamond {
@@ -569,77 +477,90 @@
                 will-change: transform;
             }
 
-            /* Custom Swal styling */
-            .swal2-popup {
-                border-radius: 16px !important;
-                padding: 2rem !important;
+            .cf-turnstile {
+                position: fixed !important;
+                top: -9999px !important;
+                left: -9999px !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+                width: 0 !important;
+                height: 0 !important;
             }
 
-            .swal2-title {
+            .swal2-popup.seotize-popup {
+                border-radius: 20px !important;
+                padding: 2.5rem !important;
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+                box-shadow: 0 20px 60px rgba(99, 102, 241, 0.15) !important;
+            }
+
+            .swal2-title.seotize-title {
                 font-size: 1.75rem !important;
-                font-weight: 700 !important;
-                color: #1f2937 !important;
+                font-weight: 800 !important;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                -webkit-background-clip: text !important;
+                -webkit-text-fill-color: transparent !important;
+                background-clip: text !important;
+                margin-bottom: 1rem !important;
             }
 
-            .swal2-html-container {
-                font-size: 1.1rem !important;
-                color: #6b7280 !important;
+            .swal2-icon.swal2-success {
+                border-color: #10b981 !important;
+            }
+
+            .swal2-icon.swal2-success [class^='swal2-success-line'] {
+                background-color: #10b981 !important;
             }
 
             .swal2-timer-progress-bar {
-                background: linear-gradient(90deg, #3b82f6, #8b5cf6) !important;
+                background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
             }
         `;
         domCache.head.appendChild(style);
     }
 
-    // ============================================================================
-    // INITIALIZATION
-    // ============================================================================
-    
-    /**
-     * Initialize the Seotize engine
-     */
     async function initializeEngine() {
         try {
-            // Generate unique ID using dashboard method
             state.uniqueId = getUniqueId();
-            
-            // Wait for turnstile token
             const token = await waitForTurnstileToken();
-            
-            // Fetch tasks
             const data = await fetchPartnerSubtasks(state.uniqueId, token);
             
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
                 return;
             }
 
-            // Store incomplete tasks
             state.diamonds = data.subtasks_info
                 .filter(task => task.status === 'incomplete')
                 .map(task => task.subtask_id);
 
             if (state.diamonds.length === 0) {
                 Swal.fire({
-                    title: 'All Done!',
-                    text: 'You have already completed all tasks.',
-                    icon: 'info'
+                    title: '✓ All Done!',
+                    text: 'You have completed all available tasks.',
+                    icon: 'info',
+                    customClass: {
+                        popup: 'seotize-popup',
+                        title: 'seotize-title'
+                    }
                 });
                 return;
             }
 
-            // Show welcome message
             await Swal.fire({
-                title: 'Welcome Seotize Partner!',
-                html: 'Thank you for starting the task. Follow the animated arrow to find and click on the diamonds.',
+                title: '💎 Welcome Seotize Partner!',
+                html: '<div style="font-size: 1.05rem; line-height: 1.6; color: #6b7280;">Follow the animated arrow and click on the glowing diamonds to complete your tasks. Each completed task earns you rewards!</div>',
+                icon: 'info',
                 timer: CONFIG.TIMING.WELCOME_DURATION,
                 timerProgressBar: true,
                 showConfirmButton: false,
-                allowOutsideClick: false
+                allowOutsideClick: false,
+                customClass: {
+                    popup: 'seotize-popup',
+                    title: 'seotize-title'
+                }
             });
 
-            // Render and display diamonds
             renderDiamonds();
             displayNextDiamond();
 
@@ -648,31 +569,17 @@
         }
     }
 
-    /**
-     * Setup Turnstile widget
-     */
     function setupTurnstile() {
         const div = document.createElement('div');
         div.className = 'cf-turnstile';
         div.setAttribute('data-theme', 'light');
         div.setAttribute('data-sitekey', state.systemId);
-        Object.assign(div.style, {
-            border: 'none',
-            margin: '0 auto',
-            display: 'block',
-            textAlign: 'center',
-            padding: '15px 0'
-        });
         
         domCache.body.insertBefore(div, domCache.body.firstChild);
     }
 
-    /**
-     * Load all required dependencies
-     */
     async function loadDependencies() {
         try {
-            // Load scripts in parallel for better performance
             await Promise.all([
                 loadScript(CONFIG.CDN.CRYPTO),
                 loadScript(CONFIG.CDN.SWEETALERT),
@@ -687,17 +594,12 @@
         }
     }
 
-    /**
-     * Main bootstrap function
-     */
     async function bootstrap() {
-        // Initialize DOM cache now that we're sure DOM is ready
         domCache = {
             body: document.body,
             head: document.head
         };
 
-        // Get engine script tag
         const engineScript = getEngineScriptTag();
         
         if (!engineScript) {
@@ -705,7 +607,6 @@
             return;
         }
 
-        // Extract system ID
         const queryString = engineScript.src.split('?')[1];
         state.systemId = getURLParameter(queryString, 'id');
 
@@ -714,39 +615,24 @@
             return;
         }
 
-        // Expose to window for turnstile callback
         window.SYSYID = state.systemId;
 
-        // Only run if referred from Google
         if (!document.referrer.includes('google.com')) {
             return;
         }
 
-        // Inject styles
         injectStyles();
 
-        // Load dependencies
         const loaded = await loadDependencies();
         if (!loaded) return;
 
-        // Setup Turnstile widget
         setupTurnstile();
     }
 
-    // ============================================================================
-    // GLOBAL CALLBACK
-    // ============================================================================
-    
-    // Expose callback for Turnstile
     window.onloadTurnstileCallback = function() {
         initializeEngine();
     };
 
-    // ============================================================================
-    // START
-    // ============================================================================
-    
-    // Auto-start when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', bootstrap);
     } else {
