@@ -478,7 +478,8 @@
 
             closeLoading();
 
-            if (result.success) {
+            // Check API response - it returns status: "success" and code: 200
+            if (result.status === 'success' || result.code === 200) {
                 state.completedTasks.push(subtaskId);
                 clickedDiamond.remove();
 
@@ -492,7 +493,10 @@
                     allowOutsideClick: false
                 });
 
-                if (state.currentDiamondIndex < state.diamondElements.length - 1) {
+                // Check if all tasks are complete
+                const allTasksComplete = result.data?.all_tasks_complete;
+                
+                if (state.currentDiamondIndex < state.diamondElements.length - 1 && !allTasksComplete) {
                     displayNextDiamond();
                     state.isProcessing = false;
                     const diamondElements = document.querySelectorAll('.seotize-diamond');
