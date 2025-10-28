@@ -1,15 +1,6 @@
-/**
- * Seotize Engine - Optimized Version
- * Performance improvements, bug fixes, and enhanced UI
- */
-
 (function() {
     'use strict';
 
-    // ============================================================================
-    // CONFIGURATION & CONSTANTS
-    // ============================================================================
-    
     const CONFIG = {
         API_ENDPOINTS: {
             GET_TASKS: 'https://api.seotize.net/get-partner-subtasks',
@@ -39,10 +30,6 @@
         }
     };
 
-    // ============================================================================
-    // STATE MANAGEMENT
-    // ============================================================================
-    
     const state = {
         systemId: null,
         uniqueId: null,
@@ -55,19 +42,8 @@
         isProcessing: false
     };
 
-    // ============================================================================
-    // DOM CACHE (initialized lazily after DOM is ready)
-    // ============================================================================
-    
     let domCache = null;
 
-    // ============================================================================
-    // UTILITY FUNCTIONS
-    // ============================================================================
-    
-    /**
-     * Get script tag containing seotize-engine.js
-     */
     function getEngineScriptTag() {
         const scripts = document.getElementsByTagName('script');
         return Array.from(scripts).find(script => 
@@ -75,18 +51,12 @@
         );
     }
 
-    /**
-     * Extract URL parameter from query string
-     */
     function getURLParameter(queryString, name) {
         if (!queryString) return null;
         const params = new URLSearchParams(queryString);
         return params.get(name);
     }
 
-    /**
-     * Generate browser fingerprint for unique ID
-     */
     function generateBrowserFingerprint() {
         const data = [
             navigator.userAgent,
@@ -99,9 +69,6 @@
         return CryptoJS.MD5(data).toString();
     }
 
-    /**
-     * Debounce function for performance optimization
-     */
     function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -114,9 +81,6 @@
         };
     }
 
-    /**
-     * Load script dynamically with promise
-     */
     function loadScript(src, defer = false) {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
@@ -128,9 +92,6 @@
         });
     }
 
-    /**
-     * Show loading indicator
-     */
     function showLoading(title = 'Loading...') {
         if (typeof Swal === 'undefined') return;
         
@@ -142,22 +103,12 @@
         });
     }
 
-    /**
-     * Close loading indicator
-     */
     function closeLoading() {
         if (typeof Swal !== 'undefined') {
             Swal.close();
         }
     }
 
-    // ============================================================================
-    // API FUNCTIONS
-    // ============================================================================
-    
-    /**
-     * Wait for Turnstile response token
-     */
     async function waitForTurnstileToken() {
         return new Promise((resolve, reject) => {
             const checkToken = () => {
@@ -169,6 +120,11 @@
                 }
 
                 if (!responseElement) {
+                    if (!domCache || !domCache.body) {
+                        reject(new Error('DOM not initialized'));
+                        return;
+                    }
+
                     const observer = new MutationObserver(() => {
                         const elem = document.getElementsByName('cf-turnstile-response')[0];
                         if (elem) {
@@ -188,14 +144,10 @@
             
             checkToken();
             
-            // Timeout after 30 seconds
             setTimeout(() => reject(new Error('Turnstile timeout')), 30000);
         });
     }
 
-    /**
-     * Fetch partner subtasks
-     */
     async function fetchPartnerSubtasks(uniqueId, turnstileToken) {
         const response = await fetch(CONFIG.API_ENDPOINTS.GET_TASKS, {
             method: 'POST',
@@ -213,9 +165,6 @@
         return await response.json();
     }
 
-    /**
-     * Submit completed task
-     */
     async function submitTask(subtaskId, turnstileToken) {
         const response = await fetch(CONFIG.API_ENDPOINTS.DO_TASK, {
             method: 'POST',
@@ -234,13 +183,6 @@
         return await response.json();
     }
 
-    // ============================================================================
-    // DIAMOND FUNCTIONS
-    // ============================================================================
-    
-    /**
-     * Create diamond SVG element
-     */
     function createDiamondSVG(subtaskId, xPosition, yPosition) {
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         const size = CONFIG.DIAMOND.SIZE;
@@ -274,9 +216,6 @@
         return svg;
     }
 
-    /**
-     * Calculate diamond positions
-     */
     function calculateDiamondPositions(count) {
         const positions = [];
         const viewportWidth = window.innerWidth;
@@ -314,9 +253,6 @@
         return positions;
     }
 
-    /**
-     * Render all diamonds on the page
-     */
     function renderDiamonds() {
         const positions = calculateDiamondPositions(state.diamonds.length);
         
@@ -329,9 +265,6 @@
         });
     }
 
-    /**
-     * Display next diamond with animation
-     */
     function displayNextDiamond() {
         state.currentDiamondIndex++;
         
@@ -355,9 +288,6 @@
         createArrowToDiamond(diamond);
     }
 
-    /**
-     * Create animated arrow pointing to diamond
-     */
     function createArrowToDiamond(targetDiamond) {
         if (state.currentArrow) {
             state.currentArrow.remove();
@@ -419,9 +349,6 @@
         }
     }
 
-    /**
-     * Handle diamond click event
-     */
     async function handleDiamondClick(subtaskId) {
         if (state.isProcessing) return;
         
@@ -432,7 +359,6 @@
         
         state.isProcessing = true;
         
-        // Disable pointer events on all diamonds
         const diamondElements = document.querySelectorAll('.seotize-diamond');
         diamondElements.forEach(el => el.style.pointerEvents = 'none');
 
@@ -512,16 +438,11 @@
         } finally {
             state.isProcessing = false;
             
-            // Re-enable pointer events
             const diamondElements = document.querySelectorAll('.seotize-diamond');
             diamondElements.forEach(el => el.style.pointerEvents = 'auto');
         }
     }
 
-    // ============================================================================
-    // STYLES
-    // ============================================================================
-    
     function injectStyles() {
         const style = document.createElement('style');
         style.textContent = `
@@ -553,7 +474,6 @@
                 will-change: transform;
             }
 
-            /* Custom Swal styling */
             .swal2-popup {
                 border-radius: 16px !important;
                 padding: 2rem !important;
@@ -577,24 +497,14 @@
         domCache.head.appendChild(style);
     }
 
-    // ============================================================================
-    // INITIALIZATION
-    // ============================================================================
-    
-    /**
-     * Initialize the Seotize engine
-     */
     async function initializeEngine() {
         try {
             showLoading('Initializing...');
             
-            // Generate unique ID
             state.uniqueId = generateBrowserFingerprint();
             
-            // Wait for turnstile token
             const token = await waitForTurnstileToken();
             
-            // Fetch tasks
             const data = await fetchPartnerSubtasks(state.uniqueId, token);
             
             closeLoading();
@@ -603,7 +513,6 @@
                 throw new Error('No tasks available');
             }
 
-            // Store incomplete tasks
             state.diamonds = data.subtasks_info
                 .filter(task => task.status === 'incomplete')
                 .map(task => task.subtask_id);
@@ -617,7 +526,6 @@
                 return;
             }
 
-            // Show welcome message
             await Swal.fire({
                 title: 'Welcome Seotize Partner!',
                 html: 'Thank you for starting the task. Follow the animated arrow to find and click on the diamonds.',
@@ -627,7 +535,6 @@
                 allowOutsideClick: false
             });
 
-            // Render and display diamonds
             renderDiamonds();
             displayNextDiamond();
 
@@ -644,9 +551,6 @@
         }
     }
 
-    /**
-     * Setup Turnstile widget
-     */
     function setupTurnstile() {
         const div = document.createElement('div');
         div.className = 'cf-turnstile';
@@ -663,12 +567,8 @@
         domCache.body.insertBefore(div, domCache.body.firstChild);
     }
 
-    /**
-     * Load all required dependencies
-     */
     async function loadDependencies() {
         try {
-            // Load scripts in parallel for better performance
             await Promise.all([
                 loadScript(CONFIG.CDN.CRYPTO),
                 loadScript(CONFIG.CDN.SWEETALERT),
@@ -684,17 +584,12 @@
         }
     }
 
-    /**
-     * Main bootstrap function
-     */
     async function bootstrap() {
-        // Initialize DOM cache now that DOM is ready
         domCache = {
             body: document.body,
             head: document.head
         };
 
-        // Get engine script tag
         const engineScript = getEngineScriptTag();
         
         if (!engineScript) {
@@ -702,7 +597,6 @@
             return;
         }
 
-        // Extract system ID
         const queryString = engineScript.src.split('?')[1];
         state.systemId = getURLParameter(queryString, 'id');
 
@@ -711,39 +605,24 @@
             return;
         }
 
-        // Expose to window for turnstile callback
         window.SYSYID = state.systemId;
 
-        // Only run if referred from Google
         if (!document.referrer.includes('google.com')) {
             return;
         }
 
-        // Inject styles
         injectStyles();
 
-        // Load dependencies
         const loaded = await loadDependencies();
         if (!loaded) return;
 
-        // Setup Turnstile widget
         setupTurnstile();
     }
 
-    // ============================================================================
-    // GLOBAL CALLBACK
-    // ============================================================================
-    
-    // Expose callback for Turnstile
     window.onloadTurnstileCallback = function() {
         initializeEngine();
     };
 
-    // ============================================================================
-    // START
-    // ============================================================================
-    
-    // Auto-start when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', bootstrap);
     } else {
