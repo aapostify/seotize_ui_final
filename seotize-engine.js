@@ -1,6 +1,15 @@
+/**
+ * Seotize Engine - Optimized Version
+ * Performance improvements, bug fixes, and enhanced UI
+ */
+
 (function() {
     'use strict';
 
+    // ============================================================================
+    // CONFIGURATION & CONSTANTS
+    // ============================================================================
+    
     const CONFIG = {
         API_ENDPOINTS: {
             GET_TASKS: 'https://api.seotize.net/get-partner-subtasks',
@@ -30,6 +39,10 @@
         }
     };
 
+    // ============================================================================
+    // STATE MANAGEMENT
+    // ============================================================================
+    
     const state = {
         systemId: null,
         uniqueId: null,
@@ -42,8 +55,19 @@
         isProcessing: false
     };
 
+    // ============================================================================
+    // DOM CACHE - Initialized after DOM is ready
+    // ============================================================================
+    
     let domCache = null;
 
+    // ============================================================================
+    // UTILITY FUNCTIONS
+    // ============================================================================
+    
+    /**
+     * Get script tag containing seotize-engine.js
+     */
     function getEngineScriptTag() {
         const scripts = document.getElementsByTagName('script');
         return Array.from(scripts).find(script => 
@@ -51,39 +75,33 @@
         );
     }
 
+    /**
+     * Extract URL parameter from query string
+     */
     function getURLParameter(queryString, name) {
         if (!queryString) return null;
         const params = new URLSearchParams(queryString);
         return params.get(name);
     }
 
+    /**
+     * Generate browser fingerprint for unique ID
+     */
     function generateBrowserFingerprint() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        ctx.textBaseline = 'top';
-        ctx.font = '14px Arial';
-        ctx.fillText('Browser fingerprint', 2, 2);
-        
-        const canvasData = canvas.toDataURL();
-        
         const data = [
             navigator.userAgent,
             navigator.language,
-            navigator.languages ? navigator.languages.join(',') : '',
             navigator.platform,
-            navigator.hardwareConcurrency || '',
-            navigator.deviceMemory || '',
-            screen.width + 'x' + screen.height,
-            screen.colorDepth,
-            new Date().getTimezoneOffset(),
-            !!window.sessionStorage,
-            !!window.localStorage,
-            canvasData
+            `${screen.width}x${screen.height}`,
+            new Date().getTimezoneOffset()
         ].join('|');
         
         return CryptoJS.MD5(data).toString();
     }
 
+    /**
+     * Debounce function for performance optimization
+     */
     function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -96,12 +114,11 @@
         };
     }
 
+    /**
+     * Load script dynamically with promise
+     */
     function loadScript(src, defer = false) {
         return new Promise((resolve, reject) => {
-            if (!domCache || !domCache.head) {
-                reject(new Error('DOM cache not initialized'));
-                return;
-            }
             const script = document.createElement('script');
             script.src = src;
             script.defer = defer;
@@ -111,6 +128,9 @@
         });
     }
 
+    /**
+     * Show loading indicator
+     */
     function showLoading(title = 'Loading...') {
         if (typeof Swal === 'undefined') return;
         
@@ -122,12 +142,22 @@
         });
     }
 
+    /**
+     * Close loading indicator
+     */
     function closeLoading() {
         if (typeof Swal !== 'undefined') {
             Swal.close();
         }
     }
 
+    // ============================================================================
+    // API FUNCTIONS
+    // ============================================================================
+    
+    /**
+     * Wait for Turnstile response token
+     */
     async function waitForTurnstileToken() {
         return new Promise((resolve, reject) => {
             const checkToken = () => {
@@ -139,11 +169,6 @@
                 }
 
                 if (!responseElement) {
-                    if (!domCache || !domCache.body) {
-                        setTimeout(checkToken, CONFIG.TIMING.POLL_INTERVAL);
-                        return;
-                    }
-
                     const observer = new MutationObserver(() => {
                         const elem = document.getElementsByName('cf-turnstile-response')[0];
                         if (elem) {
@@ -163,10 +188,14 @@
             
             checkToken();
             
+            // Timeout after 30 seconds
             setTimeout(() => reject(new Error('Turnstile timeout')), 30000);
         });
     }
 
+    /**
+     * Fetch partner subtasks
+     */
     async function fetchPartnerSubtasks(uniqueId, turnstileToken) {
         const response = await fetch(CONFIG.API_ENDPOINTS.GET_TASKS, {
             method: 'POST',
@@ -184,6 +213,9 @@
         return await response.json();
     }
 
+    /**
+     * Submit completed task
+     */
     async function submitTask(subtaskId, turnstileToken) {
         const response = await fetch(CONFIG.API_ENDPOINTS.DO_TASK, {
             method: 'POST',
@@ -202,6 +234,13 @@
         return await response.json();
     }
 
+    // ============================================================================
+    // DIAMOND FUNCTIONS
+    // ============================================================================
+    
+    /**
+     * Create diamond SVG element
+     */
     function createDiamondSVG(subtaskId, xPosition, yPosition) {
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         const size = CONFIG.DIAMOND.SIZE;
@@ -235,6 +274,9 @@
         return svg;
     }
 
+    /**
+     * Calculate diamond positions
+     */
     function calculateDiamondPositions(count) {
         const positions = [];
         const viewportWidth = window.innerWidth;
@@ -272,9 +314,10 @@
         return positions;
     }
 
+    /**
+     * Render all diamonds on the page
+     */
     function renderDiamonds() {
-        if (!domCache || !domCache.body) return;
-        
         const positions = calculateDiamondPositions(state.diamonds.length);
         
         state.diamonds.forEach((subtaskId, index) => {
@@ -286,6 +329,9 @@
         });
     }
 
+    /**
+     * Display next diamond with animation
+     */
     function displayNextDiamond() {
         state.currentDiamondIndex++;
         
@@ -309,9 +355,10 @@
         createArrowToDiamond(diamond);
     }
 
+    /**
+     * Create animated arrow pointing to diamond
+     */
     function createArrowToDiamond(targetDiamond) {
-        if (!domCache || !domCache.body) return;
-        
         if (state.currentArrow) {
             state.currentArrow.remove();
             if (state.arrowUpdateInterval) {
@@ -372,6 +419,9 @@
         }
     }
 
+    /**
+     * Handle diamond click event
+     */
     async function handleDiamondClick(subtaskId) {
         if (state.isProcessing) return;
         
@@ -382,6 +432,7 @@
         
         state.isProcessing = true;
         
+        // Disable pointer events on all diamonds
         const diamondElements = document.querySelectorAll('.seotize-diamond');
         diamondElements.forEach(el => el.style.pointerEvents = 'none');
 
@@ -461,14 +512,17 @@
         } finally {
             state.isProcessing = false;
             
+            // Re-enable pointer events
             const diamondElements = document.querySelectorAll('.seotize-diamond');
             diamondElements.forEach(el => el.style.pointerEvents = 'auto');
         }
     }
 
+    // ============================================================================
+    // STYLES
+    // ============================================================================
+    
     function injectStyles() {
-        if (!domCache || !domCache.head) return;
-        
         const style = document.createElement('style');
         style.textContent = `
             @keyframes seotizeDiamondGlow {
@@ -499,6 +553,7 @@
                 will-change: transform;
             }
 
+            /* Custom Swal styling */
             .swal2-popup {
                 border-radius: 16px !important;
                 padding: 2rem !important;
@@ -522,19 +577,33 @@
         domCache.head.appendChild(style);
     }
 
+    // ============================================================================
+    // INITIALIZATION
+    // ============================================================================
+    
+    /**
+     * Initialize the Seotize engine
+     */
     async function initializeEngine() {
         try {
+            showLoading('Initializing...');
+            
+            // Generate unique ID
             state.uniqueId = generateBrowserFingerprint();
             
+            // Wait for turnstile token
             const token = await waitForTurnstileToken();
             
+            // Fetch tasks
             const data = await fetchPartnerSubtasks(state.uniqueId, token);
             
+            closeLoading();
+            
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
-                console.log('No tasks available from Seotize');
-                return;
+                throw new Error('No tasks available');
             }
 
+            // Store incomplete tasks
             state.diamonds = data.subtasks_info
                 .filter(task => task.status === 'incomplete')
                 .map(task => task.subtask_id);
@@ -548,6 +617,7 @@
                 return;
             }
 
+            // Show welcome message
             await Swal.fire({
                 title: 'Welcome Seotize Partner!',
                 html: 'Thank you for starting the task. Follow the animated arrow to find and click on the diamonds.',
@@ -557,20 +627,27 @@
                 allowOutsideClick: false
             });
 
+            // Render and display diamonds
             renderDiamonds();
             displayNextDiamond();
 
         } catch (error) {
-            console.error('Seotize initialization error:', error);
+            closeLoading();
+            Swal.fire({
+                title: 'Initialization Error',
+                text: error.message || 'Failed to initialize',
+                icon: 'error',
+                confirmButtonText: 'Retry'
+            }).then(() => {
+                window.location.reload();
+            });
         }
     }
 
+    /**
+     * Setup Turnstile widget
+     */
     function setupTurnstile() {
-        if (!domCache || !domCache.body) {
-            console.error('Cannot setup Turnstile: DOM not ready');
-            return;
-        }
-        
         const div = document.createElement('div');
         div.className = 'cf-turnstile';
         div.setAttribute('data-theme', 'light');
@@ -586,8 +663,12 @@
         domCache.body.insertBefore(div, domCache.body.firstChild);
     }
 
+    /**
+     * Load all required dependencies
+     */
     async function loadDependencies() {
         try {
+            // Load scripts in parallel for better performance
             await Promise.all([
                 loadScript(CONFIG.CDN.CRYPTO),
                 loadScript(CONFIG.CDN.SWEETALERT),
@@ -598,72 +679,71 @@
             return true;
         } catch (error) {
             console.error('Failed to load dependencies:', error);
+            alert('Failed to load required resources. Please refresh the page.');
             return false;
         }
     }
 
-    function waitForBody() {
-        return new Promise((resolve) => {
-            if (document.body) {
-                resolve();
-                return;
-            }
-            
-            const observer = new MutationObserver(() => {
-                if (document.body) {
-                    observer.disconnect();
-                    resolve();
-                }
-            });
-            
-            observer.observe(document.documentElement, {
-                childList: true,
-                subtree: true
-            });
-        });
-    }
-
+    /**
+     * Main bootstrap function
+     */
     async function bootstrap() {
-        await waitForBody();
-        
+        // Initialize DOM cache now that we're sure DOM is ready
         domCache = {
             body: document.body,
             head: document.head
         };
 
+        // Get engine script tag
         const engineScript = getEngineScriptTag();
         
         if (!engineScript) {
-            console.error('Seotize engine script not found.');
+            alert('Seotize engine script not found.');
             return;
         }
 
+        // Extract system ID
         const queryString = engineScript.src.split('?')[1];
         state.systemId = getURLParameter(queryString, 'id');
 
         if (!state.systemId) {
-            console.error('System ID not found in script tag.');
+            alert("System ID not found in script tag.");
             return;
         }
 
+        // Expose to window for turnstile callback
         window.SYSYID = state.systemId;
 
+        // Only run if referred from Google
         if (!document.referrer.includes('google.com')) {
             return;
         }
 
+        // Inject styles
         injectStyles();
 
+        // Load dependencies
         const loaded = await loadDependencies();
         if (!loaded) return;
 
+        // Setup Turnstile widget
         setupTurnstile();
     }
 
+    // ============================================================================
+    // GLOBAL CALLBACK
+    // ============================================================================
+    
+    // Expose callback for Turnstile
     window.onloadTurnstileCallback = function() {
         initializeEngine();
     };
 
+    // ============================================================================
+    // START
+    // ============================================================================
+    
+    // Auto-start when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', bootstrap);
     } else {
