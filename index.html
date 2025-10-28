@@ -52,7 +52,7 @@
         
         /* Sections */
         .section { 
-            min-height: calc(100vh - var(--top-nav-height)); 
+            min-height: 100vh; 
             padding-top: calc(var(--top-nav-height) + 2rem);
             padding-bottom: 2rem;
             padding-left: 2rem;
@@ -284,7 +284,7 @@
         
         @media (max-width: 480px) {
             .section { 
-                min-height: calc(100vh - var(--top-nav-height) - var(--mobile-nav-height));
+                min-height: calc(100vh - var(--mobile-nav-height) - 1rem));
                 padding-top: calc(var(--top-nav-height) + 1rem);
                 padding-bottom: 1rem;
                 padding-left: 1rem;
