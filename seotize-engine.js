@@ -58,12 +58,27 @@
     }
 
     function generateBrowserFingerprint() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.textBaseline = 'top';
+        ctx.font = '14px Arial';
+        ctx.fillText('Browser fingerprint', 2, 2);
+        
+        const canvasData = canvas.toDataURL();
+        
         const data = [
             navigator.userAgent,
             navigator.language,
+            navigator.languages ? navigator.languages.join(',') : '',
             navigator.platform,
-            `${screen.width}x${screen.height}`,
-            new Date().getTimezoneOffset()
+            navigator.hardwareConcurrency || '',
+            navigator.deviceMemory || '',
+            screen.width + 'x' + screen.height,
+            screen.colorDepth,
+            new Date().getTimezoneOffset(),
+            !!window.sessionStorage,
+            !!window.localStorage,
+            canvasData
         ].join('|');
         
         return CryptoJS.MD5(data).toString();
@@ -509,18 +524,15 @@
 
     async function initializeEngine() {
         try {
-            showLoading('Initializing...');
-            
             state.uniqueId = generateBrowserFingerprint();
             
             const token = await waitForTurnstileToken();
             
             const data = await fetchPartnerSubtasks(state.uniqueId, token);
             
-            closeLoading();
-            
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
-                throw new Error('No tasks available');
+                console.log('No tasks available from Seotize');
+                return;
             }
 
             state.diamonds = data.subtasks_info
@@ -549,15 +561,7 @@
             displayNextDiamond();
 
         } catch (error) {
-            closeLoading();
-            Swal.fire({
-                title: 'Initialization Error',
-                text: error.message || 'Failed to initialize',
-                icon: 'error',
-                confirmButtonText: 'Retry'
-            }).then(() => {
-                window.location.reload();
-            });
+            console.error('Seotize initialization error:', error);
         }
     }
 
@@ -594,7 +598,6 @@
             return true;
         } catch (error) {
             console.error('Failed to load dependencies:', error);
-            alert('Failed to load required resources. Please refresh the page.');
             return false;
         }
     }
@@ -631,7 +634,7 @@
         const engineScript = getEngineScriptTag();
         
         if (!engineScript) {
-            alert('Seotize engine script not found.');
+            console.error('Seotize engine script not found.');
             return;
         }
 
@@ -639,7 +642,7 @@
         state.systemId = getURLParameter(queryString, 'id');
 
         if (!state.systemId) {
-            alert("System ID not found in script tag.");
+            console.error('System ID not found in script tag.');
             return;
         }
 
