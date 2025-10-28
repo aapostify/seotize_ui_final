@@ -21,8 +21,6 @@
             --text-muted: #94a3b8; --border: #e2e8f0; --primary: #2563eb; --primary-dark: #1e40af;
             --primary-glow: rgba(37, 99, 235, 0.2); --success: #10b981; --nav-bg: rgba(255, 255, 255, 0.85);
             --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.06); --bg-dark: #1a1f2e;
-            --nav-height: 65px;
-            --mobile-nav-height: 68px;
         }
         
         body.dark {
@@ -32,11 +30,11 @@
             --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); --bg-dark: #000000;
         }
         
-        html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; -webkit-font-smoothing: antialiased; }
         
         /* Navigation */
-        nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height); background: var(--nav-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; display: flex; align-items: center; }
+        nav { position: fixed; top: 0; left: 0; right: 0; height: 65px; background: var(--nav-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; display: flex; align-items: center; }
         .nav-container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); text-decoration: none; letter-spacing: -0.5px; }
         .nav-menu { display: flex; align-items: center; gap: 1.75rem; list-style: none; }
@@ -48,18 +46,8 @@
         .theme-btn { width: 40px; height: 40px; border-radius: 10px; background: var(--bg-secondary); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; font-size: 1.2rem; color: var(--text); }
         .theme-btn:hover { transform: translateY(-2px); box-shadow: var(--card-shadow); border-color: var(--primary); }
         
-        /* Sections - Responsive Height Calculation */
-        .section { 
-            min-height: 100vh; 
-            height: 100vh;
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            position: relative; 
-            overflow: hidden; 
-            padding: 2rem; 
-            scroll-snap-align: start;
-        }
+        /* Sections */
+        .section { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; padding: 6rem 2rem; }
         
         /* Hero */
         .hero { background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%); position: relative; }
@@ -96,11 +84,11 @@
         
         /* Pricing */
         .pricing { background: var(--bg-secondary); }
-        .pricing-type-toggle { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; background: var(--bg); padding: 0.5rem; border-radius: 16px; width: fit-content; margin-left: auto; margin-right: auto; border: 2px solid var(--border); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06); }
-        .pricing-type-toggle button { padding: 0.75rem 1.75rem; border: none; background: transparent; color: var(--text-light); font-weight: 700; border-radius: 12px; cursor: pointer; transition: all 0.3s; font-size: 0.95rem; position: relative; }
+        .pricing-type-toggle { display: flex; justify-content: center; gap: 0.75rem; margin-bottom: 3rem; background: var(--bg); padding: 0.625rem; border-radius: 20px; width: fit-content; margin-left: auto; margin-right: auto; border: 2px solid var(--border); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06); }
+        .pricing-type-toggle button { padding: 1rem 2.5rem; border: none; background: transparent; color: var(--text-light); font-weight: 700; border-radius: 16px; cursor: pointer; transition: all 0.3s; font-size: 1.05rem; position: relative; }
         .pricing-type-toggle button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 6px 16px var(--primary-glow); transform: translateY(-2px); }
-        .pricing-toggle { display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-bottom: 2rem; max-width: 900px; margin-left: auto; margin-right: auto; }
-        .pricing-toggle button { flex: 1; padding: 0.875rem 1.5rem; border: 2px solid var(--border); background: var(--bg); color: var(--text-light); font-weight: 700; border-radius: 14px; cursor: pointer; transition: all 0.4s; font-size: 0.9rem; position: relative; }
+        .pricing-toggle { display: flex; justify-content: center; align-items: center; gap: 1.25rem; margin-bottom: 3rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .pricing-toggle button { flex: 1; padding: 1.125rem 2rem; border: 2px solid var(--border); background: var(--bg); color: var(--text-light); font-weight: 700; border-radius: 18px; cursor: pointer; transition: all 0.4s; font-size: 1rem; position: relative; }
         .pricing-toggle button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-color: var(--primary); box-shadow: 0 10px 28px var(--primary-glow); transform: translateY(-5px); }
         .pricing-toggle .save-badge { position: absolute; top: -8px; right: -8px; background: var(--success); color: white; padding: 0.25rem 0.5rem; border-radius: 8px; font-size: 0.7rem; font-weight: 700; }
         .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; max-width: 1400px; margin: 0 auto; }
@@ -149,7 +137,7 @@
         .blog-date { font-size: 0.875rem; color: var(--text-muted); }
         .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: var(--bg-secondary); border: 2px solid var(--border); color: var(--text); font-size: 1.5rem; cursor: pointer; transition: all 0.3s; z-index: 10; display: flex; align-items: center; justify-content: center; }
         .nav-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-50%) scale(1.1); }
-        .prev-btn { left: -10px; }
+        .prev-btn { left: px; }
         .next-btn { right: -10px; }
         .blog-cta { text-align: center; margin-top: 3rem; }
         
@@ -192,7 +180,7 @@
         .social-links a:hover { background: var(--primary); transform: translateY(-2px); }
         
         /* Mobile Navigation */
-        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--mobile-nav-height); background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); z-index: 100; padding: 0.625rem 0.875rem; box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05); }
+        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 68px; background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); z-index: 100; padding: 0.625rem 0.875rem; box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05); }
         .mobile-items { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; max-width: 600px; height: 100%; margin: 0 auto; }
         .mobile-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.375rem; color: var(--text-light); text-decoration: none; font-size: 0.75rem; font-weight: 500; border-radius: 8px; transition: all 0.3s ease; }
         .mobile-item:active { transform: scale(0.95); }
@@ -202,31 +190,21 @@
         /* Modals */
         .feature-modal, .blog-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; overflow-y: auto; }
         .feature-modal.active, .blog-modal.active { display: flex; }
-        .feature-modal-content, .blog-modal-content { 
-            background: var(--bg-secondary); 
-            border-radius: 20px; 
-            max-width: 700px; 
-            width: 100%; 
-            max-height: 85vh; 
-            overflow-y: auto; 
-            position: relative; 
-            animation: modalSlide 0.4s ease;
-            margin: auto;
-        }
+        .feature-modal-content, .blog-modal-content { background: var(--bg-secondary); border-radius: 20px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; animation: modalSlide 0.4s ease; }
         .feature-modal-close, .blog-modal-close { position: absolute; top: 1rem; right: 1rem; width: 40px; height: 40px; border: none; background: var(--bg); border-radius: 50%; font-size: 1.5rem; cursor: pointer; color: var(--text); transition: all 0.3s; z-index: 10; }
         .feature-modal-close:hover, .blog-modal-close:hover { background: var(--primary); color: white; transform: rotate(90deg); }
         #featureModalBody, #blogModalBody { padding: 2.5rem; }
         .feature-modal-header { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.75rem; }
-        .feature-modal-icon { font-size: 3.5rem; flex-shrink: 0; }
-        .feature-modal-title { font-size: 2rem; font-weight: 800; color: var(--text); margin: 0; line-height: 1.2; }
+        .feature-modal-icon { font-size: 3.25rem; flex-shrink: 0; }
+        .feature-modal-title { font-size: 1.9rem; font-weight: 800; color: var(--text); margin: 0; line-height: 1.2; }
         .feature-modal-subtitle { font-size: 1.05rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.4; }
-        .feature-modal-image { width: 100%; border-radius: 16px; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); }
-        .feature-modal-description { font-size: 1.05rem; color: var(--text-light); line-height: 1.8; margin-bottom: 2rem; }
-        .feature-modal-features { list-style: none; margin-bottom: 2.5rem; display: flex; flex-direction: column; gap: 1rem; }
+        .feature-modal-image { width: 100%; border-radius: 16px; margin-bottom: 2rem; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
+        .feature-modal-description { font-size: 1.05rem; color: var(--text-light); line-height: 1.75; margin-bottom: 2rem; }
+        .feature-modal-features { list-style: none; margin-bottom: 2.5rem; display: flex; flex-direction: column; gap: 0.875rem; }
         .feature-modal-features li { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 1.25rem; background: var(--bg); border-radius: 12px; border: 2px solid var(--border); transition: all 0.3s; }
         .feature-modal-features li:hover { border-color: var(--primary); transform: translateX(4px); }
-        .feature-modal-features li i { color: var(--success); font-size: 1.5rem; flex-shrink: 0; margin-top: 0.1rem; }
-        .feature-modal-features li span { font-size: 0.95rem; color: var(--text-light); line-height: 1.6; }
+        .feature-modal-features li i { color: var(--success); font-size: 1.4rem; flex-shrink: 0; margin-top: 0.1rem; }
+        .feature-modal-features li span { font-size: 0.975rem; color: var(--text-light); line-height: 1.6; }
         .blog-modal-image { width: 100%; height: 250px; object-fit: cover; border-radius: 16px 16px 0 0; }
         .blog-modal-title { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 1rem; }
         @keyframes modalSlide { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -245,26 +223,18 @@
         }
         
         @media (max-width: 768px) {
-            .section { 
-                padding: 1.5rem 1rem; 
-                min-height: calc(100vh - var(--nav-height) - var(--mobile-nav-height));
-                height: calc(100vh - var(--nav-height) - var(--mobile-nav-height));
-            }
+            .section { padding: 4rem 1.5rem; }
             .hero h1 { font-size: 2rem; }
             .hero p { font-size: 1rem; }
             .hero-container > div:last-child { order: -1; }
-            .hero-controls { bottom: 1.5rem; }
+            .hero-controls { bottom: 80px; }
             .section-title { font-size: 2rem; }
-            .section-subtitle { font-size: 1rem; margin-bottom: 2rem; }
+            .section-subtitle { font-size: 1rem; }
             .features-container { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
             .feature-card { padding: 1.25rem; min-height: 220px; }
             .feature-card-icon { font-size: 2rem; }
             .feature-card-title { font-size: 0.95rem; }
             .feature-card-description { font-size: 0.8rem; }
-            .pricing-type-toggle { gap: 0.4rem; padding: 0.4rem; margin-bottom: 1.5rem; }
-            .pricing-type-toggle button { padding: 0.625rem 1.25rem; font-size: 0.85rem; }
-            .pricing-toggle { gap: 0.5rem; margin-bottom: 1.5rem; }
-            .pricing-toggle button { padding: 0.875rem 0.875rem; font-size: 0.85rem; }
             .pricing-grid { display: none; }
             .pricing-card-mobile { display: block; }
             .free-plan-note { padding: 1.5rem; margin-top: 2rem; }
@@ -276,39 +246,24 @@
             .partner-stat-value { font-size: 1.2rem; }
             .partner-stat-label { font-size: 0.75rem; }
             .mobile-nav { display: block; }
-            .footer { padding-bottom: calc(var(--mobile-nav-height) + 2rem); }
+            .footer { padding-bottom: 6rem; }
             .footer-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
             .footer-bottom { flex-direction: column; text-align: center; }
             .blog-item { width: 280px; }
             .blog-item.prev { transform: scale(0.8) translateX(-300px); }
             .blog-item.next { transform: scale(0.8) translateX(300px); }
-            #featureModalBody, #blogModalBody { padding: 1.75rem; }
-            .feature-modal-content, .blog-modal-content { max-height: 80vh; max-width: 90%; }
-            .feature-modal-header { gap: 1rem; flex-wrap: wrap; }
-            .feature-modal-icon { font-size: 2.75rem; }
-            .feature-modal-title { font-size: 1.6rem; }
-            .feature-modal-subtitle { font-size: 0.95rem; }
-            .feature-modal-description { font-size: 0.95rem; }
-            .feature-modal-features li { padding: 0.875rem 1rem; gap: 0.875rem; }
-            .feature-modal-features li i { font-size: 1.25rem; }
-            .feature-modal-features li span { font-size: 0.875rem; }
         }
         
         @media (max-width: 480px) {
-            .section { 
-                padding: 1.25rem 0.875rem; 
-                min-height: calc(100vh - var(--nav-height) - var(--mobile-nav-height));
-                height: calc(100vh - var(--nav-height) - var(--mobile-nav-height));
-            }
+            .section { padding: 3rem 1rem; }
             .hero h1 { font-size: 1.75rem; }
             .section-title { font-size: 1.75rem; }
-            .section-subtitle { font-size: 0.95rem; margin-bottom: 1.5rem; }
             .features-container { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
             .feature-card { padding: 1rem; min-height: 200px; }
             .feature-card-icon { font-size: 1.75rem; }
             .feature-card-title { font-size: 0.875rem; }
-            .pricing-type-toggle button { padding: 0.5rem 1rem; font-size: 0.8rem; }
-            .pricing-toggle button { padding: 0.75rem 0.75rem; font-size: 0.8rem; }
+            .pricing-type-toggle button { padding: 0.75rem 1.5rem; font-size: 0.9rem; }
+            .pricing-toggle button { padding: 0.875rem 0.875rem; font-size: 0.9rem; }
             .partner-stats { grid-template-columns: repeat(2, 1fr); gap: 0.875rem; }
             .partner-stat { padding: 1.125rem 0.875rem; }
             .partner-stat-icon { font-size: 1.5rem; }
@@ -325,18 +280,18 @@
             .mobile-item i { font-size: 1.2rem; }
             .blog-item { width: 260px; }
             .blog-item.prev, .blog-item.next { opacity: 0; pointer-events: none; }
-            .feature-modal-content, .blog-modal-content { margin: 0.75rem; max-height: 85vh; max-width: 95%; }
+            .feature-modal-content, .blog-modal-content { margin: 1rem; max-height: 85vh; }
             #featureModalBody, #blogModalBody { padding: 1.5rem; }
             .feature-modal-header { align-items: flex-start; }
-            .feature-modal-icon { font-size: 2.5rem; }
-            .feature-modal-title { font-size: 1.4rem; }
-            .feature-modal-subtitle { font-size: 0.875rem; }
-            .feature-modal-description { font-size: 0.9rem; margin-bottom: 1.5rem; }
+            .feature-modal-icon { font-size: 2.75rem; }
+            .feature-modal-title { font-size: 1.5rem; }
+            .feature-modal-subtitle { font-size: 0.95rem; }
+            .feature-modal-description { font-size: 0.975rem; }
             .feature-modal-image { margin-bottom: 1.5rem; }
             .feature-modal-features { gap: 0.75rem; margin-bottom: 2rem; }
-            .feature-modal-features li { padding: 0.75rem 0.875rem; gap: 0.75rem; }
-            .feature-modal-features li i { font-size: 1.15rem; }
-            .feature-modal-features li span { font-size: 0.825rem; }
+            .feature-modal-features li { padding: 0.875rem 1rem; gap: 0.875rem; }
+            .feature-modal-features li i { font-size: 1.25rem; }
+            .feature-modal-features li span { font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -661,108 +616,138 @@
         }
 
         function initializePricing() {
-            updatePricing();
+            renderHostingPricing();
+            renderTaskPricing();
         }
 
-        function showPricingType(type) {
-            document.querySelectorAll('.pricing-type-toggle button').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            if (type === 'hosting') {
-                document.getElementById('hostingPricing').style.display = 'block';
-                document.getElementById('taskPricing').style.display = 'none';
-            } else {
-                document.getElementById('hostingPricing').style.display = 'none';
-                document.getElementById('taskPricing').style.display = 'block';
-            }
-        }
-
-        function setPeriod(period) {
-            currentPeriod = period;
-            document.querySelectorAll('.pricing-toggle button').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            updatePricing();
-        }
-
-        function updatePricing() {
-            const hostingGrid = document.getElementById('hostingGrid');
-            const hostingGridMobile = document.getElementById('hostingGridMobile');
-            const taskGrid = document.getElementById('taskGrid');
-            const taskGridMobile = document.getElementById('taskGridMobile');
-
-            // Hosting plans (desktop)
-            hostingGrid.innerHTML = Object.entries(appData.hostingPlans).map(([key, plan]) => {
-                const isFreePlan = key === 'free';
-                return `<div class="pricing-card ${plan.popular ? 'popular' : ''} ${isFreePlan ? 'free-plan' : ''}">
+        function renderHostingPricing() {
+            const grid = document.getElementById('hostingGrid');
+            const mobileGrid = document.getElementById('hostingGridMobile');
+            
+            // Desktop version - reorder so Free comes last
+            const orderedPlans = ['basic', 'professional', 'enterprise', 'free'];
+            grid.innerHTML = orderedPlans.map(key => {
+                const plan = appData.hostingPlans[key];
+                return `
+                <div class="pricing-card ${plan.popular ? 'popular' : ''} ${key === 'free' ? 'free-plan' : ''}">
                     ${plan.popular ? '<div class="popular-badge">Most Popular</div>' : ''}
                     <h3>${plan.name}</h3>
-                    <div class="price">$${plan.price[currentPeriod]}<span>/month</span></div>
-                    <ul class="pricing-features">${plan.features.map(f => `<li><i class="ri-check-double-line"></i>${f}</li>`).join('')}</ul>
-                    <a href="connect.html" class="cta"><span>Get Started</span><i class="ri-arrow-right-line"></i></a>
-                </div>`;
+                    <div class="price">$${plan.price[currentPeriod]}<span>/${currentPeriod === '3month' ? '3mo' : currentPeriod === '6month' ? '6mo' : 'year'}</span></div>
+                    <ul class="pricing-features">${plan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
+                    <a href="connect.html" class="cta">${plan.name === 'Free' ? 'Get Started' : 'Upgrade Now'}</a>
+                </div>
+                `;
             }).join('');
-
-            // Hosting plans (mobile)
-            hostingGridMobile.innerHTML = Object.entries(appData.hostingPlans).map(([key, plan], index) => `
+            
+            // Mobile accordion version - reorder so Free comes first
+            const mobileOrderedPlans = ['free', 'basic', 'professional', 'enterprise'];
+            mobileGrid.innerHTML = mobileOrderedPlans.map((key, index) => {
+                const plan = appData.hostingPlans[key];
+                return `
                 <div class="pricing-card-header-mobile" onclick="togglePricingMobile(${index}, 'hosting')">
                     <div class="pricing-card-title-mobile">
-                        <h3>${plan.name}</h3>
-                        <div class="price">$${plan.price[currentPeriod]}</div>
-                        <i class="ri-arrow-down-s-line pricing-card-toggle-icon"></i>
+                        <div>
+                            <h3>${plan.name}</h3>
+                            ${plan.popular ? '<span style="color: var(--primary); font-size: 0.8rem; font-weight: 700;">⭐ Most Popular</span>' : ''}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="price" style="margin: 0;">$${plan.price[currentPeriod]}<span style="font-size: 0.8rem;">/${currentPeriod === '3month' ? '3mo' : currentPeriod === '6month' ? '6mo' : 'year'}</span></div>
+                            <i class="ri-arrow-down-s-line pricing-card-toggle-icon"></i>
+                        </div>
+                    </div>
+                    <div class="pricing-card-content-mobile" id="hosting-mobile-${index}">
+                        <ul class="pricing-features" style="margin-top: 1.5rem;">${plan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
+                        <a href="connect.html" class="cta" style="width: 100%; justify-content: center; margin-top: 1rem;">${plan.name === 'Free' ? 'Get Started' : 'Upgrade Now'}</a>
                     </div>
                 </div>
-                <div class="pricing-card-content-mobile">
-                    <ul class="pricing-features">${plan.features.map(f => `<li><i class="ri-check-double-line"></i>${f}</li>`).join('')}</ul>
-                    <a href="connect.html" class="cta" style="margin-top: 1rem;"><span>Get Started</span><i class="ri-arrow-right-line"></i></a>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+        }
 
-            // Task pricing (desktop)
-            taskGrid.innerHTML = Object.entries(appData.taskPricing).map(([key, plan]) => `
+        function renderTaskPricing() {
+            const grid = document.getElementById('taskGrid');
+            const mobileGrid = document.getElementById('taskGridMobile');
+            
+            // Desktop version
+            grid.className = 'pricing-grid task-pricing-grid';
+            grid.innerHTML = Object.entries(appData.taskPricing).map(([key, plan]) => `
                 <div class="pricing-card ${plan.popular ? 'popular' : ''}">
                     ${plan.popular ? '<div class="popular-badge">Most Popular</div>' : ''}
                     <h3>${plan.name}</h3>
                     <div class="price">$${plan.price.toFixed(2)}<span>/click</span></div>
-                    <ul class="pricing-features">${plan.features.map(f => `<li><i class="ri-check-double-line"></i>${f}</li>`).join('')}</ul>
-                    <a href="connect.html" class="cta"><span>Get Started</span><i class="ri-arrow-right-line"></i></a>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">Up to ${plan.locations} concurrent location${plan.locations > 1 ? 's' : ''}</p>
+                    <ul class="pricing-features">${plan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
+                    <a href="connect.html" class="cta">Get Started</a>
                 </div>
             `).join('');
-
-            // Task pricing (mobile)
-            taskGridMobile.innerHTML = Object.entries(appData.taskPricing).map(([key, plan], index) => `
+            
+            // Mobile accordion version
+            mobileGrid.innerHTML = Object.entries(appData.taskPricing).map(([key, plan], index) => `
                 <div class="pricing-card-header-mobile" onclick="togglePricingMobile(${index}, 'task')">
                     <div class="pricing-card-title-mobile">
-                        <h3>${plan.name}</h3>
-                        <div class="price">$${plan.price.toFixed(2)}</div>
-                        <i class="ri-arrow-down-s-line pricing-card-toggle-icon"></i>
+                        <div>
+                            <h3>${plan.name}</h3>
+                            ${plan.popular ? '<span style="color: var(--primary); font-size: 0.8rem; font-weight: 700;">⭐ Most Popular</span>' : ''}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="price" style="margin: 0;">$${plan.price.toFixed(2)}<span style="font-size: 0.8rem;">/click</span></div>
+                            <i class="ri-arrow-down-s-line pricing-card-toggle-icon"></i>
+                        </div>
+                    </div>
+                    <div class="pricing-card-content-mobile" id="task-mobile-${index}">
+                        <p style="color: var(--text-muted); margin-top: 1rem; font-size: 0.9rem;">Up to ${plan.locations} concurrent location${plan.locations > 1 ? 's' : ''}</p>
+                        <ul class="pricing-features" style="margin-top: 1rem;">${plan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
+                        <a href="connect.html" class="cta" style="width: 100%; justify-content: center; margin-top: 1rem;">Get Started</a>
                     </div>
                 </div>
-                <div class="pricing-card-content-mobile">
-                    <ul class="pricing-features">${plan.features.map(f => `<li><i class="ri-check-double-line"></i>${f}</li>`).join('')}</ul>
-                    <a href="connect.html" class="cta" style="margin-top: 1rem;"><span>Get Started</span><i class="ri-arrow-right-line"></i></a>
-                </div>
             `).join('');
+        }
+
+        function showPricingType(type) {
+            document.querySelectorAll('.pricing-type-toggle button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('hostingPricing').style.display = type === 'hosting' ? 'block' : 'none';
+            document.getElementById('taskPricing').style.display = type === 'task' ? 'block' : 'none';
+        }
+
+        function setPeriod(period) {
+            currentPeriod = period;
+            document.querySelectorAll('.pricing-toggle button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            renderHostingPricing();
         }
 
         async function initializeBlogs() {
             try {
-                const res = await fetch('https://api.seotize.net/api/v1/blogs/get-blogs');
-                const data = await res.json();
-                if (data.success && data.blogs) {
-                    appData.blogs = data.blogs.slice(0, 5);
+                const response = await fetch('https://api.seotize.net/blogs?page=1&page_size=6');
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.data && data.data.blogs) {
+                    appData.blogs = data.data.blogs.map(blog => ({
+                        id: blog._id,
+                        title: blog.title,
+                        image: blog.image_url,
+                        date: new Date(blog.creation_date).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' 
+                        })
+                    }));
+                    
                     renderBlogs();
                 }
-            } catch (e) {
-                console.error('Failed to load blogs:', e);
+            } catch (error) {
+                console.error('Error fetching blogs:', error);
             }
         }
-
+        
         function renderBlogs() {
             const carousel = document.getElementById('carousel');
             carousel.innerHTML = '';
             appData.blogs.forEach((blog, i) => {
                 const div = document.createElement('div');
                 div.className = `blog-item ${i === 0 ? 'active' : i === 1 ? 'next' : 'hidden'}`;
-                div.innerHTML = `<img src="${blog.image}" alt="${blog.title}" loading="lazy"><div class="blog-info"><h3 class="blog-title">${blog.title}</h3><p class="blog-date">${new Date(blog.createdAt).toLocaleDateString()}</p></div>`;
+                div.innerHTML = `<img src="${blog.image}" alt="${blog.title}"><div class="blog-info"><div class="blog-title">${blog.title}</div><div class="blog-date">${blog.date}</div></div>`;
                 div.onclick = () => window.location.href = `https://seotize.net/blogs?id=${blog.id}`;
                 carousel.appendChild(div);
             });
@@ -835,21 +820,20 @@
         document.getElementById('featureModal').addEventListener('click', e => { if (e.target.id === 'featureModal') closeFeatureModal(); });
         document.getElementById('blogModal').addEventListener('click', e => { if (e.target.id === 'blogModal') closeBlogModal(); });
         
-        // Improved mobile nav active state on scroll
+        // Update mobile nav active state on scroll
         const sections = ['home', 'features', 'pricing', 'blog', 'partner'];
         const mobileItems = document.querySelectorAll('.mobile-item');
         
         window.addEventListener('scroll', () => {
             let current = '';
-            const scrollPosition = window.pageYOffset + 100;
+            const scrollPos = window.pageYOffset + 200;
             
             sections.forEach(sectionId => {
                 const section = document.getElementById(sectionId);
                 if (section) {
                     const sectionTop = section.offsetTop;
                     const sectionHeight = section.clientHeight;
-                    
-                    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
                         current = sectionId;
                     }
                 }
@@ -858,11 +842,9 @@
             mobileItems.forEach(item => {
                 item.classList.remove('active');
                 const href = item.getAttribute('href');
-                
-                // Handle both section links and external links
                 if (href && href.startsWith('#')) {
-                    const sectionId = href.substring(1);
-                    if (sectionId === current) {
+                    const targetSection = href.substring(1);
+                    if (targetSection === current) {
                         item.classList.add('active');
                     }
                 }
