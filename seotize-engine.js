@@ -1,40 +1,6 @@
 (function() {
     'use strict';
 
-    // ===================================
-    // == NEW SVG ICONS ==
-    // ===================================
-    const SVG_DIAMOND = `
-    <svg width="100%" height="100%" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <linearGradient id="diamond-grad-1" x1="32" y1="0" x2="32" y2="64" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#A5B4FC"/>
-                <stop offset="1" stop-color="#6366F1"/>
-            </linearGradient>
-            <linearGradient id="diamond-grad-2" x1="32" y1="0" x2="32" y2="64" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#C4B5FD"/>
-                <stop offset="1" stop-color="#8B5CF6"/>
-            </linearGradient>
-        </defs>
-        <path d="M1.6961 29.9882L29.3516 1.4878C30.6865 0.10708 32.8943 0.10708 34.2292 1.4878L61.8847 29.9882C63.2681 31.4193 63.2681 33.7236 61.8847 35.1547L34.2292 63.6551C32.8943 65.0358 30.6865 65.0358 29.3516 63.6551L1.6961 35.1547C0.312759 33.7236 0.312759 31.4193 1.6961 29.9882Z" fill="url(#diamond-grad-1)"/>
-        <path opacity="0.7" d="M32 0L1.75 32.5L32 64L62.25 32.5L32 0ZM32 55.4286L55.5 32.5L32 9.57143L8.5 32.5L32 55.4286Z" fill="url(#diamond-grad-2)"/>
-        <path opacity="0.4" fill-rule="evenodd" clip-rule="evenodd" d="M32 0L16 32.5L32 55.5L48 32.5L32 0ZM32 44L41 32.5L32 21L23 32.5L32 44Z" fill="white"/>
-    </svg>`;
-
-    const SVG_ARROW = `
-    <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <linearGradient id="arrow-grad" x1="12" y1="0" x2="12" y2="24" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#FFD700"/>
-                <stop offset="1" stop-color="#FFA500"/>
-            </linearGradient>
-        </defs>
-        <path d="M12 16.5C12.4142 16.5 12.75 16.8358 12.75 17.25V19.1687C12.75 19.5829 12.4142 19.9187 12 19.9187C11.5858 19.9187 11.25 19.5829 11.25 19.1687V17.25C11.25 16.8358 11.5858 16.5 12 16.5Z" fill="url(#arrow-grad)"/>
-        <path d="M12.75 4.08127C12.75 3.66706 12.4142 3.33127 12 3.33127C11.5858 3.33127 11.25 3.66706 11.25 4.08127V17.25C11.25 17.6642 11.5858 18 12 18C12.4142 18 12.75 17.6642 12.75 17.25V4.08127Z" fill="url(#arrow-grad)"/>
-        <path d="M16.9697 13.9697C17.2626 14.2626 17.7374 14.2626 18.0303 13.9697C18.3232 13.6768 18.3232 13.197 18.0303 12.904L12.5303 7.40404C12.2374 7.11115 11.7626 7.11115 11.4697 7.40404L5.96967 12.904C5.67678 13.197 5.67678 13.6768 5.96967 13.9697C6.26256 14.2626 6.73744 14.2626 7.03033 13.9697L12 9.00004L16.9697 13.9697Z" fill="url(#arrow-grad)"/>
-    </svg>`;
-    // ===================================
-
     const CONFIG = {
         API_ENDPOINTS: {
             GET_TASKS: 'https://api.seotize.net/get-partner-subtasks',
@@ -207,24 +173,21 @@
         return await response.json();
     }
 
-    // ===================================
-    // == UPDATED FUNCTION (NOW SVG) ==
-    // ===================================
     function createCoinElement(subtaskId, xPosition, yPosition) {
         const coin = document.createElement('div');
         coin.className = 'seotize-coin';
         coin.setAttribute('data-subtask-id', subtaskId);
-        coin.innerHTML = SVG_DIAMOND; // Use SVG constant
+        coin.innerHTML = '💎'; // Back to text emoji
 
         Object.assign(coin.style, {
             position: 'absolute',
             left: `${xPosition}px`,
             top: `${yPosition}px`,
-            width: `${CONFIG.COIN.SIZE}px`, // Use width
-            height: `${CONFIG.COIN.SIZE}px`, // Use height
+            fontSize: `${CONFIG.COIN.SIZE}px`, // Use font-size
             cursor: 'pointer',
             zIndex: '999999',
             pointerEvents: 'auto',
+            textShadow: '0 0 20px rgba(99, 102, 241, 0.8)',
             transition: 'transform 0.2s ease',
             userSelect: 'none'
         });
@@ -275,9 +238,6 @@
         });
     }
 
-    // ===================================
-    // == UPDATED FUNCTION (GSAP GLOW) ==
-    // ===================================
     function displayNextCoin() {
         state.currentCoinIndex++;
 
@@ -296,7 +256,6 @@
                 ease: "elastic.out(1, 0.5)"
             });
 
-            // Pulse Scale
             gsap.to(coin, {
                 scale: 1.2,
                 repeat: -1,
@@ -305,9 +264,8 @@
                 duration: 1.5
             });
 
-            // Pulse Glow (using filter: drop-shadow)
             gsap.to(coin, {
-                filter: 'drop-shadow(0 0 30px rgba(99, 102, 241, 1)) drop-shadow(0 0 60px rgba(139, 92, 246, 0.8))',
+                textShadow: '0 0 30px rgba(99, 102, 241, 1), 0 0 60px rgba(139, 92, 246, 0.8)',
                 repeat: -1,
                 yoyo: true,
                 ease: "power1.inOut",
@@ -318,9 +276,7 @@
         createArrowToCoin(coin);
     }
 
-    // =================================================================
-    // == THIS IS THE UPDATED FUNCTION (SVG + GSAP ROTATION) ==
-    // =================================================================
+    // Back to v2 arrow logic
     function createArrowToCoin(targetCoin) {
         if (state.currentArrow) {
             if (typeof gsap !== 'undefined') {
@@ -336,14 +292,14 @@
 
         const arrow = document.createElement('div');
         arrow.className = 'seotize-arrow';
-        arrow.innerHTML = SVG_ARROW; // Use SVG constant
+        arrow.innerHTML = '👇'; // Back to text emoji
 
         Object.assign(arrow.style, {
             position: 'fixed',
-            width: `${CONFIG.ARROW.SIZE}px`, // Use width
-            height: `${CONFIG.ARROW.SIZE}px`, // Use height
+            fontSize: `${CONFIG.ARROW.SIZE}px`,
             pointerEvents: 'none',
             zIndex: '999998',
+            textShadow: '0 0 15px rgba(255, 215, 0, 0.8)',
             userSelect: 'none'
         });
 
@@ -375,16 +331,16 @@
                                rect.right <= viewportWidth;
 
             if (typeof gsap !== 'undefined') {
-                gsap.killTweensOf(arrow); // Stop previous bounce
+                gsap.killTweensOf(arrow);
             }
 
             if (isVisible) {
-                // Coin is ON-SCREEN: Point at it (rotation 0)
                 arrow.style.top = (rect.top - CONFIG.ARROW.OFFSET) + 'px';
                 arrow.style.left = (targetX - arrowWidth / 2) + 'px';
+                arrow.innerHTML = '👇';
+                arrow.style.transform = '';
                 
                 gsap.to(arrow, {
-                    rotation: 180, // Point down
                     y: 10,
                     repeat: -1,
                     yoyo: true,
@@ -393,32 +349,32 @@
                 });
 
             } else {
-                // Coin is OFF-SCREEN: Pin to edge
                 arrow.style.opacity = '1';
+                arrow.style.transform = 'translateY(0)';
 
                 if (rect.bottom < 0) {
-                    // Target is ABOVE viewport
                     arrow.style.top = '10px';
                     arrow.style.left = (viewportWidth / 2 - arrowWidth / 2) + 'px';
-                    gsap.to(arrow, { rotation: 0, y: -10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 }); // Point up
+                    arrow.innerHTML = '👆';
+                    gsap.to(arrow, { y: -10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 });
 
                 } else if (rect.top > viewportHeight) {
-                    // Target is BELOW viewport
                     arrow.style.top = (viewportHeight - arrowHeight - 10) + 'px';
                     arrow.style.left = (viewportWidth / 2 - arrowWidth / 2) + 'px';
-                    gsap.to(arrow, { rotation: 180, y: 10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 }); // Point down
+                    arrow.innerHTML = '👇';
+                    gsap.to(arrow, { y: 10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 });
 
                 } else if (rect.right < 0) {
-                    // Target is to the LEFT
                     arrow.style.top = (viewportHeight / 2 - arrowHeight / 2) + 'px';
                     arrow.style.left = '10px';
-                    gsap.to(arrow, { rotation: 270, x: -10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 }); // Point left
+                    arrow.innerHTML = '👈';
+                    gsap.to(arrow, { x: -10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 });
 
                 } else if (rect.left > viewportWidth) {
-                    // Target is to the RIGHT
                     arrow.style.top = (viewportHeight / 2 - arrowHeight / 2) + 'px';
                     arrow.style.left = (viewportWidth - arrowWidth - 10) + 'px';
-                    gsap.to(arrow, { rotation: 90, x: 10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 }); // Point right
+                    arrow.innerHTML = '👉';
+                    gsap.to(arrow, { x: 10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 });
                 }
             }
         };
@@ -426,9 +382,6 @@
         updateArrowPosition();
         state.arrowUpdateInterval = setInterval(updateArrowPosition, CONFIG.ARROW.UPDATE_INTERVAL);
     }
-    // =================================================================
-    // == END OF UPDATED FUNCTION ==
-    // =================================================================
 
     async function handleCoinClick(subtaskId) {
         if (state.isProcessing) return;
@@ -482,27 +435,25 @@
                 const remainingTasks = state.coinElements.length - (state.currentCoinIndex + 1);
 
                 // ===================================
-                // == POPUP DESIGN & GSAP CHANGE HERE ==
+                // == GSAP EMOJI POPUP CHANGE HERE ==
                 // ===================================
                 await Swal.fire({
                     title: `GOOD JOB, ${remainingTasks} MORE!`,
-                    html: `<div class="seotize-html seotize-success">You Have Collected a Diamond! ${remainingTasks} More To Go!</div>`,
-                    icon: 'success',
+                    html: `
+                        <div class="seotize-gsap-emoji">✅</div>
+                        <div class="seotize-html seotize-success">You Have Collected a Diamond! ${remainingTasks} More To Go!</div>
+                    `,
                     timer: CONFIG.TIMING.SUCCESS_DURATION,
                     timerProgressBar: true,
                     showConfirmButton: false,
                     allowOutsideClick: false,
-                    showClass: { popup: '' }, // Disable default anim
-                    hideClass: { popup: '' }, // Disable default anim
                     customClass: {
                         popup: 'seotize-popup',
                         title: 'seotize-title'
                     },
                     didOpen: (popup) => {
-                        gsap.from(popup, { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
-                    },
-                    willClose: (popup) => {
-                        gsap.to(popup, { scale: 0.8, opacity: 0, duration: 0.3, ease: 'power2.in' });
+                        const emoji = popup.querySelector('.seotize-gsap-emoji');
+                        gsap.from(emoji, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
                     }
                 });
                 // ===================================
@@ -516,27 +467,25 @@
                     coinElements.forEach(el => el.style.pointerEvents = 'auto');
                 } else {
                     // ===================================
-                    // == POPUP DESIGN & GSAP CHANGE HERE ==
+                    // == GSAP EMOJI POPUP CHANGE HERE ==
                     // ===================================
                     await Swal.fire({
                         title: 'CONGRATULATION!',
-                        html: '<div class="seotize-html seotize-congrats">Reward is Yours! You Have Collected all of the Diamonds, you will be redirected to the dashboard.</div>',
-                        icon: 'success',
+                        html: `
+                            <div class="seotize-gsap-emoji">🎉</div>
+                            <div class="seotize-html seotize-congrats">Reward is Yours! You Have Collected all of the Diamonds, you will be redirected to the dashboard.</div>
+                        `,
                         timer: CONFIG.TIMING.COMPLETION_DURATION,
                         timerProgressBar: true,
                         showConfirmButton: false,
                         allowOutsideClick: false,
-                        showClass: { popup: '' },
-                        hideClass: { popup: '' },
                         customClass: {
                             popup: 'seotize-popup',
                             title: 'seotize-title'
                         },
                         didOpen: (popup) => {
-                            gsap.from(popup, { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
-                        },
-                        willClose: (popup) => {
-                            gsap.to(popup, { scale: 0.8, opacity: 0, duration: 0.3, ease: 'power2.in' });
+                            const emoji = popup.querySelector('.seotize-gsap-emoji');
+                            gsap.from(emoji, { scale: 0, opacity: 0, y: -50, duration: 0.8, ease: 'bounce.out' });
                         }
                     });
                     // ===================================
@@ -563,7 +512,7 @@
     }
 
     // ===================================
-    // == POPUP & SVG CSS CHANGES HERE ==
+    // == POPUP CSS CHANGES HERE ==
     // ===================================
     function injectStyles() {
         const style = document.createElement('style');
@@ -596,26 +545,30 @@
             /* POPUP STYLES */
             .swal2-popup.seotize-popup {
                 border-radius: 24px !important;
-                padding: 1.5rem !important; /* Base padding */
-                background: #ffffff !important;
+                padding: 2.5rem 2rem !important;
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
                 box-shadow: 0 25px 80px rgba(99, 102, 241, 0.2) !important;
-                
-                /* Gradient Border */
-                border: 3px solid transparent !important;
-                background-clip: padding-box !important;
-                background-image: linear-gradient(white, white), linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-                background-origin: border-box !important;
+                border: 2px solid rgba(99, 102, 241, 0.1) !important;
+            }
+
+            /* NEW: GSAP Emoji Style */
+            .seotize-gsap-emoji {
+                font-size: 5rem;
+                line-height: 1;
+                margin: 0.5rem auto 1.5rem;
+                display: block;
+                text-align: center;
+                transform-origin: center center;
             }
 
             .swal2-title.seotize-title {
-                font-size: 1.9rem !important; 
+                font-size: 1.8rem !important;
                 font-weight: 900 !important;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
                 -webkit-background-clip: text !important;
                 -webkit-text-fill-color: transparent !important;
                 background-clip: text !important;
-                margin: 0 !important;
-                padding: 0 1rem !important;
+                margin: 0 !important; /* Removed bottom margin */
                 letter-spacing: -0.5px !important;
             }
             
@@ -625,7 +578,6 @@
                 color: #4b5563; 
                 font-weight: 500 !important;
                 margin: 0.5rem 0 0 0 !important;
-                padding: 0 1rem !important;
                 text-align: center !important;
             }
             
@@ -642,27 +594,10 @@
             .seotize-html.seotize-welcome {
                 color: #6b7280 !important;
             }
-
-            .swal2-icon {
-                margin: 1.5rem auto 1.5rem !important; /* Better spacing */
-                width: 5em !important;
-                height: 5em !important;
-            }
             
-            .swal2-icon .swal2-icon-content {
-                font-size: 3.75em !important;
-            }
-
-            .swal2-icon.swal2-success {
-                border-color: #10b981 !important;
-            }
-
-            .swal2-icon.swal2-success [class^='swal2-success-line'] {
-                background-color: #10b981 !important;
-            }
-
-            .swal2-icon.swal2-success .swal2-success-ring {
-                border-color: rgba(16, 185, 129, 0.3) !important;
+            /* Hide default icon placeholder */
+            .swal2-icon {
+                display: none !important;
             }
 
             .swal2-timer-progress-bar {
@@ -710,20 +645,21 @@
 
             if (state.coins.length === 0) {
                 // ===================================
-                // == POPUP DESIGN & GSAP CHANGE HERE ==
+                // == GSAP EMOJI POPUP CHANGE HERE ==
                 // ===================================
                 Swal.fire({
                     title: 'All Done!',
-                    html: '<div class="seotize-html">You have completed all available tasks.</div>',
-                    icon: 'info',
-                    showClass: { popup: '' },
-                    hideClass: { popup: '' },
+                    html: `
+                        <div class="seotize-gsap-emoji">👍</div>
+                        <div class="seotize-html">You have completed all available tasks.</div>
+                    `,
                     customClass: {
                         popup: 'seotize-popup',
                         title: 'seotize-title'
                     },
                     didOpen: (popup) => {
-                        gsap.from(popup, { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
+                        const emoji = popup.querySelector('.seotize-gsap-emoji');
+                        gsap.from(emoji, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
                     }
                 });
                 // ===================================
@@ -731,27 +667,25 @@
             }
 
             // ===================================
-            // == POPUP DESIGN & GSAP CHANGE HERE ==
+            // == GSAP EMOJI POPUP CHANGE HERE ==
             // ===================================
             await Swal.fire({
                 title: 'Welcome Seotize Partner!',
-                html: '<div class="seotize-html seotize-welcome">Thank you for starting the task, you are at the right place. After this popup closes, please follow the animated arrow to find and click on the first diamond.</div>',
-                icon: 'info',
+                html: `
+                    <div class="seotize-gsap-emoji">💎</div>
+                    <div class="seotize-html seotize-welcome">Thank you for starting the task, you are at the right place. After this popup closes, please follow the animated arrow to find and click on the first diamond.</div>
+                `,
                 timer: CONFIG.TIMING.WELCOME_DURATION,
                 timerProgressBar: true,
                 showConfirmButton: false,
                 allowOutsideClick: false,
-                showClass: { popup: '' },
-                hideClass: { popup: '' },
                 customClass: {
                     popup: 'seotize-popup',
                     title: 'seotize-title'
                 },
                 didOpen: (popup) => {
-                    gsap.from(popup, { scale: 0.8, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
-                },
-                willClose: (popup) => {
-                    gsap.to(popup, { scale: 0.8, opacity: 0, duration: 0.3, ease: 'power2.in' });
+                    const emoji = popup.querySelector('.seotize-gsap-emoji');
+                    gsap.from(emoji, { scale: 0, opacity: 0, rotation: 180, duration: 1, ease: 'elastic.out(1, 0.5)' });
                 }
             });
             // ===================================
@@ -811,7 +745,6 @@
         window.SYSYID = state.systemId;
 
         if (!document.referrer.includes('google.com')) {
-             // console.log('Referrer not google, exiting.');
             return;
         }
 
