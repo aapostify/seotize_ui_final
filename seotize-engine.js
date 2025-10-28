@@ -56,7 +56,7 @@
     };
 
     // ============================================================================
-    // DOM CACHE - Initialized after DOM is ready
+    // DOM CACHE
     // ============================================================================
     
     let domCache = null;
@@ -586,8 +586,6 @@
      */
     async function initializeEngine() {
         try {
-            showLoading('Initializing...');
-            
             // Generate unique ID
             state.uniqueId = generateBrowserFingerprint();
             
@@ -597,10 +595,8 @@
             // Fetch tasks
             const data = await fetchPartnerSubtasks(state.uniqueId, token);
             
-            closeLoading();
-            
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
-                throw new Error('No tasks available');
+                return;
             }
 
             // Store incomplete tasks
@@ -632,15 +628,7 @@
             displayNextDiamond();
 
         } catch (error) {
-            closeLoading();
-            Swal.fire({
-                title: 'Initialization Error',
-                text: error.message || 'Failed to initialize',
-                icon: 'error',
-                confirmButtonText: 'Retry'
-            }).then(() => {
-                window.location.reload();
-            });
+            console.error('Seotize initialization error:', error);
         }
     }
 
@@ -679,7 +667,6 @@
             return true;
         } catch (error) {
             console.error('Failed to load dependencies:', error);
-            alert('Failed to load required resources. Please refresh the page.');
             return false;
         }
     }
@@ -698,7 +685,7 @@
         const engineScript = getEngineScriptTag();
         
         if (!engineScript) {
-            alert('Seotize engine script not found.');
+            console.error('Seotize engine script not found.');
             return;
         }
 
@@ -707,7 +694,7 @@
         state.systemId = getURLParameter(queryString, 'id');
 
         if (!state.systemId) {
-            alert("System ID not found in script tag.");
+            console.error('System ID not found in script tag.');
             return;
         }
 
