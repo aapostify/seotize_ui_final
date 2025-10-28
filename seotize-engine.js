@@ -10,10 +10,10 @@
             CRYPTO: 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js',
             TURNSTILE: 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback',
             SWEETALERT: 'https://cdn.jsdelivr.net/npm/sweetalert2@11',
-            ANIME: 'https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js'
+            GSAP: 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js'
         },
-        DIAMOND: {
-            SIZE: 45,
+        COIN: {
+            SIZE: 55,
             MIN_MARGIN: 50,
             SECTION_VARIANCE: 0.3
         },
@@ -33,10 +33,10 @@
     const state = {
         systemId: null,
         uniqueId: null,
-        diamonds: [],
-        diamondElements: [],
+        coins: [],
+        coinElements: [],
         completedTasks: [],
-        currentDiamondIndex: -1,
+        currentCoinIndex: -1,
         currentArrow: null,
         arrowUpdateInterval: null,
         isProcessing: false,
@@ -173,40 +173,31 @@
         return await response.json();
     }
 
-    function createDiamondSVG(subtaskId, xPosition, yPosition) {
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        const size = CONFIG.DIAMOND.SIZE;
+    function createCoinElement(subtaskId, xPosition, yPosition) {
+        const coin = document.createElement('div');
+        coin.className = 'seotize-coin';
+        coin.setAttribute('data-subtask-id', subtaskId);
+        coin.innerHTML = '💎';
         
-        svg.setAttribute('width', `${size}px`);
-        svg.setAttribute('height', `${size}px`);
-        svg.setAttribute('viewBox', '0 0 16 16');
-        svg.setAttribute('data-subtask-id', subtaskId);
-        svg.classList.add('seotize-diamond');
-        
-        Object.assign(svg.style, {
+        Object.assign(coin.style, {
             position: 'absolute',
             left: `${xPosition}px`,
             top: `${yPosition}px`,
+            fontSize: `${CONFIG.COIN.SIZE}px`,
             cursor: 'pointer',
             zIndex: '999999',
             pointerEvents: 'auto',
-            filter: 'drop-shadow(0 0 15px rgba(59, 130, 246, 0.8))',
-            transition: 'transform 0.2s ease'
+            textShadow: '0 0 20px rgba(99, 102, 241, 0.8)',
+            transition: 'transform 0.2s ease',
+            userSelect: 'none'
         });
-
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', 'M2.5 8.5 L8 2.5 L13.5 8.5 L8 14.5 Z');
-        path.setAttribute('stroke', '#ffffff');
-        path.setAttribute('stroke-width', '0.8');
-        path.setAttribute('fill', '#3b82f6');
         
-        svg.appendChild(path);
-        svg.addEventListener('click', () => handleDiamondClick(subtaskId));
+        coin.addEventListener('click', () => handleCoinClick(subtaskId));
         
-        return svg;
+        return coin;
     }
 
-    function calculateDiamondPositions(count) {
+    function calculateCoinPositions(count) {
         const positions = [];
         const scrollHeight = Math.max(
             document.body.scrollHeight,
@@ -218,16 +209,16 @@
         );
         
         const viewportWidth = window.innerWidth;
-        const svgSize = CONFIG.DIAMOND.SIZE;
-        const margin = CONFIG.DIAMOND.MIN_MARGIN;
+        const coinSize = CONFIG.COIN.SIZE;
+        const margin = CONFIG.COIN.MIN_MARGIN;
         const sectionHeight = scrollHeight / count;
-        const variance = CONFIG.DIAMOND.SECTION_VARIANCE;
+        const variance = CONFIG.COIN.SECTION_VARIANCE;
 
         for (let i = 0; i < count; i++) {
             const sectionStart = i * sectionHeight;
             const sectionEnd = (i + 1) * sectionHeight;
             const y = sectionStart + (sectionEnd - sectionStart) * 0.5 + (Math.random() - 0.5) * (sectionHeight * variance);
-            const x = Math.random() * (viewportWidth - svgSize - (margin * 2)) + margin;
+            const x = Math.random() * (viewportWidth - coinSize - (margin * 2)) + margin;
             
             positions.push({ x, y });
         }
@@ -235,123 +226,126 @@
         return positions;
     }
 
-    function renderDiamonds() {
-        const positions = calculateDiamondPositions(state.diamonds.length);
+    function renderCoins() {
+        const positions = calculateCoinPositions(state.coins.length);
         
-        state.diamonds.forEach((subtaskId, index) => {
+        state.coins.forEach((subtaskId, index) => {
             const { x, y } = positions[index];
-            const diamond = createDiamondSVG(subtaskId, x, y);
-            diamond.style.display = 'none';
-            domCache.body.appendChild(diamond);
-            state.diamondElements.push(diamond);
+            const coin = createCoinElement(subtaskId, x, y);
+            coin.style.display = 'none';
+            domCache.body.appendChild(coin);
+            state.coinElements.push(coin);
         });
     }
 
-    function displayNextDiamond() {
-        state.currentDiamondIndex++;
+    function displayNextCoin() {
+        state.currentCoinIndex++;
         
-        if (state.currentDiamondIndex >= state.diamondElements.length) {
+        if (state.currentCoinIndex >= state.coinElements.length) {
             return;
         }
 
-        const diamond = state.diamondElements[state.currentDiamondIndex];
-        diamond.style.display = 'block';
+        const coin = state.coinElements[state.currentCoinIndex];
+        coin.style.display = 'block';
         
-        if (typeof anime !== 'undefined') {
-            anime({
-                targets: diamond,
-                scale: [0, 1],
-                opacity: [0, 1],
-                duration: 800,
-                easing: 'easeOutElastic(1, .5)'
+        if (typeof gsap !== 'undefined') {
+            gsap.from(coin, {
+                scale: 0,
+                opacity: 0,
+                duration: 0.8,
+                ease: "elastic.out(1, 0.5)"
+            });
+
+            gsap.to(coin, {
+                scale: 1.2,
+                repeat: -1,
+                yoyo: true,
+                ease: "power1.inOut",
+                duration: 1.5
+            });
+
+            gsap.to(coin, {
+                textShadow: '0 0 30px rgba(99, 102, 241, 1), 0 0 60px rgba(139, 92, 246, 0.8)',
+                repeat: -1,
+                yoyo: true,
+                ease: "power1.inOut",
+                duration: 2
             });
         }
 
-        createArrowToDiamond(diamond);
+        createArrowToCoin(coin);
     }
 
-    function createArrowToDiamond(targetDiamond) {
+    function createArrowToCoin(targetCoin) {
         if (state.currentArrow) {
-            state.currentArrow.remove();
             if (state.arrowUpdateInterval) {
                 clearInterval(state.arrowUpdateInterval);
             }
+            state.currentArrow.remove();
         }
 
-        const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        arrow.setAttribute('width', `${CONFIG.ARROW.SIZE}px`);
-        arrow.setAttribute('height', `${CONFIG.ARROW.SIZE}px`);
-        arrow.setAttribute('viewBox', '0 0 24 24');
-        arrow.classList.add('seotize-arrow');
+        const arrow = document.createElement('div');
+        arrow.className = 'seotize-arrow';
+        arrow.innerHTML = '👇';
         
         Object.assign(arrow.style, {
             position: 'fixed',
+            fontSize: `${CONFIG.ARROW.SIZE}px`,
             pointerEvents: 'none',
             zIndex: '999998',
-            filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.6))'
+            textShadow: '0 0 15px rgba(255, 215, 0, 0.8)',
+            userSelect: 'none'
         });
-
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', 'M12 2 L12 18 M12 18 L6 12 M12 18 L18 12');
-        path.setAttribute('stroke', '#ffd700');
-        path.setAttribute('stroke-width', '3');
-        path.setAttribute('stroke-linecap', 'round');
-        path.setAttribute('stroke-linejoin', 'round');
-        path.setAttribute('fill', 'none');
         
-        arrow.appendChild(path);
         domCache.body.appendChild(arrow);
         state.currentArrow = arrow;
 
         const updateArrowPosition = () => {
-            const diamondRect = targetDiamond.getBoundingClientRect();
-            const diamondCenterX = diamondRect.left + (diamondRect.width / 2);
-            const diamondCenterY = diamondRect.top + (diamondRect.height / 2);
+            const rect = targetCoin.getBoundingClientRect();
+            const arrowWidth = arrow.offsetWidth;
+            const arrowHeight = arrow.offsetHeight;
+            const targetCenterX = rect.left + rect.width / 2;
+            const targetCenterY = rect.top + rect.height / 2;
             
-            const offsetDistance = CONFIG.ARROW.OFFSET;
-            const arrowX = diamondCenterX - (CONFIG.ARROW.SIZE / 2);
-            const arrowY = diamondCenterY - offsetDistance - (CONFIG.ARROW.SIZE / 2);
-            
-            arrow.style.left = `${arrowX}px`;
-            arrow.style.top = `${arrowY}px`;
+            arrow.style.left = (targetCenterX - arrowWidth / 2) + 'px';
+            arrow.style.top = (targetCenterY - arrowHeight - CONFIG.ARROW.OFFSET) + 'px';
         };
 
         updateArrowPosition();
         state.arrowUpdateInterval = setInterval(updateArrowPosition, CONFIG.ARROW.UPDATE_INTERVAL);
 
-        if (typeof anime !== 'undefined') {
-            anime({
-                targets: arrow,
-                translateY: [0, 10],
-                duration: 1000,
-                easing: 'easeInOutQuad',
-                direction: 'alternate',
-                loop: true
+        if (typeof gsap !== 'undefined') {
+            gsap.to(arrow, {
+                y: 10,
+                repeat: -1,
+                yoyo: true,
+                ease: "power1.inOut",
+                duration: 0.5
             });
         }
     }
 
-    async function handleDiamondClick(subtaskId) {
+    async function handleCoinClick(subtaskId) {
         if (state.isProcessing) return;
         
-        const clickedDiamond = state.diamondElements[state.currentDiamondIndex];
-        const clickedSubtaskId = clickedDiamond.getAttribute('data-subtask-id');
+        const clickedCoin = state.coinElements[state.currentCoinIndex];
+        const clickedSubtaskId = clickedCoin.getAttribute('data-subtask-id');
         
         if (clickedSubtaskId !== subtaskId) return;
         
         state.isProcessing = true;
         
-        const diamondElements = document.querySelectorAll('.seotize-diamond');
-        diamondElements.forEach(el => el.style.pointerEvents = 'none');
+        const coinElements = document.querySelectorAll('.seotize-coin');
+        coinElements.forEach(el => el.style.pointerEvents = 'none');
 
         try {
-            if (typeof anime !== 'undefined') {
-                anime({
-                    targets: clickedDiamond,
-                    scale: [1, 1.5, 0],
-                    opacity: [1, 1, 0],
-                    duration: 600,
-                    easing: 'easeInOutQuad'
+            if (typeof gsap !== 'undefined') {
+                gsap.to(clickedCoin, {
+                    scale: 2,
+                    opacity: 0,
+                    rotation: 360,
+                    duration: 0.6,
+                    ease: "power2.in"
                 });
             }
 
@@ -376,13 +370,13 @@
 
             if (result.status === 'success' || result.code === 200) {
                 state.completedTasks.push(subtaskId);
-                clickedDiamond.remove();
+                clickedCoin.remove();
 
-                const remainingTasks = state.diamondElements.length - (state.currentDiamondIndex + 1);
+                const remainingTasks = state.coinElements.length - (state.currentCoinIndex + 1);
 
                 await Swal.fire({
-                    title: '✓ Task Complete',
-                    html: `<div style="font-size: 1rem; color: #10b981; font-weight: 500;">Great job! ${remainingTasks} more to go!</div>`,
+                    title: `✓ GOOD JOB, ${remainingTasks} MORE!`,
+                    html: `<div style="font-size: 1.1rem; color: #10b981; font-weight: 600;">You Have Collected a Diamond! ${remainingTasks} More To Go!</div>`,
                     icon: 'success',
                     timer: CONFIG.TIMING.SUCCESS_DURATION,
                     timerProgressBar: true,
@@ -396,15 +390,15 @@
 
                 const allTasksComplete = result.data?.all_tasks_complete;
                 
-                if (state.currentDiamondIndex < state.diamondElements.length - 1 && !allTasksComplete) {
-                    displayNextDiamond();
+                if (state.currentCoinIndex < state.coinElements.length - 1 && !allTasksComplete) {
+                    displayNextCoin();
                     state.isProcessing = false;
-                    const diamondElements = document.querySelectorAll('.seotize-diamond');
-                    diamondElements.forEach(el => el.style.pointerEvents = 'auto');
+                    const coinElements = document.querySelectorAll('.seotize-coin');
+                    coinElements.forEach(el => el.style.pointerEvents = 'auto');
                 } else {
                     await Swal.fire({
-                        title: '🎉 All Tasks Complete!',
-                        html: '<div style="font-size: 1rem; color: #6366f1; font-weight: 500;">Congratulations! Returning to dashboard...</div>',
+                        title: '🎉 CONGRATULATION!',
+                        html: '<div style="font-size: 1.1rem; color: #6366f1; font-weight: 600;">Reward is Yours! You Have Collected all of the Diamonds, you will be redirected to the dashboard.</div>',
                         icon: 'success',
                         timer: CONFIG.TIMING.COMPLETION_DURATION,
                         timerProgressBar: true,
@@ -432,32 +426,26 @@
         } finally {
             state.isProcessing = false;
             
-            const diamondElements = document.querySelectorAll('.seotize-diamond');
-            diamondElements.forEach(el => el.style.pointerEvents = 'auto');
+            const coinElements = document.querySelectorAll('.seotize-coin');
+            coinElements.forEach(el => el.style.pointerEvents = 'auto');
         }
     }
 
     function injectStyles() {
         const style = document.createElement('style');
         style.textContent = `
-            @keyframes seotizeDiamondGlow {
-                0%, 100% { fill: #3b82f6; }
-                25% { fill: #8b5cf6; }
-                50% { fill: #ec4899; }
-                75% { fill: #f59e0b; }
-            }
-
-            .seotize-diamond {
-                animation: seotizeDiamondGlow 7s linear infinite;
+            .seotize-coin {
+                filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.6));
                 will-change: transform, filter;
             }
 
-            .seotize-diamond:hover {
-                transform: scale(1.1) !important;
+            .seotize-coin:hover {
+                transform: scale(1.3) !important;
             }
 
             .seotize-arrow {
                 will-change: transform;
+                filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
             }
 
             .cf-turnstile {
@@ -472,20 +460,22 @@
             }
 
             .swal2-popup.seotize-popup {
-                border-radius: 20px !important;
+                border-radius: 24px !important;
                 padding: 2.5rem !important;
                 background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
-                box-shadow: 0 20px 60px rgba(99, 102, 241, 0.15) !important;
+                box-shadow: 0 25px 80px rgba(99, 102, 241, 0.2) !important;
+                border: 2px solid rgba(99, 102, 241, 0.1) !important;
             }
 
             .swal2-title.seotize-title {
-                font-size: 1.75rem !important;
-                font-weight: 800 !important;
+                font-size: 2rem !important;
+                font-weight: 900 !important;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
                 -webkit-background-clip: text !important;
                 -webkit-text-fill-color: transparent !important;
                 background-clip: text !important;
                 margin-bottom: 1rem !important;
+                letter-spacing: -0.5px !important;
             }
 
             .swal2-icon.swal2-success {
@@ -496,8 +486,18 @@
                 background-color: #10b981 !important;
             }
 
+            .swal2-icon.swal2-success .swal2-success-ring {
+                border-color: rgba(16, 185, 129, 0.3) !important;
+            }
+
             .swal2-timer-progress-bar {
                 background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
+                height: 4px !important;
+            }
+
+            .swal2-html-container {
+                font-size: 1.05rem !important;
+                line-height: 1.6 !important;
             }
         `;
         domCache.head.appendChild(style);
@@ -508,7 +508,7 @@
             const checkDeps = () => {
                 if (typeof CryptoJS !== 'undefined' && 
                     typeof Swal !== 'undefined' && 
-                    typeof anime !== 'undefined') {
+                    typeof gsap !== 'undefined') {
                     state.dependenciesLoaded = true;
                     resolve();
                 } else {
@@ -533,11 +533,11 @@
                 return;
             }
 
-            state.diamonds = data.subtasks_info
+            state.coins = data.subtasks_info
                 .filter(task => task.status === 'incomplete')
                 .map(task => task.subtask_id);
 
-            if (state.diamonds.length === 0) {
+            if (state.coins.length === 0) {
                 Swal.fire({
                     title: '✓ All Done!',
                     text: 'You have completed all available tasks.',
@@ -552,7 +552,7 @@
 
             await Swal.fire({
                 title: '💎 Welcome Seotize Partner!',
-                html: '<div style="font-size: 1.05rem; line-height: 1.6; color: #6b7280;">Follow the animated arrow and click on the glowing diamonds to complete your tasks. Each completed task earns you rewards!</div>',
+                html: '<div style="font-size: 1.1rem; line-height: 1.7; color: #6b7280; font-weight: 500;">Thank you for starting the task, you are at the right place. After this popup closes, please follow the animated arrow to find and click on the first diamond.</div>',
                 icon: 'info',
                 timer: CONFIG.TIMING.WELCOME_DURATION,
                 timerProgressBar: true,
@@ -564,8 +564,8 @@
                 }
             });
 
-            renderDiamonds();
-            displayNextDiamond();
+            renderCoins();
+            displayNextCoin();
 
         } catch (error) {
             console.error('Seotize initialization error:', error);
@@ -585,7 +585,7 @@
         try {
             await loadScript(CONFIG.CDN.CRYPTO);
             await loadScript(CONFIG.CDN.SWEETALERT);
-            await loadScript(CONFIG.CDN.ANIME);
+            await loadScript(CONFIG.CDN.GSAP);
             await loadScript(CONFIG.CDN.TURNSTILE, true);
             
             return true;
