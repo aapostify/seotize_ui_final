@@ -152,7 +152,7 @@
         .nav-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-50%) scale(1.1); }
         .prev-btn { left: px; }
         .next-btn { right: -10px; }
-        .blog-cta { text-align: center; margin-top: 3rem; }
+        .blog-cta { display: flex; justify-content: center; align-items: center; margin-top: auto; padding-top: 2rem; }
         
         /* Partner */
         .partner { background: var(--bg-secondary); }
@@ -203,21 +203,21 @@
         /* Modals */
         .feature-modal, .blog-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; overflow-y: auto; }
         .feature-modal.active, .blog-modal.active { display: flex; }
-        .feature-modal-content, .blog-modal-content { background: var(--bg-secondary); border-radius: 20px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; animation: modalSlide 0.4s ease; }
+        .feature-modal-content, .blog-modal-content { background: var(--bg-secondary); border-radius: 20px; max-width: 900px; width: 95%; max-height: 92vh; overflow-y: auto; position: relative; animation: modalSlide 0.4s ease; display: flex; flex-direction: column; }
         .feature-modal-close, .blog-modal-close { position: absolute; top: 1rem; right: 1rem; width: 40px; height: 40px; border: none; background: var(--bg); border-radius: 50%; font-size: 1.5rem; cursor: pointer; color: var(--text); transition: all 0.3s; z-index: 10; }
         .feature-modal-close:hover, .blog-modal-close:hover { background: var(--primary); color: white; transform: rotate(90deg); }
-        #featureModalBody, #blogModalBody { padding: 2.5rem; }
-        .feature-modal-header { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.75rem; }
-        .feature-modal-icon { font-size: 3.5rem; flex-shrink: 0; }
-        .feature-modal-title { font-size: 2rem; font-weight: 800; color: var(--text); margin: 0; line-height: 1.2; }
-        .feature-modal-subtitle { font-size: 1.05rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.4; }
-        .feature-modal-image { width: 100%; border-radius: 16px; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); }
-        .feature-modal-description { font-size: 1.05rem; color: var(--text-light); line-height: 1.8; margin-bottom: 2rem; }
-        .feature-modal-features { list-style: none; margin-bottom: 2.5rem; display: flex; flex-direction: column; gap: 1rem; }
-        .feature-modal-features li { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 1.25rem; background: var(--bg); border-radius: 12px; border: 2px solid var(--border); transition: all 0.3s; }
+        #featureModalBody, #blogModalBody { padding: 2rem; flex: 1; display: flex; flex-direction: column; }
+        .feature-modal-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+        .feature-modal-icon { font-size: 2.75rem; flex-shrink: 0; }
+        .feature-modal-title { font-size: 1.75rem; font-weight: 800; color: var(--text); margin: 0; line-height: 1.2; }
+        .feature-modal-subtitle { font-size: 1rem; color: var(--text-muted); margin-top: 0.375rem; line-height: 1.3; }
+        .feature-modal-image { width: 100%; max-height: 250px; object-fit: cover; border-radius: 12px; margin-bottom: 1.25rem; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
+        .feature-modal-description { font-size: 0.975rem; color: var(--text-light); line-height: 1.6; margin-bottom: 1.25rem; }
+        .feature-modal-features { list-style: none; margin-bottom: 1.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; flex: 1; }
+        .feature-modal-features li { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.875rem 1rem; background: var(--bg); border-radius: 10px; border: 2px solid var(--border); transition: all 0.3s; }
         .feature-modal-features li:hover { border-color: var(--primary); transform: translateX(4px); }
-        .feature-modal-features li i { color: var(--success); font-size: 1.5rem; flex-shrink: 0; margin-top: 0.1rem; }
-        .feature-modal-features li span { font-size: 0.95rem; color: var(--text-light); line-height: 1.6; }
+        .feature-modal-features li i { color: var(--success); font-size: 1.25rem; flex-shrink: 0; margin-top: 0.05rem; }
+        .feature-modal-features li span { font-size: 0.9rem; color: var(--text-light); line-height: 1.5; }
         .blog-modal-image { width: 100%; height: 250px; object-fit: cover; border-radius: 16px 16px 0 0; }
         .blog-modal-title { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 1rem; }
         @keyframes modalSlide { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -246,7 +246,7 @@
             .hero h1 { font-size: 2rem; }
             .hero p { font-size: 1rem; }
             .hero-container > div:last-child { order: -1; }
-            .hero-controls { bottom: calc(var(--mobile-nav-height) + 1rem); }
+            .hero-controls { bottom: calc(var(--mobile-nav-height) + 0.75rem); }
             .section-title { font-size: 2rem; }
             .section-subtitle { font-size: 1rem; margin-bottom: 1.5rem; }
             .features-container { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
@@ -279,19 +279,19 @@
             .blog-item.next { transform: scale(0.8) translateX(300px); }
             .carousel { min-height: 320px; }
             .carousel-container { padding: 1rem 0; }
-            .blog-cta { margin-top: 1.5rem; }
-            .feature-modal-content, .blog-modal-content { max-width: 90%; max-height: 85vh; }
-            #featureModalBody, #blogModalBody { padding: 2rem; }
-            .feature-modal-header { gap: 1rem; }
-            .feature-modal-icon { font-size: 3rem; }
-            .feature-modal-title { font-size: 1.6rem; }
+            .blog-cta { padding-top: 1.5rem; }
+            .feature-modal-content, .blog-modal-content { max-width: 90%; max-height: 88vh; }
+            #featureModalBody, #blogModalBody { padding: 1.75rem; }
+            .feature-modal-header { gap: 0.875rem; margin-bottom: 1rem; }
+            .feature-modal-icon { font-size: 2.5rem; }
+            .feature-modal-title { font-size: 1.5rem; }
             .feature-modal-subtitle { font-size: 0.95rem; }
-            .feature-modal-description { font-size: 0.95rem; margin-bottom: 1.75rem; }
-            .feature-modal-image { margin-bottom: 1.75rem; }
-            .feature-modal-features { gap: 0.875rem; margin-bottom: 2rem; }
-            .feature-modal-features li { padding: 0.875rem 1rem; gap: 0.875rem; }
-            .feature-modal-features li i { font-size: 1.3rem; }
-            .feature-modal-features li span { font-size: 0.9rem; }
+            .feature-modal-description { font-size: 0.95rem; margin-bottom: 1rem; }
+            .feature-modal-image { margin-bottom: 1rem; max-height: 220px; }
+            .feature-modal-features { gap: 0.625rem; margin-bottom: 1.25rem; grid-template-columns: 1fr; }
+            .feature-modal-features li { padding: 0.75rem 0.875rem; gap: 0.75rem; }
+            .feature-modal-features li i { font-size: 1.2rem; }
+            .feature-modal-features li span { font-size: 0.875rem; }
         }
         
         @media (max-width: 480px) {
@@ -331,19 +331,19 @@
             .blog-item.prev, .blog-item.next { opacity: 0; pointer-events: none; }
             .carousel { min-height: 300px; }
             .carousel-container { padding: 0.75rem 0; }
-            .blog-cta { margin-top: 1rem; }
-            .feature-modal-content, .blog-modal-content { margin: 0.75rem; max-height: 85vh; max-width: 95%; }
-            #featureModalBody, #blogModalBody { padding: 1.75rem; }
-            .feature-modal-header { align-items: flex-start; flex-wrap: wrap; }
-            .feature-modal-icon { font-size: 2.75rem; }
-            .feature-modal-title { font-size: 1.4rem; }
-            .feature-modal-subtitle { font-size: 0.9rem; }
-            .feature-modal-description { font-size: 0.9rem; margin-bottom: 1.5rem; }
-            .feature-modal-image { margin-bottom: 1.5rem; }
-            .feature-modal-features { gap: 0.75rem; margin-bottom: 2rem; }
-            .feature-modal-features li { padding: 0.75rem 0.875rem; gap: 0.75rem; }
-            .feature-modal-features li i { font-size: 1.2rem; }
-            .feature-modal-features li span { font-size: 0.85rem; }
+            .blog-cta { padding-top: 1rem; }
+            .feature-modal-content, .blog-modal-content { margin: 0.5rem; max-height: 90vh; max-width: 96%; }
+            #featureModalBody, #blogModalBody { padding: 1.25rem; }
+            .feature-modal-header { align-items: flex-start; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.875rem; }
+            .feature-modal-icon { font-size: 2.25rem; }
+            .feature-modal-title { font-size: 1.25rem; }
+            .feature-modal-subtitle { font-size: 0.875rem; }
+            .feature-modal-description { font-size: 0.875rem; margin-bottom: 0.875rem; }
+            .feature-modal-image { margin-bottom: 0.875rem; max-height: 180px; }
+            .feature-modal-features { gap: 0.5rem; margin-bottom: 1rem; grid-template-columns: 1fr; }
+            .feature-modal-features li { padding: 0.625rem 0.75rem; gap: 0.625rem; }
+            .feature-modal-features li i { font-size: 1.1rem; }
+            .feature-modal-features li span { font-size: 0.825rem; }
         }
     </style>
 </head>
@@ -411,7 +411,7 @@
 
     <!-- Blog Section -->
     <section id="blog" class="section blog">
-        <div style="max-width: 1400px; width: 100%; margin: 0 auto;">
+        <div style="max-width: 1400px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; height: 100%;">
             <h2 class="section-title">Latest SEO Insights</h2>
             <p class="section-subtitle">Stay ahead with the latest SEO trends and insights</p>
             <div class="carousel-container">
