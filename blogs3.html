@@ -634,11 +634,21 @@
             border-bottom: 1px solid var(--border);
             padding: 1rem 2rem;
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(10px);
             z-index: 10;
             min-height: 60px;
+            gap: 1rem;
+        }
+
+        .blog-modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+            flex: 1;
+            line-height: 1.3;
         }
 
         .blog-modal-close {
@@ -1316,6 +1326,19 @@
             .blog-modal-header {
                 padding: 0.875rem 1rem;
                 min-height: 60px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .blog-modal-title {
+                font-size: 1.25rem;
+            }
+
+            .blog-modal-close {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
             }
 
             .blog-modal-body {
@@ -2039,7 +2062,7 @@
             try {
                 const res = await fetch(`${API}/blog/${id}`);
                 const data = await res.json();
-                showModal(data.subject, data.image_url, getCategoryFromSubject(data.subject), data.creation_date, `<div class="blog-content"><h1>${data.title}</h1>${data.body}</div>`, id);
+                showModal(data.subject, data.image_url, getCategoryFromSubject(data.subject), data.creation_date, data.body, id);
                 
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.set('id', id);
@@ -2059,6 +2082,15 @@
         function showModal(subject, imageUrl, category, date, content, currentId) {
             const modal = document.getElementById('blogModal');
             const relatedBlogs = getRelatedBlogs(currentId);
+            
+            // Update the header with the title
+            const modalHeader = modal.querySelector('.blog-modal-header');
+            modalHeader.innerHTML = `
+                <h1 class="blog-modal-title">${subject}</h1>
+                <button class="blog-modal-close" onclick="closeBlogModal()">
+                    <i class="ri-close-line"></i>
+                </button>
+            `;
             
             const relatedBlogsHtml = relatedBlogs.length > 0 ? `
                 <div class="blog-modal-sidebar">
@@ -2081,6 +2113,9 @@
                     `).join('')}
                 </div>
             ` : '';
+            
+            // Remove any h1 tags from content since title is now in header
+            const cleanContent = content.replace(/<h1[^>]*>.*?<\/h1>/gi, '');
             
             const bodyContent = `
                 <div class="blog-modal-main">
@@ -2105,7 +2140,7 @@
                                 </div>
                             </div>
                         </div>
-                        ${content}
+                        <div class="blog-content">${cleanContent}</div>
                     </div>
                 </div>
                 ${relatedBlogsHtml}
