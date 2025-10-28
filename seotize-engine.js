@@ -75,18 +75,6 @@
         return hashData(browserData);
     }
 
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
     function loadScript(src, defer = false) {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
@@ -195,7 +183,7 @@
         svg.classList.add('seotize-diamond');
         
         Object.assign(svg.style, {
-            position: 'fixed',
+            position: 'absolute',
             left: `${xPosition}px`,
             top: `${yPosition}px`,
             cursor: 'pointer',
@@ -219,34 +207,26 @@
 
     function calculateDiamondPositions(count) {
         const positions = [];
+        const scrollHeight = Math.max(
+            document.body.scrollHeight,
+            document.documentElement.scrollHeight,
+            document.body.offsetHeight,
+            document.documentElement.offsetHeight,
+            document.body.clientHeight,
+            document.documentElement.clientHeight
+        );
+        
         const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
+        const svgSize = CONFIG.DIAMOND.SIZE;
         const margin = CONFIG.DIAMOND.MIN_MARGIN;
+        const sectionHeight = scrollHeight / count;
         const variance = CONFIG.DIAMOND.SECTION_VARIANCE;
-        
-        const usableWidth = viewportWidth - (2 * margin);
-        const usableHeight = viewportHeight - (2 * margin);
-        
-        const sectionsX = Math.ceil(Math.sqrt(count));
-        const sectionsY = Math.ceil(count / sectionsX);
-        
-        const sectionWidth = usableWidth / sectionsX;
-        const sectionHeight = usableHeight / sectionsY;
 
         for (let i = 0; i < count; i++) {
-            const sectionIndexX = i % sectionsX;
-            const sectionIndexY = Math.floor(i / sectionsX);
-            
-            const baseCenterX = margin + (sectionIndexX * sectionWidth) + (sectionWidth / 2);
-            const baseCenterY = margin + (sectionIndexY * sectionHeight) + (sectionHeight / 2);
-            
-            const varianceX = (Math.random() - 0.5) * sectionWidth * variance;
-            const varianceY = (Math.random() - 0.5) * sectionHeight * variance;
-            
-            const x = Math.max(margin, Math.min(viewportWidth - margin - CONFIG.DIAMOND.SIZE, 
-                baseCenterX + varianceX));
-            const y = Math.max(margin, Math.min(viewportHeight - margin - CONFIG.DIAMOND.SIZE, 
-                baseCenterY + varianceY));
+            const sectionStart = i * sectionHeight;
+            const sectionEnd = (i + 1) * sectionHeight;
+            const y = sectionStart + (sectionEnd - sectionStart) * 0.5 + (Math.random() - 0.5) * (sectionHeight * variance);
+            const x = Math.random() * (viewportWidth - svgSize - (margin * 2)) + margin;
             
             positions.push({ x, y });
         }
@@ -397,9 +377,11 @@
                 state.completedTasks.push(subtaskId);
                 clickedDiamond.remove();
 
+                const remainingTasks = state.diamondElements.length - (state.currentDiamondIndex + 1);
+
                 await Swal.fire({
                     title: '✓ Task Complete',
-                    html: '<div style="font-size: 1rem; color: #10b981; font-weight: 500;">Great job! Moving to next task...</div>',
+                    html: `<div style="font-size: 1rem; color: #10b981; font-weight: 500;">Great job! ${remainingTasks} more to go!</div>`,
                     icon: 'success',
                     timer: CONFIG.TIMING.SUCCESS_DURATION,
                     timerProgressBar: true,
@@ -525,6 +507,8 @@
             state.uniqueId = getUniqueId();
             const token = await waitForTurnstileToken();
             const data = await fetchPartnerSubtasks(state.uniqueId, token);
+            
+            closeLoading();
             
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
                 return;
