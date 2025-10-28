@@ -83,6 +83,10 @@
 
     function loadScript(src, defer = false) {
         return new Promise((resolve, reject) => {
+            if (!domCache || !domCache.head) {
+                reject(new Error('DOM cache not initialized'));
+                return;
+            }
             const script = document.createElement('script');
             script.src = src;
             script.defer = defer;
@@ -121,7 +125,7 @@
 
                 if (!responseElement) {
                     if (!domCache || !domCache.body) {
-                        reject(new Error('DOM not initialized'));
+                        setTimeout(checkToken, CONFIG.TIMING.POLL_INTERVAL);
                         return;
                     }
 
@@ -254,6 +258,8 @@
     }
 
     function renderDiamonds() {
+        if (!domCache || !domCache.body) return;
+        
         const positions = calculateDiamondPositions(state.diamonds.length);
         
         state.diamonds.forEach((subtaskId, index) => {
@@ -289,6 +295,8 @@
     }
 
     function createArrowToDiamond(targetDiamond) {
+        if (!domCache || !domCache.body) return;
+        
         if (state.currentArrow) {
             state.currentArrow.remove();
             if (state.arrowUpdateInterval) {
@@ -444,6 +452,8 @@
     }
 
     function injectStyles() {
+        if (!domCache || !domCache.head) return;
+        
         const style = document.createElement('style');
         style.textContent = `
             @keyframes seotizeDiamondGlow {
@@ -552,6 +562,11 @@
     }
 
     function setupTurnstile() {
+        if (!domCache || !domCache.body) {
+            console.error('Cannot setup Turnstile: DOM not ready');
+            return;
+        }
+        
         const div = document.createElement('div');
         div.className = 'cf-turnstile';
         div.setAttribute('data-theme', 'light');
@@ -584,7 +599,30 @@
         }
     }
 
+    function waitForBody() {
+        return new Promise((resolve) => {
+            if (document.body) {
+                resolve();
+                return;
+            }
+            
+            const observer = new MutationObserver(() => {
+                if (document.body) {
+                    observer.disconnect();
+                    resolve();
+                }
+            });
+            
+            observer.observe(document.documentElement, {
+                childList: true,
+                subtree: true
+            });
+        });
+    }
+
     async function bootstrap() {
+        await waitForBody();
+        
         domCache = {
             body: document.body,
             head: document.head
