@@ -1590,6 +1590,19 @@ tr:hover {
     }
 }
 
+.domain-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.domain-actions .btn {
+    white-space: nowrap;
+}
+
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; }
@@ -1637,6 +1650,11 @@ tr:hover {
         flex-direction: column !important;
         align-items: flex-start !important;
         gap: 14px!important;
+    }
+    .domain-actions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-start;
     }
     .logo {
         color: white !important;
@@ -3725,19 +3743,22 @@ async function loadArticles(page = 1) {
             </div>
             <div class="card-body" id="domainsList">
                 ${currentData.domains.length > 0 ? currentData.domains.map(domain => `
-                    <div class="mobilearticle1" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 0.5rem;">
-                        <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div class="mobilearticle1" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 0.5rem; gap: 1rem; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 1rem; min-width: 0;">
                             <span class="badge badge-${domain.verified ? 'success' : 'warning'}">
-                                ${domain.verified ? '✓ Verified' : '⏳ Pending'}
+                                ${domain.verified ? '&#10003; Verified' : '&#9203; Pending'}
                             </span>
-                            <span>${domain.domain}</span>
+                            <span style="font-weight: 500;">${domain.domain}</span>
                         </div>
-                        ${!domain.verified ? `
-                            <div style="display: flex; gap: 0.5rem;">
+                        <div class="domain-actions">
+                            ${!domain.verified ? `
                                 <button class="btn btn-sm" onclick="showVerificationInstructions('${domain.domain}', '${domain.txt_record || ''}')">Instructions</button>
                                 <button class="btn btn-sm btn-primary" onclick="verifyDomain('${domain.domain}')">Verify Now</button>
-                            </div>
-                        ` : ''}
+                            ` : ''}
+                            <button class="btn btn-sm btn-danger" onclick="confirmDeleteDomain('${domain.domain}')">
+                                <i class="ri-delete-bin-line"></i> Delete
+                            </button>
+                        </div>
                     </div>
                 `).join('') : `
                     <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
@@ -3954,7 +3975,7 @@ async function loadBilling(page = 1, type = 'all') {
             .plan-card h4 { margin-bottom: 1rem; color: var(--text); font-size: 1.1rem; }
             .plan-card ul { list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: var(--text-secondary); }
             .plan-card ul li { margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text); }
-            .plan-card ul li::before { content: '✓'; color: var(--success); font-weight: 600; }
+            .plan-card ul li::before { content: '?'; color: var(--success); font-weight: 600; }
             .duration-selector { display: flex; gap: 0.5rem; background: var(--bg-tertiary); padding: 0.5rem; border-radius: var(--radius); margin-bottom: 1.5rem; justify-content: center; flex-wrap: wrap; }
             .duration-selector label { flex: 1; text-align: center; min-width: 100px; }
             .duration-selector input { display: none; }
@@ -4315,7 +4336,7 @@ function loadWebsitePreview(url) {
                         <div style="font-weight:600;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5rem">
                             <span style="background:var(--primary);color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem">${i+1}</span>
                             ${loc.tag ? loc.tag.toUpperCase() + ' Element' : 'Element'}
-                            <span style="background:var(--success);color:white;padding:0.2rem 0.4rem;border-radius:4px;font-size:0.7rem">✓ Selected</span>
+                            <span style="background:var(--success);color:white;padding:0.2rem 0.4rem;border-radius:4px;font-size:0.7rem">? Selected</span>
                         </div>
                         ${loc.text ? `<div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.5rem;padding:0.5rem;background:var(--bg-tertiary);border-radius:4px">"${loc.text}"</div>` : ''}
                         <code style="background:var(--bg);padding:0.5rem;border-radius:4px;font-size:0.75rem;word-break:break-all;display:block;border:1px solid var(--border)">${loc.xpath}</code>
@@ -4359,7 +4380,7 @@ function loadWebsitePreview(url) {
                     position:relative;
                     overflow:hidden;
                 " title="Zoom Out (Ctrl/Cmd + -)">
-                    <span style="z-index:1;">−</span>
+                    <span style="z-index:1;">?</span>
                 </button>
                 
                 <div style="
@@ -5168,7 +5189,7 @@ async function showTaskModal() {
                         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
                             ${currentData.selectedKeywords.map(keyword => `
                                 <span class="badge badge-primary" data-keyword-badge="${keyword}">
-                                    ${keyword} <span class="remove-keyword" style="cursor: pointer; margin-left: 0.25rem;">×</span>
+                                    ${keyword} <span class="remove-keyword" style="cursor: pointer; margin-left: 0.25rem;">?</span>
                                 </span>
                             `).join('')}
                         </div>`;
@@ -5506,7 +5527,7 @@ async function viewTaskDetails(taskId) {
                     ${task.sitekey ? `
                       <div class="install-instructions">
                         <p><strong>Installation Instruction:</strong></p>
-                        <p>Add the following code into your website’s &lt;head&gt; section, right before &lt;/head&gt;:</p>
+                        <p>Add the following code into your website?s &lt;head&gt; section, right before &lt;/head&gt;:</p>
                         <code id="install-code">&lt;script type="text/javascript" src="https://seotize.net/seotize-engine.js?id=${task.sitekey}"&gt;&lt;/script&gt;</code>
                         <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('install-code').innerText)">Copy Code</button>
                       </div>
@@ -5835,6 +5856,50 @@ async function verifyDomain(url) {
     } catch (error) {
         console.error('Verify domain error:', error);
         showToast('Verification failed. Please check your DNS settings and try again.', 'error');
+    }
+}
+
+function confirmDeleteDomain(domain) {
+    Swal.fire({
+        title: 'Delete Domain?',
+        html: `<p style="margin: 0;">Are you sure you want to remove <strong>${domain}</strong> from your account?</p>
+               <span style="display: block; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">If the domain was verified, related articles will also be removed.</span>`,
+        icon: 'warning',
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: 'Delete',
+        confirmButtonColor: '#d33',
+        cancelButtonText: 'Cancel',
+        customClass: { popup: 'swal2-toast' }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            deleteDomain(domain);
+        }
+    });
+}
+
+async function deleteDomain(domain) {
+    Swal.fire({
+        title: 'Deleting domain...',
+        didOpen: () => Swal.showLoading(),
+        allowOutsideClick: false,
+        customClass: { popup: 'swal2-toast' }
+    });
+
+    try {
+        await api('/delete-domain', {
+            method: 'POST',
+            body: JSON.stringify({ url: domain })
+        });
+
+        Swal.close();
+        showToast('Domain deleted successfully', 'success');
+        loadArticles();
+    } catch (error) {
+        Swal.close();
+        console.error('Delete domain error:', error);
+        const message = error?.data?.message || error?.message || 'Failed to delete domain. Please try again.';
+        showToast(message, 'error');
     }
 }
 
@@ -6971,7 +7036,7 @@ function initializeCharts(user) {
                 z-index: 10;
             `;
             noDataMsg.innerHTML = `
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">??</div>
                 <div>No analytics data available yet</div>
                 <div style="font-size: 0.75rem; margin-top: 0.25rem;">Data will appear when tasks receive views</div>
             `;
@@ -7035,7 +7100,7 @@ function generateTaskChartData(user) {
     };
 }
 
-// amCharts v5 World Map — Indigo ramp, hover = green
+// amCharts v5 World Map ? Indigo ramp, hover = green
 function initializeCountryMap(user) {
   const container = document.getElementById('countryMap');
   if (!container) return;
