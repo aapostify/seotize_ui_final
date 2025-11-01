@@ -1603,6 +1603,623 @@ tr:hover {
     white-space: nowrap;
 }
 
+/* Articles Manager Redesign */
+.article-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.article-hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border-radius: var(--radius-xl);
+    padding: 1.75rem 2rem;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.article-hero::after {
+    content: '';
+    position: absolute;
+    right: -120px;
+    top: -120px;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 0%, transparent 65%);
+    animation: pulse 8s ease-in-out infinite;
+}
+
+.article-hero h2 {
+    font-size: clamp(1.6rem, 2.8vw, 2rem);
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: #fff;
+}
+
+.article-hero p {
+    margin: 0;
+    max-width: 520px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.95rem;
+}
+
+.article-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    z-index: 1;
+}
+
+.article-hero-actions .btn {
+    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.article-hero-actions .btn-primary {
+    background: #ffffff;
+    color: var(--primary);
+    border-color: transparent;
+}
+
+.article-hero-actions .btn-primary:hover {
+    box-shadow: 0 12px 30px rgba(255, 255, 255, 0.2);
+}
+
+.article-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1rem;
+}
+
+.article-summary-card {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.article-summary-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.article-summary-card:hover::before {
+    opacity: 1;
+}
+
+.article-summary-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+}
+
+.article-summary-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.article-summary-meta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.article-domains-card {
+    padding: 1.5rem;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    background: var(--card);
+    box-shadow: var(--shadow-sm);
+}
+
+.article-domain-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.article-domain-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    border-radius: var(--radius);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+}
+
+.article-domain-item:hover {
+    border-color: var(--primary-light);
+    transform: translateY(-1px);
+}
+
+.article-domain-item .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
+}
+
+.article-domain-item-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 0.45rem;
+}
+
+.article-domain-empty {
+    text-align: center;
+    padding: 1.75rem;
+    color: var(--text-secondary);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-tertiary);
+}
+
+.article-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.article-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    background: var(--card);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    position: relative;
+    min-height: 100%;
+}
+
+.article-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(99, 102, 241, 0.35);
+}
+
+.article-card-image {
+    position: relative;
+    padding-top: 56%;
+    background: var(--bg-tertiary);
+    overflow: hidden;
+}
+
+.article-card-image img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.article-card:hover .article-card-image img {
+    transform: scale(1.04);
+}
+
+.article-card-body {
+    padding: 1.25rem 1.5rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    flex: 1;
+}
+
+.article-card-domain {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    max-width: 100%;
+}
+
+.article-card-domain i {
+    font-size: 0.85rem;
+    color: var(--primary);
+}
+
+.article-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.article-card-excerpt {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.article-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.article-card-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.article-card-meta i {
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+.article-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.article-card-actions .btn {
+    flex: 1;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+.article-card-actions .btn-icon {
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    padding: 0.25rem;
+}
+
+.article-empty-state {
+    text-align: center;
+    padding: 2.5rem;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-xl);
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+}
+
+.article-empty-state i {
+    font-size: 2.5rem;
+    color: var(--primary-light);
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.article-generator-tip {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-tertiary);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.article-generator-tip i {
+    font-size: 1.2rem;
+    color: var(--primary);
+}
+
+/* Article Compose Modal */
+.article-compose-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 1.5rem;
+}
+
+.article-compose-grid form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.article-compose-fieldset {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.article-compose-preview {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--card);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 70vh;
+    overflow: hidden;
+}
+
+.article-compose-preview h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.article-preview-card {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+}
+
+.article-preview-cover {
+    position: relative;
+    padding-top: 52%;
+    background: var(--bg-tertiary);
+}
+
+.article-preview-cover img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.article-preview-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    font-size: 1.5rem;
+    gap: 0.5rem;
+}
+
+.article-preview-content {
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.article-preview-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.article-preview-content::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 999px;
+}
+
+.article-preview-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+}
+
+.article-preview-body {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+}
+
+.article-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+
+.article-preview-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Article Preview Modal */
+.article-preview-modal {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.55fr);
+    gap: 1.75rem;
+    max-height: 65vh;
+}
+
+.article-preview-main {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    background: var(--card);
+}
+
+.article-preview-main .article-preview-content {
+    max-height: 60vh;
+}
+
+.article-preview-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.article-preview-sidebar .card {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.ai-curl-block {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.75rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    line-height: 1.5;
+    margin-top: 0.75rem;
+}
+
+.ai-curl-block code {
+    white-space: pre;
+    color: var(--text);
+}
+
+.generator-options {
+    display: grid;
+    gap: 1rem;
+}
+
+.generator-options label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.generator-options input[type="text"] {
+    width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .article-preview-modal {
+        grid-template-columns: 1fr;
+        max-height: none;
+    }
+
+    .article-preview-sidebar {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .article-preview-sidebar .card {
+        min-width: 240px;
+    }
+
+    .article-preview-main .article-preview-content {
+        max-height: none;
+    }
+}
+
+@media (max-width: 1024px) {
+    .article-compose-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .article-compose-preview {
+        max-height: none;
+    }
+
+    .article-hero {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .article-hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .article-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .article-card-body {
+        padding: 1.1rem 1.25rem 1.2rem;
+    }
+
+    .article-preview-modal {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .article-preview-sidebar {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 600px) {
+    .article-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .article-hero-actions {
+        width: 100%;
+    }
+
+    .article-hero-actions .btn {
+        flex: 1 1 45%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .article-hero {
+        padding: 1.25rem;
+    }
+
+    .article-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .article-card-actions .btn {
+        flex: 1 1 100%;
+    }
+}
+
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; }
@@ -3159,6 +3776,49 @@ function formatNumber(num) {
     }
 }
 
+function stripHtml(html = '') {
+    return html
+        .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, ' ')
+        .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, ' ')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function extractArticleExcerpt(article = {}, limit = 180) {
+    const source = article.summary || article.title || article.subject || article.body || '';
+    const text = stripHtml(source);
+    if (!text) {
+        return 'Preview of your article content will appear here after you add or generate copy.';
+    }
+    return text.length > limit ? `${text.slice(0, limit).trim()}?` : text;
+}
+
+function getArticleHeroImage(article = {}) {
+    if (article.hero_image) return article.hero_image;
+    if (article.image_url) return article.image_url;
+    if (article.images && article.images.length) {
+        const first = article.images[0];
+        if (typeof first === 'string') return first;
+        if (first && typeof first === 'object') {
+            return first.url || first.image_url || first.secure_url || '';
+        }
+    }
+    return '';
+}
+
+function formatDateDisplay(dateString, options = { month: 'short', day: 'numeric', year: 'numeric' }) {
+    if (!dateString) return '?';
+    try {
+        const date = new Date(dateString);
+        if (Number.isNaN(date.getTime())) return '?';
+        return date.toLocaleDateString('en-US', options);
+    } catch (error) {
+        return '?';
+    }
+}
+
 // Dashboard
 async function loadDashboard(page = 1) {
     try {
@@ -3700,8 +4360,8 @@ async function loadImages(page = 1) {
     }
 }
 
-// Articles with Domains
-async function loadArticles(page = 1) {
+// Articles with Domains (legacy layout)
+async function loadArticlesLegacy(page = 1) {
     try {
         showSpinner();
 
@@ -3923,6 +4583,201 @@ async function loadArticles(page = 1) {
         showErrorState('Failed to load articles and domains');
     }
 }
+
+// Articles with Domains (redesigned experience)
+async function loadArticles(page = 1) {
+    try {
+        showSpinner();
+
+        const response = await api(`/dashboard/articles?page=${page}&page_size=10`);
+        const { data, pagination } = response;
+
+        currentData.articles = data.articles || [];
+        currentData.domains = data.user?.domains || [];
+
+        paginationState.articles = {
+            page: pagination.current || page,
+            pageSize: pagination.size || 10,
+            total: pagination.total || (data.articles ? data.articles.length : 0),
+            hasNext: pagination.has_next || false
+        };
+
+        const content = document.getElementById('content');
+
+        const articles = currentData.articles;
+        const domains = currentData.domains;
+        const totalPublished = paginationState.articles.total || articles.length;
+        const verifiedDomains = domains.filter(domain => domain.verified);
+        const totalViews = articles.reduce((sum, article) => sum + (article.total_views || 0), 0);
+        const avgViews = articles.length ? Math.round(totalViews / articles.length) : 0;
+        const lastArticle = articles.length
+            ? [...articles].sort((a, b) => new Date(b.creation_date) - new Date(a.creation_date))[0]
+            : null;
+        const lastPublishedDate = lastArticle ? formatDateDisplay(lastArticle.creation_date) : '?';
+        const lastPublishedSubject = lastArticle?.subject ? stripHtml(lastArticle.subject) : 'No recent article';
+
+        const sessionTokenForCurl = (sessionToken || 'YOUR_SESSION_TOKEN').replace(/'/g, "\\'");
+        const aiCurlSnippet = [
+            "curl -X POST 'https://api.seotize.net/generate-article' \\",
+            `  -H 'Session-Token: ${sessionTokenForCurl}' \\\`,
+            "  -H 'Content-Type: application/json' \\",
+            "  -d '{\\"subject\\": \\"How to Build Your First Website\\"}'"
+        ].join('\n');
+
+        const domainListHtml = domains.length ? domains.map(domain => {
+            const statusBadge = domain.verified ? 'success' : 'warning';
+            const statusText = domain.verified ? 'Verified' : 'Pending verification';
+            const domainEscaped = domain.domain.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+            const txtRecordEscaped = (domain.txt_record || '')
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/\n/g, '\\n');
+            return `
+                <div class="article-domain-item">
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-weight:600;">${domain.domain}</div>
+                        <div style="font-size:0.8rem; color: var(--text-secondary);">${statusText}</div>
+                    </div>
+                    <span class="badge badge-${statusBadge}">${domain.verified ? '<i class="ri-check-line"></i> Verified' : '<i class="ri-time-line"></i> Pending'}</span>
+                    <div class="article-domain-item-actions">
+                        ${!domain.verified ? `
+                        <button class="btn btn-sm" title="Verification instructions" onclick="showVerificationInstructions('${domainEscaped}', '${txtRecordEscaped}')">
+                            <i class="ri-information-line"></i>
+                        </button>
+                        <button class="btn btn-sm btn-primary" title="Verify now" onclick="verifyDomain('${domainEscaped}')">
+                            <i class="ri-flashlight-line"></i>
+                        </button>` : ''}
+                        <button class="btn btn-sm btn-danger" title="Delete domain" onclick="confirmDeleteDomain('${domainEscaped}')">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('') : `
+            <div class="article-domain-empty">
+                <p style="margin-bottom: 1rem;">Connect a custom domain to publish your AI-generated articles in one click.</p>
+                <button class="btn btn-primary" onclick="showDomainModal()"><i class="ri-add-line"></i> Add Domain</button>
+            </div>
+        `;
+
+        const articleCardsHtml = articles.length ? articles.map(article => {
+            const heroImage = getArticleHeroImage(article);
+            const safeSubject = stripHtml(article.subject || '') || 'Untitled Article';
+            const excerpt = extractArticleExcerpt(article);
+            const publishedDate = formatDateDisplay(article.creation_date);
+            const wordCount = stripHtml(article.body || '').split(/\s+/).filter(Boolean).length;
+            const readingTime = wordCount ? Math.max(1, Math.round(wordCount / 200)) : null;
+            const imageCount = (article.images || []).length;
+            const domainLabel = article.url || 'Unpublished';
+            const domainHref = domainLabel.startsWith('http') ? domainLabel : `https://${domainLabel}`;
+            const domainHrefEscaped = domainHref.replace(/'/g, "\\'");
+            const articleId = article.article_id;
+            return `
+                <article class="article-card">
+                    <div class="article-card-image">
+                        ${heroImage ? `<img src="${heroImage}" alt="${safeSubject}" loading="lazy" onerror="this.style.display='none';">` : `<div class="article-preview-placeholder"><i class="ri-image-line"></i><span>No cover image</span></div>`}
+                    </div>
+                    <div class="article-card-body">
+                        <span class="article-card-domain"><i class="ri-global-line"></i>${domainLabel}</span>
+                        <h3 class="article-card-title">${safeSubject}</h3>
+                        <p class="article-card-excerpt">${excerpt}</p>
+                        <div class="article-card-meta">
+                            <span><i class="ri-calendar-line"></i>${publishedDate}</span>
+                            <span><i class="ri-eye-line"></i>${formatNumber(article.total_views || 0)} views</span>
+                            <span><i class="ri-file-image-line"></i>${imageCount} images</span>
+                            ${readingTime ? `<span><i class="ri-time-line"></i>${readingTime} min read</span>` : ''}
+                        </div>
+                        <div class="article-card-actions">
+                            <button class="btn btn-secondary" onclick="viewArticle('${articleId}')"><i class="ri-eye-line"></i> Details</button>
+                            <button class="btn btn-secondary" onclick="editArticle('${articleId}')"><i class="ri-edit-line"></i> Edit</button>
+                            <button class="btn btn-secondary" onclick="window.open('${domainHrefEscaped}', '_blank')"><i class="ri-external-link-line"></i> Live</button>
+                            <button class="btn btn-danger btn-icon" onclick="confirmArticleDeletion('${articleId}')" title="Delete article"><i class="ri-delete-bin-line"></i></button>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }).join('') : '';
+
+        const paginationMarkup = articles.length ? generatePagination('articles', loadArticles) : '';
+
+        content.innerHTML = `
+        <div class="article-page">
+            <section class="article-hero">
+                <div>
+                    <span class="article-chip" style="background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.25);"><i class="ri-article-line"></i>Showing ${articles.length} of ${totalPublished}</span>
+                    <h2>Article Studio</h2>
+                    <p>Generate, review, and publish SEO-ready articles on your connected domains. Use the AI writer to start with full HTML layouts instantly.</p>
+                </div>
+                <div class="article-hero-actions">
+                    <button class="btn btn-primary" onclick="showArticleModal()"><i class="ri-add-line"></i> New Article</button>
+                    <button class="btn" onclick="openArticleGenerator()"><i class="ri-sparkling-2-line"></i> Generate with AI</button>
+                    <button class="btn" onclick="showDomainModal()"><i class="ri-global-line"></i> Manage Domains</button>
+                </div>
+            </section>
+            <div class="article-generator-tip">
+                <i class="ri-command-line"></i>
+                <div>
+                    <strong>Speed up your workflow:</strong> Call the SEOTIZE AI endpoint with a single request, then drop the generated HTML straight into the composer.
+                    <div class="ai-curl-block"><code>${aiCurlSnippet}</code></div>
+                </div>
+            </div>
+            <section class="article-summary-grid">
+                <div class="article-summary-card">
+                    <span class="article-summary-label">Published Articles</span>
+                    <div class="article-summary-value">${totalPublished}</div>
+                    <div class="article-summary-meta">Across ${verifiedDomains.length || 0} verified domains</div>
+                </div>
+                <div class="article-summary-card">
+                    <span class="article-summary-label">Total Views</span>
+                    <div class="article-summary-value">${formatNumber(totalViews)}</div>
+                    <div class="article-summary-meta">Average ${formatNumber(avgViews || 0)} per article (current page)</div>
+                </div>
+                <div class="article-summary-card">
+                    <span class="article-summary-label">Verified Domains</span>
+                    <div class="article-summary-value">${verifiedDomains.length}</div>
+                    <div class="article-summary-meta">${domains.length ? `${domains.length} total connected` : 'No domains connected yet'}</div>
+                </div>
+                <div class="article-summary-card">
+                    <span class="article-summary-label">Last Published</span>
+                    <div class="article-summary-value">${lastPublishedDate}</div>
+                    <div class="article-summary-meta" style="overflow:hidden; text-overflow: ellipsis; white-space: nowrap;">${lastPublishedSubject}</div>
+                </div>
+            </section>
+            <section class="article-domains-card">
+                <div style="display:flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+                    <div>
+                        <h3 style="margin:0; font-size:1.05rem; font-weight:600;">Publishing Domains</h3>
+                        <p style="margin:0.35rem 0 0 0; font-size:0.85rem; color: var(--text-secondary);">Verify a domain once and publish as many articles as you need.</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="showDomainModal()"><i class="ri-add-line"></i> Add Domain</button>
+                </div>
+                <div class="article-domain-list">
+                    ${domainListHtml}
+                </div>
+            </section>
+            <section>
+                ${articles.length ? `<div class="article-grid">${articleCardsHtml}</div>` : `
+                <div class="article-empty-state">
+                    <i class="ri-article-line"></i>
+                    <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem; font-weight: 600;">No articles yet</h3>
+                    <p style="margin-bottom: 1.25rem; color: var(--text-secondary);">Generate your first article with AI or start from a blank canvas.</p>
+                    <div style="display:flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
+                        <button class="btn btn-primary" onclick="openArticleGenerator()"><i class="ri-sparkling-2-line"></i> Generate with AI</button>
+                        <button class="btn btn-secondary" onclick="showArticleModal()"><i class="ri-add-line"></i> Create Manually</button>
+                    </div>
+                </div>
+                `}
+            </section>
+            ${paginationMarkup}
+        </div>
+        `;
+
+    } catch (error) {
+        console.error('Articles error:', error);
+        showErrorState('Failed to load articles and domains');
+    }
+}
+
 // Upgraded Billing Function
 async function loadBilling(page = 1, type = 'all') {
     try {
@@ -5992,57 +6847,71 @@ async function viewArticle(articleId) {
         const sortedDates = Object.entries(viewsByDate).sort(([a], [b]) => new Date(a) - new Date(b));
         const haveStats = Object.keys(stats).length > 0;
         
-        // --- Build new responsive HTML for Swal ---
-        const modalHtml = `
-        <div style="text-align: left;">
-            <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
-                ${haveStats ? `
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title" style="font-size: 1rem;">Views Timeline</h3></div>
-                        <div class="card-body" style="height: 220px; padding: 0.75rem;"><canvas id="articleViewsChart"></canvas></div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem;">
-                        <div class="card">
-                            <div class="card-header"><h3 class="card-title" style="font-size: 0.9rem;">Top Countries</h3></div>
-                            <div class="card-body" style="height: 180px; padding: 0.75rem;"><canvas id="articleCountriesChart"></canvas></div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header"><h3 class="card-title" style="font-size: 0.9rem;">Browsers</h3></div>
-                            <div class="card-body" style="height: 180px; padding: 0.75rem;"><canvas id="articleBrowsersChart"></canvas></div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header"><h3 class="card-title" style="font-size: 0.9rem;">Devices</h3></div>
-                            <div class="card-body" style="height: 180px; padding: 0.75rem;"><canvas id="articleDevicesChart"></canvas></div>
-                        </div>
-                    </div>
-                ` : `
-                    <div class="empty-state" style="padding: 1.5rem;">
-                        <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
-                        <div class="empty-state-title">No Analytics Yet</div>
-                        <p class="empty-state-description">Data will appear once your article receives views.</p>
-                    </div>
-                `}
+        const heroImage = getArticleHeroImage(article);
+        const escapeAttr = (value = '') => value
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        const galleryItems = (article.images || []).map(img => {
+            const imageUrl = typeof img === 'string' ? img : (img.url || img);
+            const safeUrl = escapeAttr(imageUrl);
+            return `<div style="border-radius: var(--radius-sm); overflow:hidden; background: var(--bg-tertiary);">
+                        <img src="${safeUrl}" style="width:100%; height:100%; object-fit:cover; cursor:pointer;" loading="lazy" onclick="window.open('${safeUrl}', '_blank')">
+                    </div>`;
+        }).join('');
 
-                ${article.images && article.images.length > 0 ? `
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title" style="font-size: 0.95rem;">Images (${article.images.length})</h3></div>
-                        <div class="card-body" style="padding: 0.75rem;">
-                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.5rem;">
-                                ${article.images.map(img => `
-                                    <div onclick="window.open('${img}', '_blank')" style="cursor: pointer; aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; background: var(--bg-tertiary);">
-                                        <img src="${img}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-                ` : ''}
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title" style="font-size: 0.95rem;">Content Preview</h3></div>
-                    <div class="card-body" style="max-height: 250px; overflow-y: auto; font-family: Georgia, serif; line-height: 1.6; font-size: 0.85rem; padding: 0.75rem;">
-                        ${article.body}
-                    </div>
+        const galleryHtml = galleryItems ? `
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">Gallery ${(article.images || []).length ? `(${(article.images || []).length})` : ''}</h3></div>
+                <div class="card-body" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap:0.5rem;">
+                    ${galleryItems}
                 </div>
+            </div>
+        ` : '';
+
+        const analyticsHtml = haveStats ? `
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">Views Timeline</h3></div>
+                <div class="card-body" style="height:220px;"><canvas id="articleViewsChart"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="card-body" style="display:grid; gap:0.75rem;">
+                    <div style="height:160px;"><canvas id="articleCountriesChart"></canvas></div>
+                    <div style="height:160px;"><canvas id="articleBrowsersChart"></canvas></div>
+                    <div style="height:160px;"><canvas id="articleDevicesChart"></canvas></div>
+                </div>
+            </div>
+        ` : `
+            <div class="card">
+                <div class="card-body">
+                    <p style="margin:0; color: var(--text-secondary);">Analytics will appear once this article receives traffic.</p>
+                </div>
+            </div>
+        `;
+
+        const wordCount = stripHtml(article.body || '').split(/\s+/).filter(Boolean).length;
+        const readingTime = Math.max(1, Math.round(wordCount / 200));
+
+        const modalHtml = `
+        <div class="article-preview-modal">
+            <div class="article-preview-main">
+                <div class="article-preview-cover">
+                    ${heroImage ? `<img src="${escapeAttr(heroImage)}" alt="${escapeAttr(article.subject || 'Article cover')}">` : '<div class="article-preview-placeholder"><i class="ri-image-line"></i><span>No cover image</span></div>'}
+                </div>
+                <div class="article-preview-content">
+                    <div class="article-preview-meta">
+                        <span class="article-chip"><i class="ri-global-line"></i>${article.url}</span>
+                        <span class="article-chip"><i class="ri-calendar-line"></i>${formatDateDisplay(article.creation_date)}</span>
+                        <span class="article-chip"><i class="ri-eye-line"></i>${formatNumber(article.total_views || 0)} views</span>
+                        <span class="article-chip"><i class="ri-time-line"></i>${readingTime} min read</span>
+                    </div>
+                    <h2 class="article-preview-title">${article.subject}</h2>
+                    <div class="article-preview-body">${article.body}</div>
+                </div>
+            </div>
+            <div class="article-preview-sidebar">
+                ${analyticsHtml}
+                ${galleryHtml}
             </div>
         </div>
         `;
@@ -6198,8 +7067,8 @@ function initializeArticleCharts(countries, browsers, devices, sortedDates) {
     });
 }
 
-// ADD THIS NEW, ALL-IN-ONE FUNCTION
-async function showArticleModal(articleId = null) {
+// Legacy article composer modal (kept for reference)
+async function showArticleModalLegacy(articleId = null) {
     const isEdit = !!articleId;
     let articleData = null; // To store fetched article data for editing
 
@@ -6380,12 +7249,460 @@ function editArticle(articleId) {
     showArticleModal(articleId);
 }
 
+async function showArticleModal(articleId = null, prefillData = null) {
+    const isEdit = !!articleId;
+    let articleData = null;
 
-async function deleteArticle(articleId) {
-    if (!confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
+    if (isEdit) {
+        Swal.fire({
+            title: 'Loading Article...',
+            didOpen: () => Swal.showLoading(),
+            allowOutsideClick: false,
+            customClass: { popup: 'swal2-toast' }
+        });
+
+        try {
+            const response = await api(`/dashboard/articles?article_id=${articleId}`);
+            articleData = response.data.article;
+            Swal.close();
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to load article',
+                text: error.message,
+                customClass: { popup: 'swal2-toast' }
+            });
+            return;
+        }
+    }
+
+    const allDomains = currentData.domains || [];
+    const verifiedDomains = allDomains.filter(domain => domain.verified);
+
+    const escapeAttribute = (value = '') => value
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
+    const escapeTextarea = (value = '') => value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+    const selectedDomain = isEdit
+        ? (articleData?.url || '')
+        : (prefillData?.url || (verifiedDomains[0]?.domain || ''));
+
+    const subjectValue = isEdit
+        ? (articleData?.subject || '')
+        : (prefillData?.subject || '');
+
+    const bodyValue = isEdit
+        ? (articleData?.body || '')
+        : (prefillData?.body || '');
+
+    const coverImage = isEdit
+        ? getArticleHeroImage(articleData)
+        : (prefillData?.image_url || '');
+
+    const domainExists = allDomains.some(domain => domain.domain === selectedDomain);
+
+    let domainOptions = allDomains.map(domain => {
+        const selectedAttr = domain.domain === selectedDomain ? 'selected' : '';
+        const disabledAttr = (!domain.verified && domain.domain !== selectedDomain) ? 'disabled' : '';
+        const statusLabel = domain.verified ? '' : ' (pending)';
+        return `<option value="${escapeAttribute(domain.domain)}" ${selectedAttr} ${disabledAttr}>${domain.domain}${statusLabel}</option>`;
+    }).join('');
+
+    if (selectedDomain && !domainExists) {
+        domainOptions = `<option value="${escapeAttribute(selectedDomain)}" selected>${selectedDomain}</option>` + domainOptions;
+    }
+
+    const brokenImagePlaceholder = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00NSA1MEg3NUw2MCA3NUw0NSA1MFoiIGZpbGw9IiNEMUQ1REIiLz4KPGNpcmNsZSBjeD0iNTIiIGN5PSI0MiIgcj0iNSIgZmlsbD0iI0QxRDVEQiIvPgo8L3N2Zz4=';
+
+    let existingImagesHtml = '';
+    if (isEdit && articleData?.images?.length) {
+        const imagesMarkup = articleData.images.map((imgUrl, idx) => {
+            const imageUrl = typeof imgUrl === 'string' ? imgUrl : (imgUrl.url || imgUrl);
+            const imageId = typeof imgUrl === 'object' ? imgUrl.image_id : `image_${idx}`;
+            return `
+                        <div class="image-preview-item" style="position: relative; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; aspect-ratio: 1;">
+                            <img src="${escapeAttribute(imageUrl)}" alt="Image ${idx + 1}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='${brokenImagePlaceholder}';">
+                            <label style="position: absolute; top: 6px; right: 6px; background: var(--error); color: #fff; border-radius: 4px; padding: 4px 6px; cursor: pointer; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                <input type="checkbox" name="delete_image_ids" value="${escapeAttribute(imageId)}" style="margin: 0;">
+                                Remove
+                            </label>
+                        </div>`;
+        }).join('');
+
+        existingImagesHtml = `
+            <div class="article-compose-fieldset">
+                <label class="form-label">Current Images</label>
+                <div id="current-images-container" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap:0.75rem; margin-top:0.5rem;">
+${imagesMarkup}
+                </div>
+                <small style="color: var(--text-secondary); display:block; margin-top:0.5rem;">Check images to delete them</small>
+            </div>`;
+    }
+
+    const modalHtml = `
+    <div class="article-compose-grid">
+        <form id="articleForm" enctype="multipart/form-data">
+            <div class="article-compose-fieldset">
+                <label class="form-label" for="swal-url">Publishing Domain</label>
+                <select class="form-select" id="swal-url" name="url" required>
+                    <option value="">Select a domain...</option>
+                    ${domainOptions}
+                </select>
+                ${verifiedDomains.length === 0 ? '<small style="color: var(--error); display:block; margin-top:0.5rem;">No verified domains found. Add and verify a domain before publishing.</small>' : ''}
+            </div>
+            <div class="article-compose-fieldset">
+                <label class="form-label" for="swal-subject">Article Title</label>
+                <input type="text" id="swal-subject" class="form-input" name="subject" required placeholder="My Amazing Article Title" value="${escapeAttribute(subjectValue)}">
+            </div>
+            <div class="article-compose-fieldset">
+                <label class="form-label" for="swal-body">Article Content (HTML)</label>
+                <textarea class="form-textarea" id="swal-body" name="body" required rows="12" placeholder="&lt;h1&gt;Title&lt;/h1&gt;&lt;p&gt;Content...&lt;/p&gt;">${escapeTextarea(bodyValue)}</textarea>
+            </div>
+            ${existingImagesHtml}
+            <div class="article-compose-fieldset">
+                <label class="form-label" for="new-images-input">${isEdit ? 'Add New Images (Optional)' : 'Upload Images (Optional)'}</label>
+                <input type="file" id="new-images-input" class="form-input" name="image_data" multiple accept="image/*">
+                <small style="color: var(--text-secondary); display:block; margin-top:0.5rem;">Max 10 files, 5MB per file.</small>
+            </div>
+            ${isEdit ? `
+            <div class="article-compose-fieldset">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="replace-all-images" name="replace_all" value="true">
+                    <span>Replace all images with new uploads (deletes current images)</span>
+                </label>
+            </div>` : ''}
+        </form>
+        <div class="article-compose-preview">
+            <h4>Live Preview</h4>
+            <div class="article-preview-card">
+                <div class="article-preview-cover" id="composePreviewCover">
+                    ${coverImage ? `<img src="${escapeAttribute(coverImage)}" alt="${escapeAttribute(subjectValue || 'Article cover')}">` : '<div class="article-preview-placeholder"><i class="ri-image-line"></i><span>No cover image</span></div>'}
+                </div>
+                <div class="article-preview-content">
+                    <div class="article-preview-meta">
+                        <span class="article-chip" id="composePreviewDomainChip">${selectedDomain || 'Select a domain'}</span>
+                        <span class="article-chip"><i class="ri-time-line"></i>${isEdit ? 'Updated moments ago' : 'Draft preview'}</span>
+                    </div>
+                    <h3 class="article-preview-title" id="composePreviewTitle">${subjectValue || 'Your headline will appear here'}</h3>
+                    <div class="article-preview-body" id="composePreviewBody">${bodyValue || '<p>Start writing or generate an article to preview it instantly.</p>'}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+
+    Swal.fire({
+        title: isEdit ? 'Edit Article' : 'Create New Article',
+        html: modalHtml,
+        width: 'min(1000px, 95vw)',
+        showCloseButton: true,
+        showCancelButton: true,
+        confirmButtonText: isEdit ? 'Update Article' : 'Create Article',
+        confirmButtonColor: 'var(--primary)',
+        focusConfirm: false,
+        didOpen: () => {
+            const domainSelect = document.getElementById('swal-url');
+            const subjectInput = document.getElementById('swal-subject');
+            const bodyInput = document.getElementById('swal-body');
+            const previewDomain = document.getElementById('composePreviewDomainChip');
+            const previewTitle = document.getElementById('composePreviewTitle');
+            const previewBody = document.getElementById('composePreviewBody');
+            const coverContainer = document.getElementById('composePreviewCover');
+            const fileInput = document.getElementById('new-images-input');
+
+            const updateDomainChip = () => {
+                if (previewDomain) {
+                    previewDomain.textContent = domainSelect && domainSelect.value ? domainSelect.value : 'Select a domain';
+                }
+            };
+
+            const updateTitle = () => {
+                if (previewTitle) {
+                    previewTitle.textContent = subjectInput && subjectInput.value ? subjectInput.value : 'Your headline will appear here';
+                }
+            };
+
+            const updateBody = () => {
+                if (previewBody) {
+                    const html = bodyInput && bodyInput.value ? bodyInput.value : '<p>Start writing or generate an article to preview it instantly.</p>';
+                    previewBody.innerHTML = html;
+                }
+            };
+
+            const renderCoverImage = (src) => {
+                if (!coverContainer) return;
+                if (src) {
+                    coverContainer.innerHTML = `<img src="${escapeAttribute(src)}" alt="Article cover">`;
+                } else {
+                    coverContainer.innerHTML = '<div class="article-preview-placeholder"><i class="ri-image-line"></i><span>No cover image</span></div>';
+                }
+            };
+
+            if (domainSelect) {
+                if (selectedDomain && domainSelect.value !== selectedDomain) {
+                    domainSelect.value = selectedDomain;
+                }
+                updateDomainChip();
+                domainSelect.addEventListener('change', updateDomainChip);
+            }
+
+            if (subjectInput) {
+                updateTitle();
+                subjectInput.addEventListener('input', updateTitle);
+            }
+
+            if (bodyInput) {
+                updateBody();
+                bodyInput.addEventListener('input', updateBody);
+            }
+
+            renderCoverImage(coverImage);
+
+            if (fileInput) {
+                fileInput.addEventListener('change', event => {
+                    const file = event.target.files && event.target.files[0];
+                    if (!file) {
+                        renderCoverImage(coverImage);
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = e => renderCoverImage(e.target && e.target.result ? e.target.result : '');
+                    reader.readAsDataURL(file);
+                });
+            }
+        },
+        preConfirm: () => {
+            const form = document.getElementById('articleForm');
+            if (!form) return false;
+
+            const urlField = form.querySelector('[name="url"]');
+            const subjectField = form.querySelector('[name="subject"]');
+            const bodyField = form.querySelector('[name="body"]');
+
+            const url = urlField ? urlField.value.trim() : '';
+            const subject = subjectField ? subjectField.value.trim() : '';
+            const body = bodyField ? bodyField.value.trim() : '';
+
+            if (!url) {
+                Swal.showValidationMessage('Please select a verified domain.');
+                return false;
+            }
+            if (!subject) {
+                Swal.showValidationMessage('Please enter an article title.');
+                return false;
+            }
+            if (!body) {
+                Swal.showValidationMessage('Article content cannot be empty.');
+                return false;
+            }
+
+            return new FormData(form);
+        }
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            const formData = result.value;
+
+            Swal.fire({
+                title: isEdit ? 'Updating...' : 'Creating...',
+                didOpen: () => Swal.showLoading(),
+                allowOutsideClick: false
+            });
+
+            try {
+                let response;
+                if (isEdit) {
+                    response = await fetch(`${API_BASE}/edit-article/${articleId}`, {
+                        method: 'PUT',
+                        headers: { 'Session-Token': sessionToken },
+                        body: formData
+                    });
+                } else {
+                    response = await fetch(`${API_BASE}/add-article`, {
+                        method: 'POST',
+                        headers: { 'Session-Token': sessionToken },
+                        body: formData
+                    });
+                }
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error?.message || data.message || 'Operation failed');
+                }
+
+                Swal.close();
+                showToast(`Article ${isEdit ? 'updated' : 'created'} successfully!`, 'success');
+                loadArticles();
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Operation Failed',
+                    text: error.message
+                });
+            }
+        }
+    });
+}
+
+async function openArticleGenerator() {
+    const hasVerifiedDomain = (currentData.domains || []).some(domain => domain.verified);
+
+    const result = await Swal.fire({
+        title: 'Generate Article with AI',
+        html: `
+            <div class="article-compose-fieldset" style="gap:0.75rem;">
+                <label class="form-label" for="generator-subject">Subject</label>
+                <input type="text" id="generator-subject" class="form-input" placeholder="e.g. How to Build Your First Website">
+                <label style="display:flex; align-items:center; gap:0.5rem; margin-top:0.5rem; font-size:0.85rem;">
+                    <input type="checkbox" id="generator-auto">
+                    <span>Let SEOTIZE pick a trending subject for me</span>
+                </label>
+                <small style="color: var(--text-secondary); display:block; margin-top:0.5rem;">We deliver fully formatted HTML you can edit before publishing.</small>
+                ${!hasVerifiedDomain ? '<small style="color: var(--error); display:block; margin-top:0.5rem;">Tip: verify a domain to publish instantly after generation.</small>' : ''}
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '<i class="ri-sparkling-2-line"></i> Generate Article',
+        confirmButtonColor: 'var(--primary)',
+        focusConfirm: false,
+        width: 'min(480px, 95vw)',
+        preConfirm: () => {
+            const subjectInput = document.getElementById('generator-subject');
+            const autoCheckbox = document.getElementById('generator-auto');
+            const subject = subjectInput ? subjectInput.value.trim() : '';
+            const autoGenerate = !!autoCheckbox?.checked;
+
+            if (!subject && !autoGenerate) {
+                Swal.showValidationMessage('Enter a subject or enable auto generate.');
+                return false;
+            }
+
+            return { subject, autoGenerate };
+        }
+    });
+
+    if (!result.isConfirmed) {
         return;
     }
 
+    const { subject, autoGenerate } = result.value;
+
+    Swal.fire({
+        title: 'Generating article...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try {
+        const payload = autoGenerate ? { auto_generate: true } : { subject };
+        const aiResponse = await api('/generate-article', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+
+        Swal.close();
+
+        if (!aiResponse?.data) {
+            throw new Error('No article content returned.');
+        }
+
+        showGeneratedArticlePreview(aiResponse.data, { subjectFallback: subject });
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Generation failed',
+            text: error.message || 'Unable to generate an article right now.'
+        });
+    }
+}
+
+function showGeneratedArticlePreview(generated, options = {}) {
+    const subject = generated.subject || options.subjectFallback || 'AI Generated Article';
+    const title = generated.title || subject;
+    const body = generated.body || '<p>No content provided.</p>';
+    const imageUrl = generated.image_url || '';
+    const wordCount = stripHtml(body).split(/\s+/).filter(Boolean).length;
+    const readingTime = Math.max(1, Math.round(wordCount / 200));
+
+    const previewHtml = `
+        <div class="article-preview-modal">
+            <div class="article-preview-main">
+                <div class="article-preview-cover">
+                    ${imageUrl ? `<img src="${imageUrl}" alt="${subject}">` : '<div class="article-preview-placeholder"><i class="ri-image-line"></i><span>No cover image</span></div>'}
+                </div>
+                <div class="article-preview-content">
+                    <div class="article-preview-meta">
+                        <span class="article-chip"><i class="ri-sparkling-2-line"></i>AI Draft</span>
+                        <span class="article-chip"><i class="ri-time-line"></i>${readingTime} min read</span>
+                    </div>
+                    <h2 class="article-preview-title">${title}</h2>
+                    <div class="article-preview-body">${body}</div>
+                </div>
+            </div>
+            <div class="article-preview-sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Quick Actions</h3>
+                    </div>
+                    <div class="card-body" style="display:flex; flex-direction:column; gap:0.75rem; font-size:0.9rem;">
+                        <p style="margin:0; color: var(--text-secondary);">Use this draft to pre-fill the composer or copy the HTML directly.</p>
+                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                            <span class="article-chip"><i class="ri-bookmark-line"></i>${subject}</span>
+                            <span class="article-chip"><i class="ri-file-text-line"></i>${wordCount} words</span>
+                            <span class="article-chip"><i class="ri-image-line"></i>${imageUrl ? 'Includes hero image' : 'No hero image supplied'}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    Swal.fire({
+        title: 'AI article draft ready',
+        html: previewHtml,
+        width: 'min(900px, 95vw)',
+        showCancelButton: true,
+        showDenyButton: true,
+        confirmButtonText: '<i class="ri-add-line"></i> Use in Composer',
+        denyButtonText: '<i class="ri-file-copy-line"></i> Copy HTML',
+        cancelButtonText: 'Close',
+        focusConfirm: false
+    }).then(result => {
+        if (result.isConfirmed) {
+            showArticleModal(null, {
+                subject,
+                body,
+                image_url: imageUrl
+            });
+        } else if (result.isDenied) {
+            copyToClipboard(body);
+            showToast('Article HTML copied to clipboard', 'success');
+        }
+    });
+}
+
+function confirmArticleDeletion(articleId) {
+    Swal.fire({
+        title: 'Delete article?',
+        text: 'This action cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: 'var(--error)',
+        confirmButtonText: '<i class="ri-delete-bin-line"></i> Delete',
+        cancelButtonText: 'Cancel'
+    }).then(result => {
+        if (result.isConfirmed) {
+            deleteArticle(articleId);
+        }
+    });
+}
+
+async function deleteArticle(articleId) {
     try {
         await api(`/delete-article/${articleId}`, { method: 'DELETE' });
         showToast('Article deleted successfully', 'success');
