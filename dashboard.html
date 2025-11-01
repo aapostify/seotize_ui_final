@@ -6254,14 +6254,28 @@ async function showArticleModal(articleId = null) {
             font-size: 0.95rem;
         }
         
+        @media (max-width: 576px) {
+            .ai-generation-header {
+                padding: 1rem;
+            }
+            
+            .ai-generation-header h3 {
+                font-size: 1.25rem;
+            }
+            
+            .ai-generation-header p {
+                font-size: 0.85rem;
+            }
+        }
+        
         .generation-modes {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
             margin-bottom: 2rem;
         }
         
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .generation-modes {
                 grid-template-columns: 1fr;
             }
@@ -6292,6 +6306,19 @@ async function showArticleModal(articleId = null) {
             width: 100%;
             height: 4px;
             background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .generation-card.manual-card::before {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        }
+        
+        .generation-card.manual-card .generation-card-icon {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .generation-card.manual-card:hover {
+            border-color: #10b981;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
         }
         
         .generation-card-icon {
@@ -6329,15 +6356,84 @@ async function showArticleModal(articleId = null) {
             font-weight: 600;
         }
         
+        .generation-card.manual-card .btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
         .generation-card .btn:hover {
             transform: none;
             opacity: 0.9;
+        }
+        
+        @media (max-width: 576px) {
+            .generation-card {
+                padding: 1rem;
+            }
+            
+            .generation-card h4 {
+                font-size: 1rem;
+            }
+            
+            .generation-card p {
+                font-size: 0.85rem;
+            }
+            
+            .generation-card-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
         }
         
         .manual-input-section {
             margin-top: 1rem;
             padding-top: 1rem;
             border-top: 1px dashed var(--border);
+        }
+        
+        .manual-article-form {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border);
+        }
+        
+        .manual-article-form .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .manual-article-form .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+        
+        .manual-article-form .form-input,
+        .manual-article-form .form-select,
+        .manual-article-form .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        
+        .manual-article-form .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-family: monospace;
+        }
+        
+        .manual-article-form .form-input:focus,
+        .manual-article-form .form-select:focus,
+        .manual-article-form .form-textarea:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
         
         .generated-content {
@@ -6387,34 +6483,69 @@ async function showArticleModal(articleId = null) {
             grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
             margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border-radius: 12px;
+            border: 1px solid var(--border);
         }
         
         @media (max-width: 768px) {
             .usage-stats {
                 grid-template-columns: repeat(2, 1fr);
+                padding: 1rem;
+                gap: 0.75rem;
             }
         }
         
         .usage-stat {
             text-align: center;
-            padding: 1rem;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            border: 1px solid var(--border);
+            padding: 1.25rem 1rem;
+            background: var(--card);
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .usage-stat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .usage-stat:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .usage-stat:hover::before {
+            opacity: 1;
         }
         
         .usage-stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.25rem;
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
         }
         
         .usage-stat-label {
             font-size: 0.75rem;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
         
         .generated-image-preview {
@@ -6440,6 +6571,13 @@ async function showArticleModal(articleId = null) {
             font-size: 0.85rem;
         }
         
+        @media (max-width: 576px) {
+            .generated-image-info {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+        
         .generated-image-info-item {
             display: flex;
             flex-direction: column;
@@ -6460,26 +6598,34 @@ async function showArticleModal(articleId = null) {
             max-height: 300px;
             overflow-y: auto;
             padding: 1rem;
-            background: white;
+            background: var(--card);
             border-radius: 8px;
             border: 1px solid var(--border);
             font-family: Georgia, serif;
             line-height: 1.8;
+            color: var(--text);
         }
         
         .article-preview h1 {
             font-size: 1.5rem;
             margin-bottom: 1rem;
+            color: var(--text);
         }
         
         .article-preview h2 {
             font-size: 1.25rem;
             margin-top: 1.5rem;
             margin-bottom: 0.75rem;
+            color: var(--text);
         }
         
         .article-preview p {
             margin-bottom: 1rem;
+            color: var(--text);
+        }
+        
+        .article-preview * {
+            color: inherit !important;
         }
         
         .domain-selector {
@@ -6509,38 +6655,72 @@ async function showArticleModal(articleId = null) {
     <div class="ai-article-modal" id="articleModalContent">
         ${!isEdit ? `
         <div class="ai-generation-header">
-            <h3><i class="ri-magic-line"></i> AI-Powered Article Generation</h3>
-            <p>Create high-quality SEO articles with AI-generated content and images</p>
+            <h3><i class="ri-article-line"></i> Article Management</h3>
+            <p>Create SEO articles manually or use AI-powered generation with images</p>
         </div>
         
         <div class="generation-modes">
-            <!-- Manual Subject Input -->
-            <div class="generation-card" id="manualCard">
+            <!-- Manual Article Addition -->
+            <div class="generation-card manual-card" id="manualAddCard">
                 <div class="generation-card-icon">
-                    <i class="ri-edit-box-line"></i>
+                    <i class="ri-file-add-line"></i>
                 </div>
-                <h4>Custom Topic</h4>
-                <p>Enter your own subject and let AI create a comprehensive article with relevant images</p>
-                <div class="manual-input-section" style="display: none;" id="manualInputSection">
-                    <input type="text" id="manualSubject" class="form-input" placeholder="e.g., How to Build Your First Website" style="margin-bottom: 1rem; font-size: 0.95rem;">
-                    <button class="btn btn-primary" onclick="generateArticleManual()">
-                        <i class="ri-magic-line"></i> Generate Article
+                <h4>Manual Article</h4>
+                <p>Add your own article content directly with domain selection</p>
+                <div class="manual-article-form" style="display: none;" id="manualArticleForm">
+                    <div class="form-group">
+                        <label class="form-label"><i class="ri-global-line"></i> Domain</label>
+                        <select class="form-select" id="manualDomain" required>
+                            <option value="">Select a verified domain...</option>
+                            ${currentData.domains.filter(d => d.verified).map(domain => `
+                                <option value="${domain.domain}">${domain.domain}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="ri-text"></i> Article Title</label>
+                        <input type="text" id="manualArticleSubject" class="form-input" placeholder="e.g., Complete Guide to Web Development" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="ri-file-text-line"></i> Article Content (HTML)</label>
+                        <textarea id="manualArticleBody" class="form-textarea" placeholder="Enter your article content in HTML format..." required></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveManualArticle()">
+                        <i class="ri-save-line"></i> Save Article
                     </button>
                 </div>
-                <button class="btn btn-primary" onclick="showManualInput()">
-                    <i class="ri-arrow-right-line"></i> Choose This
+                <button class="btn btn-primary" onclick="showManualArticleForm()">
+                    <i class="ri-arrow-right-line"></i> Add Article
                 </button>
             </div>
             
-            <!-- Auto-Generate -->
-            <div class="generation-card" id="autoCard">
+            <!-- AI Custom Topic -->
+            <div class="generation-card" id="customAiCard">
+                <div class="generation-card-icon">
+                    <i class="ri-edit-box-line"></i>
+                </div>
+                <h4>AI Custom Topic</h4>
+                <p>Enter your subject and let AI create a comprehensive article with images</p>
+                <div class="manual-input-section" style="display: none;" id="customAiInputSection">
+                    <input type="text" id="customAiSubject" class="form-input" placeholder="e.g., How to Build Your First Website" style="margin-bottom: 1rem; font-size: 0.95rem;">
+                    <button class="btn btn-primary" onclick="generateArticleCustom()">
+                        <i class="ri-magic-line"></i> Generate Article
+                    </button>
+                </div>
+                <button class="btn btn-primary" onclick="showCustomAiInput()">
+                    <i class="ri-arrow-right-line"></i> Use AI
+                </button>
+            </div>
+            
+            <!-- AI Auto-Generate -->
+            <div class="generation-card" id="autoAiCard">
                 <div class="generation-card-icon">
                     <i class="ri-ai-generate"></i>
                 </div>
-                <h4>Auto-Generate</h4>
-                <p>Let AI choose a trending SEO topic and create a complete article automatically</p>
+                <h4>AI Auto-Generate</h4>
+                <p>Let AI automatically choose a trending topic and create a complete article</p>
                 <button class="btn btn-primary" onclick="generateArticleAuto()">
-                    <i class="ri-sparkling-line"></i> Auto-Generate Now
+                    <i class="ri-sparkling-line"></i> Auto-Generate
                 </button>
             </div>
         </div>
@@ -6593,15 +6773,73 @@ async function showArticleModal(articleId = null) {
             }
             
             // Setup global functions for the modal
-            window.showManualInput = () => {
-                const manualSection = document.getElementById('manualInputSection');
-                const chooseBtn = document.querySelector('#manualCard .btn:last-child');
-                manualSection.style.display = 'block';
-                chooseBtn.style.display = 'none';
+            window.showManualArticleForm = () => {
+                const manualForm = document.getElementById('manualArticleForm');
+                const chooseBtn = document.querySelector('#manualAddCard .btn:last-child');
+                if (manualForm && chooseBtn) {
+                    manualForm.style.display = 'block';
+                    chooseBtn.style.display = 'none';
+                }
             };
             
-            window.generateArticleManual = async () => {
-                const subject = document.getElementById('manualSubject').value.trim();
+            window.saveManualArticle = async () => {
+                const domain = document.getElementById('manualDomain').value.trim();
+                const subject = document.getElementById('manualArticleSubject').value.trim();
+                const body = document.getElementById('manualArticleBody').value.trim();
+                
+                if (!domain || !subject || !body) {
+                    showToast('Please fill in all fields', 'error');
+                    return;
+                }
+                
+                // Show loading
+                Swal.fire({
+                    title: 'Saving Article...',
+                    didOpen: () => Swal.showLoading(),
+                    allowOutsideClick: false
+                });
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('url', domain);
+                    formData.append('subject', subject);
+                    formData.append('body', body);
+                    
+                    const response = await fetch(`${API_BASE}/add-article`, {
+                        method: 'POST',
+                        headers: { 'Session-Token': sessionToken },
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.error?.message || data.message || 'Failed to save article');
+                    }
+                    
+                    Swal.close();
+                    showToast('Article saved successfully!', 'success');
+                    loadArticles();
+                    
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Save Failed',
+                        text: error.message
+                    });
+                }
+            };
+            
+            window.showCustomAiInput = () => {
+                const customSection = document.getElementById('customAiInputSection');
+                const chooseBtn = document.querySelector('#customAiCard .btn:last-child');
+                if (customSection && chooseBtn) {
+                    customSection.style.display = 'block';
+                    chooseBtn.style.display = 'none';
+                }
+            };
+            
+            window.generateArticleCustom = async () => {
+                const subject = document.getElementById('customAiSubject').value.trim();
                 if (!subject) {
                     showToast('Please enter a subject', 'error');
                     return;
