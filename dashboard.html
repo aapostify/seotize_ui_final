@@ -6199,11 +6199,13 @@ function initializeArticleCharts(countries, browsers, devices, sortedDates) {
 }
 
 // ADD THIS NEW, ALL-IN-ONE FUNCTION
+// Replace the existing showArticleModal function with this enhanced version
+
 async function showArticleModal(articleId = null) {
     const isEdit = !!articleId;
-    let articleData = null; // To store fetched article data for editing
+    let articleData = null;
 
-    // If editing, show a loading state first while we fetch the article
+    // If editing, fetch the article data first
     if (isEdit) {
         Swal.fire({
             title: 'Loading Article...',
@@ -6214,7 +6216,7 @@ async function showArticleModal(articleId = null) {
         try {
             const response = await api(`/dashboard/articles?article_id=${articleId}`);
             articleData = response.data.article;
-            Swal.close(); // Close the loading modal
+            Swal.close();
         } catch (error) {
             Swal.fire({
                 icon: 'error',
@@ -6222,162 +6224,910 @@ async function showArticleModal(articleId = null) {
                 text: error.message,
                 customClass: { popup: 'swal2-toast' }
             });
-            return; // Stop execution if fetching fails
+            return;
         }
     }
 
     const modalHtml = `
-    <form id="articleForm" enctype="multipart/form-data" style="text-align: left;">
-        <div class="form-group" style="margin-bottom: 1.25rem;">
-            <label class="form-label" style="font-size: 0.9rem;">Domain URL</label>
-            <select class="form-select" id="swal-url" name="url" required style="font-size: 0.9rem;">
-                <option value="">Select a verified domain...</option>
-                ${currentData.domains.filter(d => d.verified).map(domain => `
-                    <option value="${domain.domain}">${domain.domain}</option>
-                `).join('')}
-            </select>
-            ${currentData.domains.filter(d => d.verified).length === 0 ? `
-                <small style="color: var(--error); display: block; margin-top: 0.5rem; font-size: 0.8rem;">
-                    No verified domains found. Please add one first.
-                </small>
-            ` : ''}
-        </div>
-        <div class="form-group" style="margin-bottom: 1.25rem;">
-            <label class="form-label" style="font-size: 0.9rem;">Article Title</label>
-            <input type="text" id="swal-subject" class="form-input" name="subject" required placeholder="My Amazing Article Title" style="font-size: 0.9rem;">
-        </div>
-        <div class="form-group" style="margin-bottom: 1.25rem;">
-            <label class="form-label" style="font-size: 0.9rem;">Article Content (HTML)</label>
-            <textarea class="form-textarea" id="swal-body" name="body" required rows="10" placeholder="<h1>Title</h1><p>Content...</p>" style="font-size: 0.85rem; line-height: 1.5;"></textarea>
-        </div>
-        ${isEdit && articleData && articleData.images && articleData.images.length > 0 ? `
-        <div class="form-group" style="margin-bottom: 1.25rem;">
-            <label class="form-label" style="font-size: 0.9rem;">Current Images</label>
-            <div id="current-images-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.75rem; margin-top: 0.5rem;">
-                ${articleData.images.map((imgUrl, idx) => {
-                    // Handle both string URLs and object format
-                    const imageUrl = typeof imgUrl === 'string' ? imgUrl : (imgUrl.url || imgUrl);
-                    const imageId = typeof imgUrl === 'object' ? imgUrl.image_id : `image_${idx}`;
-                    return `
-                    <div class="image-preview-item" style="position: relative; border: 2px solid var(--border); border-radius: 8px; overflow: hidden; aspect-ratio: 1;">
-                        <img src="${imageUrl}" alt="Image ${idx + 1}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00NSA1MEg3NUw2MCA3NUw0NSA1MFoiIGZpbGw9IiNEMUQ1REIiLz4KPGNpcmNsZSBjeD0iNTIiIGN5PSI0MiIgcj0iNSIgZmlsbD0iI0QxRDVEQiIvPgo8L3N2Zz4=';">
-                        <label style="position: absolute; top: 4px; right: 4px; background: var(--error); color: white; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 0.7rem; display: flex; align-items: center; gap: 4px;">
-                            <input type="checkbox" name="delete_image_ids" value="${imageId}" style="margin: 0; cursor: pointer;">
-                            <i class="ri-delete-bin-line"></i>
-                        </label>
-                    </div>
-                    `;
-                }).join('')}
+    <style>
+        /* Enhanced Article Modal Styles */
+        .article-modal-container {
+            text-align: left;
+            max-width: 100%;
+        }
+        
+        .article-form-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .article-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .article-section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .ai-button-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .ai-btn {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .ai-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .ai-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .ai-btn i {
+            font-size: 1rem;
+        }
+        
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .image-gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 2px solid var(--border);
+            background: var(--bg-tertiary);
+            transition: var(--transition);
+        }
+        
+        .image-gallery-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .image-gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+            opacity: 0;
+            transition: var(--transition);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0.75rem;
+        }
+        
+        .image-gallery-item:hover .image-overlay {
+            opacity: 1;
+        }
+        
+        .image-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .image-action-btn {
+            padding: 0.4rem 0.6rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .image-action-btn.view {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .image-action-btn.delete {
+            background: var(--error);
+            color: white;
+        }
+        
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-align: center;
+            background: var(--bg-tertiary);
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: var(--card-hover);
+        }
+        
+        .upload-zone.dragover {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--text-tertiary);
+            margin-bottom: 1rem;
+        }
+        
+        .upload-text {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-subtext {
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+        }
+        
+        .preview-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .preview-image {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 2px solid var(--success);
+        }
+        
+        .preview-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .preview-remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--error);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.85rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .content-editor {
+            min-height: 300px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .char-counter {
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+            margin-top: 0.5rem;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .article-form-section {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .article-section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+            
+            .ai-button-group {
+                width: 100%;
+            }
+            
+            .ai-btn {
+                flex: 1;
+                justify-content: center;
+                font-size: 0.8rem;
+                padding: 0.45rem 0.75rem;
+            }
+            
+            .image-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 0.75rem;
+            }
+            
+            .upload-zone {
+                padding: 1.5rem 1rem;
+            }
+            
+            .upload-icon {
+                font-size: 2.5rem;
+            }
+            
+            .content-editor {
+                min-height: 250px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .article-form-section {
+                padding: 0.75rem;
+            }
+            
+            .ai-btn {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.6rem;
+            }
+            
+            .image-gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+
+    <div class="article-modal-container">
+        <form id="articleForm">
+            <!-- Domain Selection -->
+            <div class="article-form-section">
+                <div class="article-section-header">
+                    <h3 class="article-section-title">
+                        <i class="ri-global-line"></i>
+                        Domain Settings
+                    </h3>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Select Domain</label>
+                    <select class="form-select" id="article-url" name="url" required>
+                        <option value="">Choose a verified domain...</option>
+                        ${currentData.domains.filter(d => d.verified).map(domain => `
+                            <option value="${domain.domain}" ${articleData && articleData.url === domain.domain ? 'selected' : ''}>
+                                ${domain.domain}
+                            </option>
+                        `).join('')}
+                    </select>
+                    ${currentData.domains.filter(d => d.verified).length === 0 ? `
+                        <small style="color: var(--error); display: block; margin-top: 0.5rem;">
+                            No verified domains found. Please add and verify a domain first.
+                        </small>
+                    ` : ''}
+                </div>
             </div>
-            <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem; font-size: 0.75rem;">
-                Check images to delete them
-            </small>
-        </div>
-        ` : ''}
-        <div class="form-group" style="margin-bottom: 1.25rem;">
-            <label class="form-label" style="font-size: 0.9rem;">${isEdit ? 'Add New Images (Optional)' : 'Upload Images (Optional)'}</label>
-            <input type="file" id="new-images-input" class="form-input" name="image_data" multiple accept="image/*" style="font-size: 0.85rem;">
-            <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem; font-size: 0.75rem;">
-                Max 10 files, 5MB per file.
-            </small>
-        </div>
-        ${isEdit ? `
-        <div class="form-group" style="margin-bottom: 0.5rem;">
-            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.85rem;">
-                <input type="checkbox" id="replace-all-images" name="replace_all" value="true" style="cursor: pointer;">
-                <span>Replace all images with new uploads (deletes all current images)</span>
-            </label>
-        </div>
-        ` : ''}
-    </form>
+
+            <!-- Title Section with AI -->
+            <div class="article-form-section">
+                <div class="article-section-header">
+                    <h3 class="article-section-title">
+                        <i class="ri-text"></i>
+                        Article Title
+                    </h3>
+                    <div class="ai-button-group">
+                        <button type="button" class="ai-btn" id="ai-title-btn" onclick="generateAITitle()">
+                            <i class="ri-magic-line"></i>
+                            <span>AI Generate</span>
+                        </button>
+                        <button type="button" class="ai-btn" id="ai-improve-title-btn" onclick="improveTitle()">
+                            <i class="ri-quill-pen-line"></i>
+                            <span>Improve</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input 
+                        type="text" 
+                        id="article-subject" 
+                        class="form-input" 
+                        name="subject" 
+                        required 
+                        placeholder="Enter your article title here..."
+                        value="${articleData ? articleData.subject : ''}"
+                        maxlength="200"
+                    >
+                    <div class="char-counter">
+                        <span id="title-counter">0</span>/200 characters
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Section with AI -->
+            <div class="article-form-section">
+                <div class="article-section-header">
+                    <h3 class="article-section-title">
+                        <i class="ri-file-text-line"></i>
+                        Article Content
+                    </h3>
+                    <div class="ai-button-group">
+                        <button type="button" class="ai-btn" id="ai-content-btn" onclick="generateAIContent()">
+                            <i class="ri-magic-line"></i>
+                            <span>AI Generate</span>
+                        </button>
+                        <button type="button" class="ai-btn" id="ai-expand-btn" onclick="expandContent()">
+                            <i class="ri-expand-diagonal-line"></i>
+                            <span>Expand</span>
+                        </button>
+                        <button type="button" class="ai-btn" id="ai-seo-btn" onclick="optimizeForSEO()">
+                            <i class="ri-seo-line"></i>
+                            <span>SEO Optimize</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <textarea 
+                        class="form-textarea content-editor" 
+                        id="article-body" 
+                        name="body" 
+                        required 
+                        placeholder="<h1>Your Title</h1><p>Your content here...</p>"
+                    >${articleData ? articleData.body : ''}</textarea>
+                    <div class="char-counter">
+                        <span id="content-counter">0</span> characters
+                    </div>
+                </div>
+            </div>
+
+            <!-- Images Section -->
+            <div class="article-form-section">
+                <div class="article-section-header">
+                    <h3 class="article-section-title">
+                        <i class="ri-image-line"></i>
+                        Article Images
+                    </h3>
+                    <div class="ai-button-group">
+                        <button type="button" class="ai-btn" id="ai-image-btn" onclick="generateAIImage()">
+                            <i class="ri-magic-line"></i>
+                            <span>AI Generate</span>
+                        </button>
+                    </div>
+                </div>
+
+                ${isEdit && articleData && articleData.images && articleData.images.length > 0 ? `
+                    <div>
+                        <h4 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary);">
+                            Current Images (${articleData.images.length})
+                        </h4>
+                        <div class="image-gallery" id="current-images">
+                            ${articleData.images.map((imgUrl, idx) => {
+                                const imageUrl = typeof imgUrl === 'string' ? imgUrl : (imgUrl.url || imgUrl);
+                                const imageId = typeof imgUrl === 'object' ? imgUrl.image_id : `image_${idx}`;
+                                return `
+                                <div class="image-gallery-item" data-image-id="${imageId}">
+                                    <img src="${imageUrl}" alt="Image ${idx + 1}" loading="lazy">
+                                    <div class="image-overlay">
+                                        <div class="image-actions">
+                                            <button type="button" class="image-action-btn view" onclick="window.open('${imageUrl}', '_blank')">
+                                                <i class="ri-eye-line"></i>
+                                                View
+                                            </button>
+                                            <button type="button" class="image-action-btn delete" onclick="markImageForDeletion('${imageId}', this)">
+                                                <i class="ri-delete-bin-line"></i>
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <div style="margin-top: 1.5rem;">
+                    <h4 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary);">
+                        ${isEdit ? 'Add New Images' : 'Upload Images'}
+                    </h4>
+                    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+                        <input 
+                            type="file" 
+                            id="file-input" 
+                            name="image_data" 
+                            multiple 
+                            accept="image/*" 
+                            style="display: none;"
+                            onchange="handleFileSelect(event)"
+                        >
+                        <div class="upload-icon">
+                            <i class="ri-upload-cloud-line"></i>
+                        </div>
+                        <div class="upload-text">
+                            Drop images here or click to browse
+                        </div>
+                        <div class="upload-subtext">
+                            Supports: JPG, PNG, GIF, WebP • Max 10 files, 5MB each
+                        </div>
+                    </div>
+                    <div id="preview-container" class="preview-images"></div>
+                </div>
+            </div>
+
+            <input type="hidden" id="images-to-delete" name="delete_image_ids" value="">
+        </form>
+    </div>
     `;
 
     Swal.fire({
-        title: isEdit ? 'Edit Article' : 'Create New Article',
+        title: `<div style="text-align: left; font-size: 1.3rem; font-weight: 700;">${isEdit ? '<i class="ri-edit-line"></i> Edit Article' : '<i class="ri-add-line"></i> Create New Article'}</div>`,
         html: modalHtml,
         width: '95vw',
-        maxWidth: '900px',
         showCloseButton: true,
         showCancelButton: true,
-        confirmButtonText: isEdit ? 'Update Article' : 'Create Article',
+        confirmButtonText: `<i class="ri-save-line"></i> ${isEdit ? 'Update Article' : 'Create Article'}`,
+        cancelButtonText: 'Cancel',
         confirmButtonColor: 'var(--primary)',
-
+        customClass: {
+            popup: 'article-modal-enhanced',
+            htmlContainer: 'article-modal-content'
+        },
         didOpen: () => {
-            // If we are editing, pre-fill the form with the fetched data
-            if (isEdit && articleData) {
-                document.getElementById('swal-url').value = articleData.url;
-                document.getElementById('swal-subject').value = articleData.subject;
-                document.getElementById('swal-body').value = articleData.body;
-            }
+            initializeArticleModal(articleData);
         },
         preConfirm: () => {
-            const form = document.getElementById('articleForm');
-            const url = form.querySelector('[name="url"]').value;
-            const subject = form.querySelector('[name="subject"]').value;
-
-            if (!url) {
-                Swal.showValidationMessage('Please select a verified domain.');
-                return false;
-            }
-            if (!subject) {
-                Swal.showValidationMessage('Please enter an article title.');
-                return false;
-            }
-            return new FormData(form);
+            return validateAndSubmitArticle(isEdit, articleId);
         }
     }).then(async (result) => {
-        if (result.isConfirmed) {
-            const formData = result.value;
-            
-            Swal.fire({
-                title: isEdit ? 'Updating...' : 'Creating...',
-                didOpen: () => Swal.showLoading(),
-                allowOutsideClick: false,
-            });
-
-            try {
-                let response;
-                if (isEdit) {
-                    // For edit, use PUT method with article_id in URL
-                    response = await fetch(`${API_BASE}/edit-article/${articleId}`, {
-                        method: 'PUT',
-                        headers: { 'Session-Token': sessionToken },
-                        body: formData
-                    });
-                } else {
-                    // For create, use POST method
-                    response = await fetch(`${API_BASE}/add-article`, {
-                        method: 'POST',
-                        headers: { 'Session-Token': sessionToken },
-                        body: formData
-                    });
-                }
-
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.error?.message || data.message || 'Operation failed');
-                }
-
-                Swal.close();
-                showToast(`Article ${isEdit ? 'updated' : 'created'} successfully!`, 'success');
-                loadArticles();
-
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Operation Failed',
-                    text: error.message,
-                });
-            }
+        if (result.isConfirmed && result.value) {
+            await submitArticle(result.value, isEdit, articleId);
         }
     });
 }
 
-// ADD THIS SMALL HELPER FUNCTION BACK
-function editArticle(articleId) {
-    // This now simply closes the details modal and opens the new edit modal
-    Swal.close();
-    showArticleModal(articleId);
+// Initialize modal functionality
+function initializeArticleModal(articleData) {
+    // Character counters
+    const titleInput = document.getElementById('article-subject');
+    const bodyInput = document.getElementById('article-body');
+    const titleCounter = document.getElementById('title-counter');
+    const contentCounter = document.getElementById('content-counter');
+
+    function updateCounters() {
+        if (titleInput && titleCounter) {
+            titleCounter.textContent = titleInput.value.length;
+        }
+        if (bodyInput && contentCounter) {
+            contentCounter.textContent = bodyInput.value.length;
+        }
+    }
+
+    titleInput?.addEventListener('input', updateCounters);
+    bodyInput?.addEventListener('input', updateCounters);
+    updateCounters();
+
+    // Drag and drop
+    const uploadZone = document.getElementById('upload-zone');
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadZone?.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadZone?.addEventListener(eventName, () => uploadZone.classList.add('dragover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadZone?.addEventListener(eventName, () => uploadZone.classList.remove('dragover'), false);
+    });
+
+    uploadZone?.addEventListener('drop', handleDrop, false);
+}
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    handleFiles(files);
+}
+
+let selectedFiles = [];
+let imagesToDelete = [];
+
+function handleFileSelect(event) {
+    const files = event.target.files;
+    handleFiles(files);
+}
+
+function handleFiles(files) {
+    if (files.length + selectedFiles.length > 10) {
+        showToast('Maximum 10 images allowed', 'warning');
+        return;
+    }
+
+    Array.from(files).forEach(file => {
+        if (!file.type.startsWith('image/')) {
+            showToast(`${file.name} is not an image`, 'error');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            showToast(`${file.name} exceeds 5MB`, 'error');
+            return;
+        }
+        selectedFiles.push(file);
+        previewFile(file);
+    });
+}
+
+function previewFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const previewContainer = document.getElementById('preview-container');
+        const previewDiv = document.createElement('div');
+        previewDiv.className = 'preview-image';
+        previewDiv.innerHTML = `
+            <img src="${e.target.result}" alt="${file.name}">
+            <button type="button" class="preview-remove" onclick="removePreview(this, '${file.name}')">
+                <i class="ri-close-line"></i>
+            </button>
+        `;
+        previewContainer.appendChild(previewDiv);
+    };
+    reader.readAsDataURL(file);
+}
+
+function removePreview(button, fileName) {
+    selectedFiles = selectedFiles.filter(f => f.name !== fileName);
+    button.closest('.preview-image').remove();
+}
+
+function markImageForDeletion(imageId, button) {
+    const item = button.closest('.image-gallery-item');
+    if (item.style.opacity === '0.5') {
+        // Unmark
+        item.style.opacity = '1';
+        item.style.border = '2px solid var(--border)';
+        button.innerHTML = '<i class="ri-delete-bin-line"></i> Delete';
+        button.classList.remove('view');
+        button.classList.add('delete');
+        imagesToDelete = imagesToDelete.filter(id => id !== imageId);
+    } else {
+        // Mark for deletion
+        item.style.opacity = '0.5';
+        item.style.border = '2px solid var(--error)';
+        button.innerHTML = '<i class="ri-restart-line"></i> Undo';
+        button.classList.remove('delete');
+        button.classList.add('view');
+        imagesToDelete.push(imageId);
+    }
+    document.getElementById('images-to-delete').value = imagesToDelete.join(',');
+}
+
+// AI Functions
+async function generateAITitle() {
+    const btn = document.getElementById('ai-title-btn');
+    const input = document.getElementById('article-subject');
+    const body = document.getElementById('article-body').value;
+
+    if (!body) {
+        showToast('Please add some content first', 'warning');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ri-loader-4-line"></i> Generating...';
+
+    try {
+        const response = await api('https://api.seotize.net/generate-article', {
+            method: 'POST',
+            body: JSON.stringify({
+                subject: body.substring(0, 100),
+                auto_generate: true
+            })
+        });
+
+        if (response.data && response.data.title) {
+            input.value = response.data.title;
+            document.getElementById('title-counter').textContent = input.value.length;
+            showToast('Title generated successfully!', 'success');
+        }
+    } catch (error) {
+        showToast('Failed to generate title: ' + error.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ri-magic-line"></i> <span>AI Generate</span>';
+    }
+}
+
+async function improveTitle() {
+    const input = document.getElementById('article-subject');
+    const currentTitle = input.value.trim();
+
+    if (!currentTitle) {
+        showToast('Please enter a title first', 'warning');
+        return;
+    }
+
+    const btn = document.getElementById('ai-improve-title-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ri-loader-4-line"></i> Improving...';
+
+    try {
+        const response = await api('https://api.seotize.net/generate-article', {
+            method: 'POST',
+            body: JSON.stringify({
+                subject: `Improve this title: ${currentTitle}`,
+                auto_generate: true
+            })
+        });
+
+        if (response.data && response.data.title) {
+            input.value = response.data.title;
+            document.getElementById('title-counter').textContent = input.value.length;
+            showToast('Title improved!', 'success');
+        }
+    } catch (error) {
+        showToast('Failed to improve title: ' + error.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ri-quill-pen-line"></i> <span>Improve</span>';
+    }
+}
+
+async function generateAIContent() {
+    const btn = document.getElementById('ai-content-btn');
+    const subject = document.getElementById('article-subject').value.trim();
+    const body = document.getElementById('article-body');
+
+    if (!subject) {
+        showToast('Please enter a title first', 'warning');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ri-loader-4-line"></i> Generating...';
+
+    try {
+        const response = await api('https://api.seotize.net/generate-article', {
+            method: 'POST',
+            body: JSON.stringify({ subject })
+        });
+
+        if (response.data && response.data.body) {
+            body.value = response.data.body;
+            document.getElementById('content-counter').textContent = body.value.length;
+            showToast('Content generated successfully!', 'success');
+        }
+    } catch (error) {
+        showToast('Failed to generate content: ' + error.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ri-magic-line"></i> <span>AI Generate</span>';
+    }
+}
+
+async function expandContent() {
+    const body = document.getElementById('article-body');
+    const currentContent = body.value.trim();
+
+    if (!currentContent) {
+        showToast('Please add some content first', 'warning');
+        return;
+    }
+
+    const btn = document.getElementById('ai-expand-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ri-loader-4-line"></i> Expanding...';
+
+    try {
+        const response = await api('https://api.seotize.net/generate-article', {
+            method: 'POST',
+            body: JSON.stringify({
+                subject: `Expand this content: ${currentContent.substring(0, 200)}`
+            })
+        });
+
+        if (response.data && response.data.body) {
+            body.value = response.data.body;
+            document.getElementById('content-counter').textContent = body.value.length;
+            showToast('Content expanded!', 'success');
+        }
+    } catch (error) {
+        showToast('Failed to expand content: ' + error.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ri-expand-diagonal-line"></i> <span>Expand</span>';
+    }
+}
+
+async function optimizeForSEO() {
+    const body = document.getElementById('article-body');
+    const subject = document.getElementById('article-subject').value.trim();
+    const currentContent = body.value.trim();
+
+    if (!currentContent || !subject) {
+        showToast('Please add title and content first', 'warning');
+        return;
+    }
+
+    const btn = document.getElementById('ai-seo-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ri-loader-4-line"></i> Optimizing...';
+
+    try {
+        const response = await api('https://api.seotize.net/generate-article', {
+            method: 'POST',
+            body: JSON.stringify({
+                subject: `SEO optimize this article: ${subject}`
+            })
+        });
+
+        if (response.data && response.data.body) {
+            body.value = response.data.body;
+            document.getElementById('content-counter').textContent = body.value.length;
+            showToast('Content optimized for SEO!', 'success');
+        }
+    } catch (error) {
+        showToast('Failed to optimize content: ' + error.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ri-seo-line"></i> <span>SEO Optimize</span>';
+    }
+}
+
+async function generateAIImage() {
+    const btn = document.getElementById('ai-image-btn');
+    const subject = document.getElementById('article-subject').value.trim();
+
+    if (!subject) {
+        showToast('Please enter a title first', 'warning');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ri-loader-4-line"></i> Generating...';
+
+    try {
+        const response = await api('https://api.seotize.net/generate-article', {
+            method: 'POST',
+            body: JSON.stringify({ subject })
+        });
+
+        if (response.data && response.data.image && response.data.image.base64) {
+            const imageData = response.data.image;
+            const blob = await fetch(`data:${imageData.content_type};base64,${imageData.base64}`).then(r => r.blob());
+            const file = new File([blob], imageData.filename, { type: imageData.content_type });
+            
+            selectedFiles.push(file);
+            previewFile(file);
+            showToast('AI image generated successfully!', 'success');
+        }
+    } catch (error) {
+        showToast('Failed to generate image: ' + error.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ri-magic-line"></i> <span>AI Generate</span>';
+    }
+}
+
+function validateAndSubmitArticle(isEdit, articleId) {
+    const url = document.getElementById('article-url').value;
+    const subject = document.getElementById('article-subject').value.trim();
+    const body = document.getElementById('article-body').value.trim();
+
+    if (!url) {
+        Swal.showValidationMessage('Please select a domain');
+        return false;
+    }
+    if (!subject) {
+        Swal.showValidationMessage('Please enter a title');
+        return false;
+    }
+    if (!body) {
+        Swal.showValidationMessage('Please enter content');
+        return false;
+    }
+
+    const formData = new FormData();
+    formData.append('url', url);
+    formData.append('subject', subject);
+    formData.append('body', body);
+
+    if (imagesToDelete.length > 0) {
+        formData.append('delete_image_ids', imagesToDelete.join(','));
+    }
+
+    selectedFiles.forEach(file => {
+        formData.append('image_data', file);
+    });
+
+    return { formData, isEdit, articleId };
+}
+
+async function submitArticle(data, isEdit, articleId) {
+    Swal.fire({
+        title: isEdit ? 'Updating Article...' : 'Creating Article...',
+        didOpen: () => Swal.showLoading(),
+        allowOutsideClick: false,
+    });
+
+    try {
+        const endpoint = isEdit ? `/edit-article/${articleId}` : '/add-article';
+        const method = isEdit ? 'PUT' : 'POST';
+
+        const response = await fetch(`https://api.seotize.net${endpoint}`, {
+            method: method,
+            headers: { 'Session-Token': sessionToken },
+            body: data.formData
+        });
+
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error?.message || result.message || 'Operation failed');
+        }
+
+        Swal.close();
+        showToast(`Article ${isEdit ? 'updated' : 'created'} successfully!`, 'success');
+        
+        // Reset state
+        selectedFiles = [];
+        imagesToDelete = [];
+        
+        // Reload articles
+        loadArticles();
+
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Operation Failed',
+            text: error.message,
+            customClass: { popup: 'swal2-toast' }
+        });
+    }
 }
 
 
