@@ -6312,7 +6312,7 @@ async function showArticleModal(articleId = null) {
             grid-template-columns: 1fr 320px;
             gap: 1.25rem;
             text-align: left;
-            max-height: calc(85vh - 140px);
+            max-height: calc(90vh - 80px);
             overflow: hidden;
         }
         
@@ -6368,13 +6368,28 @@ async function showArticleModal(articleId = null) {
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 1rem;
+            padding: 0.85rem;
             transition: var(--transition);
         }
         
         .article-section:hover {
             border-color: var(--primary);
             box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+        }
+        
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-label i {
+            font-size: 1rem;
+            color: var(--primary);
         }
         
         .section-header {
@@ -6742,7 +6757,7 @@ async function showArticleModal(articleId = null) {
             .article-modal-wrapper {
                 grid-template-columns: 1fr;
                 gap: 1rem;
-                max-height: calc(80vh - 120px);
+                max-height: calc(85vh - 80px);
             }
             
             .article-sidebar {
@@ -6761,18 +6776,18 @@ async function showArticleModal(articleId = null) {
             }
             
             .form-textarea-enhanced {
-                min-height: 250px;
-                max-height: 350px;
+                min-height: 280px;
+                max-height: 400px;
             }
         }
         
         @media (max-width: 768px) {
             .article-modal-wrapper {
-                max-height: calc(75vh - 100px);
+                max-height: calc(85vh - 60px);
             }
             
             .article-section {
-                padding: 0.85rem;
+                padding: 0.75rem;
             }
             
             .section-header {
@@ -6818,17 +6833,52 @@ async function showArticleModal(articleId = null) {
             }
         }
         
-        /* Smaller action buttons for article modal */
+        /* Hide default action buttons */
         .article-modal-swal .swal2-actions {
-            padding: 0.5rem 0.75rem !important;
-            gap: 0.35rem !important;
-            margin-top: 0.5rem !important;
+            display: none !important;
         }
         
-        .article-modal-swal .swal2-actions button {
-            font-size: 0.8rem !important;
-            padding: 0.4rem 1rem !important;
-            min-width: auto !important;
+        /* Custom action buttons in sidebar */
+        .article-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .article-actions button {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .article-actions .btn-save {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .article-actions .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+        
+        .article-actions .btn-cancel {
+            background: var(--bg-tertiary);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .article-actions .btn-cancel:hover {
+            background: var(--bg-secondary);
+            border-color: var(--primary);
         }
     </style>
 
@@ -6837,9 +6887,7 @@ async function showArticleModal(articleId = null) {
             <form id="articleForm">
                 <!-- Domain -->
                 <div class="article-section">
-                    <div class="section-header">
-                        <h3 class="section-title"><i class="ri-global-line"></i> Domain</h3>
-                    </div>
+                    <label class="form-label"><i class="ri-global-line"></i> Domain</label>
                     <select class="form-select" id="article-url" name="url" required>
                         <option value="">Select domain...</option>
                         ${currentData.domains.filter(d => d.verified).map(d => `
@@ -6850,13 +6898,11 @@ async function showArticleModal(articleId = null) {
 
                 <!-- Title -->
                 <div class="article-section">
-                    <div class="section-header">
-                        <h3 class="section-title"><i class="ri-text"></i> Title</h3>
-                        <div class="ai-btn-group">
-                            <button type="button" class="ai-btn" id="ai-generate-all-btn">
-                                <i class="ri-magic-line"></i> <span>Generate All</span>
-                            </button>
-                        </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <label class="form-label" style="margin-bottom: 0;"><i class="ri-text"></i> Title</label>
+                        <button type="button" class="ai-btn" id="ai-generate-all-btn">
+                            <i class="ri-magic-line"></i> <span>Generate All</span>
+                        </button>
                     </div>
                     <input type="text" id="article-subject" class="form-input" name="subject" required 
                         placeholder="Enter article title..." value="${articleData ? articleData.subject : ''}" maxlength="200">
@@ -6865,13 +6911,11 @@ async function showArticleModal(articleId = null) {
 
                 <!-- Content -->
                 <div class="article-section">
-                    <div class="section-header">
-                        <h3 class="section-title"><i class="ri-file-text-line"></i> Content</h3>
-                        <div class="ai-btn-group">
-                            <button type="button" class="ai-btn" id="ai-content-btn">
-                                <i class="ri-magic-line"></i> <span>Generate</span>
-                            </button>
-                        </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <label class="form-label" style="margin-bottom: 0;"><i class="ri-file-text-line"></i> Content</label>
+                        <button type="button" class="ai-btn" id="ai-content-btn">
+                            <i class="ri-magic-line"></i> <span>Generate</span>
+                        </button>
                     </div>
                     
                     <div class="body-editor-container">
@@ -6979,6 +7023,18 @@ async function showArticleModal(articleId = null) {
                         <span class="usage-value" id="usage-percentage">0%</span>
                         <span class="usage-label">Available</span>
                     </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="article-section">
+                <div class="article-actions">
+                    <button type="button" class="btn-save" id="article-save-btn">
+                        <i class="ri-save-line"></i> ${isEdit ? 'Update Article' : 'Create Article'}
+                    </button>
+                    <button type="button" class="btn-cancel" id="article-cancel-btn">
+                        <i class="ri-close-line"></i> Cancel
+                    </button>
                 </div>
             </div>
         </div>
@@ -7348,6 +7404,16 @@ async function showArticleModal(articleId = null) {
                 document.getElementById('image-urls').value = window.imageUrls.join(',');
                 btn.closest('.preview-item').remove();
             };
+
+            // Custom save button handler
+            document.getElementById('article-save-btn').addEventListener('click', () => {
+                Swal.clickConfirm();
+            });
+
+            // Custom cancel button handler
+            document.getElementById('article-cancel-btn').addEventListener('click', () => {
+                Swal.clickCancel();
+            });
         },
         preConfirm: () => {
             const url = document.getElementById('article-url').value;
