@@ -6200,6 +6200,7 @@ function initializeArticleCharts(countries, browsers, devices, sortedDates) {
 
 // ADD THIS NEW, ALL-IN-ONE FUNCTION
 // REPLACE THE ENTIRE showArticleModal FUNCTION WITH THIS
+// REPLACE THE ENTIRE showArticleModal FUNCTION WITH THIS ENHANCED VERSION
 async function showArticleModal(articleId = null) {
     const isEdit = !!articleId;
     let articleData = null;
@@ -6294,6 +6295,8 @@ async function showArticleModal(articleId = null) {
             align-items: center;
             gap: 0.4rem;
             white-space: nowrap;
+            position: relative;
+            overflow: hidden;
         }
         
         .ai-btn:hover:not(:disabled) {
@@ -6302,12 +6305,82 @@ async function showArticleModal(articleId = null) {
         }
         
         .ai-btn:disabled {
-            opacity: 0.6;
+            opacity: 1;
             cursor: not-allowed;
+        }
+        
+        .ai-btn.generating {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            animation: gradientShift 2s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
         
         .ai-btn i {
             font-size: 0.9rem;
+        }
+        
+        .ai-btn.generating i {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .progress-dots {
+            display: inline-flex;
+            gap: 2px;
+            margin-left: 4px;
+        }
+        
+        .progress-dots span {
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+        
+        .progress-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .progress-dots span:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        .usage-stats {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+        }
+        
+        .usage-item {
+            text-align: center;
+        }
+        
+        .usage-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+        
+        .usage-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .image-gallery {
@@ -6445,6 +6518,35 @@ async function showArticleModal(articleId = null) {
             margin-top: 0.25rem;
         }
         
+        .generation-status {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            margin-top: 0.75rem;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .generation-status.active {
+            display: flex;
+        }
+        
+        .status-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        .status-text {
+            flex: 1;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
         /* Mobile Responsive */
         @media (max-width: 1024px) {
             .article-modal-wrapper {
@@ -6462,6 +6564,10 @@ async function showArticleModal(articleId = null) {
             
             .image-gallery {
                 grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .usage-stats {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
         
@@ -6492,6 +6598,11 @@ async function showArticleModal(articleId = null) {
             .preview-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+            
+            .usage-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
         }
     </style>
 
@@ -6516,8 +6627,8 @@ async function showArticleModal(articleId = null) {
                     <div class="section-header">
                         <h3 class="section-title"><i class="ri-text"></i> Title</h3>
                         <div class="ai-btn-group">
-                            <button type="button" class="ai-btn" onclick="window.aiGenerateTitle(event)">
-                                <i class="ri-magic-line"></i> Generate
+                            <button type="button" class="ai-btn" id="ai-title-btn" onclick="window.aiGenerateTitle(event)">
+                                <i class="ri-magic-line"></i> <span>Generate</span>
                             </button>
                         </div>
                     </div>
@@ -6531,14 +6642,44 @@ async function showArticleModal(articleId = null) {
                     <div class="section-header">
                         <h3 class="section-title"><i class="ri-file-text-line"></i> Content</h3>
                         <div class="ai-btn-group">
-                            <button type="button" class="ai-btn" onclick="window.aiGenerateContent(event)">
-                                <i class="ri-magic-line"></i> Generate
+                            <button type="button" class="ai-btn" id="ai-content-btn" onclick="window.aiGenerateContent(event)">
+                                <i class="ri-magic-line"></i> <span>Generate</span>
                             </button>
                         </div>
                     </div>
                     <textarea class="form-textarea" id="article-body" name="body" required 
                         placeholder="<h1>Title</h1><p>Content...</p>" rows="12" style="font-family: monospace; font-size: 0.85rem;">${articleData ? articleData.body : ''}</textarea>
                     <div class="char-count"><span id="body-count">0</span> characters</div>
+                    
+                    <div class="generation-status" id="gen-status">
+                        <div class="status-spinner"></div>
+                        <div class="status-text" id="gen-status-text">Generating content...</div>
+                    </div>
+                </div>
+
+                <!-- AI Usage Stats -->
+                <div class="article-section" id="usage-section" style="display: none;">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="ri-pie-chart-line"></i> AI Generation Usage</h3>
+                    </div>
+                    <div class="usage-stats">
+                        <div class="usage-item">
+                            <span class="usage-value" id="usage-used">0</span>
+                            <span class="usage-label">Used</span>
+                        </div>
+                        <div class="usage-item">
+                            <span class="usage-value" id="usage-limit">0</span>
+                            <span class="usage-label">Limit</span>
+                        </div>
+                        <div class="usage-item">
+                            <span class="usage-value" id="usage-remaining">0</span>
+                            <span class="usage-label">Remaining</span>
+                        </div>
+                        <div class="usage-item">
+                            <span class="usage-value" id="usage-percentage">0%</span>
+                            <span class="usage-label">Available</span>
+                        </div>
+                    </div>
                 </div>
 
                 <input type="hidden" id="delete-images" name="delete_image_ids" value="">
@@ -6578,8 +6719,8 @@ async function showArticleModal(articleId = null) {
             <div class="article-section">
                 <div class="section-header">
                     <h3 class="section-title"><i class="ri-upload-line"></i> ${isEdit ? 'Add New' : 'Upload'}</h3>
-                    <button type="button" class="ai-btn" onclick="window.aiGenerateImage(event)">
-                        <i class="ri-magic-line"></i> AI
+                    <button type="button" class="ai-btn" id="ai-image-btn" onclick="window.aiGenerateImage(event)">
+                        <i class="ri-magic-line"></i> <span>AI</span>
                     </button>
                 </div>
                 <div class="upload-area" id="upload-zone" onclick="document.getElementById('file-input').click()">
@@ -6664,6 +6805,29 @@ async function showArticleModal(articleId = null) {
                 fileInput.dispatchEvent(new Event('change'));
             });
 
+            // Helper: Update usage display
+            window.updateUsageDisplay = (usage) => {
+                if (!usage) return;
+                document.getElementById('usage-section').style.display = 'block';
+                document.getElementById('usage-used').textContent = usage.used || 0;
+                document.getElementById('usage-limit').textContent = usage.limit || 0;
+                document.getElementById('usage-remaining').textContent = usage.remaining || 0;
+                document.getElementById('usage-percentage').textContent = usage.percentage || '0%';
+            };
+
+            // Helper: Show status
+            window.showGenStatus = (text) => {
+                const status = document.getElementById('gen-status');
+                const statusText = document.getElementById('gen-status-text');
+                statusText.textContent = text;
+                status.classList.add('active');
+            };
+
+            // Helper: Hide status
+            window.hideGenStatus = () => {
+                document.getElementById('gen-status').classList.remove('active');
+            };
+
             // Global functions
             window.removePreview = (name, btn) => {
                 window.articleFiles = window.articleFiles.filter(f => f.name !== name);
@@ -6690,7 +6854,9 @@ async function showArticleModal(articleId = null) {
                 const body = document.getElementById('article-body').value.trim();
                 
                 btn.disabled = true;
-                btn.innerHTML = '<i class="ri-loader-4-line"></i> Generating...';
+                btn.classList.add('generating');
+                btn.innerHTML = '<i class="ri-loader-4-line"></i> <span>Generating</span><div class="progress-dots"><span></span><span></span><span></span></div>';
+                window.showGenStatus('Generating title with AI...');
                 
                 try {
                     const response = await fetch(`${API_BASE}/generate-article`, {
@@ -6703,10 +6869,47 @@ async function showArticleModal(articleId = null) {
                     });
                     
                     const data = await response.json();
-                    if (data.status === 'success' && data.data.title) {
-                        document.getElementById('article-subject').value = data.data.title;
-                        document.getElementById('title-count').textContent = data.data.title.length;
-                        showToast('Title generated!', 'success');
+                    if (data.status === 'success' && data.data) {
+                        // Set title
+                        if (data.data.title) {
+                            document.getElementById('article-subject').value = data.data.title;
+                            document.getElementById('title-count').textContent = data.data.title.length;
+                        }
+                        
+                        // Set body if available
+                        if (data.data.body && !body) {
+                            document.getElementById('article-body').value = data.data.body;
+                            document.getElementById('body-count').textContent = data.data.body.length;
+                        }
+                        
+                        // Handle image if available
+                        if (data.data.image && data.data.image.base64) {
+                            const img = data.data.image;
+                            const blob = await fetch(`data:${img.content_type};base64,${img.base64}`).then(r => r.blob());
+                            const file = new File([blob], img.filename, { type: img.content_type });
+                            window.articleFiles.push(file);
+                            
+                            const reader = new FileReader();
+                            reader.onload = (ev) => {
+                                const div = document.createElement('div');
+                                div.className = 'preview-item';
+                                div.innerHTML = `
+                                    <img src="${ev.target.result}" alt="${file.name}">
+                                    <button type="button" class="preview-remove" onclick="window.removePreview('${file.name}', this)">
+                                        <i class="ri-close-line"></i>
+                                    </button>
+                                `;
+                                document.getElementById('preview-container').appendChild(div);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                        
+                        // Update usage
+                        if (data.data.usage) {
+                            window.updateUsageDisplay(data.data.usage);
+                        }
+                        
+                        showToast('Content generated successfully!', 'success');
                     } else {
                         throw new Error(data.error?.message || 'Failed to generate');
                     }
@@ -6714,7 +6917,9 @@ async function showArticleModal(articleId = null) {
                     showToast(error.message, 'error');
                 } finally {
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="ri-magic-line"></i> Generate';
+                    btn.classList.remove('generating');
+                    btn.innerHTML = '<i class="ri-magic-line"></i> <span>Generate</span>';
+                    window.hideGenStatus();
                 }
             };
 
@@ -6729,7 +6934,9 @@ async function showArticleModal(articleId = null) {
                 }
                 
                 btn.disabled = true;
-                btn.innerHTML = '<i class="ri-loader-4-line"></i> Generating...';
+                btn.classList.add('generating');
+                btn.innerHTML = '<i class="ri-loader-4-line"></i> <span>Generating</span><div class="progress-dots"><span></span><span></span><span></span></div>';
+                window.showGenStatus('Creating article content with AI...');
                 
                 try {
                     const response = await fetch(`${API_BASE}/generate-article`, {
@@ -6742,10 +6949,47 @@ async function showArticleModal(articleId = null) {
                     });
                     
                     const data = await response.json();
-                    if (data.status === 'success' && data.data.body) {
-                        document.getElementById('article-body').value = data.data.body;
-                        document.getElementById('body-count').textContent = data.data.body.length;
-                        showToast('Content generated!', 'success');
+                    if (data.status === 'success' && data.data) {
+                        // Set title if returned
+                        if (data.data.title) {
+                            document.getElementById('article-subject').value = data.data.title;
+                            document.getElementById('title-count').textContent = data.data.title.length;
+                        }
+                        
+                        // Set body
+                        if (data.data.body) {
+                            document.getElementById('article-body').value = data.data.body;
+                            document.getElementById('body-count').textContent = data.data.body.length;
+                        }
+                        
+                        // Handle image if available
+                        if (data.data.image && data.data.image.base64) {
+                            const img = data.data.image;
+                            const blob = await fetch(`data:${img.content_type};base64,${img.base64}`).then(r => r.blob());
+                            const file = new File([blob], img.filename, { type: img.content_type });
+                            window.articleFiles.push(file);
+                            
+                            const reader = new FileReader();
+                            reader.onload = (ev) => {
+                                const div = document.createElement('div');
+                                div.className = 'preview-item';
+                                div.innerHTML = `
+                                    <img src="${ev.target.result}" alt="${file.name}">
+                                    <button type="button" class="preview-remove" onclick="window.removePreview('${file.name}', this)">
+                                        <i class="ri-close-line"></i>
+                                    </button>
+                                `;
+                                document.getElementById('preview-container').appendChild(div);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                        
+                        // Update usage
+                        if (data.data.usage) {
+                            window.updateUsageDisplay(data.data.usage);
+                        }
+                        
+                        showToast('Content generated successfully!', 'success');
                     } else {
                         throw new Error(data.error?.message || 'Failed to generate');
                     }
@@ -6753,7 +6997,9 @@ async function showArticleModal(articleId = null) {
                     showToast(error.message, 'error');
                 } finally {
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="ri-magic-line"></i> Generate';
+                    btn.classList.remove('generating');
+                    btn.innerHTML = '<i class="ri-magic-line"></i> <span>Generate</span>';
+                    window.hideGenStatus();
                 }
             };
 
@@ -6768,7 +7014,9 @@ async function showArticleModal(articleId = null) {
                 }
                 
                 btn.disabled = true;
-                btn.innerHTML = '<i class="ri-loader-4-line"></i> Generating...';
+                btn.classList.add('generating');
+                btn.innerHTML = '<i class="ri-loader-4-line"></i> <span>AI</span><div class="progress-dots"><span></span><span></span><span></span></div>';
+                window.showGenStatus('Generating AI image...');
                 
                 try {
                     const response = await fetch(`${API_BASE}/generate-article`, {
@@ -6781,26 +7029,35 @@ async function showArticleModal(articleId = null) {
                     });
                     
                     const data = await response.json();
-                    if (data.status === 'success' && data.data.image && data.data.image.base64) {
-                        const img = data.data.image;
-                        const blob = await fetch(`data:${img.content_type};base64,${img.base64}`).then(r => r.blob());
-                        const file = new File([blob], img.filename, { type: img.content_type });
-                        window.articleFiles.push(file);
+                    if (data.status === 'success' && data.data) {
+                        // Handle image
+                        if (data.data.image && data.data.image.base64) {
+                            const img = data.data.image;
+                            const blob = await fetch(`data:${img.content_type};base64,${img.base64}`).then(r => r.blob());
+                            const file = new File([blob], img.filename, { type: img.content_type });
+                            window.articleFiles.push(file);
+                            
+                            const reader = new FileReader();
+                            reader.onload = (ev) => {
+                                const div = document.createElement('div');
+                                div.className = 'preview-item';
+                                div.innerHTML = `
+                                    <img src="${ev.target.result}" alt="${file.name}">
+                                    <button type="button" class="preview-remove" onclick="window.removePreview('${file.name}', this)">
+                                        <i class="ri-close-line"></i>
+                                    </button>
+                                `;
+                                document.getElementById('preview-container').appendChild(div);
+                            };
+                            reader.readAsDataURL(file);
+                            
+                            showToast('AI image generated!', 'success');
+                        }
                         
-                        const reader = new FileReader();
-                        reader.onload = (ev) => {
-                            const div = document.createElement('div');
-                            div.className = 'preview-item';
-                            div.innerHTML = `
-                                <img src="${ev.target.result}" alt="${file.name}">
-                                <button type="button" class="preview-remove" onclick="window.removePreview('${file.name}', this)">
-                                    <i class="ri-close-line"></i>
-                                </button>
-                            `;
-                            document.getElementById('preview-container').appendChild(div);
-                        };
-                        reader.readAsDataURL(file);
-                        showToast('AI image generated!', 'success');
+                        // Update usage
+                        if (data.data.usage) {
+                            window.updateUsageDisplay(data.data.usage);
+                        }
                     } else {
                         throw new Error(data.error?.message || 'Failed to generate');
                     }
@@ -6808,7 +7065,9 @@ async function showArticleModal(articleId = null) {
                     showToast(error.message, 'error');
                 } finally {
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="ri-magic-line"></i> AI';
+                    btn.classList.remove('generating');
+                    btn.innerHTML = '<i class="ri-magic-line"></i> <span>AI</span>';
+                    window.hideGenStatus();
                 }
             };
         },
