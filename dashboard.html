@@ -6817,6 +6817,18 @@ async function showArticleModal(articleId = null) {
                 font-size: 0.8rem;
             }
         }
+        
+        /* Smaller action buttons for article modal */
+        .article-modal-swal .swal2-actions {
+            padding: 0.75rem 1rem !important;
+            gap: 0.5rem !important;
+        }
+        
+        .article-modal-swal .swal2-actions button {
+            font-size: 0.85rem !important;
+            padding: 0.5rem 1.25rem !important;
+            min-width: auto !important;
+        }
     </style>
 
     <div class="article-modal-wrapper">
@@ -6893,31 +6905,6 @@ async function showArticleModal(articleId = null) {
                     </div>
                 </div>
 
-                <!-- AI Usage Stats -->
-                <div class="article-section" id="usage-section" style="display: none;">
-                    <div class="section-header">
-                        <h3 class="section-title"><i class="ri-pie-chart-line"></i> AI Generation Usage</h3>
-                    </div>
-                    <div class="usage-stats">
-                        <div class="usage-item">
-                            <span class="usage-value" id="usage-used">0</span>
-                            <span class="usage-label">Used</span>
-                        </div>
-                        <div class="usage-item">
-                            <span class="usage-value" id="usage-limit">0</span>
-                            <span class="usage-label">Limit</span>
-                        </div>
-                        <div class="usage-item">
-                            <span class="usage-value" id="usage-remaining">0</span>
-                            <span class="usage-label">Remaining</span>
-                        </div>
-                        <div class="usage-item">
-                            <span class="usage-value" id="usage-percentage">0%</span>
-                            <span class="usage-label">Available</span>
-                        </div>
-                    </div>
-                </div>
-
                 <input type="hidden" id="delete-images" name="delete_image_ids" value="">
                 <input type="hidden" id="image-urls" name="image_urls" value="">
             </form>
@@ -6967,6 +6954,31 @@ async function showArticleModal(articleId = null) {
                     <div style="font-size: 0.65rem; color: var(--text-tertiary); margin-top: 0.25rem;">Max 10 files, 5MB each</div>
                 </div>
                 <div id="preview-container" class="preview-grid"></div>
+            </div>
+
+            <!-- AI Usage Stats -->
+            <div class="article-section" id="usage-section" style="display: block;">
+                <div class="section-header">
+                    <h3 class="section-title"><i class="ri-pie-chart-line"></i> AI Usage</h3>
+                </div>
+                <div class="usage-stats">
+                    <div class="usage-item">
+                        <span class="usage-value" id="usage-used">0</span>
+                        <span class="usage-label">Used</span>
+                    </div>
+                    <div class="usage-item">
+                        <span class="usage-value" id="usage-limit">0</span>
+                        <span class="usage-label">Limit</span>
+                    </div>
+                    <div class="usage-item">
+                        <span class="usage-value" id="usage-remaining">0</span>
+                        <span class="usage-label">Remaining</span>
+                    </div>
+                    <div class="usage-item">
+                        <span class="usage-value" id="usage-percentage">0%</span>
+                        <span class="usage-label">Available</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -7047,7 +7059,6 @@ async function showArticleModal(articleId = null) {
             // Helper: Update usage display
             window.updateUsageDisplay = (usage) => {
                 if (!usage) return;
-                document.getElementById('usage-section').style.display = 'block';
                 document.getElementById('usage-used').textContent = usage.used || 0;
                 document.getElementById('usage-limit').textContent = usage.limit || 0;
                 document.getElementById('usage-remaining').textContent = usage.remaining || 0;
