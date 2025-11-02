@@ -6323,6 +6323,15 @@ async function showArticleModal(articleId = null) {
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .article-main-content form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
         
         .article-main-content::-webkit-scrollbar {
@@ -6372,6 +6381,8 @@ async function showArticleModal(articleId = null) {
             border-radius: var(--radius-lg);
             padding: 0.85rem;
             transition: var(--transition);
+            width: 100%;
+            box-sizing: border-box;
         }
         
         .article-section:hover {
@@ -7327,7 +7338,7 @@ async function showArticleModal(articleId = null) {
                             div.dataset.isAiGenerated = 'true';
                             div.innerHTML = `
                                 <img src="${data.data.image_url}" alt="AI Generated">
-                                <button type="button" class="preview-refresh" onclick="window.refreshAiImage('${data.data.image_url}', this)" title="Regenerate image">
+                                <button type="button" class="preview-refresh" onclick="window.refreshAiImage('${data.data.image_url}', this)" title="Reload image">
                                     <i class="ri-refresh-line"></i>
                                 </button>
                                 <button type="button" class="preview-remove" onclick="window.removeUrlPreview('${data.data.image_url}', this)">
@@ -7401,7 +7412,7 @@ async function showArticleModal(articleId = null) {
                             div.dataset.isAiGenerated = 'true';
                             div.innerHTML = `
                                 <img src="${data.data.image_url}" alt="AI Generated">
-                                <button type="button" class="preview-refresh" onclick="window.refreshAiImage('${data.data.image_url}', this)" title="Regenerate image">
+                                <button type="button" class="preview-refresh" onclick="window.refreshAiImage('${data.data.image_url}', this)" title="Reload image">
                                     <i class="ri-refresh-line"></i>
                                 </button>
                                 <button type="button" class="preview-remove" onclick="window.removeUrlPreview('${data.data.image_url}', this)">
@@ -7475,7 +7486,7 @@ async function showArticleModal(articleId = null) {
                             div.dataset.isAiGenerated = 'true';
                             div.innerHTML = `
                                 <img src="${data.data.image_url}" alt="AI Generated">
-                                <button type="button" class="preview-refresh" onclick="window.refreshAiImage('${data.data.image_url}', this)" title="Regenerate image">
+                                <button type="button" class="preview-refresh" onclick="window.refreshAiImage('${data.data.image_url}', this)" title="Reload image">
                                     <i class="ri-refresh-line"></i>
                                 </button>
                                 <button type="button" class="preview-remove" onclick="window.removeUrlPreview('${data.data.image_url}', this)">
@@ -7511,65 +7522,38 @@ async function showArticleModal(articleId = null) {
                 btn.closest('.preview-item').remove();
             };
             
-            // Refresh AI-generated image
-            window.refreshAiImage = async (oldUrl, btn) => {
-                const subject = document.getElementById('article-subject').value.trim();
-                
-                if (!subject) {
-                    showToast('Enter a title first', 'warning');
-                    return;
-                }
-                
+            // Refresh AI-generated image (reload the same image)
+            window.refreshAiImage = (imageUrl, btn) => {
                 const previewItem = btn.closest('.preview-item');
+                const img = previewItem.querySelector('img');
                 const refreshIcon = btn.querySelector('i');
                 
                 btn.disabled = true;
                 refreshIcon.classList.add('loading');
                 
-                try {
-                    const response = await fetch(`${API_BASE}/generate-article`, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'Session-Token': sessionToken 
-                        },
-                        body: JSON.stringify({ subject })
-                    });
-                    
-                    const data = await response.json();
-                    if (data.status === 'success' && data.data && data.data.image_url) {
-                        // Replace old URL with new one
-                        const urlIndex = window.imageUrls.indexOf(oldUrl);
-                        if (urlIndex > -1) {
-                            window.imageUrls[urlIndex] = data.data.image_url;
-                            document.getElementById('image-urls').value = window.imageUrls.join(',');
-                        }
-                        
-                        // Update preview image
-                        const img = previewItem.querySelector('img');
-                        img.src = data.data.image_url;
-                        
-                        // Update button onclick handlers with new URL
-                        const refreshBtn = previewItem.querySelector('.preview-refresh');
-                        const removeBtn = previewItem.querySelector('.preview-remove');
-                        refreshBtn.setAttribute('onclick', `window.refreshAiImage('${data.data.image_url}', this)`);
-                        removeBtn.setAttribute('onclick', `window.removeUrlPreview('${data.data.image_url}', this)`);
-                        
-                        // Update usage
-                        if (data.data.usage) {
-                            window.updateUsageDisplay(data.data.usage);
-                        }
-                        
-                        showToast('Image regenerated successfully!', 'success');
-                    } else {
-                        throw new Error(data.error?.message || 'Failed to regenerate image');
-                    }
-                } catch (error) {
-                    showToast(error.message, 'error');
-                } finally {
+                // Add cache-busting parameter to force reload
+                const url = new URL(imageUrl);
+                url.searchParams.set('t', Date.now());
+                
+                // Create a temporary image to test if it loads
+                const tempImg = new Image();
+                
+                tempImg.onload = () => {
+                    // Image loaded successfully, update the main image
+                    img.src = url.toString();
+                    showToast('Image reloaded successfully!', 'success');
                     btn.disabled = false;
                     refreshIcon.classList.remove('loading');
-                }
+                };
+                
+                tempImg.onerror = () => {
+                    showToast('Failed to reload image', 'error');
+                    btn.disabled = false;
+                    refreshIcon.classList.remove('loading');
+                };
+                
+                // Start loading the image
+                tempImg.src = url.toString();
             };
 
             // Custom save button handler
