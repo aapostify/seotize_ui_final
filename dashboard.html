@@ -6313,7 +6313,7 @@ async function showArticleModal(articleId = null) {
             gap: 1.25rem;
             text-align: left;
             max-height: calc(90vh - 80px);
-            overflow: hidden;
+            overflow: auto;
         }
         
         .article-main-content {
@@ -6344,6 +6344,8 @@ async function showArticleModal(articleId = null) {
         }
         
         .article-sidebar {
+            display: flex;
+            flex-direction: column;
             overflow-y: auto;
             overflow-x: hidden;
             border-left: 2px solid var(--border);
@@ -6839,6 +6841,10 @@ async function showArticleModal(articleId = null) {
         }
         
         /* Custom action buttons in sidebar */
+        .article-section.action-buttons-wrapper {
+            margin-top: auto;
+        }
+        
         .article-actions {
             display: flex;
             flex-direction: column;
@@ -6885,17 +6891,6 @@ async function showArticleModal(articleId = null) {
     <div class="article-modal-wrapper">
         <div class="article-main-content">
             <form id="articleForm">
-                <!-- Domain -->
-                <div class="article-section">
-                    <label class="form-label"><i class="ri-global-line"></i> Domain</label>
-                    <select class="form-select" id="article-url" name="url" required>
-                        <option value="">Select domain...</option>
-                        ${currentData.domains.filter(d => d.verified).map(d => `
-                            <option value="${d.domain}" ${articleData && articleData.url === d.domain ? 'selected' : ''}>${d.domain}</option>
-                        `).join('')}
-                    </select>
-                </div>
-
                 <!-- Title -->
                 <div class="article-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
@@ -6956,6 +6951,17 @@ async function showArticleModal(articleId = null) {
         </div>
 
         <div class="article-sidebar">
+            <!-- Domain -->
+            <div class="article-section">
+                <label class="form-label"><i class="ri-global-line"></i> Domain</label>
+                <select class="form-select" id="article-url" name="url" required>
+                    <option value="">Select domain...</option>
+                    ${currentData.domains.filter(d => d.verified).map(d => `
+                        <option value="${d.domain}" ${articleData && articleData.url === d.domain ? 'selected' : ''}>${d.domain}</option>
+                    `).join('')}
+                </select>
+            </div>
+
             <!-- Current Images -->
             ${isEdit && articleData && articleData.images && articleData.images.length > 0 ? `
             <div class="article-section">
@@ -7027,7 +7033,7 @@ async function showArticleModal(articleId = null) {
             </div>
 
             <!-- Action Buttons -->
-            <div class="article-section">
+            <div class="article-section action-buttons-wrapper">
                 <div class="article-actions">
                     <button type="button" class="btn-save" id="article-save-btn">
                         <i class="ri-save-line"></i> ${isEdit ? 'Update Article' : 'Create Article'}
