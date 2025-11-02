@@ -3726,10 +3726,10 @@ async function loadArticles(page = 1) {
         <div class="mobilearticle2" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
             <h2 style="font-size: 1.5rem; font-weight: 700;">Articles & Domains</h2>
             <div style="display: flex; gap: 1rem;">
-                <button class="btn btn-secondary" onclick="showDomainModal()">
+                <button class="btn btn-secondary" id="addDomainBtn">
                     <i class="ri-global-line"></i> Add Domain
                 </button>
-                <button class="btn btn-primary" onclick="()">
+                <button class="btn btn-primary" id="createArticleBtn">
                     <i class="ri-add-line"></i> Create Article
                 </button>
             </div>
@@ -3752,10 +3752,10 @@ async function loadArticles(page = 1) {
                         </div>
                         <div class="domain-actions">
                             ${!domain.verified ? `
-                                <button class="btn btn-sm" onclick="showVerificationInstructions('${domain.domain}', '${domain.txt_record || ''}')">Instructions</button>
-                                <button class="btn btn-sm btn-primary" onclick="verifyDomain('${domain.domain}')">Verify Now</button>
+                                <button class="btn btn-sm btn-verify-instructions" data-domain="${domain.domain}" data-txt="${domain.txt_record || ''}">Instructions</button>
+                                <button class="btn btn-sm btn-primary btn-verify-domain" data-domain="${domain.domain}">Verify Now</button>
                             ` : ''}
-                            <button class="btn btn-sm btn-danger" onclick="confirmDeleteDomain('${domain.domain}')">
+                            <button class="btn btn-sm btn-danger btn-delete-domain" data-domain="${domain.domain}">
                                 <i class="ri-delete-bin-line"></i> Delete
                             </button>
                         </div>
@@ -3815,16 +3815,16 @@ async function loadArticles(page = 1) {
                                     </td>
                                     <td>
                                         <div style="display: flex; gap: 0.25rem;">
-                                            <button class="btn btn-sm" onclick="viewArticle('${article.article_id}')" title="View Details">
+                                            <button class="btn btn-sm btn-view-article" data-article-id="${article.article_id}" title="View Details">
                                                 <i class="ri-eye-line"></i>
                                             </button>
-                                            <button class="btn btn-sm" onclick="editArticle('${article.article_id}')" title="Edit">
+                                            <button class="btn btn-sm btn-edit-article" data-article-id="${article.article_id}" title="Edit">
                                                 <i class="ri-edit-line"></i>
                                             </button>
-                                            <button class="btn btn-sm" onclick="window.open('https://${article.url}', '_blank')" title="View Live">
+                                            <button class="btn btn-sm btn-view-live" data-url="${article.url}" title="View Live">
                                                 <i class="ri-external-link-line"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-danger" onclick="if(confirm('Are you sure you want to delete this article? This action cannot be undone.')) deleteArticle('${article.article_id}')" title="Delete">
+                                            <button class="btn btn-sm btn-danger btn-delete-article" data-article-id="${article.article_id}" title="Delete">
                                                 <i class="ri-delete-bin-line"></i>
                                             </button>
                                         </div>
@@ -3845,7 +3845,7 @@ async function loadArticles(page = 1) {
                         });
 
                         return `
-                        <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; cursor: pointer; transition: var(--transition);" onclick="viewArticle('${article.article_id}')" ontouchstart="this.style.background='var(--card-hover)'" ontouchend="this.style.background='var(--bg-secondary)'">
+                        <div class="mobile-article-card" data-article-id="${article.article_id}" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; cursor: pointer; transition: var(--transition);">
 
                             <!-- Header: Title and Domain -->
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
@@ -3880,16 +3880,16 @@ async function loadArticles(page = 1) {
 
                             <!-- Actions -->
                             <div style="display: flex; gap: 0.5rem;">
-                                <button class="btn btn-sm" onclick="event.stopPropagation(); viewArticle('${article.article_id}')" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                                <button class="btn btn-sm btn-view-article-mobile" data-article-id="${article.article_id}" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
                                     <i class="ri-eye-line"></i> Details
                                 </button>
-                                <button class="btn btn-sm" onclick="event.stopPropagation(); editArticle('${article.article_id}')" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                                <button class="btn btn-sm btn-edit-article-mobile" data-article-id="${article.article_id}" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
                                     <i class="ri-edit-line"></i> Edit
                                 </button>
-                                <button class="btn btn-sm" onclick="event.stopPropagation(); window.open('https://${article.url}', '_blank')" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                                <button class="btn btn-sm btn-view-live-mobile" data-url="${article.url}" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
                                     <i class="ri-external-link-line"></i> Live
                                 </button>
-                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); if(confirm('Are you sure you want to delete this article? This action cannot be undone.')) deleteArticle('${article.article_id}')" style="padding: 0.4rem 0.6rem; font-size: 0.75rem;">
+                                <button class="btn btn-sm btn-danger btn-delete-article-mobile" data-article-id="${article.article_id}" style="padding: 0.4rem 0.6rem; font-size: 0.75rem;">
                                     <i class="ri-delete-bin-line"></i>
                                 </button>
                             </div>
@@ -3911,12 +3911,92 @@ async function loadArticles(page = 1) {
                         </div>
                         <div class="empty-state-title">No Articles Published</div>
                         <div class="empty-state-description">Create your first article to start publishing content</div>
-                        <button class="btn btn-primary" onclick="()">Create First Article</button>
+                        <button class="btn btn-primary" id="emptyStateCreateBtn">Create First Article</button>
                     </div>
                 ` : generatePagination('articles', loadArticles)}
             </div>
         </div>
         `;
+
+        // Add event listeners after DOM is updated
+        document.getElementById('addDomainBtn')?.addEventListener('click', showDomainModal);
+        document.getElementById('createArticleBtn')?.addEventListener('click', () => showArticleModal());
+        document.getElementById('emptyStateCreateBtn')?.addEventListener('click', () => showArticleModal());
+
+        // Domain action buttons
+        document.querySelectorAll('.btn-verify-instructions').forEach(btn => {
+            btn.addEventListener('click', () => {
+                showVerificationInstructions(btn.dataset.domain, btn.dataset.txt);
+            });
+        });
+
+        document.querySelectorAll('.btn-verify-domain').forEach(btn => {
+            btn.addEventListener('click', () => verifyDomain(btn.dataset.domain));
+        });
+
+        document.querySelectorAll('.btn-delete-domain').forEach(btn => {
+            btn.addEventListener('click', () => confirmDeleteDomain(btn.dataset.domain));
+        });
+
+        // Article action buttons - Desktop
+        document.querySelectorAll('.btn-view-article').forEach(btn => {
+            btn.addEventListener('click', () => viewArticle(btn.dataset.articleId));
+        });
+
+        document.querySelectorAll('.btn-edit-article').forEach(btn => {
+            btn.addEventListener('click', () => showArticleModal(btn.dataset.articleId));
+        });
+
+        document.querySelectorAll('.btn-view-live').forEach(btn => {
+            btn.addEventListener('click', () => window.open(`https://${btn.dataset.url}`, '_blank'));
+        });
+
+        document.querySelectorAll('.btn-delete-article').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
+                    deleteArticle(btn.dataset.articleId);
+                }
+            });
+        });
+
+        // Article action buttons - Mobile
+        document.querySelectorAll('.mobile-article-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('button') && !e.target.closest('a')) {
+                    viewArticle(card.dataset.articleId);
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-view-article-mobile').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                viewArticle(btn.dataset.articleId);
+            });
+        });
+
+        document.querySelectorAll('.btn-edit-article-mobile').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showArticleModal(btn.dataset.articleId);
+            });
+        });
+
+        document.querySelectorAll('.btn-view-live-mobile').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.open(`https://${btn.dataset.url}`, '_blank');
+            });
+        });
+
+        document.querySelectorAll('.btn-delete-article-mobile').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
+                    deleteArticle(btn.dataset.articleId);
+                }
+            });
+        });
 
     } catch (error) {
         console.error('Articles error:', error);
