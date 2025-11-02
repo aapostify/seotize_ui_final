@@ -6229,55 +6229,95 @@ async function showArticleModal(articleId = null) {
     <style>
         .article-modal-wrapper {
             display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 1.5rem;
+            grid-template-columns: 1fr 320px;
+            gap: 1.25rem;
             text-align: left;
-            max-height: 80vh;
+            max-height: calc(85vh - 140px);
             overflow: hidden;
         }
         
         .article-main-content {
             overflow-y: auto;
+            overflow-x: hidden;
             padding-right: 0.5rem;
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
         
+        .article-main-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .article-main-content::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+        
+        .article-main-content::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        
+        .article-main-content::-webkit-scrollbar-thumb:hover {
+            background: var(--text-tertiary);
+        }
+        
         .article-sidebar {
             overflow-y: auto;
+            overflow-x: hidden;
             border-left: 2px solid var(--border);
-            padding-left: 1.5rem;
+            padding-left: 1.25rem;
+        }
+        
+        .article-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .article-sidebar::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+        
+        .article-sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
         }
         
         .article-section {
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 1.25rem;
+            padding: 1rem;
             transition: var(--transition);
         }
         
         .article-section:hover {
             border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
         }
         
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             padding-bottom: 0.75rem;
             border-bottom: 2px solid var(--border);
         }
         
         .section-title {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: var(--text);
             display: flex;
             align-items: center;
             gap: 0.5rem;
+        }
+        
+        .section-title i {
+            font-size: 1.1rem;
+            color: var(--primary);
         }
         
         .ai-btn-group {
@@ -6287,21 +6327,19 @@ async function showArticleModal(articleId = null) {
         }
         
         .ai-btn {
-            padding: 0.4rem 0.8rem;
+            padding: 0.35rem 0.75rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: var(--radius);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.35rem;
             white-space: nowrap;
-            position: relative;
-            overflow: hidden;
         }
         
         .ai-btn:hover:not(:disabled) {
@@ -6310,7 +6348,7 @@ async function showArticleModal(articleId = null) {
         }
         
         .ai-btn:disabled {
-            opacity: 1;
+            opacity: 0.7;
             cursor: not-allowed;
         }
         
@@ -6326,7 +6364,7 @@ async function showArticleModal(articleId = null) {
         }
         
         .ai-btn i {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         .ai-btn.generating i {
@@ -6345,8 +6383,8 @@ async function showArticleModal(articleId = null) {
         }
         
         .progress-dots span {
-            width: 4px;
-            height: 4px;
+            width: 3px;
+            height: 3px;
             background: white;
             border-radius: 50%;
             animation: bounce 1.4s ease-in-out infinite;
@@ -6364,34 +6402,33 @@ async function showArticleModal(articleId = null) {
             background: var(--bg-tertiary);
             border: 2px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 1rem;
-            min-height: 450px;
+            padding: 0.75rem;
             display: flex;
             flex-direction: column;
+            gap: 0.75rem;
         }
         
         .editor-toolbar {
             display: flex;
-            gap: 0.5rem;
-            padding: 0.75rem;
+            gap: 0.35rem;
+            padding: 0.5rem;
             background: var(--card);
             border-radius: var(--radius);
-            margin-bottom: 1rem;
             flex-wrap: wrap;
         }
         
         .editor-btn {
-            padding: 0.4rem 0.8rem;
+            padding: 0.35rem 0.65rem;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text);
             transition: var(--transition);
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.25rem;
         }
         
         .editor-btn:hover {
@@ -6400,19 +6437,23 @@ async function showArticleModal(articleId = null) {
             border-color: var(--primary);
         }
         
+        .editor-btn i {
+            font-size: 0.85rem;
+        }
+        
         .form-textarea-enhanced {
             width: 100%;
-            flex: 1;
-            padding: 1rem;
+            min-height: 300px;
+            max-height: 400px;
+            padding: 0.75rem;
             border: 1px solid var(--border);
             border-radius: var(--radius);
             background: var(--input-bg);
             color: var(--text);
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
+            font-size: 0.85rem;
+            line-height: 1.5;
             resize: vertical;
-            min-height: 350px;
         }
         
         .form-textarea-enhanced:focus {
@@ -6425,7 +6466,7 @@ async function showArticleModal(articleId = null) {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
             border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: var(--radius-lg);
-            padding: 1rem;
+            padding: 0.85rem;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 0.75rem;
@@ -6436,7 +6477,7 @@ async function showArticleModal(articleId = null) {
         }
         
         .usage-value {
-            font-size: 1.5rem;
+            font-size: 1.35rem;
             font-weight: 700;
             color: var(--primary);
             display: block;
@@ -6444,7 +6485,7 @@ async function showArticleModal(articleId = null) {
         }
         
         .usage-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -6453,7 +6494,7 @@ async function showArticleModal(articleId = null) {
         .image-gallery {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
+            gap: 0.65rem;
         }
         
         .image-item {
@@ -6500,11 +6541,11 @@ async function showArticleModal(articleId = null) {
         }
         
         .img-btn {
-            padding: 0.4rem 0.6rem;
+            padding: 0.35rem 0.55rem;
             border: none;
             border-radius: var(--radius-sm);
             cursor: pointer;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: white;
             display: flex;
             align-items: center;
@@ -6517,7 +6558,7 @@ async function showArticleModal(articleId = null) {
         .upload-area {
             border: 2px dashed var(--border);
             border-radius: var(--radius);
-            padding: 1.5rem;
+            padding: 1.25rem;
             text-align: center;
             background: var(--bg-tertiary);
             cursor: pointer;
@@ -6535,16 +6576,16 @@ async function showArticleModal(articleId = null) {
         }
         
         .upload-icon {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: var(--text-tertiary);
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
         
         .preview-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 0.5rem;
-            margin-top: 0.75rem;
+            margin-top: 0.65rem;
         }
         
         .preview-item {
@@ -6575,25 +6616,25 @@ async function showArticleModal(articleId = null) {
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
         
         .char-count {
             text-align: right;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-tertiary);
-            margin-top: 0.5rem;
+            margin-top: 0.35rem;
         }
         
         .generation-status {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
             border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: var(--radius);
-            padding: 1rem;
-            margin-top: 1rem;
+            padding: 0.85rem;
+            margin-top: 0.75rem;
             display: none;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.65rem;
         }
         
         .generation-status.active {
@@ -6601,8 +6642,8 @@ async function showArticleModal(articleId = null) {
         }
         
         .status-spinner {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 3px solid var(--border);
             border-top-color: var(--primary);
             border-radius: 50%;
@@ -6611,7 +6652,7 @@ async function showArticleModal(articleId = null) {
         
         .status-text {
             flex: 1;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text);
             font-weight: 500;
         }
@@ -6621,7 +6662,7 @@ async function showArticleModal(articleId = null) {
             .article-modal-wrapper {
                 grid-template-columns: 1fr;
                 gap: 1rem;
-                max-height: 70vh;
+                max-height: calc(80vh - 120px);
             }
             
             .article-sidebar {
@@ -6639,24 +6680,25 @@ async function showArticleModal(articleId = null) {
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .body-editor-container {
-                min-height: 350px;
-            }
-            
             .form-textarea-enhanced {
-                min-height: 280px;
+                min-height: 250px;
+                max-height: 350px;
             }
         }
         
         @media (max-width: 768px) {
+            .article-modal-wrapper {
+                max-height: calc(75vh - 100px);
+            }
+            
             .article-section {
-                padding: 1rem;
+                padding: 0.85rem;
             }
             
             .section-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 0.75rem;
+                gap: 0.65rem;
             }
             
             .ai-btn-group {
@@ -6666,8 +6708,8 @@ async function showArticleModal(articleId = null) {
             .ai-btn {
                 flex: 1;
                 justify-content: center;
-                font-size: 0.75rem;
-                padding: 0.35rem 0.6rem;
+                font-size: 0.7rem;
+                padding: 0.3rem 0.55rem;
             }
             
             .image-gallery,
@@ -6681,12 +6723,18 @@ async function showArticleModal(articleId = null) {
             }
             
             .editor-toolbar {
-                padding: 0.5rem;
+                padding: 0.4rem;
             }
             
             .editor-btn {
-                padding: 0.3rem 0.6rem;
-                font-size: 0.75rem;
+                padding: 0.3rem 0.5rem;
+                font-size: 0.7rem;
+            }
+            
+            .form-textarea-enhanced {
+                min-height: 220px;
+                max-height: 300px;
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -6712,7 +6760,7 @@ async function showArticleModal(articleId = null) {
                     <div class="section-header">
                         <h3 class="section-title"><i class="ri-text"></i> Title</h3>
                         <div class="ai-btn-group">
-                            <button type="button" class="ai-btn" id="ai-generate-all-btn" onclick="window.aiGenerateAll(event)">
+                            <button type="button" class="ai-btn" id="ai-generate-all-btn">
                                 <i class="ri-magic-line"></i> <span>Generate All</span>
                             </button>
                         </div>
@@ -6727,7 +6775,7 @@ async function showArticleModal(articleId = null) {
                     <div class="section-header">
                         <h3 class="section-title"><i class="ri-file-text-line"></i> Content</h3>
                         <div class="ai-btn-group">
-                            <button type="button" class="ai-btn" id="ai-content-btn" onclick="window.aiGenerateContent(event)">
+                            <button type="button" class="ai-btn" id="ai-content-btn">
                                 <i class="ri-magic-line"></i> <span>Generate</span>
                             </button>
                         </div>
@@ -6735,22 +6783,22 @@ async function showArticleModal(articleId = null) {
                     
                     <div class="body-editor-container">
                         <div class="editor-toolbar">
-                            <button type="button" class="editor-btn" onclick="window.insertTag('<h1></h1>')">
+                            <button type="button" class="editor-btn" data-tag="h1">
                                 <i class="ri-h-1"></i> H1
                             </button>
-                            <button type="button" class="editor-btn" onclick="window.insertTag('<h2></h2>')">
+                            <button type="button" class="editor-btn" data-tag="h2">
                                 <i class="ri-h-2"></i> H2
                             </button>
-                            <button type="button" class="editor-btn" onclick="window.insertTag('<p></p>')">
+                            <button type="button" class="editor-btn" data-tag="p">
                                 <i class="ri-paragraph"></i> P
                             </button>
-                            <button type="button" class="editor-btn" onclick="window.insertTag('<strong></strong>')">
+                            <button type="button" class="editor-btn" data-tag="strong">
                                 <i class="ri-bold"></i> Bold
                             </button>
-                            <button type="button" class="editor-btn" onclick="window.insertTag('<em></em>')">
+                            <button type="button" class="editor-btn" data-tag="em">
                                 <i class="ri-italic"></i> Italic
                             </button>
-                            <button type="button" class="editor-btn" onclick="window.insertTag('<a href=\\'\\\'></a>')">
+                            <button type="button" class="editor-btn" data-tag="a">
                                 <i class="ri-link"></i> Link
                             </button>
                         </div>
@@ -6805,7 +6853,7 @@ async function showArticleModal(articleId = null) {
                 <div class="image-gallery" id="current-images">
                     ${articleData.images.map((img, i) => {
                         const url = typeof img === 'string' ? img : (img.url || img);
-                        const id = typeof img === 'object' ? img.image_id : 'img_' + i;
+                        const id = typeof img === 'object' ? (img.id || img.image_id || 'img_' + i) : 'img_' + i;
                         return `
                         <div class="image-item" data-id="${id}">
                             <img src="${url}" alt="Image ${i + 1}" loading="lazy">
@@ -6828,15 +6876,15 @@ async function showArticleModal(articleId = null) {
             <div class="article-section">
                 <div class="section-header">
                     <h3 class="section-title"><i class="ri-upload-line"></i> ${isEdit ? 'Add New' : 'Upload'}</h3>
-                    <button type="button" class="ai-btn" id="ai-image-btn" onclick="window.aiGenerateImage(event)">
+                    <button type="button" class="ai-btn" id="ai-image-btn">
                         <i class="ri-magic-line"></i> <span>AI</span>
                     </button>
                 </div>
                 <div class="upload-area" id="upload-zone" onclick="document.getElementById('file-input').click()">
                     <input type="file" id="file-input" name="image_data" multiple accept="image/*" style="display:none;">
                     <div class="upload-icon"><i class="ri-upload-cloud-line"></i></div>
-                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Click or drop images</div>
-                    <div style="font-size: 0.7rem; color: var(--text-tertiary); margin-top: 0.25rem;">Max 10 files, 5MB each</div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Click or drop images</div>
+                    <div style="font-size: 0.65rem; color: var(--text-tertiary); margin-top: 0.25rem;">Max 10 files, 5MB each</div>
                 </div>
                 <div id="preview-container" class="preview-grid"></div>
             </div>
@@ -6845,7 +6893,7 @@ async function showArticleModal(articleId = null) {
     `;
 
     Swal.fire({
-        title: `<div style="font-size: 1.2rem; font-weight: 700;">${isEdit ? '<i class="ri-edit-line"></i> Edit Article' : '<i class="ri-add-line"></i> Create Article'}</div>`,
+        title: `<div style="font-size: 1.15rem; font-weight: 700;">${isEdit ? '<i class="ri-edit-line"></i> Edit Article' : '<i class="ri-add-line"></i> Create Article'}</div>`,
         html: modalHtml,
         width: '95vw',
         showCloseButton: true,
@@ -6958,28 +7006,38 @@ async function showArticleModal(articleId = null) {
                 document.getElementById('delete-images').value = window.deleteImageIds.join(',');
             };
 
-            // Editor functions
-            window.insertTag = (tag) => {
-                const textarea = document.getElementById('article-body');
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                const text = textarea.value;
-                const selectedText = text.substring(start, end);
-                
-                const openTag = tag.split('</')[0];
-                const closeTag = '</' + tag.split('</')[1];
-                
-                const newText = text.substring(0, start) + openTag + selectedText + closeTag + text.substring(end);
-                textarea.value = newText;
-                textarea.focus();
-                
-                const cursorPos = start + openTag.length + selectedText.length;
-                textarea.setSelectionRange(cursorPos, cursorPos);
-                document.getElementById('body-count').textContent = newText.length;
-            };
+            // Editor functions - FIXED SYNTAX ERROR
+            document.querySelectorAll('.editor-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tagName = btn.getAttribute('data-tag');
+                    const textarea = document.getElementById('article-body');
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    const text = textarea.value;
+                    const selectedText = text.substring(start, end);
+                    
+                    let openTag, closeTag;
+                    if (tagName === 'a') {
+                        openTag = '<a href="">';
+                        closeTag = '</a>';
+                    } else {
+                        openTag = `<${tagName}>`;
+                        closeTag = `</${tagName}>`;
+                    }
+                    
+                    const newText = text.substring(0, start) + openTag + selectedText + closeTag + text.substring(end);
+                    textarea.value = newText;
+                    textarea.focus();
+                    
+                    const cursorPos = start + openTag.length + selectedText.length;
+                    textarea.setSelectionRange(cursorPos, cursorPos);
+                    document.getElementById('body-count').textContent = newText.length;
+                });
+            });
 
             // AI Generate All (Title + Body + Image)
-            window.aiGenerateAll = async (e) => {
+            document.getElementById('ai-generate-all-btn').addEventListener('click', async (e) => {
                 e.preventDefault();
                 const btn = e.currentTarget;
                 const body = document.getElementById('article-body').value.trim();
@@ -7050,10 +7108,10 @@ async function showArticleModal(articleId = null) {
                     btn.innerHTML = '<i class="ri-magic-line"></i> <span>Generate All</span>';
                     window.hideGenStatus();
                 }
-            };
+            });
 
             // AI Generate Content Only
-            window.aiGenerateContent = async (e) => {
+            document.getElementById('ai-content-btn').addEventListener('click', async (e) => {
                 e.preventDefault();
                 const btn = e.currentTarget;
                 const subject = document.getElementById('article-subject').value.trim();
@@ -7120,10 +7178,10 @@ async function showArticleModal(articleId = null) {
                     btn.innerHTML = '<i class="ri-magic-line"></i> <span>Generate</span>';
                     window.hideGenStatus();
                 }
-            };
+            });
 
             // AI Generate Image Only
-            window.aiGenerateImage = async (e) => {
+            document.getElementById('ai-image-btn').addEventListener('click', async (e) => {
                 e.preventDefault();
                 const btn = e.currentTarget;
                 const subject = document.getElementById('article-subject').value.trim();
@@ -7190,7 +7248,7 @@ async function showArticleModal(articleId = null) {
                     btn.innerHTML = '<i class="ri-magic-line"></i> <span>AI</span>';
                     window.hideGenStatus();
                 }
-            };
+            });
 
             // Remove URL preview
             window.removeUrlPreview = (url, btn) => {
