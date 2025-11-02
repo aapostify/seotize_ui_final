@@ -3729,7 +3729,7 @@ async function loadArticles(page = 1) {
                 <button class="btn btn-secondary" onclick="showDomainModal()">
                     <i class="ri-global-line"></i> Add Domain
                 </button>
-                <button class="btn btn-primary" onclick="showArticleModal()">
+                <button class="btn btn-primary" onclick="()">
                     <i class="ri-add-line"></i> Create Article
                 </button>
             </div>
@@ -3911,7 +3911,7 @@ async function loadArticles(page = 1) {
                         </div>
                         <div class="empty-state-title">No Articles Published</div>
                         <div class="empty-state-description">Create your first article to start publishing content</div>
-                        <button class="btn btn-primary" onclick="showArticleModal()">Create First Article</button>
+                        <button class="btn btn-primary" onclick="()">Create First Article</button>
                     </div>
                 ` : generatePagination('articles', loadArticles)}
             </div>
@@ -6199,8 +6199,6 @@ function initializeArticleCharts(countries, browsers, devices, sortedDates) {
 }
 
 // ADD THIS NEW, ALL-IN-ONE FUNCTION
-// REPLACE THE ENTIRE showArticleModal FUNCTION WITH THIS
-// REPLACE THE ENTIRE showArticleModal FUNCTION WITH THIS ENHANCED VERSION
 async function showArticleModal(articleId = null) {
     const isEdit = !!articleId;
     let articleData = null;
@@ -6231,16 +6229,19 @@ async function showArticleModal(articleId = null) {
     <style>
         .article-modal-wrapper {
             display: grid;
-            grid-template-columns: 1fr 400px;
+            grid-template-columns: 1fr 350px;
             gap: 1.5rem;
             text-align: left;
-            max-height: 75vh;
+            max-height: 80vh;
             overflow: hidden;
         }
         
         .article-main-content {
             overflow-y: auto;
             padding-right: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
         
         .article-sidebar {
@@ -6254,7 +6255,11 @@ async function showArticleModal(articleId = null) {
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             padding: 1.25rem;
-            margin-bottom: 1.25rem;
+            transition: var(--transition);
+        }
+        
+        .article-section:hover {
+            border-color: var(--primary);
         }
         
         .section-header {
@@ -6310,7 +6315,8 @@ async function showArticleModal(articleId = null) {
         }
         
         .ai-btn.generating {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(270deg, #667eea, #764ba2, #667eea);
+            background-size: 200% 200%;
             animation: gradientShift 2s ease infinite;
         }
         
@@ -6354,12 +6360,72 @@ async function showArticleModal(articleId = null) {
             40% { transform: scale(1); }
         }
         
+        .body-editor-container {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .editor-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--card);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .editor-btn {
+            padding: 0.4rem 0.8rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: var(--text);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .editor-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .form-textarea-enhanced {
+            width: 100%;
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--input-bg);
+            color: var(--text);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            resize: vertical;
+            min-height: 350px;
+        }
+        
+        .form-textarea-enhanced:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
         .usage-stats {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
             border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: var(--radius);
-            padding: 0.75rem;
-            margin-top: 1rem;
+            border-radius: var(--radius-lg);
+            padding: 1rem;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 0.75rem;
@@ -6370,10 +6436,11 @@ async function showArticleModal(articleId = null) {
         }
         
         .usage-value {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary);
             display: block;
+            margin-bottom: 0.25rem;
         }
         
         .usage-label {
@@ -6515,14 +6582,15 @@ async function showArticleModal(articleId = null) {
             text-align: right;
             font-size: 0.75rem;
             color: var(--text-tertiary);
-            margin-top: 0.25rem;
+            margin-top: 0.5rem;
         }
         
         .generation-status {
-            background: var(--bg-tertiary);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: var(--radius);
-            padding: 0.75rem;
-            margin-top: 0.75rem;
+            padding: 1rem;
+            margin-top: 1rem;
             display: none;
             align-items: center;
             gap: 0.75rem;
@@ -6544,7 +6612,8 @@ async function showArticleModal(articleId = null) {
         .status-text {
             flex: 1;
             font-size: 0.85rem;
-            color: var(--text-secondary);
+            color: var(--text);
+            font-weight: 500;
         }
         
         /* Mobile Responsive */
@@ -6569,12 +6638,19 @@ async function showArticleModal(articleId = null) {
             .usage-stats {
                 grid-template-columns: repeat(2, 1fr);
             }
+            
+            .body-editor-container {
+                min-height: 350px;
+            }
+            
+            .form-textarea-enhanced {
+                min-height: 280px;
+            }
         }
         
         @media (max-width: 768px) {
             .article-section {
                 padding: 1rem;
-                margin-bottom: 1rem;
             }
             
             .section-header {
@@ -6603,6 +6679,15 @@ async function showArticleModal(articleId = null) {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 0.5rem;
             }
+            
+            .editor-toolbar {
+                padding: 0.5rem;
+            }
+            
+            .editor-btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
+            }
         }
     </style>
 
@@ -6627,13 +6712,13 @@ async function showArticleModal(articleId = null) {
                     <div class="section-header">
                         <h3 class="section-title"><i class="ri-text"></i> Title</h3>
                         <div class="ai-btn-group">
-                            <button type="button" class="ai-btn" id="ai-title-btn" onclick="window.aiGenerateTitle(event)">
-                                <i class="ri-magic-line"></i> <span>Generate</span>
+                            <button type="button" class="ai-btn" id="ai-generate-all-btn" onclick="window.aiGenerateAll(event)">
+                                <i class="ri-magic-line"></i> <span>Generate All</span>
                             </button>
                         </div>
                     </div>
                     <input type="text" id="article-subject" class="form-input" name="subject" required 
-                        placeholder="Article title..." value="${articleData ? articleData.subject : ''}" maxlength="200">
+                        placeholder="Enter article title..." value="${articleData ? articleData.subject : ''}" maxlength="200">
                     <div class="char-count"><span id="title-count">0</span>/200</div>
                 </div>
 
@@ -6647,8 +6732,31 @@ async function showArticleModal(articleId = null) {
                             </button>
                         </div>
                     </div>
-                    <textarea class="form-textarea" id="article-body" name="body" required 
-                        placeholder="<h1>Title</h1><p>Content...</p>" rows="12" style="font-family: monospace; font-size: 0.85rem;">${articleData ? articleData.body : ''}</textarea>
+                    
+                    <div class="body-editor-container">
+                        <div class="editor-toolbar">
+                            <button type="button" class="editor-btn" onclick="window.insertTag('<h1></h1>')">
+                                <i class="ri-h-1"></i> H1
+                            </button>
+                            <button type="button" class="editor-btn" onclick="window.insertTag('<h2></h2>')">
+                                <i class="ri-h-2"></i> H2
+                            </button>
+                            <button type="button" class="editor-btn" onclick="window.insertTag('<p></p>')">
+                                <i class="ri-paragraph"></i> P
+                            </button>
+                            <button type="button" class="editor-btn" onclick="window.insertTag('<strong></strong>')">
+                                <i class="ri-bold"></i> Bold
+                            </button>
+                            <button type="button" class="editor-btn" onclick="window.insertTag('<em></em>')">
+                                <i class="ri-italic"></i> Italic
+                            </button>
+                            <button type="button" class="editor-btn" onclick="window.insertTag('<a href=\\'\\\'></a>')">
+                                <i class="ri-link"></i> Link
+                            </button>
+                        </div>
+                        <textarea class="form-textarea-enhanced" id="article-body" name="body" required 
+                            placeholder="<h1>Main Heading</h1>&#10;<p>Your content here...</p>&#10;&#10;<h2>Subheading</h2>&#10;<p>More content...</p>">${articleData ? articleData.body : ''}</textarea>
+                    </div>
                     <div class="char-count"><span id="body-count">0</span> characters</div>
                     
                     <div class="generation-status" id="gen-status">
@@ -6683,6 +6791,7 @@ async function showArticleModal(articleId = null) {
                 </div>
 
                 <input type="hidden" id="delete-images" name="delete_image_ids" value="">
+                <input type="hidden" id="image-urls" name="image_urls" value="">
             </form>
         </div>
 
@@ -6749,6 +6858,7 @@ async function showArticleModal(articleId = null) {
             // State
             window.articleFiles = [];
             window.deleteImageIds = [];
+            window.imageUrls = [];
 
             // Counters
             const titleInput = document.getElementById('article-subject');
@@ -6770,7 +6880,8 @@ async function showArticleModal(articleId = null) {
                         showToast(file.name + ' exceeds 5MB', 'error');
                         return;
                     }
-                    if (window.articleFiles.length >= 10) {
+                    const totalImages = window.articleFiles.length + window.imageUrls.length;
+                    if (totalImages >= 10) {
                         showToast('Max 10 images', 'warning');
                         return;
                     }
@@ -6847,8 +6958,28 @@ async function showArticleModal(articleId = null) {
                 document.getElementById('delete-images').value = window.deleteImageIds.join(',');
             };
 
-            // AI Functions
-            window.aiGenerateTitle = async (e) => {
+            // Editor functions
+            window.insertTag = (tag) => {
+                const textarea = document.getElementById('article-body');
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const text = textarea.value;
+                const selectedText = text.substring(start, end);
+                
+                const openTag = tag.split('</')[0];
+                const closeTag = '</' + tag.split('</')[1];
+                
+                const newText = text.substring(0, start) + openTag + selectedText + closeTag + text.substring(end);
+                textarea.value = newText;
+                textarea.focus();
+                
+                const cursorPos = start + openTag.length + selectedText.length;
+                textarea.setSelectionRange(cursorPos, cursorPos);
+                document.getElementById('body-count').textContent = newText.length;
+            };
+
+            // AI Generate All (Title + Body + Image)
+            window.aiGenerateAll = async (e) => {
                 e.preventDefault();
                 const btn = e.currentTarget;
                 const body = document.getElementById('article-body').value.trim();
@@ -6856,52 +6987,50 @@ async function showArticleModal(articleId = null) {
                 btn.disabled = true;
                 btn.classList.add('generating');
                 btn.innerHTML = '<i class="ri-loader-4-line"></i> <span>Generating</span><div class="progress-dots"><span></span><span></span><span></span></div>';
-                window.showGenStatus('Generating title with AI...');
+                window.showGenStatus('Generating complete article with AI...');
                 
                 try {
+                    const payload = body ? { subject: body.substring(0, 100) } : { auto_generate: true };
+                    
                     const response = await fetch(`${API_BASE}/generate-article`, {
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json',
                             'Session-Token': sessionToken 
                         },
-                        body: JSON.stringify(body ? { subject: body.substring(0, 100) } : { auto_generate: true })
+                        body: JSON.stringify(payload)
                     });
                     
                     const data = await response.json();
                     if (data.status === 'success' && data.data) {
                         // Set title
-                        if (data.data.title) {
-                            document.getElementById('article-subject').value = data.data.title;
-                            document.getElementById('title-count').textContent = data.data.title.length;
+                        if (data.data.title || data.data.subject) {
+                            const title = data.data.title || data.data.subject;
+                            document.getElementById('article-subject').value = title;
+                            document.getElementById('title-count').textContent = title.length;
                         }
                         
-                        // Set body if available
-                        if (data.data.body && !body) {
+                        // Set body
+                        if (data.data.body) {
                             document.getElementById('article-body').value = data.data.body;
                             document.getElementById('body-count').textContent = data.data.body.length;
                         }
                         
-                        // Handle image if available
-                        if (data.data.image && data.data.image.base64) {
-                            const img = data.data.image;
-                            const blob = await fetch(`data:${img.content_type};base64,${img.base64}`).then(r => r.blob());
-                            const file = new File([blob], img.filename, { type: img.content_type });
-                            window.articleFiles.push(file);
+                        // Handle AI-generated image URL
+                        if (data.data.image_url) {
+                            window.imageUrls.push(data.data.image_url);
+                            document.getElementById('image-urls').value = window.imageUrls.join(',');
                             
-                            const reader = new FileReader();
-                            reader.onload = (ev) => {
-                                const div = document.createElement('div');
-                                div.className = 'preview-item';
-                                div.innerHTML = `
-                                    <img src="${ev.target.result}" alt="${file.name}">
-                                    <button type="button" class="preview-remove" onclick="window.removePreview('${file.name}', this)">
-                                        <i class="ri-close-line"></i>
-                                    </button>
-                                `;
-                                document.getElementById('preview-container').appendChild(div);
-                            };
-                            reader.readAsDataURL(file);
+                            // Add preview
+                            const div = document.createElement('div');
+                            div.className = 'preview-item';
+                            div.innerHTML = `
+                                <img src="${data.data.image_url}" alt="AI Generated">
+                                <button type="button" class="preview-remove" onclick="window.removeUrlPreview('${data.data.image_url}', this)">
+                                    <i class="ri-close-line"></i>
+                                </button>
+                            `;
+                            document.getElementById('preview-container').appendChild(div);
                         }
                         
                         // Update usage
@@ -6909,7 +7038,7 @@ async function showArticleModal(articleId = null) {
                             window.updateUsageDisplay(data.data.usage);
                         }
                         
-                        showToast('Content generated successfully!', 'success');
+                        showToast('Article generated successfully!', 'success');
                     } else {
                         throw new Error(data.error?.message || 'Failed to generate');
                     }
@@ -6918,11 +7047,12 @@ async function showArticleModal(articleId = null) {
                 } finally {
                     btn.disabled = false;
                     btn.classList.remove('generating');
-                    btn.innerHTML = '<i class="ri-magic-line"></i> <span>Generate</span>';
+                    btn.innerHTML = '<i class="ri-magic-line"></i> <span>Generate All</span>';
                     window.hideGenStatus();
                 }
             };
 
+            // AI Generate Content Only
             window.aiGenerateContent = async (e) => {
                 e.preventDefault();
                 const btn = e.currentTarget;
@@ -6950,38 +7080,27 @@ async function showArticleModal(articleId = null) {
                     
                     const data = await response.json();
                     if (data.status === 'success' && data.data) {
-                        // Set title if returned
-                        if (data.data.title) {
-                            document.getElementById('article-subject').value = data.data.title;
-                            document.getElementById('title-count').textContent = data.data.title.length;
-                        }
-                        
                         // Set body
                         if (data.data.body) {
                             document.getElementById('article-body').value = data.data.body;
                             document.getElementById('body-count').textContent = data.data.body.length;
                         }
                         
-                        // Handle image if available
-                        if (data.data.image && data.data.image.base64) {
-                            const img = data.data.image;
-                            const blob = await fetch(`data:${img.content_type};base64,${img.base64}`).then(r => r.blob());
-                            const file = new File([blob], img.filename, { type: img.content_type });
-                            window.articleFiles.push(file);
+                        // Handle AI-generated image URL
+                        if (data.data.image_url) {
+                            window.imageUrls.push(data.data.image_url);
+                            document.getElementById('image-urls').value = window.imageUrls.join(',');
                             
-                            const reader = new FileReader();
-                            reader.onload = (ev) => {
-                                const div = document.createElement('div');
-                                div.className = 'preview-item';
-                                div.innerHTML = `
-                                    <img src="${ev.target.result}" alt="${file.name}">
-                                    <button type="button" class="preview-remove" onclick="window.removePreview('${file.name}', this)">
-                                        <i class="ri-close-line"></i>
-                                    </button>
-                                `;
-                                document.getElementById('preview-container').appendChild(div);
-                            };
-                            reader.readAsDataURL(file);
+                            // Add preview
+                            const div = document.createElement('div');
+                            div.className = 'preview-item';
+                            div.innerHTML = `
+                                <img src="${data.data.image_url}" alt="AI Generated">
+                                <button type="button" class="preview-remove" onclick="window.removeUrlPreview('${data.data.image_url}', this)">
+                                    <i class="ri-close-line"></i>
+                                </button>
+                            `;
+                            document.getElementById('preview-container').appendChild(div);
                         }
                         
                         // Update usage
@@ -7003,6 +7122,7 @@ async function showArticleModal(articleId = null) {
                 }
             };
 
+            // AI Generate Image Only
             window.aiGenerateImage = async (e) => {
                 e.preventDefault();
                 const btn = e.currentTarget;
@@ -7030,26 +7150,27 @@ async function showArticleModal(articleId = null) {
                     
                     const data = await response.json();
                     if (data.status === 'success' && data.data) {
-                        // Handle image
-                        if (data.data.image && data.data.image.base64) {
-                            const img = data.data.image;
-                            const blob = await fetch(`data:${img.content_type};base64,${img.base64}`).then(r => r.blob());
-                            const file = new File([blob], img.filename, { type: img.content_type });
-                            window.articleFiles.push(file);
+                        // Handle AI-generated image URL
+                        if (data.data.image_url) {
+                            const totalImages = window.articleFiles.length + window.imageUrls.length;
+                            if (totalImages >= 10) {
+                                showToast('Max 10 images reached', 'warning');
+                                return;
+                            }
                             
-                            const reader = new FileReader();
-                            reader.onload = (ev) => {
-                                const div = document.createElement('div');
-                                div.className = 'preview-item';
-                                div.innerHTML = `
-                                    <img src="${ev.target.result}" alt="${file.name}">
-                                    <button type="button" class="preview-remove" onclick="window.removePreview('${file.name}', this)">
-                                        <i class="ri-close-line"></i>
-                                    </button>
-                                `;
-                                document.getElementById('preview-container').appendChild(div);
-                            };
-                            reader.readAsDataURL(file);
+                            window.imageUrls.push(data.data.image_url);
+                            document.getElementById('image-urls').value = window.imageUrls.join(',');
+                            
+                            // Add preview
+                            const div = document.createElement('div');
+                            div.className = 'preview-item';
+                            div.innerHTML = `
+                                <img src="${data.data.image_url}" alt="AI Generated">
+                                <button type="button" class="preview-remove" onclick="window.removeUrlPreview('${data.data.image_url}', this)">
+                                    <i class="ri-close-line"></i>
+                                </button>
+                            `;
+                            document.getElementById('preview-container').appendChild(div);
                             
                             showToast('AI image generated!', 'success');
                         }
@@ -7070,6 +7191,13 @@ async function showArticleModal(articleId = null) {
                     window.hideGenStatus();
                 }
             };
+
+            // Remove URL preview
+            window.removeUrlPreview = (url, btn) => {
+                window.imageUrls = window.imageUrls.filter(u => u !== url);
+                document.getElementById('image-urls').value = window.imageUrls.join(',');
+                btn.closest('.preview-item').remove();
+            };
         },
         preConfirm: () => {
             const url = document.getElementById('article-url').value;
@@ -7079,12 +7207,19 @@ async function showArticleModal(articleId = null) {
             if (!url) { Swal.showValidationMessage('Select a domain'); return false; }
             if (!subject) { Swal.showValidationMessage('Enter a title'); return false; }
             if (!body) { Swal.showValidationMessage('Enter content'); return false; }
+            
+            // Validate that we have at least one image (file or URL)
+            if (window.articleFiles.length === 0 && window.imageUrls.length === 0 && !isEdit) {
+                Swal.showValidationMessage('At least one image is required');
+                return false;
+            }
 
             const formData = new FormData();
             formData.append('url', url);
             formData.append('subject', subject);
             formData.append('body', body);
             if (window.deleteImageIds.length) formData.append('delete_image_ids', window.deleteImageIds.join(','));
+            if (window.imageUrls.length) formData.append('image_urls', window.imageUrls.join(','));
             window.articleFiles.forEach(f => formData.append('image_data', f));
 
             return formData;
