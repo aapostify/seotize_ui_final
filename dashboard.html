@@ -1514,6 +1514,12 @@ tr:hover {
         flex-direction: column !important;
         gap: 1rem !important;
     }
+    
+    /* Make usage plan full width on tablets */
+    .domains-usage-container .card {
+        flex: 1 !important;
+        max-width: 100% !important;
+    }
 }
 
 /* Extra small screens (phones in portrait) */
@@ -1678,6 +1684,65 @@ tr:hover {
    
     .user-menu-container {
         display: none!important;
+    }
+}
+
+/* Collapsible sections for mobile */
+@media (max-width: 768px) {
+    .collapsible-header {
+        user-select: none;
+    }
+    
+    .collapsible-header #domainsContentIcon,
+    .collapsible-header #usageContentIcon {
+        display: inline-block !important;
+    }
+    
+    .collapsible-content {
+        max-height: 1000px;
+        overflow: hidden;
+        transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    
+    .collapsible-content.collapsed {
+        max-height: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        border-top: none !important;
+    }
+    
+    .usage-category {
+        padding: 0.75rem;
+        background: var(--bg-secondary);
+        border-radius: var(--radius-sm);
+    }
+}
+
+/* Desktop - no collapse */
+@media (min-width: 769px) {
+    .collapsible-header {
+        cursor: default !important;
+    }
+}
+
+/* Usage category styling */
+.usage-category {
+    transition: transform 0.2s ease;
+}
+
+.usage-category:hover {
+    transform: translateY(-2px);
+}
+
+/* Better mobile spacing for usage plan */
+@media (max-width: 580px) {
+    .usage-category {
+        padding: 0.5rem !important;
+        background: var(--bg-secondary) !important;
+    }
+    
+    .usage-category i {
+        font-size: 1rem !important;
     }
 }
     /* Desktop/Mobile visibility classes */
@@ -3177,6 +3242,27 @@ function formatNumber(num) {
     }
 }
 
+// Toggle collapsible sections (for mobile)
+function toggleSection(sectionId) {
+    const content = document.getElementById(sectionId);
+    const icon = document.getElementById(sectionId + 'Icon');
+    
+    if (!content) return;
+    
+    // Only apply collapse on mobile screens
+    if (window.innerWidth <= 768) {
+        content.classList.toggle('collapsed');
+        
+        if (icon) {
+            if (content.classList.contains('collapsed')) {
+                icon.style.transform = 'rotate(-90deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+    }
+}
+
 // Dashboard
 async function loadDashboard(page = 1) {
     try {
@@ -3761,11 +3847,14 @@ async function loadArticles(page = 1) {
         <div class="domains-usage-container" style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
             <!-- Domains Section -->
             <div class="card" style="flex: 1; min-width: 0;">
-                <div class="card-header">
-                    <h3 class="card-title">Domain Verification</h3>
+                <div class="card-header collapsible-header" onclick="toggleSection('domainsContent')" style="cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="ri-arrow-down-s-line" id="domainsContentIcon" style="transition: transform 0.3s ease; display: none;"></i>
+                        <h3 class="card-title">Domain Verification</h3>
+                    </div>
                     <span class="badge badge-primary">${currentData.domains.length} domains</span>
                 </div>
-                <div class="card-body" id="domainsList">
+                <div class="card-body collapsible-content" id="domainsContent">
                     ${currentData.domains.length > 0 ? currentData.domains.map(domain => `
                         <div class="mobilearticle1" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 0.5rem; gap: 1rem; flex-wrap: wrap;">
                             <div style="display: flex; align-items: center; gap: 1rem; min-width: 0;">
@@ -3793,45 +3882,82 @@ async function loadArticles(page = 1) {
             </div>
 
             <!-- Usage Plan Section -->
-            <div class="card" style="flex: 0 0 280px; min-width: 0;">
-                <div class="card-header">
-                    <h3 class="card-title">Usage Plan</h3>
-                    <span class="badge badge-info">${currentData.plan || 'N/A'}</span>
+            <div class="card" style="flex: 0 0 380px; min-width: 0;">
+                <div class="card-header collapsible-header" onclick="toggleSection('usageContent')" style="cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="ri-arrow-down-s-line" id="usageContentIcon" style="transition: transform 0.3s ease; display: none;"></i>
+                        <h3 class="card-title">Usage Plan</h3>
+                    </div>
+                    <span class="badge badge-info" style="text-transform: uppercase;">${currentData.plan || 'N/A'}</span>
                 </div>
-                <div class="card-body">
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
-                        <!-- Usage Progress Bar -->
-                        <div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem;">
-                                <span style="color: var(--text-secondary);">Usage</span>
-                                <span style="font-weight: 600; color: var(--primary);">${currentData.usage?.percentage || '0%'}</span>
+                <div class="card-body collapsible-content" id="usageContent">
+                    <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                        ${currentData.usage && (currentData.usage.ai || currentData.usage.articles || currentData.usage.images) ? `
+                            <!-- AI Usage -->
+                            ${currentData.usage.ai ? `
+                            <div class="usage-category">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i class="ri-robot-line" style="color: var(--primary); font-size: 1.1rem;"></i>
+                                        <span style="font-weight: 600; color: var(--text);">AI Generations</span>
+                                    </div>
+                                    <span style="font-size: 0.875rem; font-weight: 600; color: ${currentData.usage.ai.percentage > 80 ? 'var(--danger)' : 'var(--primary)'};">${ currentData.usage.ai.percentage}%</span>
+                                </div>
+                                <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
+                                    <div style="height: 100%; background: linear-gradient(90deg, ${currentData.usage.ai.percentage > 80 ? 'var(--danger)' : 'var(--primary)'}, ${currentData.usage.ai.percentage > 80 ? '#ff6b6b' : 'var(--success)'}); width: ${currentData.usage.ai.percentage}%; transition: width 0.3s ease;"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
+                                    <span><strong>${currentData.usage.ai.used}</strong> used</span>
+                                    <span><strong>${currentData.usage.ai.remaining}</strong> remaining / <strong>${currentData.usage.ai.limit}</strong> total</span>
+                                </div>
                             </div>
-                            <div style="width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
-                                <div style="height: 100%; background: linear-gradient(90deg, var(--primary), var(--success)); width: ${currentData.usage?.percentage || '0%'}; transition: width 0.3s ease;"></div>
+                            ` : ''}
+                            
+                            <!-- Articles Usage -->
+                            ${currentData.usage.articles ? `
+                            <div class="usage-category">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i class="ri-article-line" style="color: var(--success); font-size: 1.1rem;"></i>
+                                        <span style="font-weight: 600; color: var(--text);">Articles</span>
+                                    </div>
+                                    <span style="font-size: 0.875rem; font-weight: 600; color: ${currentData.usage.articles.percentage > 80 ? 'var(--danger)' : 'var(--success)'};">${ currentData.usage.articles.percentage}%</span>
+                                </div>
+                                <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
+                                    <div style="height: 100%; background: linear-gradient(90deg, ${currentData.usage.articles.percentage > 80 ? 'var(--danger)' : 'var(--success)'}, ${currentData.usage.articles.percentage > 80 ? '#ff6b6b' : '#51cf66'}); width: ${currentData.usage.articles.percentage}%; transition: width 0.3s ease;"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
+                                    <span><strong>${currentData.usage.articles.used}</strong> used</span>
+                                    <span><strong>${currentData.usage.articles.remaining}</strong> remaining / <strong>${currentData.usage.articles.limit}</strong> total</span>
+                                </div>
                             </div>
-                        </div>
-
-                        <!-- Usage Stats -->
-                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--background); border-radius: var(--radius-sm);">
-                                <span style="color: var(--text-secondary); font-size: 0.875rem;">
-                                    <i class="ri-bar-chart-line" style="margin-right: 0.25rem;"></i>Used
-                                </span>
-                                <span style="font-weight: 600; color: var(--text);">${currentData.usage?.used || 0}</span>
+                            ` : ''}
+                            
+                            <!-- Images Usage -->
+                            ${currentData.usage.images ? `
+                            <div class="usage-category">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i class="ri-image-line" style="color: var(--warning); font-size: 1.1rem;"></i>
+                                        <span style="font-weight: 600; color: var(--text);">Images</span>
+                                    </div>
+                                    <span style="font-size: 0.875rem; font-weight: 600; color: ${currentData.usage.images.percentage > 80 ? 'var(--danger)' : 'var(--warning)'};">${ currentData.usage.images.percentage}%</span>
+                                </div>
+                                <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
+                                    <div style="height: 100%; background: linear-gradient(90deg, ${currentData.usage.images.percentage > 80 ? 'var(--danger)' : 'var(--warning)'}, ${currentData.usage.images.percentage > 80 ? '#ff6b6b' : '#ffc107'}); width: ${currentData.usage.images.percentage}%; transition: width 0.3s ease;"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
+                                    <span><strong>${currentData.usage.images.used}</strong> used</span>
+                                    <span><strong>${currentData.usage.images.remaining}</strong> remaining / <strong>${currentData.usage.images.limit}</strong> total</span>
+                                </div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--background); border-radius: var(--radius-sm);">
-                                <span style="color: var(--text-secondary); font-size: 0.875rem;">
-                                    <i class="ri-check-line" style="margin-right: 0.25rem;"></i>Remaining
-                                </span>
-                                <span style="font-weight: 600; color: var(--success);">${currentData.usage?.remaining || 0}</span>
+                            ` : ''}
+                        ` : `
+                            <div style="text-align: center; padding: 1.5rem; color: var(--text-secondary);">
+                                <i class="ri-information-line" style="font-size: 2rem; opacity: 0.5; margin-bottom: 0.5rem;"></i>
+                                <p>No usage data available</p>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--background); border-radius: var(--radius-sm);">
-                                <span style="color: var(--text-secondary); font-size: 0.875rem;">
-                                    <i class="ri-bookmark-line" style="margin-right: 0.25rem;"></i>Limit
-                                </span>
-                                <span style="font-weight: 600; color: var(--primary);">${currentData.usage?.limit || 0}</span>
-                            </div>
-                        </div>
+                        `}
                     </div>
                 </div>
             </div>
