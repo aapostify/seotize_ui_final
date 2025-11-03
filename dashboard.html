@@ -1714,15 +1714,17 @@ tr:hover {
     }
     
     .domain-actions-row {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 0.75rem !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 0.5rem !important;
+        flex-wrap: nowrap !important;
     }
     
     .domain-actions {
         margin-left: 0;
-        width: 100%;
-        justify-content: flex-start;
+        width: auto;
+        justify-content: flex-end;
         gap: 0.5rem !important;
     }
     
@@ -7477,15 +7479,15 @@ async function showArticleModal(articleId = null) {
                 document.getElementById('usage-used').textContent = usage.used || 0;
                 document.getElementById('usage-limit').textContent = usage.limit || 0;
                 document.getElementById('usage-remaining').textContent = usage.remaining || 0;
-                document.getElementById('usage-percentage').textContent = usage.percentage || '0%';
+                document.getElementById('usage-percentage').textContent = (usage.percentage !== undefined ? usage.percentage + '%' : '0%');
             };
 
             // Fetch and display current usage stats from API
             (async () => {
                 try {
                     const response = await api('/users/dashboard');
-                    if (response && response.data && response.data.usage) {
-                        window.updateUsageDisplay(response.data.usage);
+                    if (response && response.data && response.data.usage && response.data.usage.ai) {
+                        window.updateUsageDisplay(response.data.usage.ai);
                     }
                 } catch (error) {
                     console.error('Failed to fetch usage stats:', error);
@@ -7614,8 +7616,8 @@ async function showArticleModal(articleId = null) {
                         }
                         
                         // Update usage
-                        if (data.data.usage) {
-                            window.updateUsageDisplay(data.data.usage);
+                        if (data.data.usage && data.data.usage.ai) {
+                            window.updateUsageDisplay(data.data.usage.ai);
                         }
                         
                         showToast('Article generated successfully!', 'success');
@@ -7688,8 +7690,8 @@ async function showArticleModal(articleId = null) {
                         }
                         
                         // Update usage
-                        if (data.data.usage) {
-                            window.updateUsageDisplay(data.data.usage);
+                        if (data.data.usage && data.data.usage.ai) {
+                            window.updateUsageDisplay(data.data.usage.ai);
                         }
                         
                         showToast('Content generated successfully!', 'success');
@@ -7764,8 +7766,8 @@ async function showArticleModal(articleId = null) {
                         }
                         
                         // Update usage
-                        if (data.data.usage) {
-                            window.updateUsageDisplay(data.data.usage);
+                        if (data.data.usage && data.data.usage.ai) {
+                            window.updateUsageDisplay(data.data.usage.ai);
                         }
                     } else {
                         throw new Error(data.error?.message || 'Failed to generate');
