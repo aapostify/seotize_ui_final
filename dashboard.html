@@ -3919,18 +3919,20 @@ async function loadArticles(page = 1) {
                                 <span style="font-weight: 500; font-size: 0.95rem; word-break: break-all;">${domain.domain}</span>
                             </div>
                             <div class="domain-actions-row" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
-                                <span class="badge badge-${domain.verified ? 'success' : 'warning'}">
-                                    ${domain.verified ? '&#10003; Verified' : '&#9203; Pending'}
-                                </span>
-                                <div class="domain-actions" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                    ${!domain.verified ? `
-                                        <button class="btn btn-sm btn-verify-instructions" data-domain="${domain.domain}" data-txt="${domain.txt_record || ''}">Instructions</button>
-                                        <button class="btn btn-sm btn-primary btn-verify-domain" data-domain="${domain.domain}">Verify Now</button>
-                                    ` : ''}
-                                    <button class="btn btn-sm btn-danger btn-delete-domain" data-domain="${domain.domain}">
-                                        <i class="ri-delete-bin-line"></i> Delete
-                                    </button>
+                                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                    <span class="badge badge-${domain.verified ? 'success' : 'warning'}">
+                                        ${domain.verified ? '&#10003; Verified' : '&#9203; Pending'}
+                                    </span>
+                                    <div class="domain-actions" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                        ${!domain.verified ? `
+                                            <button class="btn btn-sm btn-verify-instructions" data-domain="${domain.domain}" data-txt="${domain.txt_record || ''}">Instructions</button>
+                                            <button class="btn btn-sm btn-primary btn-verify-domain" data-domain="${domain.domain}">Verify Now</button>
+                                        ` : ''}
+                                    </div>
                                 </div>
+                                <button class="btn btn-sm btn-danger btn-delete-domain" data-domain="${domain.domain}">
+                                    <i class="ri-delete-bin-line"></i> Delete
+                                </button>
                             </div>
                         </div>
                     `).join('') : `
@@ -7368,19 +7370,19 @@ async function showArticleModal(articleId = null) {
                 </div>
                 <div class="usage-stats">
                     <div class="usage-item">
-                        <span class="usage-value" id="usage-used">0</span>
+                        <span class="usage-value" id="usage-used">${currentData.usage?.ai?.used || 0}</span>
                         <span class="usage-label">Used</span>
                     </div>
                     <div class="usage-item">
-                        <span class="usage-value" id="usage-limit">0</span>
+                        <span class="usage-value" id="usage-limit">${currentData.usage?.ai?.limit || 0}</span>
                         <span class="usage-label">Limit</span>
                     </div>
                     <div class="usage-item">
-                        <span class="usage-value" id="usage-remaining">0</span>
+                        <span class="usage-value" id="usage-remaining">${currentData.usage?.ai?.remaining || 0}</span>
                         <span class="usage-label">Remaining</span>
                     </div>
                     <div class="usage-item">
-                        <span class="usage-value" id="usage-percentage">0%</span>
+                        <span class="usage-value" id="usage-percentage">${currentData.usage?.ai?.percentage !== undefined ? currentData.usage.ai.percentage + '%' : '0%'}</span>
                         <span class="usage-label">Available</span>
                     </div>
                 </div>
