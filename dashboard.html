@@ -7773,7 +7773,14 @@ async function showArticleModal(articleId = null) {
             document.getElementById('ai-generate-all-btn').addEventListener('click', async (e) => {
                 e.preventDefault();
                 const btn = e.currentTarget;
+                const url = document.getElementById('article-url').value.trim();
                 const body = document.getElementById('article-body').value.trim();
+                
+                // Validate that domain is selected
+                if (!url) {
+                    showToast('Please select a domain first', 'warning');
+                    return;
+                }
                 
                 btn.disabled = true;
                 btn.classList.add('generating');
@@ -7781,7 +7788,13 @@ async function showArticleModal(articleId = null) {
                 window.showGenStatus('Generating complete article with AI...');
                 
                 try {
-                    const payload = body ? { subject: body.substring(0, 100) } : { auto_generate: true };
+                    const payload = body ? { 
+                        url: url,
+                        subject: body.substring(0, 100) 
+                    } : { 
+                        url: url,
+                        auto_generate: true 
+                    };
                     
                     const response = await fetch(`${API_BASE}/generate-article`, {
                         method: 'POST',
@@ -7829,8 +7842,8 @@ async function showArticleModal(articleId = null) {
                         }
                         
                         // Update usage
-                        if (data.data.usage && data.data.usage.ai) {
-                            window.updateUsageDisplay(data.data.usage.ai);
+                        if (data.data.usage) {
+                            window.updateUsageDisplay(data.data.usage);
                         }
                         
                         showToast('Article generated successfully!', 'success');
@@ -7851,7 +7864,14 @@ async function showArticleModal(articleId = null) {
             document.getElementById('ai-content-btn').addEventListener('click', async (e) => {
                 e.preventDefault();
                 const btn = e.currentTarget;
+                const url = document.getElementById('article-url').value.trim();
                 const subject = document.getElementById('article-subject').value.trim();
+                
+                // Validate that domain is selected
+                if (!url) {
+                    showToast('Please select a domain first', 'warning');
+                    return;
+                }
                 
                 if (!subject) {
                     showToast('Enter a title first', 'warning');
@@ -7870,7 +7890,7 @@ async function showArticleModal(articleId = null) {
                             'Content-Type': 'application/json',
                             'Session-Token': sessionToken 
                         },
-                        body: JSON.stringify({ subject })
+                        body: JSON.stringify({ url: url, subject })
                     });
                     
                     const data = await response.json();
@@ -7903,8 +7923,8 @@ async function showArticleModal(articleId = null) {
                         }
                         
                         // Update usage
-                        if (data.data.usage && data.data.usage.ai) {
-                            window.updateUsageDisplay(data.data.usage.ai);
+                        if (data.data.usage) {
+                            window.updateUsageDisplay(data.data.usage);
                         }
                         
                         showToast('Content generated successfully!', 'success');
@@ -7925,7 +7945,14 @@ async function showArticleModal(articleId = null) {
             document.getElementById('ai-image-btn').addEventListener('click', async (e) => {
                 e.preventDefault();
                 const btn = e.currentTarget;
+                const url = document.getElementById('article-url').value.trim();
                 const subject = document.getElementById('article-subject').value.trim();
+                
+                // Validate that domain is selected
+                if (!url) {
+                    showToast('Please select a domain first', 'warning');
+                    return;
+                }
                 
                 if (!subject) {
                     showToast('Enter a title first', 'warning');
@@ -7944,7 +7971,7 @@ async function showArticleModal(articleId = null) {
                             'Content-Type': 'application/json',
                             'Session-Token': sessionToken 
                         },
-                        body: JSON.stringify({ subject })
+                        body: JSON.stringify({ url: url, subject })
                     });
                     
                     const data = await response.json();
@@ -7979,8 +8006,8 @@ async function showArticleModal(articleId = null) {
                         }
                         
                         // Update usage
-                        if (data.data.usage && data.data.usage.ai) {
-                            window.updateUsageDisplay(data.data.usage.ai);
+                        if (data.data.usage) {
+                            window.updateUsageDisplay(data.data.usage);
                         }
                     } else {
                         throw new Error(data.error?.message || 'Failed to generate');
