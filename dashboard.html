@@ -1658,13 +1658,19 @@ tr:hover {
         gap: 14px!important;
     }
     .domains-usage-container {
-        flex-direction: column !important;
+        flex-direction: column-reverse !important;
         gap: 1rem !important;
     }
     .domain-actions {
         margin-left: 0;
         width: 100%;
         justify-content: flex-start;
+        gap: 0.75rem !important;
+    }
+    .domain-actions .btn {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.875rem !important;
+        min-height: 38px !important;
     }
     .logo {
         color: white !important;
@@ -2722,7 +2728,9 @@ let currentData = {
     selectedLocations: [],
     currentStep: 1,
     taskPriority: 'standard',
-    selectedKeywords: []
+    selectedKeywords: [],
+    usage: null,
+    plan: null
 };
 
 let charts = {};
@@ -3722,6 +3730,10 @@ async function loadArticles(page = 1) {
         // Extract articles and domains from the response
         currentData.articles = data.articles || [];
         currentData.domains = data.user?.domains || [];
+        
+        // Extract usage and plan data
+        currentData.usage = data.user?.usage || null;
+        currentData.plan = data.user?.plan || 'N/A';
 
         // Update pagination state
         paginationState.articles = {
