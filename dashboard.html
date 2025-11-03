@@ -1655,12 +1655,34 @@ tr:hover {
     flex-wrap: wrap;
 }
 
+/* Status row: Badge and Delete button */
+.domain-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+/* Buttons row: Instructions and Verify Now buttons */
+.domain-buttons-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
 /* Right side container: Delete button */
 .domain-verify-delete {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     flex-shrink: 0;
+}
+
+/* Desktop delete button - hidden by default, shown on desktop */
+.domain-verify-delete-desktop {
+    display: none;
 }
 
 .domain-status-badge {
@@ -1689,11 +1711,39 @@ tr:hover {
 /* Desktop: Single line, clean layout */
 @media (min-width: 769px) {
     .domain-actions-row {
+        flex-direction: row;
         flex-wrap: nowrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
     }
     
-    .domain-status-actions {
-        flex-wrap: nowrap;
+    .domain-status-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    /* Hide mobile delete button on desktop */
+    .domain-status-row .domain-verify-delete {
+        display: none !important;
+    }
+    
+    /* Show desktop delete button */
+    .domain-verify-delete-desktop {
+        display: flex !important;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+    
+    .domain-buttons-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
         gap: 0.5rem;
     }
     
@@ -1704,13 +1754,30 @@ tr:hover {
 
 /* Tablet optimization */
 @media (min-width: 581px) and (max-width: 768px) {
-    .domain-status-actions {
+    .domain-status-row {
         gap: 0.5rem;
-        flex-wrap: wrap;
+    }
+    
+    .domain-buttons-row {
+        gap: 0.5rem;
     }
     
     .domain-verify-delete {
         gap: 0.5rem;
+    }
+    
+    /* Hide mobile delete on tablet, show desktop delete */
+    .domain-status-row .domain-verify-delete {
+        display: none !important;
+    }
+    
+    .domain-verify-delete-desktop {
+        display: flex !important;
+    }
+    
+    .domain-actions-row {
+        flex-direction: row;
+        flex-wrap: wrap;
     }
     
     .domain-actions-row .btn {
@@ -1788,21 +1855,20 @@ tr:hover {
     
     .domain-actions-row {
         display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        gap: 0.5rem !important;
-        flex-wrap: nowrap !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.75rem !important;
         width: 100% !important;
     }
     
-    /* Left side: Status badge, Instructions, and Verify Now buttons */
-    .domain-status-actions {
+    /* First row: Status badge and Delete button */
+    .domain-status-row {
         display: flex !important;
+        flex-direction: row !important;
         align-items: center !important;
-        gap: 0.4rem !important;
-        flex-wrap: wrap !important;
-        flex: 1 !important;
-        min-width: 0 !important;
+        justify-content: space-between !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
     }
     
     .domain-status-badge {
@@ -1811,11 +1877,35 @@ tr:hover {
         flex-shrink: 0 !important;
     }
     
+    /* Hide desktop delete button on mobile */
+    .domain-verify-delete-desktop {
+        display: none !important;
+    }
+    
+    /* Mobile delete button in status row */
+    .domain-status-row .domain-verify-delete {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.4rem !important;
+        flex-shrink: 0 !important;
+        margin-left: auto !important;
+    }
+    
+    /* Second row: Instructions and Verify Now buttons */
+    .domain-buttons-row {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+    }
+    
     .btn-verify-instructions {
         padding: 0.4rem 0.6rem !important;
         font-size: 0.75rem !important;
         min-height: 32px !important;
         flex-shrink: 0 !important;
+        flex: 1 !important;
     }
     
     .btn-verify-domain {
@@ -1823,16 +1913,7 @@ tr:hover {
         font-size: 0.75rem !important;
         min-height: 32px !important;
         flex-shrink: 0 !important;
-    }
-    
-    /* Right side: Delete button only */
-    .domain-verify-delete {
-        display: flex !important;
-        align-items: center !important;
-        gap: 0.4rem !important;
-        flex-wrap: nowrap !important;
-        flex-shrink: 0 !important;
-        margin-left: auto !important;
+        flex: 1 !important;
     }
     
     .btn-delete-domain {
@@ -4035,20 +4116,27 @@ async function loadArticles(page = 1) {
                                 <span class="domain-url-text">${domain.domain}</span>
                             </div>
                             <div class="domain-actions-row">
-                                <div class="domain-status-actions">
+                                <div class="domain-status-row">
                                     <span class="badge badge-${domain.verified ? 'success' : 'warning'} domain-status-badge">
                                         ${domain.verified ? '&#10003; Verified' : '&#9203; Pending'}
                                     </span>
-                                    ${!domain.verified ? `
-                                        <button class="btn btn-sm btn-secondary btn-verify-instructions" data-domain="${domain.domain}" data-txt="${domain.txt_record || ''}">
-                                            <i class="ri-information-line"></i> Instructions
+                                    <div class="domain-verify-delete">
+                                        <button class="btn btn-sm btn-danger btn-delete-domain" data-domain="${domain.domain}">
+                                            <i class="ri-delete-bin-line"></i> <span class="btn-delete-text">Delete</span>
                                         </button>
-                                        <button class="btn btn-sm btn-primary btn-verify-domain" data-domain="${domain.domain}">
-                                            <i class="ri-checkbox-circle-line"></i> Verify Now
-                                        </button>
-                                    ` : ''}
+                                    </div>
                                 </div>
-                                <div class="domain-verify-delete">
+                                ${!domain.verified ? `
+                                <div class="domain-buttons-row">
+                                    <button class="btn btn-sm btn-secondary btn-verify-instructions" data-domain="${domain.domain}" data-txt="${domain.txt_record || ''}">
+                                        <i class="ri-information-line"></i> Instructions
+                                    </button>
+                                    <button class="btn btn-sm btn-primary btn-verify-domain" data-domain="${domain.domain}">
+                                        <i class="ri-checkbox-circle-line"></i> Verify Now
+                                    </button>
+                                </div>
+                                ` : ''}
+                                <div class="domain-verify-delete domain-verify-delete-desktop">
                                     <button class="btn btn-sm btn-danger btn-delete-domain" data-domain="${domain.domain}">
                                         <i class="ri-delete-bin-line"></i> <span class="btn-delete-text">Delete</span>
                                     </button>
