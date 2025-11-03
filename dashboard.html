@@ -1604,32 +1604,76 @@ tr:hover {
 
 /* Domain item styles */
 .domain-item {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 0.75rem;
+    gap: 0.875rem;
     transition: all 0.2s ease;
+    background: var(--card);
 }
 
 .domain-item:hover {
     border-color: var(--primary) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
 }
 
 .domain-url-row {
-    padding-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--border);
 }
 
-.domain-actions-row {
-    padding-top: 0.25rem;
+.domain-url-text {
+    font-weight: 600;
+    font-size: 0.95rem;
+    word-break: break-all;
+    color: var(--text);
 }
 
-.domain-actions {
+.domain-actions-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.domain-status-actions {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     flex-wrap: wrap;
-    justify-content: flex-end;
 }
 
-.domain-actions .btn {
+.domain-verify-delete {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.domain-status-badge {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.75rem;
+    font-weight: 600;
+}
+
+.domain-actions-row .btn {
     white-space: nowrap;
+    font-size: 0.85rem;
+}
+
+.btn-verify-instructions i,
+.btn-verify-domain i,
+.btn-delete-domain i {
+    font-size: 1rem;
+    margin-right: 0.25rem;
 }
 
 /* Desktop: keep actions on same line */
@@ -1641,11 +1685,12 @@ tr:hover {
 
 /* Tablet optimization */
 @media (min-width: 581px) and (max-width: 768px) {
-    .domain-actions {
+    .domain-status-actions,
+    .domain-verify-delete {
         gap: 0.5rem;
     }
     
-    .domain-actions .btn {
+    .domain-actions-row .btn {
         font-size: 0.85rem;
         padding: 0.4rem 0.8rem;
     }
@@ -1706,34 +1751,79 @@ tr:hover {
     
     /* Mobile domain styles */
     .domain-item {
-        padding: 0.75rem !important;
+        padding: 0.875rem !important;
+        gap: 0.75rem !important;
     }
     
     .domain-url-row {
-        font-size: 0.9rem;
+        padding-bottom: 0.625rem !important;
+    }
+    
+    .domain-url-text {
+        font-size: 0.9rem !important;
     }
     
     .domain-actions-row {
-        flex-direction: row !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.625rem !important;
+    }
+    
+    /* First row: Status badge and Instructions button */
+    .domain-status-actions {
+        display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
+        width: 100% !important;
         gap: 0.5rem !important;
         flex-wrap: nowrap !important;
     }
     
-    .domain-actions {
-        margin-left: 0;
-        width: auto;
-        justify-content: flex-end;
-        gap: 0.5rem !important;
+    .domain-status-badge {
+        font-size: 0.75rem !important;
+        padding: 0.35rem 0.65rem !important;
+        flex-shrink: 0;
     }
     
-    .domain-actions .btn {
-        padding: 0.5rem 1rem !important;
-        font-size: 0.875rem !important;
-        min-height: 38px !important;
-        flex: 1;
-        min-width: auto;
+    .btn-verify-instructions {
+        flex: 1 !important;
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.8rem !important;
+        min-height: 36px !important;
+    }
+    
+    /* Second row: Verify Now and Delete buttons */
+    .domain-verify-delete {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+        gap: 0.5rem !important;
+        flex-wrap: nowrap !important;
+    }
+    
+    .btn-verify-domain {
+        flex: 1 !important;
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.8rem !important;
+        min-height: 36px !important;
+    }
+    
+    .btn-delete-domain {
+        flex: 1 !important;
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.8rem !important;
+        min-height: 36px !important;
+    }
+    
+    .btn-delete-text {
+        display: inline !important;
+    }
+    
+    /* Hide text for delete button on very small screens if needed */
+    .domain-actions-row .btn i {
+        font-size: 0.95rem !important;
+        margin-right: 0.3rem !important;
     }
     
     .logo {
@@ -3914,25 +4004,31 @@ async function loadArticles(page = 1) {
                 </div>
                 <div class="card-body collapsible-content" id="domainsContent">
                     ${currentData.domains.length > 0 ? currentData.domains.map(domain => `
-                        <div class="mobilearticle1 domain-item" style="display: flex; flex-direction: column; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 0.5rem; gap: 0.75rem;">
-                            <div class="domain-url-row" style="display: flex; align-items: center; width: 100%;">
-                                <span style="font-weight: 500; font-size: 0.95rem; word-break: break-all;">${domain.domain}</span>
+                        <div class="mobilearticle1 domain-item">
+                            <div class="domain-url-row">
+                                <span class="domain-url-text">${domain.domain}</span>
                             </div>
-                            <div class="domain-actions-row" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                    <span class="badge badge-${domain.verified ? 'success' : 'warning'}">
+                            <div class="domain-actions-row">
+                                <div class="domain-status-actions">
+                                    <span class="badge badge-${domain.verified ? 'success' : 'warning'} domain-status-badge">
                                         ${domain.verified ? '&#10003; Verified' : '&#9203; Pending'}
                                     </span>
-                                    <div class="domain-actions" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                        ${!domain.verified ? `
-                                            <button class="btn btn-sm btn-verify-instructions" data-domain="${domain.domain}" data-txt="${domain.txt_record || ''}">Instructions</button>
-                                            <button class="btn btn-sm btn-primary btn-verify-domain" data-domain="${domain.domain}">Verify Now</button>
-                                        ` : ''}
-                                    </div>
+                                    ${!domain.verified ? `
+                                        <button class="btn btn-sm btn-secondary btn-verify-instructions" data-domain="${domain.domain}" data-txt="${domain.txt_record || ''}">
+                                            <i class="ri-information-line"></i> Instructions
+                                        </button>
+                                    ` : ''}
                                 </div>
-                                <button class="btn btn-sm btn-danger btn-delete-domain" data-domain="${domain.domain}">
-                                    <i class="ri-delete-bin-line"></i> Delete
-                                </button>
+                                <div class="domain-verify-delete">
+                                    ${!domain.verified ? `
+                                        <button class="btn btn-sm btn-primary btn-verify-domain" data-domain="${domain.domain}">
+                                            <i class="ri-checkbox-circle-line"></i> Verify Now
+                                        </button>
+                                    ` : ''}
+                                    <button class="btn btn-sm btn-danger btn-delete-domain" data-domain="${domain.domain}">
+                                        <i class="ri-delete-bin-line"></i> <span class="btn-delete-text">Delete</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     `).join('') : `
