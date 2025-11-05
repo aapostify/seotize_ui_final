@@ -7716,9 +7716,29 @@ async function showArticleModal(articleId = null) {
             // Fetch and display current usage stats from API
             (async () => {
                 try {
-                    const response = await api('/users/dashboard');
-                    if (response && response.data && response.data.usage && response.data.usage.ai) {
-                        window.updateUsageDisplay(response.data.usage.ai);
+                    const response = await api('/dashboard/articles');
+                    if (response && response.data) {
+                        let usageData = null;
+                        
+                        // Check if usage is in the format from generate-article (direct usage object)
+                        if (response.data.usage && response.data.usage.ai_generations_limit !== undefined) {
+                            usageData = response.data.usage;
+                        }
+                        // Check if usage is in the format from loadArticles (user.usage.ai)
+                        else if (response.data.user && response.data.user.usage && response.data.user.usage.ai) {
+                            const usage = response.data.user.usage.ai;
+                            // Convert usage format from loadArticles format to updateUsageDisplay format
+                            usageData = {
+                                ai_generations_limit: usage.limit || usage.ai_generations_limit,
+                                ai_generations_remaining: usage.remaining || usage.ai_generations_remaining,
+                                ai_generations_used: usage.used || usage.ai_generations_used,
+                                percentage_remaining: usage.percentage || usage.percentage_remaining
+                            };
+                        }
+                        
+                        if (usageData) {
+                            window.updateUsageDisplay(usageData);
+                        }
                     }
                 } catch (error) {
                     console.error('Failed to fetch usage stats:', error);
@@ -7860,8 +7880,8 @@ async function showArticleModal(articleId = null) {
                         }
                         
                         // Update usage
-                        if (data.usage) {
-                            window.updateUsageDisplay(data.usage);
+                        if (data.data && data.data.usage) {
+                            window.updateUsageDisplay(data.data.usage);
                         }
                         
                         showToast('Article generated successfully!', 'success');
@@ -7943,8 +7963,8 @@ async function showArticleModal(articleId = null) {
                         }
                         
                         // Update usage
-                        if (data.usage) {
-                            window.updateUsageDisplay(data.usage);
+                        if (data.data && data.data.usage) {
+                            window.updateUsageDisplay(data.data.usage);
                         }
                     } else {
                         throw new Error(data.error?.message || 'Failed to generate');
