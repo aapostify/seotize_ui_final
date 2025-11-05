@@ -4177,7 +4177,7 @@ async function loadArticles(page = 1) {
                                     <span style="font-size: 0.875rem; font-weight: 600; color: ${currentData.usage.ai.percentage > 80 ? 'var(--danger)' : 'var(--primary)'};">${ currentData.usage.ai.percentage}%</span>
                                 </div>
                                 <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
-                                    <div style="height: 100%; background: background: linear-gradient(90deg, #e63946, #ff6b6b); width: ${currentData.usage.ai.percentage}%; transition: width 0.3s ease;"></div>
+                                    <div style="height: 100%; background: linear-gradient(90deg, #e63946, #ff6b6b); width: ${currentData.usage.ai.percentage}%; transition: width 0.3s ease;"></div>
                                 </div>
                                 <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
                                     <span><strong>${currentData.usage.ai.used}</strong> used</span>
@@ -4222,6 +4222,26 @@ async function loadArticles(page = 1) {
                                 <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
                                     <span><strong>${currentData.usage.images.used}</strong> used</span>
                                     <span><strong>${currentData.usage.images.remaining}</strong> remaining / <strong>${currentData.usage.images.limit}</strong> total</span>
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            <!-- Keywords Usage -->
+                            ${currentData.usage.keywords ? `
+                            <div class="usage-category">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i class="ri-key-line" style="color: #9c36b5; font-size: 1.1rem;"></i>
+                                        <span style="font-weight: 600; color: var(--text);">Keywords</span>
+                                    </div>
+                                    <span style="font-size: 0.875rem; font-weight: 600; color: ${currentData.usage.keywords.percentage > 80 ? 'var(--danger)' : '#9c36b5'};">${ currentData.usage.keywords.percentage}%</span>
+                                </div>
+                                <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
+                                    <div style="height: 100%; background: linear-gradient(90deg, ${currentData.usage.keywords.percentage > 80 ? 'var(--danger)' : '#9c36b5'}, ${currentData.usage.keywords.percentage > 80 ? '#ff6b6b' : '#c084fc'}); width: ${currentData.usage.keywords.percentage}%; transition: width 0.3s ease;"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
+                                    <span><strong>${currentData.usage.keywords.used}</strong> used</span>
+                                    <span><strong>${currentData.usage.keywords.remaining}</strong> remaining / <strong>${currentData.usage.keywords.limit}</strong> total</span>
                                 </div>
                             </div>
                             ` : ''}
