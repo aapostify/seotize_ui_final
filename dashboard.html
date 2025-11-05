@@ -7463,7 +7463,7 @@ async function showArticleModal(articleId = null) {
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                         <label class="form-label" style="margin-bottom: 0;"><i class="ri-text"></i> Title</label>
                         <button type="button" class="ai-btn" id="ai-generate-all-btn">
-                            <i class="ri-magic-line"></i> <span>Generate All</span>
+                            <i class="ri-magic-line"></i> <span>Generate by AI</span>
                         </button>
                     </div>
                     <input type="text" id="article-subject" class="form-input" name="subject" required 
@@ -7475,9 +7475,6 @@ async function showArticleModal(articleId = null) {
                 <div class="article-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                         <label class="form-label" style="margin-bottom: 0;"><i class="ri-file-text-line"></i> Content</label>
-                        <button type="button" class="ai-btn" id="ai-content-btn">
-                            <i class="ri-magic-line"></i> <span>Generate</span>
-                        </button>
                     </div>
                     
                     <div class="body-editor-container">
@@ -7579,22 +7576,20 @@ async function showArticleModal(articleId = null) {
                 <div class="section-header">
                     <h3 class="section-title"><i class="ri-pie-chart-line"></i> AI Usage</h3>
                 </div>
-                <div class="usage-stats">
-                    <div class="usage-item">
-                        <span class="usage-value" id="usage-used">${currentData.usage?.ai?.used || 0}</span>
-                        <span class="usage-label">Used</span>
+                <div class="usage-category" id="usage-stats-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="ri-robot-line" style="color: var(--primary); font-size: 1.1rem;"></i>
+                            <span style="font-weight: 600; color: var(--text);">AI Generations</span>
+                        </div>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: var(--primary);" id="usage-percentage">0%</span>
                     </div>
-                    <div class="usage-item">
-                        <span class="usage-value" id="usage-limit">${currentData.usage?.ai?.limit || 0}</span>
-                        <span class="usage-label">Limit</span>
+                    <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
+                        <div id="usage-progress-bar" style="height: 100%; background: linear-gradient(90deg, var(--primary), var(--success)); width: 0%; transition: width 0.3s ease;"></div>
                     </div>
-                    <div class="usage-item">
-                        <span class="usage-value" id="usage-remaining">${currentData.usage?.ai?.remaining || 0}</span>
-                        <span class="usage-label">Remaining</span>
-                    </div>
-                    <div class="usage-item">
-                        <span class="usage-value" id="usage-percentage">${currentData.usage?.ai?.percentage !== undefined ? currentData.usage.ai.percentage + '%' : '0%'}</span>
-                        <span class="usage-label">Available</span>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
+                        <span><strong id="usage-used">0</strong> used</span>
+                        <span><strong id="usage-remaining">0</strong> remaining / <strong id="usage-limit">0</strong> total</span>
                     </div>
                 </div>
             </div>
@@ -7689,10 +7684,33 @@ async function showArticleModal(articleId = null) {
             // Helper: Update usage display
             window.updateUsageDisplay = (usage) => {
                 if (!usage) return;
-                document.getElementById('usage-used').textContent = usage.used || 0;
-                document.getElementById('usage-limit').textContent = usage.limit || 0;
-                document.getElementById('usage-remaining').textContent = usage.remaining || 0;
-                document.getElementById('usage-percentage').textContent = (usage.percentage !== undefined ? usage.percentage + '%' : '0%');
+                
+                // Handle API response format: ai_generations_limit, ai_generations_remaining, ai_generations_used, percentage_remaining
+                const used = usage.ai_generations_used !== undefined ? usage.ai_generations_used : (usage.used || 0);
+                const limit = usage.ai_generations_limit !== undefined ? usage.ai_generations_limit : (usage.limit || 0);
+                const remaining = usage.ai_generations_remaining !== undefined ? usage.ai_generations_remaining : (usage.remaining || 0);
+                const percentageRemaining = usage.percentage_remaining !== undefined ? usage.percentage_remaining : (usage.percentage !== undefined ? usage.percentage : 0);
+                const percentageUsed = limit > 0 ? Math.round((used / limit) * 100) : 0;
+                
+                // Update text values
+                document.getElementById('usage-used').textContent = used;
+                document.getElementById('usage-limit').textContent = limit;
+                document.getElementById('usage-remaining').textContent = remaining;
+                document.getElementById('usage-percentage').textContent = percentageRemaining + '%';
+                
+                // Update progress bar
+                const progressBar = document.getElementById('usage-progress-bar');
+                if (progressBar) {
+                    progressBar.style.width = percentageUsed + '%';
+                    // Change color if above 80%
+                    if (percentageUsed > 80) {
+                        progressBar.style.background = 'linear-gradient(90deg, var(--danger), #ff6b6b)';
+                        document.getElementById('usage-percentage').style.color = 'var(--danger)';
+                    } else {
+                        progressBar.style.background = 'linear-gradient(90deg, var(--primary), var(--success))';
+                        document.getElementById('usage-percentage').style.color = 'var(--primary)';
+                    }
+                }
             };
 
             // Fetch and display current usage stats from API
@@ -7774,7 +7792,7 @@ async function showArticleModal(articleId = null) {
                 e.preventDefault();
                 const btn = e.currentTarget;
                 const url = document.getElementById('article-url').value.trim();
-                const body = document.getElementById('article-body').value.trim();
+                const subject = document.getElementById('article-subject').value.trim();
                 
                 // Validate that domain is selected
                 if (!url) {
@@ -7788,12 +7806,12 @@ async function showArticleModal(articleId = null) {
                 window.showGenStatus('Generating complete article with AI...');
                 
                 try {
-                    const payload = body ? { 
-                        url: url,
-                        subject: body.substring(0, 100) 
+                    // Build payload: with subject if provided, without subject if empty
+                    const payload = subject ? { 
+                        subject: subject,
+                        url: url
                     } : { 
-                        url: url,
-                        auto_generate: true 
+                        url: url
                     };
                     
                     const response = await fetch(`${API_BASE}/generate-article`, {
@@ -7842,8 +7860,8 @@ async function showArticleModal(articleId = null) {
                         }
                         
                         // Update usage
-                        if (data.data.usage) {
-                            window.updateUsageDisplay(data.data.usage);
+                        if (data.usage) {
+                            window.updateUsageDisplay(data.usage);
                         }
                         
                         showToast('Article generated successfully!', 'success');
@@ -7855,88 +7873,7 @@ async function showArticleModal(articleId = null) {
                 } finally {
                     btn.disabled = false;
                     btn.classList.remove('generating');
-                    btn.innerHTML = '<i class="ri-magic-line"></i> <span>Generate All</span>';
-                    window.hideGenStatus();
-                }
-            });
-
-            // AI Generate Content Only
-            document.getElementById('ai-content-btn').addEventListener('click', async (e) => {
-                e.preventDefault();
-                const btn = e.currentTarget;
-                const url = document.getElementById('article-url').value.trim();
-                const subject = document.getElementById('article-subject').value.trim();
-                
-                // Validate that domain is selected
-                if (!url) {
-                    showToast('Please select a domain first', 'warning');
-                    return;
-                }
-                
-                if (!subject) {
-                    showToast('Enter a title first', 'warning');
-                    return;
-                }
-                
-                btn.disabled = true;
-                btn.classList.add('generating');
-                btn.innerHTML = '<i class="ri-loader-4-line"></i> <span>Generating</span><div class="progress-dots"><span></span><span></span><span></span></div>';
-                window.showGenStatus('Creating article content with AI...');
-                
-                try {
-                    const response = await fetch(`${API_BASE}/generate-article`, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'Session-Token': sessionToken 
-                        },
-                        body: JSON.stringify({ url: url, subject })
-                    });
-                    
-                    const data = await response.json();
-                    if (data.status === 'success' && data.data) {
-                        // Set body
-                        if (data.data.body) {
-                            document.getElementById('article-body').value = data.data.body;
-                            document.getElementById('body-count').textContent = data.data.body.length;
-                        }
-                        
-                        // Handle AI-generated image URL
-                        if (data.data.image_url) {
-                            window.imageUrls.push(data.data.image_url);
-                            document.getElementById('image-urls').value = window.imageUrls.join(',');
-                            
-                            // Add preview
-                            const div = document.createElement('div');
-                            div.className = 'preview-item';
-                            div.dataset.isAiGenerated = 'true';
-                            div.innerHTML = `
-                                <img src="${data.data.image_url}" alt="AI Generated">
-                                <button type="button" class="preview-refresh" onclick="window.refreshAiImage('${data.data.image_url}', this)" title="Reload image">
-                                    <i class="ri-refresh-line"></i>
-                                </button>
-                                <button type="button" class="preview-remove" onclick="window.removeUrlPreview('${data.data.image_url}', this)">
-                                    <i class="ri-close-line"></i>
-                                </button>
-                            `;
-                            document.getElementById('preview-container').appendChild(div);
-                        }
-                        
-                        // Update usage
-                        if (data.data.usage) {
-                            window.updateUsageDisplay(data.data.usage);
-                        }
-                        
-                        showToast('Content generated successfully!', 'success');
-                    } else {
-                        throw new Error(data.error?.message || 'Failed to generate');
-                    }
-                } catch (error) {
-                    showToast(error.message, 'error');
-                } finally {
-                    btn.disabled = false;
-                    btn.classList.remove('generating');
-                    btn.innerHTML = '<i class="ri-magic-line"></i> <span>Generate</span>';
+                    btn.innerHTML = '<i class="ri-magic-line"></i> <span>Generate by AI</span>';
                     window.hideGenStatus();
                 }
             });
@@ -8006,8 +7943,8 @@ async function showArticleModal(articleId = null) {
                         }
                         
                         // Update usage
-                        if (data.data.usage) {
-                            window.updateUsageDisplay(data.data.usage);
+                        if (data.usage) {
+                            window.updateUsageDisplay(data.usage);
                         }
                     } else {
                         throw new Error(data.error?.message || 'Failed to generate');
