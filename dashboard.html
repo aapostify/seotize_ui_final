@@ -7689,14 +7689,13 @@ async function showArticleModal(articleId = null) {
                 const used = usage.ai_generations_used !== undefined ? usage.ai_generations_used : (usage.used || 0);
                 const limit = usage.ai_generations_limit !== undefined ? usage.ai_generations_limit : (usage.limit || 0);
                 const remaining = usage.ai_generations_remaining !== undefined ? usage.ai_generations_remaining : (usage.remaining || 0);
-                const percentageRemaining = usage.percentage_remaining !== undefined ? usage.percentage_remaining : (usage.percentage !== undefined ? usage.percentage : 0);
                 const percentageUsed = limit > 0 ? Math.round((used / limit) * 100) : 0;
                 
                 // Update text values
                 document.getElementById('usage-used').textContent = used;
                 document.getElementById('usage-limit').textContent = limit;
                 document.getElementById('usage-remaining').textContent = remaining;
-                document.getElementById('usage-percentage').textContent = percentageRemaining + '%';
+                document.getElementById('usage-percentage').textContent = percentageUsed + '%';
                 
                 // Update progress bar
                 const progressBar = document.getElementById('usage-progress-bar');
