@@ -4175,10 +4175,10 @@ async function loadArticles(page = 1) {
                                         <i class="ri-robot-line" style="color: var(--primary); font-size: 1.1rem;"></i>
                                         <span style="font-weight: 600; color: var(--text);">AI Generations</span>
                                     </div>
-                                    <span style="font-size: 0.875rem; font-weight: 600; color: ${currentData.usage.ai.percentage > 80 ? 'var(--danger)' : 'var(--primary)'};">${ currentData.usage.ai.percentage}%</span>
+                                    <span style="font-size: 0.875rem; font-weight: 600;">${currentData.usage.ai.percentage}%</span>
                                 </div>
                                 <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
-                                    <div style="height: 100%; background: linear-gradient(90deg, #e63946, #ff6b6b); width: ${currentData.usage.ai.percentage}%; transition: width 0.3s ease;"></div>
+                                    <div style="height: 100%; width: ${currentData.usage.ai.percentage}%; transition: width 0.3s ease, background-color 0.3s ease; background: ${currentData.usage.ai.percentage >= 100 ? '#8b5cf6' : currentData.usage.ai.percentage >= 10 ? '#10b981' : '#ef4444'};"></div>
                                 </div>
                                 <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
                                     <span><strong>${currentData.usage.ai.used}</strong> used</span>
@@ -7583,7 +7583,7 @@ async function showArticleModal(articleId = null) {
                             <i class="ri-robot-line" style="color: var(--primary); font-size: 1.1rem;"></i>
                             <span style="font-weight: 600; color: var(--text);">AI Generations</span>
                         </div>
-                        <span style="font-size: 0.875rem; font-weight: 600; color: var(--primary);" id="usage-percentage">0%</span>
+                        <span style="font-size: 0.875rem; font-weight: 600;" id="usage-percentage">0%</span>
                     </div>
                     <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
                         <div id="usage-progress-bar" style="height: 100%; width: 0%; transition: width 0.3s ease, background-color 0.3s ease;"></div>
