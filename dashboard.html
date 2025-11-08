@@ -4195,10 +4195,10 @@ async function loadArticles(page = 1) {
                                         <i class="ri-article-line" style="color: var(--success); font-size: 1.1rem;"></i>
                                         <span style="font-weight: 600; color: var(--text);">Articles</span>
                                     </div>
-                                    <span style="font-size: 0.875rem; font-weight: 600; color: ${currentData.usage.articles.percentage > 80 ? 'var(--danger)' : 'var(--success)'};">${ currentData.usage.articles.percentage}%</span>
+                                    <span style="font-size: 0.875rem; font-weight: 600;">${currentData.usage.articles.percentage}%</span>
                                 </div>
                                 <div class="progress-bar" style="height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
-                                    <div class="progress-fill" style="height: 100%; background: ${currentData.usage.articles.percentage > 80 ? 'var(--danger)' : 'var(--success)'}; width: ${currentData.usage.articles.percentage}%; transition: width 0.3s ease, background-color 0.3s ease;"></div>
+                                    <div class="progress-fill" style="height: 100%; width: ${currentData.usage.articles.percentage}%; transition: width 0.3s ease, background-color 0.3s ease; background: ${currentData.usage.articles.percentage >= 100 ? '#8b5cf6' : currentData.usage.articles.percentage >= 10 ? '#10b981' : '#ef4444'};"></div>
                                 </div>
                                 <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
                                     <span><strong>${currentData.usage.articles.used}</strong> used</span>
@@ -4215,10 +4215,10 @@ async function loadArticles(page = 1) {
                                         <i class="ri-image-line" style="color: var(--warning); font-size: 1.1rem;"></i>
                                         <span style="font-weight: 600; color: var(--text);">Images</span>
                                     </div>
-                                    <span style="font-size: 0.875rem; font-weight: 600; color: ${currentData.usage.images.percentage > 80 ? 'var(--danger)' : 'var(--warning)'};">${ currentData.usage.images.percentage}%</span>
+                                    <span style="font-size: 0.875rem; font-weight: 600;">${currentData.usage.images.percentage}%</span>
                                 </div>
                                 <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
-                                    <div style="height: 100%; background: linear-gradient(90deg, ${currentData.usage.images.percentage > 80 ? 'var(--danger)' : 'var(--warning)'}, ${currentData.usage.images.percentage > 80 ? '#ff6b6b' : '#ffc107'}); width: ${currentData.usage.images.percentage}%; transition: width 0.3s ease;"></div>
+                                    <div style="height: 100%; width: ${currentData.usage.images.percentage}%; transition: width 0.3s ease, background-color 0.3s ease; background: ${currentData.usage.images.percentage >= 100 ? '#8b5cf6' : currentData.usage.images.percentage >= 10 ? '#10b981' : '#ef4444'};"></div>
                                 </div>
                                 <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
                                     <span><strong>${currentData.usage.images.used}</strong> used</span>
