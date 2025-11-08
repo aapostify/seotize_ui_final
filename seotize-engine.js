@@ -40,7 +40,9 @@
         currentArrow: null,
         arrowUpdateInterval: null,
         isProcessing: false,
-        dependenciesLoaded: false
+        dependenciesLoaded: false,
+        turnstileReady: false,
+        tasksData: null
     };
 
     let domCache = null;
@@ -138,6 +140,24 @@
         });
     }
 
+    // NEW: Fast initial request without waiting for Turnstile
+    async function fetchPartnerSubtasksFast(uniqueId) {
+        const response = await fetch(CONFIG.API_ENDPOINTS.GET_TASKS, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                unique_id: uniqueId,
+                'cf-turnstile-response': '' // Empty token for fast initial request
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+    }
+
     async function fetchPartnerSubtasks(uniqueId, turnstileToken) {
         const response = await fetch(CONFIG.API_ENDPOINTS.GET_TASKS, {
             method: 'POST',
@@ -177,13 +197,13 @@
         const coin = document.createElement('div');
         coin.className = 'seotize-coin';
         coin.setAttribute('data-subtask-id', subtaskId);
-        coin.innerHTML = '💎'; // Back to text emoji
+        coin.innerHTML = '💎';
 
         Object.assign(coin.style, {
             position: 'absolute',
             left: `${xPosition}px`,
             top: `${yPosition}px`,
-            fontSize: `${CONFIG.COIN.SIZE}px`, // Use font-size
+            fontSize: `${CONFIG.COIN.SIZE}px`,
             cursor: 'pointer',
             zIndex: '999999',
             pointerEvents: 'auto',
@@ -276,7 +296,6 @@
         createArrowToCoin(coin);
     }
 
-    // Back to v2 arrow logic
     function createArrowToCoin(targetCoin) {
         if (state.currentArrow) {
             if (typeof gsap !== 'undefined') {
@@ -292,7 +311,7 @@
 
         const arrow = document.createElement('div');
         arrow.className = 'seotize-arrow';
-        arrow.innerHTML = '👇'; // Back to text emoji
+        arrow.innerHTML = '👇';
 
         Object.assign(arrow.style, {
             position: 'fixed',
@@ -423,6 +442,7 @@
 
             showLoading('Submitting task...');
 
+            // Wait for Turnstile token before submitting
             const token = await waitForTurnstileToken();
             const result = await submitTask(subtaskId, token);
 
@@ -434,9 +454,6 @@
 
                 const remainingTasks = state.coinElements.length - (state.currentCoinIndex + 1);
 
-                // ===================================
-                // == GSAP EMOJI POPUP CHANGE HERE ==
-                // ===================================
                 await Swal.fire({
                     title: `GOOD JOB, ${remainingTasks} MORE!`,
                     html: `
@@ -456,7 +473,6 @@
                         gsap.from(emoji, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
                     }
                 });
-                // ===================================
 
                 const allTasksComplete = result.data?.all_tasks_complete;
 
@@ -466,9 +482,6 @@
                     const coinElements = document.querySelectorAll('.seotize-coin');
                     coinElements.forEach(el => el.style.pointerEvents = 'auto');
                 } else {
-                    // ===================================
-                    // == GSAP EMOJI POPUP CHANGE HERE ==
-                    // ===================================
                     await Swal.fire({
                         title: 'CONGRATULATION!',
                         html: `
@@ -488,7 +501,6 @@
                             gsap.from(emoji, { scale: 0, opacity: 0, y: -50, duration: 0.8, ease: 'bounce.out' });
                         }
                     });
-                    // ===================================
                     
                     window.location.href = 'https://seotize.net/partner/dashboard';
                 }
@@ -511,9 +523,6 @@
         }
     }
 
-    // ===================================
-    // == POPUP CSS CHANGES HERE ==
-    // ===================================
     function injectStyles() {
         const style = document.createElement('style');
         style.textContent = `
@@ -542,7 +551,6 @@
                 height: 0 !important;
             }
 
-            /* POPUP STYLES */
             .swal2-popup.seotize-popup {
                 border-radius: 24px !important;
                 padding: 2.5rem 2rem !important;
@@ -551,7 +559,6 @@
                 border: 2px solid rgba(99, 102, 241, 0.1) !important;
             }
 
-            /* NEW: GSAP Emoji Style */
             .seotize-gsap-emoji {
                 font-size: 5rem;
                 line-height: 1;
@@ -568,7 +575,7 @@
                 -webkit-background-clip: text !important;
                 -webkit-text-fill-color: transparent !important;
                 background-clip: text !important;
-                margin: 0 !important; /* Removed bottom margin */
+                margin: 0 !important;
                 letter-spacing: -0.5px !important;
             }
             
@@ -595,7 +602,6 @@
                 color: #6b7280 !important;
             }
             
-            /* Hide default icon placeholder */
             .swal2-icon {
                 display: none !important;
             }
@@ -607,7 +613,6 @@
         `;
         domCache.head.appendChild(style);
     }
-    // ===================================
 
     async function waitForDependencies() {
         return new Promise((resolve) => {
@@ -625,17 +630,19 @@
         });
     }
 
-    async function initializeEngine() {
+    // NEW: Fast initialization that doesn't wait for Turnstile
+    async function initializeEngineFast() {
         try {
+            // Wait only for essential dependencies (not Turnstile)
             await waitForDependencies();
 
             state.uniqueId = getUniqueId();
-            const token = await waitForTurnstileToken();
-            const data = await fetchPartnerSubtasks(state.uniqueId, token);
-
-            closeLoading();
+            
+            // Make fast request immediately without Turnstile token
+            const data = await fetchPartnerSubtasksFast(state.uniqueId);
 
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
+                closeLoading();
                 return;
             }
 
@@ -644,9 +651,7 @@
                 .map(task => task.subtask_id);
 
             if (state.coins.length === 0) {
-                // ===================================
-                // == GSAP EMOJI POPUP CHANGE HERE ==
-                // ===================================
+                closeLoading();
                 Swal.fire({
                     title: 'All Done!',
                     html: `
@@ -662,13 +667,12 @@
                         gsap.from(emoji, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
                     }
                 });
-                // ===================================
                 return;
             }
 
-            // ===================================
-            // == GSAP EMOJI POPUP CHANGE HERE ==
-            // ===================================
+            closeLoading();
+
+            // Show welcome message
             await Swal.fire({
                 title: 'Welcome Seotize Partner!',
                 html: `
@@ -688,13 +692,14 @@
                     gsap.from(emoji, { scale: 0, opacity: 0, rotation: 180, duration: 1, ease: 'elastic.out(1, 0.5)' });
                 }
             });
-            // ===================================
 
+            // Render and display coins
             renderCoins();
             displayNextCoin();
 
         } catch (error) {
             console.error('Seotize initialization error:', error);
+            closeLoading();
         }
     }
 
@@ -709,10 +714,13 @@
 
     async function loadDependencies() {
         try {
-            await loadScript(CONFIG.CDN.CRYPTO);
-            await loadScript(CONFIG.CDN.SWEETALERT);
-            await loadScript(CONFIG.CDN.GSAP);
-            await loadScript(CONFIG.CDN.TURNSTILE, true);
+            // Load all scripts in parallel for faster loading
+            await Promise.all([
+                loadScript(CONFIG.CDN.CRYPTO),
+                loadScript(CONFIG.CDN.SWEETALERT),
+                loadScript(CONFIG.CDN.GSAP),
+                loadScript(CONFIG.CDN.TURNSTILE, true)
+            ]);
 
             return true;
         } catch (error) {
@@ -754,10 +762,14 @@
         if (!loaded) return;
 
         setupTurnstile();
+        
+        // Start fast initialization immediately
+        initializeEngineFast();
     }
 
+    // Turnstile callback - no longer needed for initialization
     window.onloadTurnstileCallback = function() {
-        initializeEngine();
+        state.turnstileReady = true;
     };
 
     if (document.readyState === 'loading') {
