@@ -6170,6 +6170,7 @@ function initializeTaskAnalyticsChart(sortedDates) {
 }
 // Recharge Task
 // [NEW] Rebuilt Recharge Task Modal using SweetAlert2
+// [NEW] Rebuilt Recharge Task Modal using SweetAlert2
 async function rechargeTask(taskId) {
     // Find the task to show its URL in the modal
     const task = currentData.tasks.find(t => t._id === taskId);
@@ -6270,7 +6271,7 @@ async function rechargeTask(taskId) {
             const { amount, provider, taskId } = result.value;
 
             try {
-                // This API call now correctly includes the amount
+                // This is the first attempt
                 const response = await api('/recharge', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -6302,7 +6303,71 @@ async function rechargeTask(taskId) {
                 }
 
             } catch (error) {
-                Swal.fire('Error!', 'Failed to initiate recharge: ' + error.message, 'error');
+                // START OF MODIFIED SECTION
+                // Check for the specific 409 error
+                if (error.message === 'A pending recharge exists') {
+                    Swal.fire({
+                        title: 'Pending Recharge Exists',
+                        html: "You already have a pending recharge. If you proceed, the previous pending recharge will be cancelled.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: 'var(--primary)',
+                        confirmButtonText: 'Proceed & Cancel Previous',
+                        cancelButtonText: 'Cancel',
+                        customClass: { popup: 'swal2-toast' }
+                    }).then(async (proceedResult) => {
+                        if (proceedResult.isConfirmed) {
+                            // User wants to proceed, send the request again with cancel_previous: true
+                            try {
+                                Swal.fire({
+                                    title: 'Cancelling and Recharging...',
+                                    didOpen: () => Swal.showLoading(),
+                                    allowOutsideClick: false,
+                                    customClass: { popup: 'swal2-toast' }
+                                });
+                                
+                                const response = await api('/recharge', {
+                                    method: 'POST',
+                                    body: JSON.stringify({
+                                        task_ids: [taskId],
+                                        amount: amount,
+                                        payment_method: provider,
+                                        cancel_previous: true // The new key to override
+                                    })
+                                });
+
+                                if (response.data.payment_url) {
+                                    Swal.fire({
+                                        title: 'Redirecting...',
+                                        text: 'Redirecting you to the new payment page.',
+                                        icon: 'success',
+                                        timer: 2000,
+                                        showConfirmButton: false,
+                                        customClass: { popup: 'swal2-toast' }
+                                    });
+                                    window.open(response.data.payment_url, '_blank');
+                                } else {
+                                    showToast('Task recharged successfully!', 'success');
+                                }
+
+                                // Refresh the list
+                                if (document.querySelector('.nav-item[data-page="tasks"]').classList.contains('active')) {
+                                    loadTasks();
+                                } else {
+                                    loadDashboard();
+                                }
+
+                            } catch (retryError) {
+                                // Handle error on the *second* attempt
+                                Swal.fire('Error!', 'Failed to initiate recharge: ' + retryError.message, 'error');
+                            }
+                        }
+                    });
+                } else {
+                    // It was a different error, show the generic message
+                    Swal.fire('Error!', 'Failed to initiate recharge: ' + error.message, 'error');
+                }
+                // END OF MODIFIED SECTION
             }
         }
     });
