@@ -3067,6 +3067,42 @@ let paginationState = {
 };
 
 // Initialize
+
+
+
+/**
+ * [NEW FUNCTION]
+ * Handles the redirect back from a payment provider (Stripe, OxaPay).
+ * It checks the URL for 'transaction_status' and 'payment_id'.
+ */
+function handlePaymentRedirect() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('transaction_status');
+    const paymentId = urlParams.get('payment_id');
+
+    if (status === 'success' && paymentId) {
+        // Payment was successful, show the details modal
+        // We use a small timeout to let the dashboard load first
+        setTimeout(() => {
+            viewPaymentDetails(paymentId);
+        }, 1000);
+
+        // Clean the URL so the popup doesn't show on every refresh
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+    } else if (status === 'cancel') {
+        // Payment was cancelled
+        setTimeout(() => {
+            showToast('Your payment was cancelled.', 'warning');
+        }, 1000);
+
+        // Clean the URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+}
+   
+
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     if (!sessionToken) {
         window.location.href = '/login.html';
@@ -3074,6 +3110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     initializeEventListeners();
+    handlePaymentRedirect(); // <-- THIS IS THE NEW LINE YOU ARE ADDING
     loadDashboard();
     initializeTheme();
 
