@@ -6850,6 +6850,7 @@ function initializeArticleCharts(countries, browsers, devices, sortedDates) {
 }
 
 // ADD THIS NEW, ALL-IN-ONE FUNCTION
+// ADD THIS NEW, ALL-IN-ONE FUNCTION
 async function showArticleModal(articleId = null) {
     const isEdit = !!articleId;
     let articleData = null;
@@ -7561,7 +7562,6 @@ async function showArticleModal(articleId = null) {
     <div class="article-modal-wrapper">
         <div class="article-main-content">
             <form id="articleForm">
-                <!-- Title -->
                 <div class="article-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                         <label class="form-label" style="margin-bottom: 0;"><i class="ri-text"></i> Title</label>
@@ -7574,7 +7574,6 @@ async function showArticleModal(articleId = null) {
                     <div class="char-count"><span id="title-count">0</span>/200</div>
                 </div>
 
-                <!-- Content -->
                 <div class="article-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                         <label class="form-label" style="margin-bottom: 0;"><i class="ri-file-text-line"></i> Content</label>
@@ -7618,7 +7617,6 @@ async function showArticleModal(articleId = null) {
         </div>
 
         <div class="article-sidebar">
-            <!-- Domain -->
             <div class="article-section">
                 <label class="form-label"><i class="ri-global-line"></i> Domain</label>
                 <select class="form-select" id="article-url" name="url" required>
@@ -7629,7 +7627,6 @@ async function showArticleModal(articleId = null) {
                 </select>
             </div>
 
-            <!-- Current Images -->
             ${isEdit && articleData && articleData.images && articleData.images.length > 0 ? `
             <div class="article-section">
                 <div class="section-header">
@@ -7637,8 +7634,29 @@ async function showArticleModal(articleId = null) {
                 </div>
                 <div class="image-gallery" id="current-images">
                     ${articleData.images.map((img, i) => {
-                        const url = typeof img === 'string' ? img : (img.url || img);
-                        const id = typeof img === 'object' ? (img.id || img.image_id || 'img_' + i) : 'img_' + i;
+                        
+                        // --- [START OF FIX] ---
+                        // This block robustly finds the URL and the REAL ID
+                        let url = '';
+                        let id = '';
+                        
+                        if (typeof img === 'string') {
+                            // This handles the old, buggy backend response (a list of strings)
+                            url = img;
+                            // Extract the UUID from the URL
+                            const match = url.match(/image-cdn\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
+                            if (match) {
+                                id = match[1]; // The REAL ID
+                            } else {
+                                id = 'img_fallback_' + i; // A fallback that will fail, but it's better than 'img_0'
+                            }
+                        } else if (typeof img === 'object' && img !== null) {
+                            // This handles the new, correct backend response (a list of objects)
+                            url = img.url;
+                            id = img.id; // The key is 'id'
+                        }
+                        // --- [END OF FIX] ---
+
                         return `
                         <div class="image-item" data-id="${id}">
                             <img src="${url}" alt="Image ${i + 1}" loading="lazy">
@@ -7657,7 +7675,6 @@ async function showArticleModal(articleId = null) {
             </div>
             ` : ''}
 
-            <!-- Upload New -->
             <div class="article-section">
                 <div class="section-header">
                     <h3 class="section-title"><i class="ri-upload-line"></i> ${isEdit ? 'Add New' : 'Upload'}</h3>
@@ -7674,7 +7691,6 @@ async function showArticleModal(articleId = null) {
                 <div id="preview-container" class="preview-grid"></div>
             </div>
 
-            <!-- AI Usage Stats -->
             <div class="article-section" id="usage-section" style="display: block;">
                 <div class="section-header">
                     <h3 class="section-title"><i class="ri-pie-chart-line"></i> AI Usage</h3>
@@ -7697,7 +7713,6 @@ async function showArticleModal(articleId = null) {
                 </div>
             </div>
 
-            <!-- Action Buttons -->
             <div class="article-section action-buttons-wrapper">
                 <div class="article-actions">
                     <button type="button" class="btn-save" id="article-save-btn">
