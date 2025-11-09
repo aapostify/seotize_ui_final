@@ -9247,24 +9247,90 @@ async function purchasePlan() {
         return;
     }
 
+    // This is the payload for the *first* attempt
     const payload = {
         package: purchaseSelection.plan,
         duration: purchaseSelection.duration,
         provider: document.getElementById('payment-provider').value,
         subscription: false,
-        cancel_previous: true
+        cancel_previous: true // This is for pending payments
     };
 
     try {
+        // --- FIRST ATTEMPT ---
+        // We try to buy the plan normally.
         const { data } = await api('/hosting/buy-package', {
             method: 'POST',
             body: JSON.stringify(payload)
         });
+        
+        // If it works, we redirect to payment.
         showToast("Redirecting to payment...", "success");
         window.open(data.payment_url, '_blank');
+
     } catch (error) {
-        console.error("Failed to initiate purchase", error);
-        showToast('Failed to start purchase: ' + error.message, 'error');
+        // --- ERROR HANDLING ---
+        console.error("Failed to initiate purchase (first attempt)", error);
+
+        // Check for the specific error message you mentioned.
+        if (error && error.message && error.message.includes("Please set cancel_current_plan=true")) {
+            
+            // --- SHOW CONFIRMATION POPUP ---
+            Swal.fire({
+                title: 'Active Plan Found',
+                html: `You already have an active hosting plan.<br><br>Proceeding will <strong>cancel and replace</strong> your current plan with this new one. Are you sure you want to continue?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'var(--primary)',
+                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Yes, Proceed',
+                customClass: { popup: 'swal2-toast' } // Use our theme
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    // User clicked "Yes, Proceed"
+                    
+                    // Create the new payload with the required 'cancel_current_plan: true'
+                    const newPayload = {
+                        ...payload, // Copy all the old properties (plan, duration, etc.)
+                        cancel_current_plan: true // Add the new key
+                    };
+
+                    Swal.fire({
+                        title: 'Processing...',
+                        didOpen: () => Swal.showLoading(),
+                        allowOutsideClick: false,
+                        customClass: { popup: 'swal2-toast' }
+                    });
+
+                    try {
+                        // --- SECOND ATTEMPT ---
+                        // We send the API request again, this time with the new payload.
+                        const { data } = await api('/hosting/buy-package', {
+                            method: 'POST',
+                            body: JSON.stringify(newPayload)
+                        });
+
+                        Swal.close();
+                        showToast("Redirecting to payment...", "success");
+                        window.open(data.payment_url, '_blank');
+
+                    } catch (retryError) {
+                        // Handle an error on the *second* attempt
+                        console.error("Failed to initiate purchase (second attempt)", retryError);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to start purchase: ' + retryError.message,
+                            customClass: { popup: 'swal2-toast' }
+                        });
+                    }
+                }
+            });
+            
+        } else {
+            // It was a different error, so we show the generic toast
+            showToast('Failed to start purchase: ' + error.message, 'error');
+        }
     }
 }
 
