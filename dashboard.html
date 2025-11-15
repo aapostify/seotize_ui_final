@@ -4174,6 +4174,7 @@ async function loadImages(page = 1) {
 }
 
 // Articles with Domains
+// Articles with Domains
 async function loadArticles(page = 1) {
     try {
         showSpinner();
@@ -4212,10 +4213,8 @@ async function loadArticles(page = 1) {
             </div>
         </div>
 
-        <!-- Domains and Usage Plan Section -->
-        <div class="domains-usage-container" style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
-            <!-- Domains Section -->
-            <div class="card" style="flex: 1; min-width: 0;">
+                <div class="domains-usage-container" style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="card" style="flex: 1; min-width: 0;">
                 <div class="card-header collapsible-header" onclick="toggleSection('domainsContent')" style="cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <i class="ri-arrow-down-s-line" id="domainsContentIcon" style="transition: transform 0.3s ease; display: none;"></i>
@@ -4243,13 +4242,19 @@ async function loadArticles(page = 1) {
                                 ${!domain.verified ? `
                                 <div class="domain-buttons-row">
                                     <button class="btn btn-sm btn-secondary btn-verify-instructions" data-domain="${domain.domain}" data-txt="${domain.txt_record || ''}">
-                                        <i class="ri-information-line"></i> Instructions
+                                        <i class="ri-information-line"></i> DNS Setup
                                     </button>
                                     <button class="btn btn-sm btn-primary btn-verify-domain" data-domain="${domain.domain}">
                                         <i class="ri-checkbox-circle-line"></i> Verify Now
                                     </button>
                                 </div>
-                                ` : ''}
+                                ` : `
+                                <div class="domain-buttons-row">
+                                    <button class="btn btn-sm btn-secondary btn-install-instructions" data-domain="${domain.domain}">
+                                        <i class="ri-code-s-slash-line"></i> Install Instructions
+                                    </button>
+                                </div>
+                                `}
                                 <div class="domain-verify-delete domain-verify-delete-desktop">
                                     <button class="btn btn-sm btn-danger btn-delete-domain" data-domain="${domain.domain}">
                                         <i class="ri-delete-bin-line"></i> <span class="btn-delete-text">Delete</span>
@@ -4265,8 +4270,7 @@ async function loadArticles(page = 1) {
                 </div>
             </div>
 
-            <!-- Usage Plan Section -->
-            <div class="card" style="flex: 0 0 380px; min-width: 0;">
+                        <div class="card" style="flex: 0 0 380px; min-width: 0;">
                 <div class="card-header collapsible-header" onclick="toggleSection('usageContent')" style="cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <i class="ri-arrow-down-s-line" id="usageContentIcon" style="transition: transform 0.3s ease; display: none;"></i>
@@ -4277,8 +4281,7 @@ async function loadArticles(page = 1) {
                 <div class="card-body collapsible-content" id="usageContent">
                     <div style="display: flex; flex-direction: column; gap: 1.25rem;">
                         ${currentData.usage && (currentData.usage.ai || currentData.usage.articles || currentData.usage.images) ? `
-                            <!-- AI Usage -->
-                            ${currentData.usage.ai ? `
+                                                ${currentData.usage.ai ? `
                             <div class="usage-category">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                                     <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -4297,8 +4300,7 @@ async function loadArticles(page = 1) {
                             </div>
                             ` : ''}
                             
-                            <!-- Articles Usage -->
-                            ${currentData.usage.articles ? `
+                                                ${currentData.usage.articles ? `
                             <div class="usage-category">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                                     <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -4317,8 +4319,7 @@ async function loadArticles(page = 1) {
                             </div>
                             ` : ''}
                             
-                            <!-- Images Usage -->
-                            ${currentData.usage.images ? `
+                                                ${currentData.usage.images ? `
                             <div class="usage-category">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                                     <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -4347,15 +4348,13 @@ async function loadArticles(page = 1) {
             </div>
         </div>
 
-        <!-- Articles Section -->
-        <div class="card">
+                <div class="card">
             <div class="card-header">
                 <h3 class="card-title">Published Articles</h3>
                 <span class="badge badge-primary">${paginationState.articles.total} articles</span>
             </div>
             <div class="card-body">
-                <!-- Desktop Table Version -->
-                <div class="table-container desktop-only">
+                            <div class="table-container desktop-only">
                     <table>
                         <thead>
                             <tr>
@@ -4414,8 +4413,7 @@ async function loadArticles(page = 1) {
                     </table>
                 </div>
 
-                <!-- Mobile Card Version -->
-                <div class="mobile-only">
+                                <div class="mobile-only">
                     ${currentData.articles.length > 0 ? currentData.articles.map(article => {
                         const publishedDate = new Date(article.creation_date).toLocaleDateString('en-US', {
                             month: 'short',
@@ -4426,8 +4424,7 @@ async function loadArticles(page = 1) {
                         return `
                         <div class="mobile-article-card" data-article-id="${article.article_id}" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; cursor: pointer; transition: var(--transition);">
 
-                            <!-- Header: Title and Domain -->
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                                                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
                                 <div style="flex: 1; min-width: 0;">
                                     <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600; line-height: 1.3; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${article.subject}</h4>
                                     <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
@@ -4441,8 +4438,7 @@ async function loadArticles(page = 1) {
                                 </div>
                             </div>
 
-                            <!-- Stats Row -->
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: var(--radius-sm);">
+                                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: var(--radius-sm);">
                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                     <span style="font-size: 0.75rem; color: var(--text-secondary);">Views:</span>
                                     <span class="badge badge-success" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">${formatNumber(article.total_views || 0)}</span>
@@ -4457,8 +4453,7 @@ async function loadArticles(page = 1) {
                                 </div>
                             </div>
 
-                            <!-- Actions -->
-                            <div style="display: flex; gap: 0.5rem;">
+                                                        <div style="display: flex; gap: 0.5rem;">
                                 <button class="btn btn-sm btn-view-article-mobile" data-article-id="${article.article_id}" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
                                     <i class="ri-eye-line"></i> Details
                                 </button>
@@ -4484,7 +4479,7 @@ async function loadArticles(page = 1) {
                 </div>
 
                 ${currentData.articles.length === 0 ? `
-                    <div class="empty-state">
+                <div class="empty-state">
                         <div class="empty-state-icon">
                             <i class="ri-article-line"></i>
                         </div>
@@ -4506,6 +4501,12 @@ async function loadArticles(page = 1) {
         document.querySelectorAll('.btn-verify-instructions').forEach(btn => {
             btn.addEventListener('click', () => {
                 showVerificationInstructions(btn.dataset.domain, btn.dataset.txt);
+            });
+        });
+        
+        document.querySelectorAll('.btn-install-instructions').forEach(btn => {
+            btn.addEventListener('click', () => {
+                showInstallInstructions(btn.dataset.domain);
             });
         });
 
