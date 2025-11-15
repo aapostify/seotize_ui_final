@@ -4174,414 +4174,413 @@ async function loadImages(page = 1) {
 }
 
 // Articles with Domains
-// Articles with Domains
 async function loadArticles(page = 1) {
-    try {
-        showSpinner();
+    try {
+        showSpinner();
 
-        // Single API call gets both articles and domains
-        const response = await api(`/dashboard/articles?page=${page}&page_size=10`);
-        const { data, pagination } = response;
+        // Single API call gets both articles and domains
+        const response = await api(`/dashboard/articles?page=${page}&page_size=10`);
+        const { data, pagination } = response;
 
-        // Extract articles and domains from the response
-        currentData.articles = data.articles || [];
-        currentData.domains = data.user?.domains || [];
-        
-        // Extract usage and plan data
-        currentData.usage = data.user?.usage || null;
-        currentData.plan = data.user?.plan || 'N/A';
+        // Extract articles and domains from the response
+        currentData.articles = data.articles || [];
+        currentData.domains = data.user?.domains || [];
+        
+        // Extract usage and plan data
+        currentData.usage = data.user?.usage || null;
+        currentData.plan = data.user?.plan || 'N/A';
 
-        // Update pagination state
-        paginationState.articles = {
-            page: pagination.current || page,
-            pageSize: pagination.size || 10,
-            total: pagination.total || 0,
-            hasNext: pagination.has_next || false
-        };
+        // Update pagination state
+        paginationState.articles = {
+            page: pagination.current || page,
+            pageSize: pagination.size || 10,
+            total: pagination.total || 0,
+            hasNext: pagination.has_next || false
+        };
 
-        const content = document.getElementById('content');
-        content.innerHTML = `
-        <div class="mobilearticle2" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <h2 style="font-size: 1.5rem; font-weight: 700;">Articles & Domains</h2>
-            <div style="display: flex; gap: 1rem;">
-                <button class="btn btn-secondary" id="addDomainBtn">
-                    <i class="ri-global-line"></i> Add Domain
-                </button>
-                <button class="btn btn-primary" id="createArticleBtn">
-                    <i class="ri-add-line"></i> Create Article
-                </button>
-            </div>
-        </div>
+        const content = document.getElementById('content');
+        content.innerHTML = `
+        <div class="mobilearticle2" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.5rem; font-weight: 700;">Articles & Domains</h2>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-secondary" id="addDomainBtn">
+                    <i class="ri-global-line"></i> Add Domain
+                </button>
+                <button class="btn btn-primary" id="createArticleBtn">
+                    <i class="ri-add-line"></i> Create Article
+                </button>
+            </div>
+        </div>
 
-                <div class="domains-usage-container" style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
-                        <div class="card" style="flex: 1; min-width: 0;">
-                <div class="card-header collapsible-header" onclick="toggleSection('domainsContent')" style="cursor: pointer;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="ri-arrow-down-s-line" id="domainsContentIcon" style="transition: transform 0.3s ease; display: none;"></i>
-                        <h3 class="card-title">Domain Verification</h3>
-                    </div>
-                    <span class="badge badge-primary">${currentData.domains.length} domains</span>
-                </div>
-                <div class="card-body collapsible-content" id="domainsContent">
-                    ${currentData.domains.length > 0 ? currentData.domains.map(domain => `
-                        <div class="mobilearticle1 domain-item">
-                            <div class="domain-url-row">
-                                <span class="domain-url-text">${domain.domain}</span>
-                            </div>
-                            <div class="domain-actions-row">
-                                <div class="domain-status-row">
-                                    <span class="badge badge-${domain.verified ? 'success' : 'warning'} domain-status-badge">
-                                        ${domain.verified ? '&#10003; Verified' : '&#9203; Pending'}
-                                    </span>
-                                    <div class="domain-verify-delete">
-                                        <button class="btn btn-sm btn-danger btn-delete-domain" data-domain="${domain.domain}">
-                                            <i class="ri-delete-bin-line"></i> <span class="btn-delete-text">Delete</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                ${!domain.verified ? `
-                                <div class="domain-buttons-row">
-                                    <button class="btn btn-sm btn-secondary btn-verify-instructions" data-domain="${domain.domain}" data-txt="${domain.txt_record || ''}">
-                                        <i class="ri-information-line"></i> DNS Setup
-                                    </button>
-                                    <button class="btn btn-sm btn-primary btn-verify-domain" data-domain="${domain.domain}">
-                                        <i class="ri-checkbox-circle-line"></i> Verify Now
-                                    </button>
-                                </div>
-                                ` : `
-                                <div class="domain-buttons-row">
-                                    <button class="btn btn-sm btn-secondary btn-install-instructions" data-domain="${domain.domain}">
-                                        <i class="ri-code-s-slash-line"></i> Install Instructions
-                                    </button>
-                                </div>
-                                `}
-                                <div class="domain-verify-delete domain-verify-delete-desktop">
-                                    <button class="btn btn-sm btn-danger btn-delete-domain" data-domain="${domain.domain}">
-                                        <i class="ri-delete-bin-line"></i> <span class="btn-delete-text">Delete</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('') : `
-                        <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
-                            No domains added yet. Add a domain to start publishing articles.
-                        </div>
-                    `}
-                </div>
-            </div>
+        <!-- Domains and Usage Plan Section -->
+        <div class="domains-usage-container" style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <!-- Domains Section -->
+            <div class="card" style="flex: 1; min-width: 0;">
+                <div class="card-header collapsible-header" onclick="toggleSection('domainsContent')" style="cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="ri-arrow-down-s-line" id="domainsContentIcon" style="transition: transform 0.3s ease; display: none;"></i>
+                        <h3 class="card-title">Domain Verification</h3>
+                    </div>
+                    <span class="badge badge-primary">${currentData.domains.length} domains</span>
+                </div>
+                <div class="card-body collapsible-content" id="domainsContent">
+                    ${currentData.domains.length > 0 ? currentData.domains.map(domain => `
+                        <div class="mobilearticle1 domain-item">
+                            <div class="domain-url-row">
+                                <span class="domain-url-text">${domain.domain}</span>
+                            </div>
+                            <div class="domain-actions-row">
+                                <div class="domain-status-row">
+                                    <span class="badge badge-${domain.verified ? 'success' : 'warning'} domain-status-badge">
+                                        ${domain.verified ? '&#10003; Verified' : '&#9203; Pending'}
+                                    </span>
+                                    <div class="domain-verify-delete">
+                                        <button class="btn btn-sm btn-danger btn-delete-domain" data-domain="${domain.domain}">
+                                            <i class="ri-delete-bin-line"></i> <span class="btn-delete-text">Delete</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                ${!domain.verified ? `
+                                <div class="domain-buttons-row">
+                                    <button class="btn btn-sm btn-secondary btn-verify-instructions" data-domain="${domain.domain}" data-txt="${domain.txt_record || ''}">
+                                        <i class="ri-information-line"></i> Instructions
+                                    </button>
+                                    <button class="btn btn-sm btn-primary btn-verify-domain" data-domain="${domain.domain}">
+                                        <i class="ri-checkbox-circle-line"></i> Verify Now
+                                    </button>
+                                </div>
+                                ` : ''}
+                                <div class="domain-verify-delete domain-verify-delete-desktop">
+                                    <button class="btn btn-sm btn-danger btn-delete-domain" data-domain="${domain.domain}">
+                                        <i class="ri-delete-bin-line"></i> <span class="btn-delete-text">Delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('') : `
+                        <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                            No domains added yet. Add a domain to start publishing articles.
+                        </div>
+                    `}
+                </div>
+            </div>
 
-                        <div class="card" style="flex: 0 0 380px; min-width: 0;">
-                <div class="card-header collapsible-header" onclick="toggleSection('usageContent')" style="cursor: pointer;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="ri-arrow-down-s-line" id="usageContentIcon" style="transition: transform 0.3s ease; display: none;"></i>
-                        <h3 class="card-title">Usage Plan</h3>
-                    </div>
-                    <span class="badge badge-info" style="text-transform: uppercase;">${currentData.plan || 'N/A'}</span>
-                </div>
-                <div class="card-body collapsible-content" id="usageContent">
-                    <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-                        ${currentData.usage && (currentData.usage.ai || currentData.usage.articles || currentData.usage.images) ? `
-                                                        ${currentData.usage.ai ? `
-                            <div class="usage-category">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <i class="ri-robot-line" style="color: var(--primary); font-size: 1.1rem;"></i>
-                                        <span style="font-weight: 600; color: var(--text);">AI Generations</span>
-                                    </div>
-                                    <span style="font-size: 0.875rem; font-weight: 600;">${currentData.usage.ai.percentage}%</span>
-                                </div>
-                                <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
-                                    <div style="height: 100%; width: ${currentData.usage.ai.percentage}%; transition: width 0.3s ease, background-color 0.3s ease; background: ${currentData.usage.ai.percentage >= 100 ? '#8b5cf6' : currentData.usage.ai.percentage >= 10 ? '#10b981' : '#ef4444'};"></div>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
-                                    <span><strong>${currentData.usage.ai.used}</strong> used</span>
-                                    <span><strong>${currentData.usage.ai.remaining}</strong> remaining / <strong>${currentData.usage.ai.limit}</strong> total</span>
-                                </div>
-                            </div>
-                            ` : ''}
-                            
-                                                        ${currentData.usage.articles ? `
-                            <div class="usage-category">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <i class="ri-article-line" style="color: var(--success); font-size: 1.1rem;"></i>
-                                        <span style="font-weight: 600; color: var(--text);">Articles</span>
-                          __         </div>
-                                    <span style="font-size: 0.875rem; font-weight: 600;">${currentData.usage.articles.percentage}%</span>
-                                </div>
-                                <div class="progress-bar" style="height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
-                                    <div class="progress-fill" style="height: 100%; width: ${currentData.usage.articles.percentage}%; transition: width 0.3s ease, background-color 0.3s ease; background: ${currentData.usage.articles.percentage >= 100 ? '#8b5cf6' : currentData.usage.articles.percentage >= 10 ? '#10b981' : '#ef4444'};"></div>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
-                                    <span><strong>${currentData.usage.articles.used}</strong> used</span>
-                                    <span><strong>${currentData.usage.articles.remaining}</strong> remaining / <strong>${currentData.usage.articles.limit}</strong> total</span>
-                                </div>
-                            </div>
-                            ` : ''}
-                            
-                                                        ${currentData.usage.images ? `
-                            <div class="usage-category">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <i class="ri-image-line" style="color: var(--warning); font-size: 1.1rem;"></i>
-                                        <span style="font-weight: 600; color: var(--text);">Images</span>
-                                    </div>
-                                    <span style="font-size: 0.875rem; font-weight: 600;">${currentData.usage.images.percentage}%</span>
-                                </div>
-                      _         <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
-                                    <div style="height: 100%; width: ${currentData.usage.images.percentage}%; transition: width 0.3s ease, background-color 0.3s ease; background: ${currentData.usage.images.percentage >= 100 ? '#8b5cf6' : currentData.usage.images.percentage >= 10 ? '#10b981' : '#ef4444'};"></div>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
-                                    <span><strong>${currentData.usage.images.used}</strong> used</span>
-                                    <span><strong>${currentData.usage.images.remaining}</strong> remaining / <strong>${currentData.usage.images.limit}</strong> total</span>
-                                </div>
-                            </div>
-                            ` : ''}
-                        ` : `
-                            <div style="text-align: center; padding: 1.5rem; color: var(--text-secondary);">
-                                <i class="ri-information-line" style="font-size: 2rem; opacity: 0.5; margin-bottom: 0.5rem;"></i>
-                                <p>No usage data available</p>
-section                     </div>
-                        `}
-                    </div>
-                </div>
-            </div>
-        </div>
+            <!-- Usage Plan Section -->
+            <div class="card" style="flex: 0 0 380px; min-width: 0;">
+                <div class="card-header collapsible-header" onclick="toggleSection('usageContent')" style="cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="ri-arrow-down-s-line" id="usageContentIcon" style="transition: transform 0.3s ease; display: none;"></i>
+                        <h3 class="card-title">Usage Plan</h3>
+                    </div>
+                    <span class="badge badge-info" style="text-transform: uppercase;">${currentData.plan || 'N/A'}</span>
+                </div>
+                <div class="card-body collapsible-content" id="usageContent">
+                    <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                        ${currentData.usage && (currentData.usage.ai || currentData.usage.articles || currentData.usage.images) ? `
+                            <!-- AI Usage -->
+                            ${currentData.usage.ai ? `
+                            <div class="usage-category">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i class="ri-robot-line" style="color: var(--primary); font-size: 1.1rem;"></i>
+                                        <span style="font-weight: 600; color: var(--text);">AI Generations</span>
+                                    </div>
+                                    <span style="font-size: 0.875rem; font-weight: 600;">${currentData.usage.ai.percentage}%</span>
+                                </div>
+                                <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
+                                    <div style="height: 100%; width: ${currentData.usage.ai.percentage}%; transition: width 0.3s ease, background-color 0.3s ease; background: ${currentData.usage.ai.percentage >= 100 ? '#8b5cf6' : currentData.usage.ai.percentage >= 10 ? '#10b981' : '#ef4444'};"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
+                                    <span><strong>${currentData.usage.ai.used}</strong> used</span>
+                                    <span><strong>${currentData.usage.ai.remaining}</strong> remaining / <strong>${currentData.usage.ai.limit}</strong> total</span>
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            <!-- Articles Usage -->
+                            ${currentData.usage.articles ? `
+                            <div class="usage-category">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i class="ri-article-line" style="color: var(--success); font-size: 1.1rem;"></i>
+                                        <span style="font-weight: 600; color: var(--text);">Articles</span>
+                                    </div>
+                                    <span style="font-size: 0.875rem; font-weight: 600;">${currentData.usage.articles.percentage}%</span>
+                                </div>
+                                <div class="progress-bar" style="height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
+                                    <div class="progress-fill" style="height: 100%; width: ${currentData.usage.articles.percentage}%; transition: width 0.3s ease, background-color 0.3s ease; background: ${currentData.usage.articles.percentage >= 100 ? '#8b5cf6' : currentData.usage.articles.percentage >= 10 ? '#10b981' : '#ef4444'};"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
+                                    <span><strong>${currentData.usage.articles.used}</strong> used</span>
+                                    <span><strong>${currentData.usage.articles.remaining}</strong> remaining / <strong>${currentData.usage.articles.limit}</strong> total</span>
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            <!-- Images Usage -->
+                            ${currentData.usage.images ? `
+                            <div class="usage-category">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i class="ri-image-line" style="color: var(--warning); font-size: 1.1rem;"></i>
+                                        <span style="font-weight: 600; color: var(--text);">Images</span>
+                                    </div>
+                                    <span style="font-size: 0.875rem; font-weight: 600;">${currentData.usage.images.percentage}%</span>
+                                </div>
+                                <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
+                                    <div style="height: 100%; width: ${currentData.usage.images.percentage}%; transition: width 0.3s ease, background-color 0.3s ease; background: ${currentData.usage.images.percentage >= 100 ? '#8b5cf6' : currentData.usage.images.percentage >= 10 ? '#10b981' : '#ef4444'};"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
+                                    <span><strong>${currentData.usage.images.used}</strong> used</span>
+                                    <span><strong>${currentData.usage.images.remaining}</strong> remaining / <strong>${currentData.usage.images.limit}</strong> total</span>
+                                </div>
+                            </div>
+                            ` : ''}
+                        ` : `
+                            <div style="text-align: center; padding: 1.5rem; color: var(--text-secondary);">
+                                <i class="ri-information-line" style="font-size: 2rem; opacity: 0.5; margin-bottom: 0.5rem;"></i>
+                                <p>No usage data available</p>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Published Articles</h3>
-                <span class="badge badge-primary">${paginationState.articles.total} articles</span>
-            </div>
-            <div class="card-body">
-                                <div class="table-container desktop-only">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Domain</th>
-                                <th>Published</th>
-                                <th>Views</th>
-                                <th>Images</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${currentData.articles.map(article => `
-                                <tr>
-                                    <td>
-                                        <div style="font-weight: 600; margin-bottom: 0.25rem;">${article.subject}</div>
-                                        <div style="font-size: 0.75rem; color: var(--text-secondary);">ID: ${article.article_id}</div>
-                _                 </td>
-                                    <td>
-                                        <a href="https://${article.url}" target="_blank" class="badge badge-primary" style="text-decoration: none;">
-                                            ${article.url}
-                                        </a>
-                                    </td>
-                                    <td style="font-size: 0.875rem; color: var(--text-secondary);">
-                                        ${new Date(article.creation_date).toLocaleDateString('en-US', {
-                                            year: 'numeric',
-                                            month: 'short',
-                                            day: 'numeric'
-                                        })}
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-success">${article.total_views || 0}</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-warning">${(article.images || []).length}</span>
-                                    </td>
-                                    <td>
-                                        <div style="display: flex; gap: 0.25rem;">
-                                            <button class="btn btn-sm btn-view-article" data-article-id="${article.article_id}" title="View Details">
-                                                <i class="ri-eye-line"></i>
-section                                 </button>
-          _                             <button class="btn btn-sm btn-edit-article" data-article-id="${article.article_id}" title="Edit">
-                                                <i class="ri-edit-line"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-view-live" data-url="${article.url}" title="View Live">
-                                                <i class="ri-external-link-line"></i>
-section                                 </button>
-                                            <button class="btn btn-sm btn-danger btn-delete-article" data-article-id="${article.article_id}" title="Delete">
-                                                <i class="ri-delete-bin-line"></i>
-                                            </button>
-is                               </div>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
+        <!-- Articles Section -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Published Articles</h3>
+                <span class="badge badge-primary">${paginationState.articles.total} articles</span>
+            </div>
+            <div class="card-body">
+                <!-- Desktop Table Version -->
+                <div class="table-container desktop-only">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Domain</th>
+                                <th>Published</th>
+                                <th>Views</th>
+                                <th>Images</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${currentData.articles.map(article => `
+                                <tr>
+                                    <td>
+                                        <div style="font-weight: 600; margin-bottom: 0.25rem;">${article.subject}</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary);">ID: ${article.article_id}</div>
+                                    </td>
+                                    <td>
+                                        <a href="https://${article.url}" target="_blank" class="badge badge-primary" style="text-decoration: none;">
+                                            ${article.url}
+                                        </a>
+                                    </td>
+                                    <td style="font-size: 0.875rem; color: var(--text-secondary);">
+                                        ${new Date(article.creation_date).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        })}
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-success">${article.total_views || 0}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-warning">${(article.images || []).length}</span>
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; gap: 0.25rem;">
+                                            <button class="btn btn-sm btn-view-article" data-article-id="${article.article_id}" title="View Details">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-edit-article" data-article-id="${article.article_id}" title="Edit">
+                                                <i class="ri-edit-line"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-view-live" data-url="${article.url}" title="View Live">
+                                                <i class="ri-external-link-line"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger btn-delete-article" data-article-id="${article.article_id}" title="Delete">
+                                                <i class="ri-delete-bin-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
 
-is                             <div class="mobile-only">
-                    ${currentData.articles.length > 0 ? currentData.articles.map(article => {
-                        const publishedDate = new Date(article.creation_date).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: new Date(article.creation_date).getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
-                        });
+                <!-- Mobile Card Version -->
+                <div class="mobile-only">
+                    ${currentData.articles.length > 0 ? currentData.articles.map(article => {
+                        const publishedDate = new Date(article.creation_date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: new Date(article.creation_date).getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+                        });
 
-                        return `
-a                     <div class="mobile-article-card" data-article-id="${article.article_id}" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; cursor: pointer; transition: var(--transition);">
+                        return `
+                        <div class="mobile-article-card" data-article-id="${article.article_id}" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; cursor: pointer; transition: var(--transition);">
 
-                                                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
-                                <div style="flex: 1; min-width: 0;">
-                                    <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600; line-height: 1.3; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${article.subject}</h4>
-                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                                        <a href="https://${article.url}" target="_blank" style="color: var(--primary); text-decoration: none; font-size: 0.85rem; font-weight: 500;" onclick="event.stopPropagation()">
-                                            <i class="ri-global-line" style="font-size: 0.8rem;"></i> ${article.url}
-                                        </a>
-                                    </div>
-A                                 <div style="font-size: 0.75rem; color: var(--text-tertiary);">
-                                        Published ${publishedDate}
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- Header: Title and Domain -->
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                                <div style="flex: 1; min-width: 0;">
+                                    <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600; line-height: 1.3; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${article.subject}</h4>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                        <a href="https://${article.url}" target="_blank" style="color: var(--primary); text-decoration: none; font-size: 0.85rem; font-weight: 500;" onclick="event.stopPropagation()">
+                                            <i class="ri-global-line" style="font-size: 0.8rem;"></i> ${article.url}
+                                        </a>
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: var(--text-tertiary);">
+                                        Published ${publishedDate}
+                                    </div>
+                                </div>
+                            </div>
 
-                            A                       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: var(--radius-sm);">
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span style="font-size: 0.75rem; color: var(--text-secondary);">Views:</span>
-                                    <span class="badge badge-success" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">${formatNumber(article.total_views || 0)}</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span style="font-size: 0.75rem; color: var(--text-secondary);">Images:</span>
-                                    <span class="badge badge-warning" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">${(article.images || []).length}</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span style="font-size: 0.75rem; color: var(--text-secondary);">ID:</span>
-                                    <code style="font-size: 0.65rem; background: var(--bg); padding: 0.2rem 0.4rem; border-radius: 3px;">${article.article_id.substring(0, 8)}...</code>
-                                </div>
-    _                     </div>
+                            <!-- Stats Row -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: var(--radius-sm);">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="font-size: 0.75rem; color: var(--text-secondary);">Views:</span>
+                                    <span class="badge badge-success" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">${formatNumber(article.total_views || 0)}</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="font-size: 0.75rem; color: var(--text-secondary);">Images:</span>
+                                    <span class="badge badge-warning" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">${(article.images || []).length}</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="font-size: 0.75rem; color: var(--text-secondary);">ID:</span>
+                                    <code style="font-size: 0.65rem; background: var(--bg); padding: 0.2rem 0.4rem; border-radius: 3px;">${article.article_id.substring(0, 8)}...</code>
+                                </div>
+                            </div>
 
-                                                        <div style="display: flex; gap: 0.5rem;">
-                                <button class="btn btn-sm btn-view-article-mobile" data-article-id="${article.article_id}" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
-                                    <i class="ri-eye-line"></i> Details
-is                             </button>
-                                <button class="btn btn-sm btn-edit-article-mobile" data-article-id="${article.article_id}" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
-                                    <i class="ri-edit-line"></i> Edit
-                                </button>
-                                <button class="btn btn-sm btn-view-live-mobile" data-url="${article.url}" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
-                                    <i class="ri-external-link-line"></i> Live
-                                </button>
-                    section           <button class="btn btn-sm btn-danger btn-delete-article-mobile" data-article-id="${article.article_id}" style="padding: 0.4rem 0.6rem; font-size: 0.75rem;">
-                                    <i class="ri-delete-bin-line"></i>
-                                </button>
-                            </div>
-                        </div>
-is                     `;
-                    }).join('') : `
-                        <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
-                            <i class="ri-article-line" style="font-size: 2.5rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
-                            <p style="margin: 0; font-weight: 500;">No articles published</p>
-                            <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem;">Create your first article to start publishing content</p>
-section               </div>
-                    `}
-                </div>
+                            <!-- Actions -->
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-sm btn-view-article-mobile" data-article-id="${article.article_id}" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                                    <i class="ri-eye-line"></i> Details
+                                </button>
+                                <button class="btn btn-sm btn-edit-article-mobile" data-article-id="${article.article_id}" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                                    <i class="ri-edit-line"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-view-live-mobile" data-url="${article.url}" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                                    <i class="ri-external-link-line"></i> Live
+                                </button>
+                                <button class="btn btn-sm btn-danger btn-delete-article-mobile" data-article-id="${article.article_id}" style="padding: 0.4rem 0.6rem; font-size: 0.75rem;">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                        `;
+                    }).join('') : `
+                        <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                            <i class="ri-article-line" style="font-size: 2.5rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+                            <p style="margin: 0; font-weight: 500;">No articles published</p>
+                            <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem;">Create your first article to start publishing content</p>
+                        </div>
+                    `}
+                </div>
 
-                ${currentData.articles.length === 0 ? `
-is               <div class="empty-state">
-                        <div class="empty-state-icon">
-                            <i class="ri-article-line"></i>
-                        </div>
-                        <div class="empty-state-title">No Articles Published</div>
-Read                   <div class="empty-state-description">Create your first article to start publishing content</div>
-                        <button class="btn btn-primary" id="emptyStateCreateBtn">Create First Article</button>
-                    </div>
-                ` : generatePagination('articles', loadArticles)}
-CSS         </div>
-        </div>
-  Read     `;
+                ${currentData.articles.length === 0 ? `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="ri-article-line"></i>
+                        </div>
+                        <div class="empty-state-title">No Articles Published</div>
+                        <div class="empty-state-description">Create your first article to start publishing content</div>
+                        <button class="btn btn-primary" id="emptyStateCreateBtn">Create First Article</button>
+                    </div>
+                ` : generatePagination('articles', loadArticles)}
+            </div>
+        </div>
+        `;
 
-        // Add event listeners after DOM is updated
-        document.getElementById('addDomainBtn')?.addEventListener('click', showDomainModal);
-        document.getElementById('createArticleBtn')?.addEventListener('click', () => showArticleModal());
-        document.getElementById('emptyStateCreateBtn')?.addEventListener('click', () => showArticleModal());
+        // Add event listeners after DOM is updated
+        document.getElementById('addDomainBtn')?.addEventListener('click', showDomainModal);
+        document.getElementById('createArticleBtn')?.addEventListener('click', () => showArticleModal());
+        document.getElementById('emptyStateCreateBtn')?.addEventListener('click', () => showArticleModal());
 
-        // Domain action buttons
-        document.querySelectorAll('.btn-verify-instructions').forEach(btn => {
-            btn.addEventListener('click', () => {
-                showVerificationInstructions(btn.dataset.domain, btn.dataset.txt);
-            });
-        });
-        
-        document.querySelectorAll('.btn-install-instructions').forEach(btn => {
-            btn.addEventListener('click', () => {
-                showInstallInstructions(btn.dataset.domain);
-            });
-        });
+        // Domain action buttons
+        document.querySelectorAll('.btn-verify-instructions').forEach(btn => {
+            btn.addEventListener('click', () => {
+                showVerificationInstructions(btn.dataset.domain, btn.dataset.txt);
+            });
+        });
 
-        document.querySelectorAll('.btn-verify-domain').forEach(btn => {
-            btn.addEventListener('click', () => verifyDomain(btn.dataset.domain));
-        });
+        document.querySelectorAll('.btn-verify-domain').forEach(btn => {
+            btn.addEventListener('click', () => verifyDomain(btn.dataset.domain));
+        });
 
-        document.querySelectorAll('.btn-delete-domain').forEach(btn => {
-            btn.addEventListener('click', () => confirmDeleteDomain(btn.dataset.domain));
-        });
+        document.querySelectorAll('.btn-delete-domain').forEach(btn => {
+            btn.addEventListener('click', () => confirmDeleteDomain(btn.dataset.domain));
+        });
 
-        // Article action buttons - Desktop
-    _   document.querySelectorAll('.btn-view-article').forEach(btn => {
-            btn.addEventListener('click', () => viewArticle(btn.dataset.articleId));
-        });
+        // Article action buttons - Desktop
+        document.querySelectorAll('.btn-view-article').forEach(btn => {
+            btn.addEventListener('click', () => viewArticle(btn.dataset.articleId));
+        });
 
-        document.querySelectorAll('.btn-edit-article').forEach(btn => {
-            btn.addEventListener('click', () => showArticleModal(btn.dataset.articleId));
-section       });
+        document.querySelectorAll('.btn-edit-article').forEach(btn => {
+            btn.addEventListener('click', () => showArticleModal(btn.dataset.articleId));
+        });
 
-        document.querySelectorAll('.btn-view-live').forEach(btn => {
-            btn.addEventListener('click', () => window.open(`https://${btn.dataset.url}`, '_blank'));
-        });
+        document.querySelectorAll('.btn-view-live').forEach(btn => {
+            btn.addEventListener('click', () => window.open(`https://${btn.dataset.url}`, '_blank'));
+        });
 
-is       document.querySelectorAll('.btn-delete-article').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
-                    deleteArticle(btn.dataset.articleId);
-                }
-            });
-        });
+        document.querySelectorAll('.btn-delete-article').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
+                    deleteArticle(btn.dataset.articleId);
+                }
+            });
+        });
 
-        // Article action buttons - Mobile
-        document.querySelectorAll('.mobile-article-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                if (!e.target.closest('button') && !e.target.closest('a')) {
-                    viewArticle(card.dataset.articleId);
-                }
-            });
-        });
+        // Article action buttons - Mobile
+        document.querySelectorAll('.mobile-article-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('button') && !e.target.closest('a')) {
+                    viewArticle(card.dataset.articleId);
+                }
+            });
+        });
 
-        document.querySelectorAll('.btn-view-article-mobile').forEach(btn => {
-EOD           btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                viewArticle(btn.dataset.articleId);
-            });
-        });
+        document.querySelectorAll('.btn-view-article-mobile').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                viewArticle(btn.dataset.articleId);
+            });
+        });
 
-        document.querySelectorAll('.btn-edit-article-mobile').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                showArticleModal(btn.dataset.articleId);
-            });
-        });
+        document.querySelectorAll('.btn-edit-article-mobile').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showArticleModal(btn.dataset.articleId);
+            });
+        });
 
-        document.querySelectorAll('.btn-view-live-mobile').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                window.open(`https://${btn.dataset.url}`, '_blank');
-            });
-        });
+        document.querySelectorAll('.btn-view-live-mobile').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.open(`https://${btn.dataset.url}`, '_blank');
+            });
+        });
 
-        document.querySelectorAll('.btn-delete-article-mobile').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
-e                 deleteArticle(btn.dataset.articleId);
-                }
-            });
-        });
+        document.querySelectorAll('.btn-delete-article-mobile').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
+                    deleteArticle(btn.dataset.articleId);
+                }
+            });
+        });
 
-    } catch (error) {
-        console.error('Articles error:', error);
-        showErrorState('Failed to load articles and domains');
-    }
+    } catch (error) {
+        console.error('Articles error:', error);
+        showErrorState('Failed to load articles and domains');
+    }
 }
 // Upgraded Billing Function
 async function loadBilling(page = 1, type = 'all') {
