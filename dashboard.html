@@ -8305,7 +8305,96 @@ function editArticle(articleId) {
     showArticleModal(articleId);
 }
 
+function showInstallInstructions(domain) {
+    const divCode = `<div id="seotize-blog-root"></div>`;
+    const scriptCode = `<script src="https://seotize.net/blog.js?site=${domain}" defer><\/script>`;
 
+    const modalHtml = `
+    <style>
+        .install-code-block {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            margin-top: 1rem;
+            position: relative;
+        }
+        .install-code-block pre {
+            background: var(--input-bg);
+            color: var(--text);
+            padding: 1rem;
+            border-radius: var(--radius);
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+        .install-code-block code {
+            white-space: pre-wrap;
+        }
+        .install-code-block p {
+            margin: 0 0 0.75rem 0;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+        .install-copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: var(--radius-sm);
+        }
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .install-code-block {
+                padding: 0.75rem;
+            }
+            .install-code-block pre {
+                padding: 0.75rem;
+                font-size: 0.75rem;
+            }
+            .install-copy-btn {
+                position: static;
+                display: block;
+                width: 100%;
+                margin-top: 0.75rem;
+            }
+        }
+    </style>
+    <div style="text-align: left;">
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            This is what you would send to your client:
+            <br><strong>How to Install Your Seotize Blog:</strong>
+        </p>
+
+        <div class="install-code-block">
+            <button class="btn btn-sm btn-primary install-copy-btn" onclick="copyToClipboard(document.getElementById('install-code-div').innerText)">
+                <i class="ri-file-copy-line"></i> Copy
+            </button>
+            <p><strong>Step 1:</strong> Paste this &lt;div&gt; tag exactly where you want the blog to appear on your page:</p>
+            <pre><code id="install-code-div">${divCode.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
+        </div>
+
+        <div class="install-code-block">
+            <button class="btn btn-sm btn-primary install-copy-btn" onclick="copyToClipboard(document.getElementById('install-code-script').innerText)">
+                <i class="ri-file-copy-line"></i> Copy
+            </button>
+            <p><strong>Step 2:</strong> Paste this &lt;script&gt; tag just before your closing &lt;/body&gt; tag:</p>
+            <pre><code id="install-code-script">${scriptCode.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
+        </div>
+    </div>
+    `;
+
+    Swal.fire({
+        title: 'Client-Side Installation',
+        html: modalHtml,
+        width: '95vw',
+        maxWidth: '800px',
+        showCloseButton: true,
+        showConfirmButton: false,
+    });
+}
 async function deleteArticle(articleId) {
     if (!confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
         return;
