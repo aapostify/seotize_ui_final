@@ -42,6 +42,7 @@
         isProcessing: false,
         dependenciesLoaded: false,
         turnstileReady: false,
+        turnstileWidgetId: null,
         tasksData: null
     };
 
@@ -106,7 +107,21 @@
         }
     }
 
-    async function waitForTurnstileToken() {
+    function resetTurnstile() {
+        if (typeof turnstile !== 'undefined' && state.turnstileWidgetId !== null) {
+            try {
+                turnstile.reset(state.turnstileWidgetId);
+            } catch (error) {
+                console.error('Error resetting Turnstile:', error);
+            }
+        }
+    }
+
+    async function waitForTurnstileToken(resetFirst = false) {
+        if (resetFirst) {
+            resetTurnstile();
+        }
+
         return new Promise((resolve, reject) => {
             const checkToken = () => {
                 const responseElement = document.getElementsByName('cf-turnstile-response')[0];
@@ -138,24 +153,6 @@
 
             setTimeout(() => reject(new Error('Turnstile timeout')), 30000);
         });
-    }
-
-    // NEW: Fast initial request without waiting for Turnstile
-    async function fetchPartnerSubtasksFast(uniqueId) {
-        const response = await fetch(CONFIG.API_ENDPOINTS.GET_TASKS, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                unique_id: uniqueId,
-                'cf-turnstile-response': '' // Empty token for fast initial request
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        return await response.json();
     }
 
     async function fetchPartnerSubtasks(uniqueId, turnstileToken) {
@@ -442,8 +439,8 @@
 
             showLoading('Submitting task...');
 
-            // Wait for Turnstile token before submitting
-            const token = await waitForTurnstileToken();
+            // Reset Turnstile and get a fresh token for this submission
+            const token = await waitForTurnstileToken(true);
             const result = await submitTask(subtaskId, token);
 
             closeLoading();
@@ -630,16 +627,18 @@
         });
     }
 
-    // NEW: Fast initialization that doesn't wait for Turnstile
-    async function initializeEngineFast() {
+    async function initializeEngine() {
         try {
-            // Wait only for essential dependencies (not Turnstile)
+            showLoading('Initializing...');
+
+            // Wait for all dependencies including Turnstile
             await waitForDependencies();
 
             state.uniqueId = getUniqueId();
             
-            // Make fast request immediately without Turnstile token
-            const data = await fetchPartnerSubtasksFast(state.uniqueId);
+            // Wait for Turnstile token before making the request
+            const token = await waitForTurnstileToken(false);
+            const data = await fetchPartnerSubtasks(state.uniqueId, token);
 
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
                 closeLoading();
@@ -700,6 +699,12 @@
         } catch (error) {
             console.error('Seotize initialization error:', error);
             closeLoading();
+            Swal.fire({
+                title: 'Initialization Error',
+                text: error.message || 'Failed to initialize. Please refresh the page.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
     }
 
@@ -708,6 +713,7 @@
         div.className = 'cf-turnstile';
         div.setAttribute('data-theme', 'light');
         div.setAttribute('data-sitekey', state.systemId);
+        div.setAttribute('data-callback', 'onTurnstileCallback');
 
         domCache.body.insertBefore(div, domCache.body.firstChild);
     }
@@ -763,13 +769,29 @@
 
         setupTurnstile();
         
-        // Start fast initialization immediately
-        initializeEngineFast();
+        // Start initialization after Turnstile is ready
+        initializeEngine();
     }
 
-    // Turnstile callback - no longer needed for initialization
+    // Turnstile callbacks
     window.onloadTurnstileCallback = function() {
         state.turnstileReady = true;
+        if (typeof turnstile !== 'undefined') {
+            const element = document.querySelector('.cf-turnstile');
+            if (element) {
+                state.turnstileWidgetId = turnstile.render(element, {
+                    sitekey: state.systemId,
+                    theme: 'light',
+                    callback: function(token) {
+                        // Token is ready
+                    }
+                });
+            }
+        }
+    };
+
+    window.onTurnstileCallback = function(token) {
+        // Callback when token is generated
     };
 
     if (document.readyState === 'loading') {
