@@ -629,20 +629,18 @@
 
     async function initializeEngine() {
         try {
-            showLoading('Initializing...');
-
-            // Wait for all dependencies including Turnstile
+            // Wait for all dependencies including Turnstile - SILENTLY
             await waitForDependencies();
 
             state.uniqueId = getUniqueId();
             
-            // Wait for Turnstile token before making the request
+            // Wait for Turnstile token before making the request - SILENTLY
             const token = await waitForTurnstileToken(false);
             const data = await fetchPartnerSubtasks(state.uniqueId, token);
 
+            // Only check if we have valid data
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
-                closeLoading();
-                return;
+                return; // Silently exit
             }
 
             state.coins = data.subtasks_info
@@ -650,7 +648,7 @@
                 .map(task => task.subtask_id);
 
             if (state.coins.length === 0) {
-                closeLoading();
+                // All tasks complete - show completion message
                 Swal.fire({
                     title: 'All Done!',
                     html: `
@@ -669,9 +667,7 @@
                 return;
             }
 
-            closeLoading();
-
-            // Show welcome message
+            // SUCCESS! Now show welcome message
             await Swal.fire({
                 title: 'Welcome Seotize Partner!',
                 html: `
@@ -697,14 +693,8 @@
             displayNextCoin();
 
         } catch (error) {
+            // Silently fail - no error messages to user
             console.error('Seotize initialization error:', error);
-            closeLoading();
-            Swal.fire({
-                title: 'Initialization Error',
-                text: error.message || 'Failed to initialize. Please refresh the page.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
         }
     }
 
@@ -769,7 +759,7 @@
 
         setupTurnstile();
         
-        // Start initialization after Turnstile is ready
+        // Start initialization silently
         initializeEngine();
     }
 
