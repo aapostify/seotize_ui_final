@@ -3360,9 +3360,26 @@ async function revokeSession(token) {
 }
 
 // [NEW] Updated to work with SweetAlert2
+// [NEW] Updated function to revoke sessions one-by-one in a loop
 async function revokeAllSessions() {
+    // 1. Get all sessions *except* the current one
+    const sessionsToRevoke = getOtherSessions();
+    const total = sessionsToRevoke.length;
+
+    // 2. If there are no other sessions, just inform the user.
+    if (total === 0) {
+        Swal.fire({
+            title: 'No Other Sessions',
+            text: 'You are only logged in on this device.',
+            icon: 'info',
+            customClass: { popup: 'swal2-toast' }
+        });
+        return;
+    }
+
+    // 3. Ask for confirmation first
     Swal.fire({
-        title: 'Revoke all other sessions?',
+        title: `Revoke all ${total} other sessions?`,
         text: "You will be logged out from all other devices immediately.",
         icon: 'warning',
         showCancelButton: true,
@@ -3370,31 +3387,87 @@ async function revokeAllSessions() {
         confirmButtonText: 'Yes, revoke all!',
         customClass: { popup: 'swal2-toast' }
     }).then(async (result) => {
+        // 4. If user confirms, start the loop
         if (result.isConfirmed) {
+            
+            // Open the progress modal. We will update this modal's title.
             Swal.fire({
-                title: 'Revoking all...',
+                title: `Revoking 1 of ${total}...`,
                 didOpen: () => Swal.showLoading(),
+                allowOutsideClick: false,
+                allowEscapeKey: false,
                 customClass: { popup: 'swal2-toast' }
             });
-            try {
-                await api('/sessions/revoke-all', { method: 'POST' });
 
-                // Keep only current session in local data
-                if (currentData.user && currentData.user.sessions) {
-                    currentData.user.sessions = currentData.user.sessions.filter(s => s.token === sessionToken);
+            let successCount = 0;
+            let failCount = 0;
+            const tokensToRevoke = sessionsToRevoke.map(s => s.token);
+            const successfulTokens = [];
+
+            // 5. Loop through each token
+            for (let i = 0; i < total; i++) {
+                const token = tokensToRevoke[i];
+                
+                // Update progress title
+                Swal.update({
+                    title: `Revoking ${i + 1} of ${total}...`
+                });
+
+                try {
+                    // Call the single-revoke endpoint (which is /logout with that session's token)
+                    // We use fetch directly here since api() helper might not be set up for this
+                    await fetch(`${API_BASE}/logout`, {
+                        method: 'GET',
+                        headers: { 'Session-Token': token, 'Content-Type': 'application/json' }
+                    });
+
+                    // If successful:
+                    successCount++;
+                    successfulTokens.push(token);
+
+                } catch (error) {
+                    // If one fails, log it and continue
+                    console.error('Failed to revoke session:', token, error);
+                    failCount++;
                 }
-
-                Swal.close(); // Close loading popup
-                showToast('All other sessions revoked!', 'success');
-                showSessionsModal(); // Refresh the main sessions modal
-                updateUserInfo(); // Update session count badges
-            } catch (error) {
-                Swal.fire('Error!', 'Failed to revoke sessions: ' + error.message, 'error');
             }
+
+            // 6. Update local data: keep only the current session AND any sessions that failed to revoke
+            if (currentData.user && currentData.user.sessions) {
+                currentData.user.sessions = currentData.user.sessions.filter(s => {
+                    // Keep if it's the current session
+                    if (s.token === sessionToken) return true;
+                    // Keep if it was *not* in the successfully revoked list
+                    if (!successfulTokens.includes(s.token)) return true;
+                    // Otherwise, remove it
+                    return false;
+                });
+            }
+
+            // 7. Close the progress modal
+            Swal.close();
+
+            // 8. Show final status
+            if (failCount === 0) {
+                // All succeeded
+                showToast(`All ${total} other sessions revoked!`, 'success');
+            } else {
+                // Some failed
+                Swal.fire({
+                    title: 'Partial Success',
+                    text: `Successfully revoked ${successCount} of ${total} sessions. ${failCount} failed.`,
+                    icon: 'warning',
+                    customClass: { popup: 'swal2-toast' }
+                });
+            }
+            
+            // 9. Refresh the UI
+            showSessionsModal(); // Refresh the main sessions modal
+            updateUserInfo(); // Update session count badges
         }
     });
 }
-
+   
 // Theme Management
 function initializeTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
