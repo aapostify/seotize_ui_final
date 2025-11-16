@@ -802,6 +802,20 @@ tr:hover {
     color: var(--primary);
 }
 
+.task-status.unverified {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+}
+
+.task-card.unverified {
+    opacity: 0.7;
+    border: 1px dashed var(--border);
+}
+
+.task-card.unverified .task-url {
+    color: var(--text-secondary);
+}
+
 .task-stats {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -4037,11 +4051,17 @@ async function loadTasks(page = 1) {
         </div>
 
         <div class="task-grid">
-        ${currentData.tasks.map(task => `
-            <div class="task-card" onclick="viewTaskDetails('${task._id}')">
+        ${currentData.tasks.map(task => {
+            const isVerified = task.verified !== false;
+            const statusClass = isVerified ? 'active' : 'unverified';
+            const statusText = isVerified ? 'Active' : 'Unverified';
+            const cardClass = isVerified ? '' : ' unverified';
+            
+            return `
+            <div class="task-card${cardClass}" onclick="viewTaskDetails('${task._id}')">
             <div class="task-header">
             <a href="${task.url}" target="_blank" class="task-url" onclick="event.stopPropagation()">${task.url}</a>
-            <span class="task-status active">Active</span>
+            <span class="task-status ${statusClass}">${statusText}</span>
             </div>
 
             <div class="task-stats">
@@ -4070,6 +4090,11 @@ async function loadTasks(page = 1) {
             </div>
 
             <div class="task-actions">
+            ${!isVerified ? `
+            <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); verifyTask('${task._id}')" style="background: var(--warning); color: white;">
+            <i class="ri-shield-check-line"></i> Verify Task
+            </button>
+            ` : ''}
             <button class="btn btn-sm" onclick="event.stopPropagation(); viewTaskDetails('${task._id}')">
             <i class="ri-eye-line"></i> Details
             </button>
@@ -4078,7 +4103,8 @@ async function loadTasks(page = 1) {
             </button>
             </div>
             </div>
-            `).join('')}
+            `;
+        }).join('')}
             </div>
 
             ${currentData.tasks.length === 0 ? `
@@ -6060,6 +6086,14 @@ async function viewTaskDetails(taskId) {
         const hasAnalytics = sortedDates.length > 0;
 
         // --- 2. Construct Modal HTML (New Responsive Layout) ---
+        const isVerified = task.verified !== false;
+        const verificationStatus = isVerified ? 
+            '<span class="badge badge-success"><i class="ri-checkbox-circle-line"></i> Verified</span>' : 
+            '<span class="badge badge-danger"><i class="ri-error-warning-line"></i> Not Verified</span>';
+        
+        const lastVerifiedText = task.last_verified ? 
+            `<span><i class="ri-time-line"></i> Last Verified: ${new Date(task.last_verified).toLocaleString()}</span>` : '';
+        
         const modalHtml = `
         <div class="task-details-modal-container">
             <div class="task-modal-header">
@@ -6067,6 +6101,10 @@ async function viewTaskDetails(taskId) {
                 <div class="header-meta">
                     <span><i class="ri-calendar-line"></i> Created: ${new Date(task.date_created).toLocaleString()}</span>
                     <span><i class="ri-key-line"></i> ID: ${task._id}</span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="ri-shield-check-line"></i> Status: ${verificationStatus}
+                    </span>
+                    ${lastVerifiedText}
                 </div>
             </div>
 
@@ -6202,10 +6240,9 @@ async function viewTaskDetails(taskId) {
         `;
 
         // --- 3. Fire SweetAlert2 Modal ---
-        Swal.fire({
+        const modalConfig = {
             html: modalHtml,
             showCloseButton: true,
-            showConfirmButton: false,
             width: '95vw',
             maxWidth: '1100px', // Large on desktop, as requested
             padding: '1.5rem',
@@ -6220,14 +6257,27 @@ async function viewTaskDetails(taskId) {
                     initializeTaskAnalyticsChart(sortedDates);
                 }
             },
-            // Add action buttons to the footer for better UX
             showDenyButton: true,
             showCancelButton: true,
             denyButtonText: `<i class="ri-wallet-line"></i> Recharge`,
             cancelButtonText: `<i class="ri-external-link-line"></i> View Website`,
-
-        }).then((result) => {
-            if (result.isDenied) {
+        };
+        
+        // Add verify button if task is not verified
+        if (!isVerified) {
+            modalConfig.showConfirmButton = true;
+            modalConfig.confirmButtonText = `<i class="ri-shield-check-line"></i> Verify Task`;
+            modalConfig.confirmButtonColor = '#f59e0b'; // warning color
+        } else {
+            modalConfig.showConfirmButton = false;
+        }
+        
+        Swal.fire(modalConfig).then((result) => {
+            if (result.isConfirmed && !isVerified) {
+                // The "Verify Task" button was clicked
+                Swal.close();
+                verifyTask(taskId);
+            } else if (result.isDenied) {
                 // The "Recharge" button was clicked
                 rechargeTask(taskId);
             } else if (result.dismiss === Swal.DismissReason.cancel) {
@@ -6282,6 +6332,38 @@ function initializeTaskAnalyticsChart(sortedDates) {
 // Recharge Task
 // [NEW] Rebuilt Recharge Task Modal using SweetAlert2
 // [NEW] Rebuilt Recharge Task Modal using SweetAlert2
+// Verify Task
+async function verifyTask(taskId) {
+    try {
+        showSpinner();
+        const response = await api('/verify-task', {
+            method: 'POST',
+            body: JSON.stringify({ task_id: taskId })
+        });
+        
+        hideSpinner();
+        
+        if (response.data.verified) {
+            showToast('Task verified successfully! Script found on your website.', 'success');
+        } else {
+            showToast('Verification failed: Script not found on your website. Please ensure you have added the script to your website\'s <head> section.', 'error');
+        }
+        
+        // Refresh the current view to show updated status
+        if (document.querySelector('.nav-item[data-page="tasks"]').classList.contains('active')) {
+            loadTasks();
+        } else {
+            loadDashboard();
+        }
+        
+    } catch (error) {
+        hideSpinner();
+        console.error('Verification error:', error);
+        showToast(error.message || 'Failed to verify task', 'error');
+    }
+}
+
+// Recharge Task
 async function rechargeTask(taskId) {
     // Find the task to show its URL in the modal
     const task = currentData.tasks.find(t => t._id === taskId);
