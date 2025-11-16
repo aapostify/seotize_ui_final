@@ -4096,6 +4096,8 @@ async function loadTasks(page = 1) {
             <button class="btn btn-sm" onclick="event.stopPropagation(); rechargeTask('${task._id}')">
             <i class="ri-wallet-line"></i> Recharge
             </button>
+            </div>
+            <div class="task-actions" style="margin-top: 8px;">
             <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteTask('${task._id}')" style="background: var(--danger); color: white;">
             <i class="ri-delete-bin-line"></i> Delete
             </button>
@@ -6363,24 +6365,15 @@ async function verifyTask(taskId) {
                     confirmButtonColor: '#10b981'
                 });
             } else {
-                // Show error message with instructions
+                // Show simple error message
                 await Swal.fire({
                     icon: 'error',
                     title: 'Verification Failed',
                     html: `
-                        <p class="mb-3">${message || 'Script not found on your website.'}</p>
-                        <div class="alert alert-warning text-start" style="font-size: 0.9em;">
-                            <strong>Please ensure:</strong>
-                            <ul class="mb-0 mt-2">
-                                <li>The script is added to your website's <code>&lt;head&gt;</code> section</li>
-                                <li>Your website is accessible and loading properly</li>
-                                <li>You have deployed the latest changes to your website</li>
-                            </ul>
-                        </div>
-                        <p class="text-muted small">URL checked: ${url || ''}</p>
+                        <p class="text-danger mt-3"><i class="ri-close-circle-line"></i> ${message || 'Script not found on your website. Please ensure the script is added to your website\'s &lt;head&gt; section and try again.'}</p>
                     `,
                     confirmButtonText: 'OK',
-                    confirmButtonColor: '#f59e0b'
+                    confirmButtonColor: '#ef4444'
                 });
             }
             
