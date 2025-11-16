@@ -6336,6 +6336,7 @@ function initializeTaskAnalyticsChart(sortedDates) {
 async function verifyTask(taskId) {
     try {
         showSpinner();
+        
         const response = await api('/verify-task', {
             method: 'POST',
             body: JSON.stringify({ task_id: taskId })
@@ -6343,23 +6344,67 @@ async function verifyTask(taskId) {
         
         hideSpinner();
         
-        if (response.data.verified) {
-            showToast('Task verified successfully! Script found on your website.', 'success');
+        // Handle the response structure: {status: "success", code: 200, data: {verified, message, ...}}
+        if (response && response.status === 'success' && response.data) {
+            const { verified, message, url } = response.data;
+            
+            if (verified) {
+                // Show success message with Swal
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Verification Successful!',
+                    html: `
+                        <p class="mb-2">${message || 'Script found on your website.'}</p>
+                        <p class="text-muted small">URL: ${url || ''}</p>
+                        <p class="text-success mt-3"><i class="ri-checkbox-circle-line"></i> Your task is now active!</p>
+                    `,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#10b981'
+                });
+            } else {
+                // Show error message with instructions
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Verification Failed',
+                    html: `
+                        <p class="mb-3">${message || 'Script not found on your website.'}</p>
+                        <div class="alert alert-warning text-start" style="font-size: 0.9em;">
+                            <strong>Please ensure:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>The script is added to your website's <code>&lt;head&gt;</code> section</li>
+                                <li>Your website is accessible and loading properly</li>
+                                <li>You have deployed the latest changes to your website</li>
+                            </ul>
+                        </div>
+                        <p class="text-muted small">URL checked: ${url || ''}</p>
+                    `,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#f59e0b'
+                });
+            }
+            
+            // Refresh the current view to show updated status
+            if (document.querySelector('.nav-item[data-page="tasks"]').classList.contains('active')) {
+                await loadTasks();
+            } else {
+                await loadDashboard();
+            }
         } else {
-            showToast('Verification failed: Script not found on your website. Please ensure you have added the script to your website\'s <head> section.', 'error');
-        }
-        
-        // Refresh the current view to show updated status
-        if (document.querySelector('.nav-item[data-page="tasks"]').classList.contains('active')) {
-            loadTasks();
-        } else {
-            loadDashboard();
+            throw new Error('Invalid response format from server');
         }
         
     } catch (error) {
         hideSpinner();
         console.error('Verification error:', error);
-        showToast(error.message || 'Failed to verify task', 'error');
+        
+        // Show error with Swal
+        await Swal.fire({
+            icon: 'error',
+            title: 'Verification Error',
+            text: error.message || 'Failed to verify task. Please try again.',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#ef4444'
+        });
     }
 }
 
