@@ -4101,14 +4101,12 @@ async function loadTasks(page = 1) {
             <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteTask('${task._id}')" style="background: var(--danger); color: white;">
             <i class="ri-delete-bin-line"></i> Delete
             </button>
-            </div>
             ${!isVerified ? `
-            <div class="task-actions" style="margin-top: 8px;">
             <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); verifyTask('${task._id}')" style="background: var(--warning); color: white;">
             <i class="ri-shield-check-line"></i> Verify Task
             </button>
-            </div>
             ` : ''}
+            </div>
             </div>
             `;
         }).join('')}
