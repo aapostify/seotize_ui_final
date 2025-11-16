@@ -4096,10 +4096,13 @@ async function loadTasks(page = 1) {
             <button class="btn btn-sm" onclick="event.stopPropagation(); rechargeTask('${task._id}')">
             <i class="ri-wallet-line"></i> Recharge
             </button>
+            <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteTask('${task._id}')" style="background: var(--danger); color: white;">
+            <i class="ri-delete-bin-line"></i> Delete
+            </button>
             </div>
             ${!isVerified ? `
             <div class="task-actions" style="margin-top: 8px;">
-            <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); verifyTask('${task._id}')" style="background: var(--warning); color: white; width: 100%;">
+            <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); verifyTask('${task._id}')" style="background: var(--warning); color: white;">
             <i class="ri-shield-check-line"></i> Verify Task
             </button>
             </div>
@@ -6337,15 +6340,10 @@ function initializeTaskAnalyticsChart(sortedDates) {
 // Verify Task
 async function verifyTask(taskId) {
     try {
-        showSpinner();
-        
         const response = await api('/verify-task', {
             method: 'POST',
             body: JSON.stringify({ task_id: taskId })
         });
-        
-        // Always hide spinner after API call completes
-        hideSpinner();
         
         // Handle the response structure: {status: "success", code: 200, data: {verified, message, ...}}
         if (response && response.status === 'success' && response.data) {
@@ -6402,8 +6400,6 @@ async function verifyTask(taskId) {
         }
         
     } catch (error) {
-        // Ensure spinner is hidden even if there's an error
-        hideSpinner();
         console.error('Verification error:', error);
         
         // Show error with Swal
@@ -6411,6 +6407,86 @@ async function verifyTask(taskId) {
             icon: 'error',
             title: 'Verification Error',
             text: error.message || 'Failed to verify task. Please try again.',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#ef4444'
+        });
+    }
+}
+
+// Delete Task
+async function deleteTask(taskId) {
+    try {
+        // Find the task to show its URL in the confirmation modal
+        const task = currentData.tasks.find(t => t._id === taskId);
+        const taskUrl = task ? task.url : 'this task';
+        
+        // Show confirmation dialog
+        const result = await Swal.fire({
+            icon: 'warning',
+            title: 'Delete Task?',
+            html: `
+                <p class="mb-2">Are you sure you want to delete this task?</p>
+                <p class="text-muted small">Task: <strong>${taskUrl}</strong></p>
+                <p class="text-danger mt-3"><i class="ri-alert-line"></i> This action cannot be undone!</p>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Delete',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            reverseButtons: true
+        });
+        
+        // If user cancelled, return early
+        if (!result.isConfirmed) {
+            return;
+        }
+        
+        // Make the delete request
+        const response = await api('/delete-task', {
+            method: 'DELETE',
+            body: JSON.stringify({ task_id: taskId })
+        });
+        
+        // Handle the response structure: {status: "success", code: 200, data: {message, task_id}}
+        if (response && response.status === 'success' && response.data) {
+            // Show success message
+            await Swal.fire({
+                icon: 'success',
+                title: 'Task Deleted!',
+                html: `
+                    <p class="mb-2">${response.data.message || 'Task has been deleted successfully.'}</p>
+                    <p class="text-muted small">Task ID: ${response.data.task_id || taskId}</p>
+                `,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#10b981',
+                timer: 3000,
+                timerProgressBar: true
+            });
+            
+            // Refresh the current view to show updated list
+            try {
+                if (document.querySelector('.nav-item[data-page="tasks"]')?.classList.contains('active')) {
+                    await loadTasks();
+                } else {
+                    await loadDashboard();
+                }
+            } catch (refreshError) {
+                console.error('Failed to refresh view:', refreshError);
+                // Don't show error to user, just log it
+            }
+        } else {
+            throw new Error(response?.error?.message || 'Invalid response format from server');
+        }
+        
+    } catch (error) {
+        console.error('Delete task error:', error);
+        
+        // Show error with Swal
+        await Swal.fire({
+            icon: 'error',
+            title: 'Delete Failed',
+            text: error.message || 'Failed to delete task. Please try again.',
             confirmButtonText: 'OK',
             confirmButtonColor: '#ef4444'
         });
