@@ -4090,11 +4090,6 @@ async function loadTasks(page = 1) {
             </div>
 
             <div class="task-actions">
-            ${!isVerified ? `
-            <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); verifyTask('${task._id}')" style="background: var(--warning); color: white;">
-            <i class="ri-shield-check-line"></i> Verify Task
-            </button>
-            ` : ''}
             <button class="btn btn-sm" onclick="event.stopPropagation(); viewTaskDetails('${task._id}')">
             <i class="ri-eye-line"></i> Details
             </button>
@@ -4102,6 +4097,13 @@ async function loadTasks(page = 1) {
             <i class="ri-wallet-line"></i> Recharge
             </button>
             </div>
+            ${!isVerified ? `
+            <div class="task-actions" style="margin-top: 8px;">
+            <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); verifyTask('${task._id}')" style="background: var(--warning); color: white; width: 100%;">
+            <i class="ri-shield-check-line"></i> Verify Task
+            </button>
+            </div>
+            ` : ''}
             </div>
             `;
         }).join('')}
@@ -6342,6 +6344,7 @@ async function verifyTask(taskId) {
             body: JSON.stringify({ task_id: taskId })
         });
         
+        // Always hide spinner after API call completes
         hideSpinner();
         
         // Handle the response structure: {status: "success", code: 200, data: {verified, message, ...}}
@@ -6383,17 +6386,23 @@ async function verifyTask(taskId) {
                 });
             }
             
-            // Refresh the current view to show updated status
-            if (document.querySelector('.nav-item[data-page="tasks"]').classList.contains('active')) {
-                await loadTasks();
-            } else {
-                await loadDashboard();
+            // Refresh the current view to show updated status (don't block on this)
+            try {
+                if (document.querySelector('.nav-item[data-page="tasks"]')?.classList.contains('active')) {
+                    await loadTasks();
+                } else {
+                    await loadDashboard();
+                }
+            } catch (refreshError) {
+                console.error('Failed to refresh view:', refreshError);
+                // Don't show error to user, just log it
             }
         } else {
             throw new Error('Invalid response format from server');
         }
         
     } catch (error) {
+        // Ensure spinner is hidden even if there's an error
         hideSpinner();
         console.error('Verification error:', error);
         
