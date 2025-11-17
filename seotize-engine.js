@@ -26,13 +26,13 @@
             WELCOME_DURATION: 6000,
             SUCCESS_DURATION: 1500,
             COMPLETION_DURATION: 2000,
-            POLL_INTERVAL: 50, // Reduced from 100ms to 50ms for faster checking
-            TURNSTILE_READY_TIMEOUT: 20000, // Reduced from 30s to 20s
-            TURNSTILE_TOKEN_TIMEOUT: 45000 // Reduced from 60s to 45s
+            POLL_INTERVAL: 50,
+            TURNSTILE_READY_TIMEOUT: 20000,
+            TURNSTILE_TOKEN_TIMEOUT: 60000 // Increased to 60s to account for slow mobile
         },
         DEBUG: {
             ENABLED: true, // Set to false to disable debug mode
-            LOG_POSITION: 'bottom-right' // Options: 'bottom-right', 'bottom-left', 'top-right', 'top-left'
+            LOG_POSITION: 'bottom-right'
         }
     };
 
@@ -51,8 +51,9 @@
         turnstileWidgetId: null,
         tasksData: null,
         debugLogs: [],
-        turnstileTokenCache: null, // Cache for token
-        lastTokenTime: 0 // Track when last token was generated
+        turnstileTokenCache: null,
+        lastTokenTime: 0,
+        isInitialToken: true // Track if this is the first token
     };
 
     let domCache = null;
@@ -63,13 +64,10 @@
         const timestamp = new Date().toLocaleTimeString();
         const logEntry = `[${timestamp}] ${message}`;
         
-        // Always log to console
         console.log(`[SEOTIZE ${type.toUpperCase()}]`, message);
         
-        // Store in state
         state.debugLogs.push({ timestamp, message, type });
         
-        // Show in UI if debug mode is enabled
         if (CONFIG.DEBUG.ENABLED) {
             updateDebugUI(logEntry, type);
         }
@@ -80,16 +78,13 @@
             .map(log => `[${log.timestamp}] [${log.type.toUpperCase()}] ${log.message}`)
             .join('\n');
         
-        // Try modern clipboard API first
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(logsText).then(() => {
                 showCopyFeedback('✓ Copied!');
             }).catch(() => {
-                // Fallback to old method
                 fallbackCopyToClipboard(logsText);
             });
         } else {
-            // Fallback for older browsers
             fallbackCopyToClipboard(logsText);
         }
     }
@@ -181,10 +176,7 @@
 
         document.body.appendChild(debugContainer);
 
-        // Copy button handler
         document.getElementById('seotize-debug-copy').addEventListener('click', copyLogsToClipboard);
-
-        // Close button handler
         document.getElementById('seotize-debug-close').addEventListener('click', () => {
             debugContainer.remove();
             debugContainer = null;
@@ -217,11 +209,8 @@
         logEntry.textContent = message;
 
         logContent.appendChild(logEntry);
-
-        // Auto-scroll to bottom
         logContent.scrollTop = logContent.scrollHeight;
 
-        // Limit log entries to prevent memory issues
         const maxLogs = 100;
         while (logContent.children.length > maxLogs) {
             logContent.removeChild(logContent.firstChild);
@@ -299,7 +288,7 @@
         if (typeof turnstile !== 'undefined' && state.turnstileWidgetId !== null) {
             try {
                 turnstile.reset(state.turnstileWidgetId);
-                state.turnstileTokenCache = null; // Clear cache on reset
+                state.turnstileTokenCache = null;
                 state.lastTokenTime = 0;
                 debugLog('✓ Turnstile reset successful', 'success');
             } catch (error) {
@@ -311,69 +300,16 @@
         }
     }
 
-    // IMPROVED: Pre-render Turnstile widget immediately for faster token generation
-    function forceRenderTurnstile() {
-        if (state.turnstileWidgetId !== null || typeof turnstile === 'undefined') {
-            return;
-        }
-
-        const element = document.querySelector('.cf-turnstile');
-        if (!element) {
-            debugLog('⚠ Turnstile element not found for force render', 'warning');
-            return;
-        }
-
-        try {
-            debugLog('Attempting to force render Turnstile...', 'info');
-            state.turnstileWidgetId = turnstile.render(element, {
-                sitekey: state.systemId,
-                theme: 'light',
-                size: 'normal',
-                callback: function(token) {
-                    debugLog(`✓ Turnstile token auto-generated (length: ${token.length})`, 'success');
-                    state.turnstileTokenCache = token;
-                    state.lastTokenTime = Date.now();
-                },
-                'error-callback': function() {
-                    debugLog('✗ Turnstile error callback triggered', 'error');
-                    state.turnstileTokenCache = null;
-                },
-                'expired-callback': function() {
-                    debugLog('⚠ Turnstile token expired', 'warning');
-                    state.turnstileTokenCache = null;
-                },
-                'timeout-callback': function() {
-                    debugLog('✗ Turnstile timeout callback triggered', 'error');
-                    state.turnstileTokenCache = null;
-                }
-            });
-            
-            state.turnstileReady = true;
-            debugLog(`✓ Turnstile force rendered (ID: ${state.turnstileWidgetId})`, 'success');
-        } catch (error) {
-            debugLog(`✗ Force render error: ${error.message}`, 'error');
-        }
-    }
-
-    // Wait for Turnstile to be ready before requesting token
     async function waitForTurnstileReady() {
         debugLog('Waiting for Turnstile to be ready...', 'info');
         
         return new Promise((resolve, reject) => {
             const startTime = Date.now();
             let lastLogTime = startTime;
-            let attemptedForceRender = false;
             
             const checkReady = () => {
                 const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
                 
-                // Try to force render after 2 seconds if not ready
-                if (!attemptedForceRender && elapsed > 2 && typeof turnstile !== 'undefined') {
-                    attemptedForceRender = true;
-                    forceRenderTurnstile();
-                }
-                
-                // Log progress every 3 seconds
                 if (Date.now() - lastLogTime > 3000) {
                     debugLog(`Waiting for Turnstile ready... (${elapsed}s)`, 'info');
                     debugLog(`turnstileReady: ${state.turnstileReady}, widgetId: ${state.turnstileWidgetId}`, 'info');
@@ -391,7 +327,6 @@
             
             checkReady();
             
-            // Timeout for Turnstile to become ready
             setTimeout(() => {
                 debugLog('✗ Turnstile ready timeout', 'error');
                 debugLog(`Final state - ready: ${state.turnstileReady}, widgetId: ${state.turnstileWidgetId}`, 'error');
@@ -401,31 +336,32 @@
         });
     }
 
-    // IMPROVED: Use cached token if available and fresh
+    // FIXED: Don't reset on initial token request
     async function waitForTurnstileToken(resetFirst = false, retryCount = 0) {
-        const MAX_RETRIES = 2; // Reduced from 3 to 2
-        const TOKEN_CACHE_DURATION = 110000; // 110 seconds (tokens valid for 120s, use 110 for safety)
+        const MAX_RETRIES = 2;
+        const TOKEN_CACHE_DURATION = 110000;
         
         debugLog(`Waiting for Turnstile token (reset: ${resetFirst}, retry: ${retryCount}/${MAX_RETRIES})`, 'info');
         
         try {
-            // First, ensure Turnstile is ready and widget is rendered
             if (!state.turnstileReady || state.turnstileWidgetId === null) {
                 debugLog('⚠ Turnstile not ready, waiting for initialization...', 'warning');
                 await waitForTurnstileReady();
             }
             
-            // Check if we have a cached token that's still valid
+            // Check cached token
             const tokenAge = Date.now() - state.lastTokenTime;
             if (!resetFirst && state.turnstileTokenCache && tokenAge < TOKEN_CACHE_DURATION) {
                 debugLog(`✓ Using cached token (age: ${(tokenAge/1000).toFixed(1)}s)`, 'success');
                 return state.turnstileTokenCache;
             }
             
-            if (resetFirst || !state.turnstileTokenCache) {
+            // CRITICAL FIX: Don't reset on initial load, let the auto-generated token come through
+            if (resetFirst && !state.isInitialToken) {
                 resetTurnstile();
-                // Shorter wait after reset - reduced from 500ms to 200ms
                 await new Promise(resolve => setTimeout(resolve, 200));
+            } else if (state.isInitialToken) {
+                debugLog('⏳ Waiting for initial auto-generated token (no reset)', 'info');
             }
 
             return new Promise((resolve, reject) => {
@@ -436,7 +372,6 @@
                     const responseElement = document.getElementsByName('cf-turnstile-response')[0];
                     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
                     
-                    // Log progress every 3 seconds (reduced from 5)
                     if (Date.now() - lastLogTime > 3000) {
                         debugLog(`Still waiting for token... (${elapsed}s)`, 'info');
                         lastLogTime = Date.now();
@@ -446,13 +381,21 @@
                         const token = responseElement.value;
                         state.turnstileTokenCache = token;
                         state.lastTokenTime = Date.now();
+                        state.isInitialToken = false; // Mark that we got the initial token
                         debugLog(`✓ Turnstile token received (${elapsed}s)`, 'success');
                         resolve(token);
                         return;
                     }
 
+                    // Also check cache in case callback already set it
+                    if (state.turnstileTokenCache && (Date.now() - state.lastTokenTime < 2000)) {
+                        debugLog(`✓ Using token from cache (callback received)`, 'success');
+                        state.isInitialToken = false;
+                        resolve(state.turnstileTokenCache);
+                        return;
+                    }
+
                     if (!responseElement) {
-                        debugLog('Turnstile response element not found, setting up observer', 'warning');
                         const observer = new MutationObserver(() => {
                             const elem = document.getElementsByName('cf-turnstile-response')[0];
                             if (elem) {
@@ -467,14 +410,12 @@
                             subtree: true
                         });
                     } else {
-                        // Element exists but no value yet - check more frequently
                         setTimeout(checkToken, CONFIG.TIMING.POLL_INTERVAL);
                     }
                 };
 
                 checkToken();
 
-                // Timeout
                 setTimeout(() => {
                     debugLog(`✗ Turnstile timeout (${CONFIG.TIMING.TURNSTILE_TOKEN_TIMEOUT/1000}s) - Retry ${retryCount}/${MAX_RETRIES}`, 'error');
                     debugLog(`Widget ID: ${state.turnstileWidgetId}, Ready: ${state.turnstileReady}`, 'error');
@@ -483,11 +424,11 @@
             });
             
         } catch (error) {
-            // Retry logic with shorter delay
             if (retryCount < MAX_RETRIES) {
                 debugLog(`Retrying Turnstile token request (attempt ${retryCount + 1})...`, 'warning');
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Reduced from 2s to 1s
-                return waitForTurnstileToken(true, retryCount + 1); // Force reset on retry
+                state.isInitialToken = false; // Force reset on retry
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                return waitForTurnstileToken(true, retryCount + 1);
             }
             throw error;
         }
@@ -1022,20 +963,18 @@
         try {
             debugLog('🚀 Starting initialization...', 'info');
             
-            // Wait for all dependencies including Turnstile - SILENTLY
             await waitForDependencies();
 
             state.uniqueId = getUniqueId();
             debugLog(`Generated Unique ID: ${state.uniqueId.substring(0, 8)}...`, 'info');
             
-            // Wait for Turnstile token before making the request - SILENTLY
+            // Don't reset on initial load - wait for auto-generated token
             const token = await waitForTurnstileToken(false);
             const data = await fetchPartnerSubtasks(state.uniqueId, token);
 
-            // Only check if we have valid data
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
                 debugLog('⚠ No subtasks info - silent exit', 'warning');
-                return; // Silently exit
+                return;
             }
 
             state.coins = data.subtasks_info
@@ -1046,7 +985,6 @@
 
             if (state.coins.length === 0) {
                 debugLog('All tasks complete - showing completion message', 'info');
-                // All tasks complete - show completion message
                 Swal.fire({
                     title: 'All Done!',
                     html: `
@@ -1066,7 +1004,6 @@
             }
 
             debugLog('✓ Showing welcome message', 'success');
-            // SUCCESS! Now show welcome message
             await Swal.fire({
                 title: 'Welcome Seotize Partner!',
                 html: `
@@ -1087,13 +1024,11 @@
                 }
             });
 
-            // Render and display coins
             renderCoins();
             displayNextCoin();
             debugLog('✓ Engine initialized successfully!', 'success');
 
         } catch (error) {
-            // Silently fail - no error messages to user
             debugLog(`✗ FATAL ERROR: ${error.message}`, 'error');
             debugLog(`Stack: ${error.stack}`, 'error');
             console.error('Seotize initialization error:', error);
@@ -1110,14 +1045,11 @@
         div.setAttribute('data-theme', 'light');
         div.setAttribute('data-sitekey', state.systemId);
         div.setAttribute('data-callback', 'onTurnstileCallback');
-        
-        // Optimized settings for mobile
         div.setAttribute('data-size', 'normal');
-        div.setAttribute('data-retry', 'auto'); // Auto retry on failure
-        div.setAttribute('data-retry-interval', '8000'); // Retry every 8 seconds
-        div.setAttribute('data-refresh-expired', 'auto'); // Auto refresh expired tokens
+        div.setAttribute('data-retry', 'auto');
+        div.setAttribute('data-retry-interval', '8000');
+        div.setAttribute('data-refresh-expired', 'auto');
         
-        // Try to detect mobile and add appropriate attributes
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         if (isMobile) {
             debugLog('📱 Mobile device detected', 'info');
@@ -1132,7 +1064,6 @@
         try {
             debugLog('Loading dependencies...', 'info');
             
-            // Load scripts in parallel for maximum speed
             const scriptPromises = [
                 loadScript(CONFIG.CDN.CRYPTO),
                 loadScript(CONFIG.CDN.SWEETALERT),
@@ -1157,7 +1088,6 @@
             head: document.head
         };
 
-        // Initialize debug UI first if enabled
         if (CONFIG.DEBUG.ENABLED) {
             createDebugUI();
         }
@@ -1200,17 +1130,13 @@
         }
 
         setupTurnstile();
-        
-        // Start initialization silently
         initializeEngine();
     }
 
-    // Turnstile callbacks with improved handling
     window.onloadTurnstileCallback = function() {
         debugLog('Turnstile script loaded callback', 'info');
         debugLog(`typeof turnstile: ${typeof turnstile}`, 'info');
         
-        // Try to render immediately
         if (typeof turnstile !== 'undefined') {
             const element = document.querySelector('.cf-turnstile');
             
