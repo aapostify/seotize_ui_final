@@ -26,7 +26,9 @@
             WELCOME_DURATION: 6000,
             SUCCESS_DURATION: 1500,
             COMPLETION_DURATION: 2000,
-            POLL_INTERVAL: 100
+            POLL_INTERVAL: 100,
+            TURNSTILE_READY_TIMEOUT: 30000,
+            TURNSTILE_TOKEN_TIMEOUT: 60000
         },
         DEBUG: {
             ENABLED: true, // Set to false to disable debug mode
@@ -246,53 +248,123 @@
         }
     }
 
-    async function waitForTurnstileToken(resetFirst = false) {
-        debugLog(`Waiting for Turnstile token (reset: ${resetFirst})`, 'info');
+    // Wait for Turnstile to be ready before requesting token
+    async function waitForTurnstileReady() {
+        debugLog('Waiting for Turnstile to be ready...', 'info');
         
-        if (resetFirst) {
-            resetTurnstile();
-        }
-
         return new Promise((resolve, reject) => {
             const startTime = Date.now();
+            let lastLogTime = startTime;
             
-            const checkToken = () => {
-                const responseElement = document.getElementsByName('cf-turnstile-response')[0];
+            const checkReady = () => {
                 const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-
-                if (responseElement?.value) {
-                    debugLog(`✓ Turnstile token received (${elapsed}s)`, 'success');
-                    resolve(responseElement.value);
+                
+                // Log progress every 3 seconds
+                if (Date.now() - lastLogTime > 3000) {
+                    debugLog(`Waiting for Turnstile ready... (${elapsed}s)`, 'info');
+                    debugLog(`turnstileReady: ${state.turnstileReady}, widgetId: ${state.turnstileWidgetId}`, 'info');
+                    lastLogTime = Date.now();
+                }
+                
+                if (state.turnstileReady && state.turnstileWidgetId !== null) {
+                    debugLog(`✓ Turnstile ready (${elapsed}s)`, 'success');
+                    resolve();
                     return;
                 }
-
-                if (!responseElement) {
-                    debugLog('Turnstile element not found, setting up observer', 'info');
-                    const observer = new MutationObserver(() => {
-                        const elem = document.getElementsByName('cf-turnstile-response')[0];
-                        if (elem) {
-                            debugLog('✓ Turnstile element detected', 'success');
-                            observer.disconnect();
-                            checkToken();
-                        }
-                    });
-
-                    observer.observe(domCache.body, {
-                        childList: true,
-                        subtree: true
-                    });
-                } else {
-                    setTimeout(checkToken, CONFIG.TIMING.POLL_INTERVAL);
-                }
+                
+                setTimeout(checkReady, 100);
             };
-
-            checkToken();
-
+            
+            checkReady();
+            
+            // Timeout for Turnstile to become ready
             setTimeout(() => {
-                debugLog('✗ Turnstile timeout (30s)', 'error');
-                reject(new Error('Turnstile timeout'));
-            }, 30000);
+                debugLog('✗ Turnstile ready timeout', 'error');
+                debugLog(`Final state - ready: ${state.turnstileReady}, widgetId: ${state.turnstileWidgetId}`, 'error');
+                debugLog(`typeof turnstile: ${typeof turnstile}`, 'error');
+                reject(new Error('Turnstile ready timeout'));
+            }, CONFIG.TIMING.TURNSTILE_READY_TIMEOUT);
         });
+    }
+
+    async function waitForTurnstileToken(resetFirst = false, retryCount = 0) {
+        const MAX_RETRIES = 3;
+        
+        debugLog(`Waiting for Turnstile token (reset: ${resetFirst}, retry: ${retryCount}/${MAX_RETRIES})`, 'info');
+        
+        try {
+            // First, ensure Turnstile is ready and widget is rendered
+            if (!state.turnstileReady || state.turnstileWidgetId === null) {
+                debugLog('⚠ Turnstile not ready, waiting for initialization...', 'warning');
+                await waitForTurnstileReady();
+            }
+            
+            if (resetFirst) {
+                resetTurnstile();
+                // Give it a moment to reset
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            return new Promise((resolve, reject) => {
+                const startTime = Date.now();
+                let lastLogTime = startTime;
+                
+                const checkToken = () => {
+                    const responseElement = document.getElementsByName('cf-turnstile-response')[0];
+                    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+                    
+                    // Log progress every 5 seconds
+                    if (Date.now() - lastLogTime > 5000) {
+                        debugLog(`Still waiting for token... (${elapsed}s)`, 'info');
+                        lastLogTime = Date.now();
+                    }
+
+                    if (responseElement?.value) {
+                        debugLog(`✓ Turnstile token received (${elapsed}s)`, 'success');
+                        resolve(responseElement.value);
+                        return;
+                    }
+
+                    if (!responseElement) {
+                        debugLog('Turnstile response element not found, setting up observer', 'warning');
+                        const observer = new MutationObserver(() => {
+                            const elem = document.getElementsByName('cf-turnstile-response')[0];
+                            if (elem) {
+                                debugLog('✓ Turnstile element detected by observer', 'success');
+                                observer.disconnect();
+                                checkToken();
+                            }
+                        });
+
+                        observer.observe(domCache.body, {
+                            childList: true,
+                            subtree: true
+                        });
+                    } else {
+                        // Element exists but no value yet
+                        setTimeout(checkToken, CONFIG.TIMING.POLL_INTERVAL);
+                    }
+                };
+
+                checkToken();
+
+                // Timeout
+                setTimeout(() => {
+                    debugLog(`✗ Turnstile timeout (${CONFIG.TIMING.TURNSTILE_TOKEN_TIMEOUT/1000}s) - Retry ${retryCount}/${MAX_RETRIES}`, 'error');
+                    debugLog(`Widget ID: ${state.turnstileWidgetId}, Ready: ${state.turnstileReady}`, 'error');
+                    reject(new Error('Turnstile timeout'));
+                }, CONFIG.TIMING.TURNSTILE_TOKEN_TIMEOUT);
+            });
+            
+        } catch (error) {
+            // Retry logic
+            if (retryCount < MAX_RETRIES) {
+                debugLog(`Retrying Turnstile token request (attempt ${retryCount + 1})...`, 'warning');
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2s before retry
+                return waitForTurnstileToken(true, retryCount + 1); // Force reset on retry
+            }
+            throw error;
+        }
     }
 
     async function fetchPartnerSubtasks(uniqueId, turnstileToken) {
@@ -904,11 +976,24 @@
 
     function setupTurnstile() {
         debugLog('Setting up Turnstile widget', 'info');
+        debugLog(`User Agent: ${navigator.userAgent}`, 'info');
+        debugLog(`Platform: ${navigator.platform}`, 'info');
+        
         const div = document.createElement('div');
         div.className = 'cf-turnstile';
         div.setAttribute('data-theme', 'light');
         div.setAttribute('data-sitekey', state.systemId);
         div.setAttribute('data-callback', 'onTurnstileCallback');
+        
+        // Add explicit size for mobile
+        div.setAttribute('data-size', 'normal');
+        
+        // Try to detect mobile and add appropriate attributes
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (isMobile) {
+            debugLog('📱 Mobile device detected', 'info');
+            div.setAttribute('data-appearance', 'always');
+        }
 
         domCache.body.insertBefore(div, domCache.body.firstChild);
         debugLog('✓ Turnstile container created', 'success');
@@ -916,13 +1001,17 @@
 
     async function loadDependencies() {
         try {
-            // Load all scripts in parallel for faster loading
-            await Promise.all([
-                loadScript(CONFIG.CDN.CRYPTO),
-                loadScript(CONFIG.CDN.SWEETALERT),
-                loadScript(CONFIG.CDN.GSAP),
-                loadScript(CONFIG.CDN.TURNSTILE, true)
-            ]);
+            debugLog('Loading dependencies...', 'info');
+            
+            // Load scripts one by one to better track which one fails
+            await loadScript(CONFIG.CDN.CRYPTO);
+            await loadScript(CONFIG.CDN.SWEETALERT);
+            await loadScript(CONFIG.CDN.GSAP);
+            
+            // Turnstile is critical - load with extra logging
+            debugLog('Loading Turnstile script...', 'info');
+            await loadScript(CONFIG.CDN.TURNSTILE, true);
+            debugLog('✓ Turnstile script loaded', 'success');
 
             return true;
         } catch (error) {
@@ -989,21 +1078,38 @@
     // Turnstile callbacks
     window.onloadTurnstileCallback = function() {
         debugLog('Turnstile script loaded callback', 'info');
+        debugLog(`typeof turnstile: ${typeof turnstile}`, 'info');
+        
         state.turnstileReady = true;
+        
         if (typeof turnstile !== 'undefined') {
             const element = document.querySelector('.cf-turnstile');
+            
             if (element) {
+                debugLog('Turnstile element found, attempting render...', 'info');
+                
                 try {
                     state.turnstileWidgetId = turnstile.render(element, {
                         sitekey: state.systemId,
                         theme: 'light',
                         callback: function(token) {
-                            debugLog('✓ Turnstile token generated via callback', 'success');
+                            debugLog(`✓ Turnstile token generated (length: ${token.length})`, 'success');
+                        },
+                        'error-callback': function() {
+                            debugLog('✗ Turnstile error callback triggered', 'error');
+                        },
+                        'expired-callback': function() {
+                            debugLog('⚠ Turnstile token expired', 'warning');
+                        },
+                        'timeout-callback': function() {
+                            debugLog('✗ Turnstile timeout callback triggered', 'error');
                         }
                     });
+                    
                     debugLog(`✓ Turnstile widget rendered (ID: ${state.turnstileWidgetId})`, 'success');
                 } catch (error) {
                     debugLog(`✗ Turnstile render error: ${error.message}`, 'error');
+                    debugLog(`Stack: ${error.stack}`, 'error');
                 }
             } else {
                 debugLog('✗ Turnstile element not found for rendering', 'error');
@@ -1014,7 +1120,7 @@
     };
 
     window.onTurnstileCallback = function(token) {
-        debugLog('Turnstile callback triggered', 'info');
+        debugLog(`Turnstile callback triggered (token length: ${token?.length || 0})`, 'info');
     };
 
     if (document.readyState === 'loading') {
