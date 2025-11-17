@@ -27,6 +27,10 @@
             SUCCESS_DURATION: 1500,
             COMPLETION_DURATION: 2000,
             POLL_INTERVAL: 100
+        },
+        DEBUG: {
+            ENABLED: true, // Set to false to disable debug mode
+            LOG_POSITION: 'bottom-right' // Options: 'bottom-right', 'bottom-left', 'top-right', 'top-left'
         }
     };
 
@@ -43,10 +47,123 @@
         dependenciesLoaded: false,
         turnstileReady: false,
         turnstileWidgetId: null,
-        tasksData: null
+        tasksData: null,
+        debugLogs: []
     };
 
     let domCache = null;
+    let debugContainer = null;
+
+    // Debug Logger
+    function debugLog(message, type = 'info') {
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = `[${timestamp}] ${message}`;
+        
+        // Always log to console
+        console.log(`[SEOTIZE ${type.toUpperCase()}]`, message);
+        
+        // Store in state
+        state.debugLogs.push({ timestamp, message, type });
+        
+        // Show in UI if debug mode is enabled
+        if (CONFIG.DEBUG.ENABLED) {
+            updateDebugUI(logEntry, type);
+        }
+    }
+
+    function createDebugUI() {
+        if (!CONFIG.DEBUG.ENABLED || debugContainer) return;
+
+        debugContainer = document.createElement('div');
+        debugContainer.id = 'seotize-debug-log';
+        
+        const positions = {
+            'bottom-right': { bottom: '10px', right: '10px' },
+            'bottom-left': { bottom: '10px', left: '10px' },
+            'top-right': { top: '10px', right: '10px' },
+            'top-left': { top: '10px', left: '10px' }
+        };
+        
+        const pos = positions[CONFIG.DEBUG.LOG_POSITION] || positions['bottom-right'];
+        
+        Object.assign(debugContainer.style, {
+            position: 'fixed',
+            ...pos,
+            maxWidth: '90vw',
+            width: '350px',
+            maxHeight: '400px',
+            overflowY: 'auto',
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            color: '#00ff00',
+            fontFamily: 'monospace',
+            fontSize: '11px',
+            padding: '10px',
+            borderRadius: '8px',
+            zIndex: '9999999',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+            border: '2px solid #00ff00'
+        });
+
+        const header = document.createElement('div');
+        header.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #00ff00; padding-bottom: 5px;">
+                <strong style="color: #00ff00;">🐛 SEOTIZE DEBUG</strong>
+                <button id="seotize-debug-close" style="background: #ff0000; color: white; border: none; padding: 2px 8px; cursor: pointer; border-radius: 4px; font-size: 10px;">CLOSE</button>
+            </div>
+        `;
+        
+        debugContainer.appendChild(header);
+
+        const logContent = document.createElement('div');
+        logContent.id = 'seotize-debug-content';
+        logContent.style.lineHeight = '1.4';
+        debugContainer.appendChild(logContent);
+
+        document.body.appendChild(debugContainer);
+
+        // Close button handler
+        document.getElementById('seotize-debug-close').addEventListener('click', () => {
+            debugContainer.remove();
+            debugContainer = null;
+            CONFIG.DEBUG.ENABLED = false;
+        });
+
+        debugLog('Debug mode initialized', 'info');
+    }
+
+    function updateDebugUI(message, type = 'info') {
+        if (!debugContainer) {
+            createDebugUI();
+        }
+
+        const logContent = document.getElementById('seotize-debug-content');
+        if (!logContent) return;
+
+        const logEntry = document.createElement('div');
+        
+        const colors = {
+            info: '#00ff00',
+            success: '#00ffff',
+            error: '#ff0000',
+            warning: '#ffff00'
+        };
+
+        logEntry.style.color = colors[type] || colors.info;
+        logEntry.style.marginBottom = '3px';
+        logEntry.style.wordBreak = 'break-word';
+        logEntry.textContent = message;
+
+        logContent.appendChild(logEntry);
+
+        // Auto-scroll to bottom
+        logContent.scrollTop = logContent.scrollHeight;
+
+        // Limit log entries to prevent memory issues
+        const maxLogs = 50;
+        while (logContent.children.length > maxLogs) {
+            logContent.removeChild(logContent.firstChild);
+        }
+    }
 
     function getEngineScriptTag() {
         const scripts = document.getElementsByTagName('script');
@@ -81,11 +198,18 @@
 
     function loadScript(src, defer = false) {
         return new Promise((resolve, reject) => {
+            debugLog(`Loading script: ${src}`, 'info');
             const script = document.createElement('script');
             script.src = src;
             script.defer = defer;
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+            script.onload = () => {
+                debugLog(`✓ Loaded: ${src}`, 'success');
+                resolve();
+            };
+            script.onerror = () => {
+                debugLog(`✗ Failed to load: ${src}`, 'error');
+                reject(new Error(`Failed to load script: ${src}`));
+            };
             domCache.head.appendChild(script);
         });
     }
@@ -108,33 +232,46 @@
     }
 
     function resetTurnstile() {
+        debugLog('Resetting Turnstile widget', 'info');
         if (typeof turnstile !== 'undefined' && state.turnstileWidgetId !== null) {
             try {
                 turnstile.reset(state.turnstileWidgetId);
+                debugLog('✓ Turnstile reset successful', 'success');
             } catch (error) {
+                debugLog(`✗ Turnstile reset error: ${error.message}`, 'error');
                 console.error('Error resetting Turnstile:', error);
             }
+        } else {
+            debugLog('⚠ Turnstile not available for reset', 'warning');
         }
     }
 
     async function waitForTurnstileToken(resetFirst = false) {
+        debugLog(`Waiting for Turnstile token (reset: ${resetFirst})`, 'info');
+        
         if (resetFirst) {
             resetTurnstile();
         }
 
         return new Promise((resolve, reject) => {
+            const startTime = Date.now();
+            
             const checkToken = () => {
                 const responseElement = document.getElementsByName('cf-turnstile-response')[0];
+                const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 
                 if (responseElement?.value) {
+                    debugLog(`✓ Turnstile token received (${elapsed}s)`, 'success');
                     resolve(responseElement.value);
                     return;
                 }
 
                 if (!responseElement) {
+                    debugLog('Turnstile element not found, setting up observer', 'info');
                     const observer = new MutationObserver(() => {
                         const elem = document.getElementsByName('cf-turnstile-response')[0];
                         if (elem) {
+                            debugLog('✓ Turnstile element detected', 'success');
                             observer.disconnect();
                             checkToken();
                         }
@@ -151,43 +288,71 @@
 
             checkToken();
 
-            setTimeout(() => reject(new Error('Turnstile timeout')), 30000);
+            setTimeout(() => {
+                debugLog('✗ Turnstile timeout (30s)', 'error');
+                reject(new Error('Turnstile timeout'));
+            }, 30000);
         });
     }
 
     async function fetchPartnerSubtasks(uniqueId, turnstileToken) {
-        const response = await fetch(CONFIG.API_ENDPOINTS.GET_TASKS, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                unique_id: uniqueId,
-                'cf-turnstile-response': turnstileToken
-            })
-        });
+        debugLog('Fetching partner subtasks from API', 'info');
+        debugLog(`Unique ID: ${uniqueId.substring(0, 8)}...`, 'info');
+        
+        try {
+            const response = await fetch(CONFIG.API_ENDPOINTS.GET_TASKS, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    unique_id: uniqueId,
+                    'cf-turnstile-response': turnstileToken
+                })
+            });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            debugLog(`API Response Status: ${response.status}`, response.ok ? 'success' : 'error');
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            debugLog(`✓ API returned data: ${JSON.stringify(data).substring(0, 100)}...`, 'success');
+            
+            return data;
+        } catch (error) {
+            debugLog(`✗ API fetch error: ${error.message}`, 'error');
+            throw error;
         }
-
-        return await response.json();
     }
 
     async function submitTask(subtaskId, turnstileToken) {
-        const response = await fetch(CONFIG.API_ENDPOINTS.DO_TASK, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                unique_id: state.uniqueId,
-                'cf-turnstile-response': turnstileToken,
-                sub_task_id: subtaskId
-            })
-        });
+        debugLog(`Submitting task: ${subtaskId}`, 'info');
+        
+        try {
+            const response = await fetch(CONFIG.API_ENDPOINTS.DO_TASK, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    unique_id: state.uniqueId,
+                    'cf-turnstile-response': turnstileToken,
+                    sub_task_id: subtaskId
+                })
+            });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            debugLog(`Task submit status: ${response.status}`, response.ok ? 'success' : 'error');
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            debugLog(`✓ Task result: ${result.status || result.code}`, 'success');
+            
+            return result;
+        } catch (error) {
+            debugLog(`✗ Task submit error: ${error.message}`, 'error');
+            throw error;
         }
-
-        return await response.json();
     }
 
     function createCoinElement(subtaskId, xPosition, yPosition) {
@@ -231,6 +396,8 @@
         const sectionHeight = scrollHeight / count;
         const variance = CONFIG.COIN.SECTION_VARIANCE;
 
+        debugLog(`Calculating ${count} coin positions (viewport: ${viewportWidth}x${scrollHeight})`, 'info');
+
         for (let i = 0; i < count; i++) {
             const sectionStart = i * sectionHeight;
             const sectionEnd = (i + 1) * sectionHeight;
@@ -240,10 +407,12 @@
             positions.push({ x, y });
         }
 
+        debugLog(`✓ Coin positions calculated`, 'success');
         return positions;
     }
 
     function renderCoins() {
+        debugLog(`Rendering ${state.coins.length} coins`, 'info');
         const positions = calculateCoinPositions(state.coins.length);
 
         state.coins.forEach((subtaskId, index) => {
@@ -253,14 +422,19 @@
             domCache.body.appendChild(coin);
             state.coinElements.push(coin);
         });
+
+        debugLog(`✓ ${state.coinElements.length} coins rendered`, 'success');
     }
 
     function displayNextCoin() {
         state.currentCoinIndex++;
 
         if (state.currentCoinIndex >= state.coinElements.length) {
+            debugLog('No more coins to display', 'info');
             return;
         }
+
+        debugLog(`Displaying coin ${state.currentCoinIndex + 1}/${state.coinElements.length}`, 'info');
 
         const coin = state.coinElements[state.currentCoinIndex];
         coin.style.display = 'block';
@@ -325,7 +499,7 @@
         const updateArrowPosition = () => {
             if (!targetCoin || !targetCoin.parentNode) {
                 if (arrow && arrow.parentNode) {
-                    arrow.parentNode.removeChild();
+                    arrow.parentNode.removeChild(arrow);
                 }
                 if (state.arrowUpdateInterval) {
                     clearInterval(state.arrowUpdateInterval);
@@ -407,6 +581,7 @@
 
         if (clickedSubtaskId !== subtaskId) return;
 
+        debugLog(`Coin clicked: ${subtaskId}`, 'info');
         state.isProcessing = true;
 
         const coinElements = document.querySelectorAll('.seotize-coin');
@@ -450,6 +625,7 @@
                 clickedCoin.remove();
 
                 const remainingTasks = state.coinElements.length - (state.currentCoinIndex + 1);
+                debugLog(`✓ Task completed! ${remainingTasks} remaining`, 'success');
 
                 await Swal.fire({
                     title: `GOOD JOB, ${remainingTasks} MORE!`,
@@ -479,6 +655,7 @@
                     const coinElements = document.querySelectorAll('.seotize-coin');
                     coinElements.forEach(el => el.style.pointerEvents = 'auto');
                 } else {
+                    debugLog('🎉 All tasks completed!', 'success');
                     await Swal.fire({
                         title: 'CONGRATULATION!',
                         html: `
@@ -506,6 +683,7 @@
             }
         } catch (error) {
             closeLoading();
+            debugLog(`✗ Coin click error: ${error.message}`, 'error');
             Swal.fire({
                 title: 'Error',
                 text: error.message || 'An error occurred',
@@ -607,17 +785,32 @@
                 background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
                 height: 4px !important;
             }
+
+            #seotize-debug-log::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            #seotize-debug-log::-webkit-scrollbar-track {
+                background: rgba(0, 255, 0, 0.1);
+            }
+
+            #seotize-debug-log::-webkit-scrollbar-thumb {
+                background: #00ff00;
+                border-radius: 4px;
+            }
         `;
         domCache.head.appendChild(style);
     }
 
     async function waitForDependencies() {
+        debugLog('Waiting for dependencies...', 'info');
         return new Promise((resolve) => {
             const checkDeps = () => {
                 if (typeof CryptoJS !== 'undefined' &&
                     typeof Swal !== 'undefined' &&
                     typeof gsap !== 'undefined') {
                     state.dependenciesLoaded = true;
+                    debugLog('✓ All dependencies loaded', 'success');
                     resolve();
                 } else {
                     setTimeout(checkDeps, 50);
@@ -629,10 +822,13 @@
 
     async function initializeEngine() {
         try {
+            debugLog('🚀 Starting initialization...', 'info');
+            
             // Wait for all dependencies including Turnstile - SILENTLY
             await waitForDependencies();
 
             state.uniqueId = getUniqueId();
+            debugLog(`Generated Unique ID: ${state.uniqueId.substring(0, 8)}...`, 'info');
             
             // Wait for Turnstile token before making the request - SILENTLY
             const token = await waitForTurnstileToken(false);
@@ -640,6 +836,7 @@
 
             // Only check if we have valid data
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
+                debugLog('⚠ No subtasks info - silent exit', 'warning');
                 return; // Silently exit
             }
 
@@ -647,7 +844,10 @@
                 .filter(task => task.status === 'incomplete')
                 .map(task => task.subtask_id);
 
+            debugLog(`Found ${state.coins.length} incomplete tasks`, 'info');
+
             if (state.coins.length === 0) {
+                debugLog('All tasks complete - showing completion message', 'info');
                 // All tasks complete - show completion message
                 Swal.fire({
                     title: 'All Done!',
@@ -667,6 +867,7 @@
                 return;
             }
 
+            debugLog('✓ Showing welcome message', 'success');
             // SUCCESS! Now show welcome message
             await Swal.fire({
                 title: 'Welcome Seotize Partner!',
@@ -691,14 +892,18 @@
             // Render and display coins
             renderCoins();
             displayNextCoin();
+            debugLog('✓ Engine initialized successfully!', 'success');
 
         } catch (error) {
             // Silently fail - no error messages to user
+            debugLog(`✗ FATAL ERROR: ${error.message}`, 'error');
+            debugLog(`Stack: ${error.stack}`, 'error');
             console.error('Seotize initialization error:', error);
         }
     }
 
     function setupTurnstile() {
+        debugLog('Setting up Turnstile widget', 'info');
         const div = document.createElement('div');
         div.className = 'cf-turnstile';
         div.setAttribute('data-theme', 'light');
@@ -706,6 +911,7 @@
         div.setAttribute('data-callback', 'onTurnstileCallback');
 
         domCache.body.insertBefore(div, domCache.body.firstChild);
+        debugLog('✓ Turnstile container created', 'success');
     }
 
     async function loadDependencies() {
@@ -720,6 +926,7 @@
 
             return true;
         } catch (error) {
+            debugLog(`✗ Failed to load dependencies: ${error.message}`, 'error');
             console.error('Failed to load dependencies:', error);
             return false;
         }
@@ -731,9 +938,17 @@
             head: document.head
         };
 
+        // Initialize debug UI first if enabled
+        if (CONFIG.DEBUG.ENABLED) {
+            createDebugUI();
+        }
+
+        debugLog('🔧 Bootstrap starting...', 'info');
+
         const engineScript = getEngineScriptTag();
 
         if (!engineScript) {
+            debugLog('✗ Seotize engine script not found', 'error');
             console.error('Seotize engine script not found.');
             return;
         }
@@ -742,20 +957,28 @@
         state.systemId = getURLParameter(queryString, 'id');
 
         if (!state.systemId) {
+            debugLog('✗ System ID not found in script tag', 'error');
             console.error('System ID not found in script tag.');
             return;
         }
 
+        debugLog(`System ID: ${state.systemId}`, 'info');
         window.SYSYID = state.systemId;
 
         if (!document.referrer.includes('google.com')) {
+            debugLog('⚠ Not from Google referrer - silent exit', 'warning');
             return;
         }
+
+        debugLog('✓ Google referrer detected', 'success');
 
         injectStyles();
 
         const loaded = await loadDependencies();
-        if (!loaded) return;
+        if (!loaded) {
+            debugLog('✗ Dependencies failed to load', 'error');
+            return;
+        }
 
         setupTurnstile();
         
@@ -765,23 +988,33 @@
 
     // Turnstile callbacks
     window.onloadTurnstileCallback = function() {
+        debugLog('Turnstile script loaded callback', 'info');
         state.turnstileReady = true;
         if (typeof turnstile !== 'undefined') {
             const element = document.querySelector('.cf-turnstile');
             if (element) {
-                state.turnstileWidgetId = turnstile.render(element, {
-                    sitekey: state.systemId,
-                    theme: 'light',
-                    callback: function(token) {
-                        // Token is ready
-                    }
-                });
+                try {
+                    state.turnstileWidgetId = turnstile.render(element, {
+                        sitekey: state.systemId,
+                        theme: 'light',
+                        callback: function(token) {
+                            debugLog('✓ Turnstile token generated via callback', 'success');
+                        }
+                    });
+                    debugLog(`✓ Turnstile widget rendered (ID: ${state.turnstileWidgetId})`, 'success');
+                } catch (error) {
+                    debugLog(`✗ Turnstile render error: ${error.message}`, 'error');
+                }
+            } else {
+                debugLog('✗ Turnstile element not found for rendering', 'error');
             }
+        } else {
+            debugLog('✗ Turnstile object not available', 'error');
         }
     };
 
     window.onTurnstileCallback = function(token) {
-        // Callback when token is generated
+        debugLog('Turnstile callback triggered', 'info');
     };
 
     if (document.readyState === 'loading') {
