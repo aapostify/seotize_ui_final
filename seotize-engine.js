@@ -31,7 +31,7 @@
             TURNSTILE_TOKEN_TIMEOUT: 60000
         },
         DEBUG: {
-            ENABLED: true, // Set to true to enable debug mode
+            ENABLED: false, // Set to true to enable debug mode
             LOG_POSITION: 'bottom-right'
         }
     };
@@ -244,6 +244,20 @@
     function getUniqueId() {
         var browserData = getBrowserData();
         return hashData(browserData);
+    }
+
+    // NEW: Normalize URL function
+    function normalizeURL(url) {
+        let normalized = url;
+        
+        // Remove www. subdomain
+        normalized = normalized.replace('https://www.', 'https://');
+        normalized = normalized.replace('http://www.', 'http://');
+        
+        // Remove trailing slash
+        normalized = normalized.replace(/\/$/, '');
+        
+        return normalized;
     }
 
     function loadScript(src, defer = false) {
@@ -957,11 +971,15 @@
             state.uniqueId = getUniqueId();
             debugLog(`Generated Unique ID: ${state.uniqueId.substring(0, 8)}...`, 'info');
             
-            const currentUrl = window.location.href;
-            debugLog(`Current URL: ${currentUrl}`, 'info');
+            // Get current URL and normalize it
+            const rawUrl = window.location.href;
+            const normalizedUrl = normalizeURL(rawUrl);
+            
+            debugLog(`Raw URL: ${rawUrl}`, 'info');
+            debugLog(`Normalized URL: ${normalizedUrl}`, 'info');
             
             debugLog('⚡ Fast loading: Fetching tasks without captcha', 'info');
-            const data = await fetchPartnerSubtasks(state.uniqueId, currentUrl);
+            const data = await fetchPartnerSubtasks(state.uniqueId, normalizedUrl);
 
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
                 debugLog('⚠ No subtasks info - silent exit', 'warning');
