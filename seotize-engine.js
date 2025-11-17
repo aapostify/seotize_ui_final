@@ -31,7 +31,7 @@
             TURNSTILE_TOKEN_TIMEOUT: 60000
         },
         DEBUG: {
-            ENABLED: false, // Set to true to enable debug mode
+            ENABLED: true, // Set to true to enable debug mode
             LOG_POSITION: 'bottom-right'
         }
     };
