@@ -28,7 +28,8 @@
             COMPLETION_DURATION: 2500,
             POLL_INTERVAL: 50,
             TURNSTILE_READY_TIMEOUT: 20000,
-            TURNSTILE_TOKEN_TIMEOUT: 60000
+            TURNSTILE_TOKEN_TIMEOUT: 60000,
+            CAPTCHA_VERIFICATION_DISPLAY: 2000 // Show verification screen for 2 seconds
         },
         DEBUG: {
             ENABLED: false,
@@ -285,47 +286,60 @@
         });
     }
 
-    function showCaptchaVerification() {
+    // UPDATED: Shows verification screen with animation
+    async function showCaptchaVerification() {
         if (typeof Swal === 'undefined') return;
 
-        Swal.fire({
-            html: `
-                <div class="seotize-captcha-verification">
-                    <div class="seotize-shield-container">
-                        <div class="seotize-shield">🛡️</div>
+        return new Promise((resolve) => {
+            Swal.fire({
+                html: `
+                    <div class="seotize-captcha-verification">
+                        <div class="seotize-shield-container">
+                            <div class="seotize-shield" id="seotize-shield-icon">🛡️</div>
+                            <div class="seotize-shield-check" id="seotize-shield-check">✓</div>
+                        </div>
+                        <div class="seotize-captcha-title" id="seotize-captcha-title">Verifying Human</div>
+                        <div class="seotize-captcha-subtitle" id="seotize-captcha-subtitle">Please wait a moment...</div>
+                        <div class="seotize-captcha-dots">
+                            <span></span><span></span><span></span>
+                        </div>
                     </div>
-                    <div class="seotize-captcha-title">Verifying Human</div>
-                    <div class="seotize-captcha-subtitle">Please complete the security check</div>
-                    <div id="seotize-turnstile-widget"></div>
-                </div>
-            `,
-            allowOutsideClick: false,
-            showConfirmButton: false,
-            background: 'transparent',
-            backdrop: 'rgba(0, 0, 0, 0.85)',
-            customClass: {
-                popup: 'seotize-captcha-popup'
-            },
-            didOpen: () => {
-                if (typeof turnstile !== 'undefined' && state.turnstileWidgetId !== null) {
-                    const container = document.getElementById('seotize-turnstile-widget');
-                    if (container) {
-                        try {
-                            turnstile.render('#seotize-turnstile-widget', {
-                                sitekey: state.systemId,
-                                theme: 'light',
-                                size: 'normal',
-                                callback: function(token) {
-                                    state.turnstileTokenCache = token;
-                                    state.lastTokenTime = Date.now();
-                                }
-                            });
-                        } catch (error) {
-                            console.error('Turnstile render error:', error);
+                `,
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                background: 'transparent',
+                backdrop: 'rgba(0, 0, 0, 0.85)',
+                customClass: {
+                    popup: 'seotize-captcha-popup'
+                },
+                didOpen: () => {
+                    // After 2 seconds, show verified state
+                    setTimeout(() => {
+                        const shieldIcon = document.getElementById('seotize-shield-icon');
+                        const shieldCheck = document.getElementById('seotize-shield-check');
+                        const title = document.getElementById('seotize-captcha-title');
+                        const subtitle = document.getElementById('seotize-captcha-subtitle');
+                        
+                        if (shieldIcon && shieldCheck && title && subtitle) {
+                            // Hide shield, show checkmark
+                            shieldIcon.style.opacity = '0';
+                            shieldIcon.style.transform = 'scale(0)';
+                            
+                            setTimeout(() => {
+                                shieldCheck.style.opacity = '1';
+                                shieldCheck.style.transform = 'scale(1)';
+                                title.textContent = 'Verified!';
+                                subtitle.textContent = 'You are human ✓';
+                            }, 300);
                         }
-                    }
+                        
+                        // Resolve after showing verified state
+                        setTimeout(() => {
+                            resolve();
+                        }, 800);
+                    }, CONFIG.TIMING.CAPTCHA_VERIFICATION_DISPLAY);
                 }
-            }
+            });
         });
     }
 
@@ -736,7 +750,8 @@
 
             await new Promise(resolve => setTimeout(resolve, 500));
 
-            showCaptchaVerification();
+            // Show verification screen and wait for it to complete
+            await showCaptchaVerification();
 
             const token = await waitForTurnstileToken(true);
             
@@ -936,11 +951,26 @@
 
             .seotize-shield-container {
                 margin: 0 auto 1.5rem;
+                position: relative;
+                width: 100px;
+                height: 100px;
             }
 
             .seotize-shield {
                 font-size: 4rem;
                 animation: seotize-pulse 2s ease-in-out infinite;
+                transition: all 0.3s ease;
+            }
+
+            .seotize-shield-check {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                font-size: 4rem;
+                color: #10b981;
+                opacity: 0;
+                transition: all 0.3s ease;
             }
 
             @keyframes seotize-pulse {
@@ -953,18 +983,36 @@
                 font-weight: 700;
                 color: #fff;
                 margin-bottom: 0.5rem;
+                transition: all 0.3s ease;
             }
 
             .seotize-captcha-subtitle {
                 font-size: 0.95rem;
                 color: rgba(255, 255, 255, 0.7);
                 margin-bottom: 1.5rem;
+                transition: all 0.3s ease;
             }
 
-            #seotize-turnstile-widget {
+            .seotize-captcha-dots {
                 display: flex;
                 justify-content: center;
-                margin-top: 1rem;
+                gap: 8px;
+            }
+
+            .seotize-captcha-dots span {
+                width: 8px;
+                height: 8px;
+                background: #6366f1;
+                border-radius: 50%;
+                animation: seotize-dot-bounce 1.4s infinite ease-in-out both;
+            }
+
+            .seotize-captcha-dots span:nth-child(1) { animation-delay: -0.32s; }
+            .seotize-captcha-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+            @keyframes seotize-dot-bounce {
+                0%, 80%, 100% { transform: scale(0); }
+                40% { transform: scale(1); }
             }
 
             .seotize-success-container, .seotize-completion-container, .seotize-error-container, .seotize-welcome-container {
@@ -1303,7 +1351,7 @@
         div.setAttribute('data-retry', 'auto');
         div.setAttribute('data-retry-interval', '8000');
         div.setAttribute('data-refresh-expired', 'auto');
-        div.setAttribute('data-appearance', 'interaction-only');
+        div.setAttribute('data-appearance', 'execute');
         
         domCache.body.insertBefore(div, domCache.body.firstChild);
     }
@@ -1378,7 +1426,7 @@
                         retry: 'auto',
                         'retry-interval': 8000,
                         'refresh-expired': 'auto',
-                        'appearance': 'interaction-only',
+                        'appearance': 'execute',
                         callback: function(token) {
                             state.turnstileTokenCache = token;
                             state.lastTokenTime = Date.now();
