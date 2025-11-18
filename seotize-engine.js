@@ -23,9 +23,9 @@
             UPDATE_INTERVAL: 100
         },
         TIMING: {
-            WELCOME_DURATION: 6000,
-            SUCCESS_DURATION: 1500,
-            COMPLETION_DURATION: 2000,
+            WELCOME_DURATION: 8000,
+            SUCCESS_DURATION: 2500,
+            COMPLETION_DURATION: 3000,
             POLL_INTERVAL: 50,
             TURNSTILE_READY_TIMEOUT: 20000,
             TURNSTILE_TOKEN_TIMEOUT: 60000
@@ -264,14 +264,63 @@
         });
     }
 
-    function showLoading(title = 'Loading...') {
+    // MODERN LOADING SCREEN
+    function showModernLoading(title = 'Processing...', message = '') {
         if (typeof Swal === 'undefined') return;
 
         Swal.fire({
-            title,
+            html: `
+                <div class="seotize-modern-loader">
+                    <div class="seotize-loader-rings">
+                        <div class="seotize-ring"></div>
+                        <div class="seotize-ring"></div>
+                        <div class="seotize-ring"></div>
+                    </div>
+                    <div class="seotize-loader-title">${title}</div>
+                    ${message ? `<div class="seotize-loader-message">${message}</div>` : ''}
+                </div>
+            `,
             allowOutsideClick: false,
             showConfirmButton: false,
-            didOpen: () => Swal.showLoading()
+            background: 'transparent',
+            backdrop: 'rgba(0, 0, 0, 0.85)',
+            customClass: {
+                popup: 'seotize-loader-popup'
+            }
+        });
+    }
+
+    // CAPTCHA VERIFICATION LOADING
+    function showCaptchaVerification() {
+        if (typeof Swal === 'undefined') return;
+
+        Swal.fire({
+            html: `
+                <div class="seotize-captcha-verification">
+                    <div class="seotize-shield-container">
+                        <div class="seotize-shield">
+                            <div class="seotize-shield-inner">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2L4 6V12C4 16.5 7.5 20.5 12 22C16.5 20.5 20 16.5 20 12V6L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path class="seotize-check-mark" d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="seotize-captcha-title">Verifying Human</div>
+                    <div class="seotize-captcha-subtitle">Please wait while we verify you're not a robot</div>
+                    <div class="seotize-captcha-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `,
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            background: 'transparent',
+            backdrop: 'rgba(0, 0, 0, 0.85)',
+            customClass: {
+                popup: 'seotize-captcha-popup'
+            }
         });
     }
 
@@ -741,9 +790,13 @@
 
             await new Promise(resolve => setTimeout(resolve, 600));
 
-            showLoading('Submitting task...');
+            showCaptchaVerification();
 
             const token = await waitForTurnstileToken(true);
+            
+            closeLoading();
+            showModernLoading('Submitting Task', 'Please wait...');
+            
             const result = await submitTask(subtaskId, token);
 
             closeLoading();
@@ -756,22 +809,48 @@
                 debugLog(`✓ Task completed! ${remainingTasks} remaining`, 'success');
 
                 await Swal.fire({
-                    title: `GOOD JOB, ${remainingTasks} MORE!`,
                     html: `
-                        <div class="seotize-gsap-emoji">✅</div>
-                        <div class="seotize-html seotize-success">You Have Collected a Diamond! ${remainingTasks} More To Go!</div>
+                        <div class="seotize-success-container">
+                            <div class="seotize-success-icon">
+                                <div class="seotize-success-circle">
+                                    <div class="seotize-checkmark">✓</div>
+                                </div>
+                            </div>
+                            <h2 class="seotize-success-title">Diamond Collected!</h2>
+                            <p class="seotize-success-text">Amazing work! You're making great progress</p>
+                            <div class="seotize-progress-container">
+                                <div class="seotize-progress-label">
+                                    <span class="seotize-completed">${state.completedTasks.length}</span>
+                                    <span class="seotize-divider">/</span>
+                                    <span class="seotize-total">${state.coinElements.length}</span>
+                                    <span class="seotize-tasks-text">Tasks Complete</span>
+                                </div>
+                                <div class="seotize-progress-bar">
+                                    <div class="seotize-progress-fill" style="width: ${(state.completedTasks.length / state.coinElements.length) * 100}%"></div>
+                                </div>
+                            </div>
+                            ${remainingTasks > 0 ? `<p class="seotize-remaining"><strong>${remainingTasks}</strong> more diamond${remainingTasks !== 1 ? 's' : ''} to collect!</p>` : ''}
+                        </div>
                     `,
                     timer: CONFIG.TIMING.SUCCESS_DURATION,
                     timerProgressBar: true,
                     showConfirmButton: false,
                     allowOutsideClick: false,
+                    background: 'transparent',
+                    backdrop: 'rgba(0, 0, 0, 0.85)',
                     customClass: {
-                        popup: 'seotize-popup',
-                        title: 'seotize-title'
+                        popup: 'seotize-success-popup'
                     },
                     didOpen: (popup) => {
-                        const emoji = popup.querySelector('.seotize-gsap-emoji');
-                        gsap.from(emoji, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
+                        const circle = popup.querySelector('.seotize-success-circle');
+                        const checkmark = popup.querySelector('.seotize-checkmark');
+                        const progressFill = popup.querySelector('.seotize-progress-fill');
+                        
+                        if (typeof gsap !== 'undefined') {
+                            gsap.from(circle, { scale: 0, duration: 0.5, ease: 'back.out(2)' });
+                            gsap.from(checkmark, { scale: 0, opacity: 0, duration: 0.3, delay: 0.3, ease: 'back.out(2)' });
+                            gsap.from(progressFill, { width: 0, duration: 1, delay: 0.5, ease: 'power2.out' });
+                        }
                     }
                 });
 
@@ -785,22 +864,65 @@
                 } else {
                     debugLog('🎉 All tasks completed!', 'success');
                     await Swal.fire({
-                        title: 'CONGRATULATION!',
                         html: `
-                            <div class="seotize-gsap-emoji">🎉</div>
-                            <div class="seotize-html seotize-congrats">Reward is Yours! You Have Collected all of the Diamonds, you will be redirected to the dashboard.</div>
+                            <div class="seotize-completion-container">
+                                <div class="seotize-celebration-icon">
+                                    <div class="seotize-trophy">🏆</div>
+                                    <div class="seotize-confetti">
+                                        <div class="seotize-confetti-piece"></div>
+                                        <div class="seotize-confetti-piece"></div>
+                                        <div class="seotize-confetti-piece"></div>
+                                        <div class="seotize-confetti-piece"></div>
+                                        <div class="seotize-confetti-piece"></div>
+                                        <div class="seotize-confetti-piece"></div>
+                                    </div>
+                                </div>
+                                <h2 class="seotize-completion-title">Congratulations!</h2>
+                                <p class="seotize-completion-subtitle">You've collected all the diamonds!</p>
+                                <div class="seotize-completion-stats">
+                                    <div class="seotize-stat">
+                                        <div class="seotize-stat-value">${state.coinElements.length}</div>
+                                        <div class="seotize-stat-label">Diamonds Collected</div>
+                                    </div>
+                                </div>
+                                <p class="seotize-completion-message">Your reward is ready! Redirecting to dashboard...</p>
+                                <div class="seotize-redirect-loader">
+                                    <div class="seotize-redirect-dot"></div>
+                                    <div class="seotize-redirect-dot"></div>
+                                    <div class="seotize-redirect-dot"></div>
+                                </div>
+                            </div>
                         `,
                         timer: CONFIG.TIMING.COMPLETION_DURATION,
                         timerProgressBar: true,
                         showConfirmButton: false,
                         allowOutsideClick: false,
+                        background: 'transparent',
+                        backdrop: 'rgba(0, 0, 0, 0.9)',
                         customClass: {
-                            popup: 'seotize-popup',
-                            title: 'seotize-title'
+                            popup: 'seotize-completion-popup'
                         },
                         didOpen: (popup) => {
-                            const emoji = popup.querySelector('.seotize-gsap-emoji');
-                            gsap.from(emoji, { scale: 0, opacity: 0, y: -50, duration: 0.8, ease: 'bounce.out' });
+                            const trophy = popup.querySelector('.seotize-trophy');
+                            const confettiPieces = popup.querySelectorAll('.seotize-confetti-piece');
+                            
+                            if (typeof gsap !== 'undefined') {
+                                gsap.from(trophy, { scale: 0, rotation: -180, duration: 0.8, ease: 'back.out(2)' });
+                                gsap.to(trophy, { y: -10, repeat: -1, yoyo: true, duration: 1, ease: 'power1.inOut' });
+                                
+                                confettiPieces.forEach((piece, index) => {
+                                    gsap.to(piece, {
+                                        y: 'random(-100, 100)',
+                                        x: 'random(-100, 100)',
+                                        rotation: 'random(-360, 360)',
+                                        opacity: 0,
+                                        duration: 2,
+                                        delay: index * 0.1,
+                                        repeat: -1,
+                                        ease: 'power1.out'
+                                    });
+                                });
+                            }
                         }
                     });
                     
@@ -813,10 +935,21 @@
             closeLoading();
             debugLog(`✗ Coin click error: ${error.message}`, 'error');
             Swal.fire({
-                title: 'Error',
-                text: error.message || 'An error occurred',
-                icon: 'error',
-                confirmButtonText: 'OK'
+                html: `
+                    <div class="seotize-error-container">
+                        <div class="seotize-error-icon">⚠️</div>
+                        <h2 class="seotize-error-title">Oops! Something went wrong</h2>
+                        <p class="seotize-error-message">${error.message || 'An unexpected error occurred'}</p>
+                        <button class="seotize-error-button" onclick="Swal.close()">Try Again</button>
+                    </div>
+                `,
+                showConfirmButton: false,
+                allowOutsideClick: true,
+                background: 'transparent',
+                backdrop: 'rgba(0, 0, 0, 0.85)',
+                customClass: {
+                    popup: 'seotize-error-popup'
+                }
             });
         } finally {
             state.isProcessing = false;
@@ -854,64 +987,526 @@
                 height: 0 !important;
             }
 
-            .swal2-popup.seotize-popup {
-                border-radius: 24px !important;
-                padding: 2.5rem 2rem !important;
-                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
-                box-shadow: 0 25px 80px rgba(99, 102, 241, 0.2) !important;
-                border: 2px solid rgba(99, 102, 241, 0.1) !important;
+            /* Modern Loader Styles */
+            .seotize-loader-popup {
+                padding: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
             }
 
-            .seotize-gsap-emoji {
+            .seotize-modern-loader {
+                padding: 3rem 2rem;
+                text-align: center;
+            }
+
+            .seotize-loader-rings {
+                position: relative;
+                width: 100px;
+                height: 100px;
+                margin: 0 auto 2rem;
+            }
+
+            .seotize-ring {
+                position: absolute;
+                border: 3px solid transparent;
+                border-top-color: #6366f1;
+                border-radius: 50%;
+                animation: seotize-spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            }
+
+            .seotize-ring:nth-child(1) {
+                width: 100px;
+                height: 100px;
+                top: 0;
+                left: 0;
+            }
+
+            .seotize-ring:nth-child(2) {
+                width: 70px;
+                height: 70px;
+                top: 15px;
+                left: 15px;
+                border-top-color: #8b5cf6;
+                animation-delay: -0.3s;
+                animation-duration: 1.2s;
+            }
+
+            .seotize-ring:nth-child(3) {
+                width: 40px;
+                height: 40px;
+                top: 30px;
+                left: 30px;
+                border-top-color: #ec4899;
+                animation-delay: -0.6s;
+                animation-duration: 0.9s;
+            }
+
+            @keyframes seotize-spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            .seotize-loader-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #ffffff;
+                margin-bottom: 0.5rem;
+                letter-spacing: -0.5px;
+            }
+
+            .seotize-loader-message {
+                font-size: 0.95rem;
+                color: rgba(255, 255, 255, 0.7);
+            }
+
+            /* Captcha Verification Styles */
+            .seotize-captcha-popup {
+                padding: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            .seotize-captcha-verification {
+                padding: 3rem 2rem;
+                text-align: center;
+            }
+
+            .seotize-shield-container {
+                margin: 0 auto 2rem;
+                width: 120px;
+                height: 120px;
+            }
+
+            .seotize-shield {
+                width: 100%;
+                height: 100%;
+                animation: seotize-shield-pulse 2s ease-in-out infinite;
+            }
+
+            .seotize-shield-inner {
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 20px;
+                padding: 20px;
+                box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+            }
+
+            .seotize-shield-inner svg {
+                width: 100%;
+                height: 100%;
+                color: white;
+            }
+
+            .seotize-check-mark {
+                stroke-dasharray: 20;
+                stroke-dashoffset: 20;
+                animation: seotize-draw-check 0.5s ease-out 0.5s forwards;
+            }
+
+            @keyframes seotize-shield-pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+
+            @keyframes seotize-draw-check {
+                to { stroke-dashoffset: 0; }
+            }
+
+            .seotize-captcha-title {
+                font-size: 1.6rem;
+                font-weight: 700;
+                color: #ffffff;
+                margin-bottom: 0.5rem;
+                letter-spacing: -0.5px;
+            }
+
+            .seotize-captcha-subtitle {
+                font-size: 1rem;
+                color: rgba(255, 255, 255, 0.7);
+                margin-bottom: 1.5rem;
+            }
+
+            .seotize-captcha-dots {
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .seotize-captcha-dots span {
+                width: 8px;
+                height: 8px;
+                background: #6366f1;
+                border-radius: 50%;
+                animation: seotize-dot-bounce 1.4s infinite ease-in-out both;
+            }
+
+            .seotize-captcha-dots span:nth-child(1) { animation-delay: -0.32s; }
+            .seotize-captcha-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+            @keyframes seotize-dot-bounce {
+                0%, 80%, 100% { transform: scale(0); }
+                40% { transform: scale(1); }
+            }
+
+            /* Success Popup Styles */
+            .seotize-success-popup {
+                padding: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            .seotize-success-container {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 3rem 2rem;
+                border-radius: 24px;
+                text-align: center;
+                box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+            }
+
+            .seotize-success-icon {
+                margin: 0 auto 2rem;
+            }
+
+            .seotize-success-circle {
+                width: 100px;
+                height: 100px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto;
+                backdrop-filter: blur(10px);
+            }
+
+            .seotize-checkmark {
+                font-size: 3rem;
+                color: white;
+                font-weight: bold;
+            }
+
+            .seotize-success-title {
+                font-size: 2rem;
+                font-weight: 900;
+                color: white;
+                margin: 0 0 0.5rem 0;
+                letter-spacing: -0.5px;
+            }
+
+            .seotize-success-text {
+                font-size: 1rem;
+                color: rgba(255, 255, 255, 0.9);
+                margin: 0 0 2rem 0;
+            }
+
+            .seotize-progress-container {
+                background: rgba(255, 255, 255, 0.1);
+                padding: 1.5rem;
+                border-radius: 16px;
+                backdrop-filter: blur(10px);
+                margin-bottom: 1rem;
+            }
+
+            .seotize-progress-label {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: white;
+            }
+
+            .seotize-completed {
+                color: #10b981;
+                font-size: 2.5rem;
+            }
+
+            .seotize-divider {
+                color: rgba(255, 255, 255, 0.5);
+            }
+
+            .seotize-total {
+                color: rgba(255, 255, 255, 0.8);
+            }
+
+            .seotize-tasks-text {
+                font-size: 0.9rem;
+                color: rgba(255, 255, 255, 0.7);
+                font-weight: 500;
+                margin-left: 0.5rem;
+            }
+
+            .seotize-progress-bar {
+                width: 100%;
+                height: 12px;
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 6px;
+                overflow: hidden;
+            }
+
+            .seotize-progress-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+                border-radius: 6px;
+                transition: width 1s ease;
+            }
+
+            .seotize-remaining {
+                font-size: 1.1rem;
+                color: white;
+                margin: 0;
+                font-weight: 500;
+            }
+
+            /* Completion Popup Styles */
+            .seotize-completion-popup {
+                padding: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            .seotize-completion-container {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                padding: 3rem 2rem;
+                border-radius: 24px;
+                text-align: center;
+                box-shadow: 0 20px 60px rgba(240, 147, 251, 0.4);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .seotize-celebration-icon {
+                position: relative;
+                margin: 0 auto 2rem;
+                width: 120px;
+                height: 120px;
+            }
+
+            .seotize-trophy {
                 font-size: 5rem;
                 line-height: 1;
-                margin: 0.5rem auto 1.5rem;
-                display: block;
+            }
+
+            .seotize-confetti {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 200px;
+                height: 200px;
+            }
+
+            .seotize-confetti-piece {
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                background: white;
+                top: 50%;
+                left: 50%;
+                opacity: 0.8;
+            }
+
+            .seotize-confetti-piece:nth-child(1) { background: #ffd700; }
+            .seotize-confetti-piece:nth-child(2) { background: #ff69b4; }
+            .seotize-confetti-piece:nth-child(3) { background: #00ff00; }
+            .seotize-confetti-piece:nth-child(4) { background: #00bfff; }
+            .seotize-confetti-piece:nth-child(5) { background: #ff4500; }
+            .seotize-confetti-piece:nth-child(6) { background: #9370db; }
+
+            .seotize-completion-title {
+                font-size: 2.5rem;
+                font-weight: 900;
+                color: white;
+                margin: 0 0 0.5rem 0;
+                letter-spacing: -1px;
+            }
+
+            .seotize-completion-subtitle {
+                font-size: 1.2rem;
+                color: rgba(255, 255, 255, 0.9);
+                margin: 0 0 2rem 0;
+            }
+
+            .seotize-completion-stats {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 2rem;
+            }
+
+            .seotize-stat {
+                background: rgba(255, 255, 255, 0.2);
+                padding: 1.5rem 3rem;
+                border-radius: 16px;
+                backdrop-filter: blur(10px);
+            }
+
+            .seotize-stat-value {
+                font-size: 3rem;
+                font-weight: 900;
+                color: white;
+                line-height: 1;
+                margin-bottom: 0.5rem;
+            }
+
+            .seotize-stat-label {
+                font-size: 0.9rem;
+                color: rgba(255, 255, 255, 0.8);
+                font-weight: 600;
+            }
+
+            .seotize-completion-message {
+                font-size: 1rem;
+                color: rgba(255, 255, 255, 0.9);
+                margin: 0 0 1rem 0;
+            }
+
+            .seotize-redirect-loader {
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .seotize-redirect-dot {
+                width: 10px;
+                height: 10px;
+                background: white;
+                border-radius: 50%;
+                animation: seotize-redirect-bounce 1.4s infinite ease-in-out both;
+            }
+
+            .seotize-redirect-dot:nth-child(1) { animation-delay: -0.32s; }
+            .seotize-redirect-dot:nth-child(2) { animation-delay: -0.16s; }
+
+            @keyframes seotize-redirect-bounce {
+                0%, 80%, 100% { transform: scale(0); }
+                40% { transform: scale(1); }
+            }
+
+            /* Error Popup Styles */
+            .seotize-error-popup {
+                padding: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            .seotize-error-container {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                padding: 3rem 2rem;
+                border-radius: 24px;
                 text-align: center;
-                transform-origin: center center;
+                box-shadow: 0 20px 60px rgba(245, 87, 108, 0.4);
             }
 
-            .swal2-title.seotize-title {
-                font-size: 1.8rem !important;
-                font-weight: 900 !important;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-                -webkit-background-clip: text !important;
-                -webkit-text-fill-color: transparent !important;
-                background-clip: text !important;
-                margin: 0 !important;
-                letter-spacing: -0.5px !important;
-            }
-            
-            .seotize-html {
-                font-size: 1.1rem !important;
-                line-height: 1.6 !important;
-                color: #4b5563; 
-                font-weight: 500 !important;
-                margin: 0.5rem 0 0 0 !important;
-                text-align: center !important;
-            }
-            
-            .seotize-html.seotize-success {
-                color: #10b981 !important;
-                font-weight: 600 !important;
-            }
-            
-            .seotize-html.seotize-congrats {
-                color: #6366f1 !important;
-                font-weight: 600 !important;
-            }
-            
-            .seotize-html.seotize-welcome {
-                color: #6b7280 !important;
-            }
-            
-            .swal2-icon {
-                display: none !important;
+            .seotize-error-icon {
+                font-size: 4rem;
+                margin-bottom: 1rem;
             }
 
-            .swal2-timer-progress-bar {
-                background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
-                height: 4px !important;
+            .seotize-error-title {
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: white;
+                margin: 0 0 1rem 0;
+            }
+
+            .seotize-error-message {
+                font-size: 1rem;
+                color: rgba(255, 255, 255, 0.9);
+                margin: 0 0 2rem 0;
+            }
+
+            .seotize-error-button {
+                background: white;
+                color: #f5576c;
+                border: none;
+                padding: 0.75rem 2rem;
+                border-radius: 12px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.2s;
+            }
+
+            .seotize-error-button:hover {
+                transform: scale(1.05);
+            }
+
+            /* Welcome Popup Styles */
+            .seotize-welcome-popup {
+                padding: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            .seotize-welcome-container {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 3rem 2.5rem;
+                border-radius: 24px;
+                text-align: center;
+                box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .seotize-welcome-icon {
+                font-size: 5rem;
+                margin-bottom: 1.5rem;
+                line-height: 1;
+            }
+
+            .seotize-welcome-title {
+                font-size: 2.2rem;
+                font-weight: 900;
+                color: white;
+                margin: 0 0 1rem 0;
+                letter-spacing: -0.5px;
+            }
+
+            .seotize-welcome-text {
+                font-size: 1.1rem;
+                color: rgba(255, 255, 255, 0.95);
+                line-height: 1.6;
+                margin: 0 0 2rem 0;
+            }
+
+            .seotize-welcome-features {
+                background: rgba(255, 255, 255, 0.1);
+                padding: 1.5rem;
+                border-radius: 16px;
+                backdrop-filter: blur(10px);
+                margin-bottom: 1.5rem;
+            }
+
+            .seotize-feature {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.75rem;
+                margin-bottom: 1rem;
+                color: white;
+                font-size: 1rem;
+            }
+
+            .seotize-feature:last-child {
+                margin-bottom: 0;
+            }
+
+            .seotize-feature-icon {
+                font-size: 1.5rem;
+            }
+
+            .seotize-countdown {
+                font-size: 0.9rem;
+                color: rgba(255, 255, 255, 0.7);
             }
 
             #seotize-debug-log::-webkit-scrollbar {
@@ -925,6 +1520,11 @@
             #seotize-debug-log::-webkit-scrollbar-thumb {
                 background: #00ff00;
                 border-radius: 4px;
+            }
+
+            .swal2-timer-progress-bar {
+                background: rgba(255, 255, 255, 0.3) !important;
+                height: 4px !important;
             }
         `;
         domCache.head.appendChild(style);
@@ -975,18 +1575,18 @@
             if (state.coins.length === 0) {
                 debugLog('All tasks complete - showing completion message', 'info');
                 Swal.fire({
-                    title: 'All Done!',
                     html: `
-                        <div class="seotize-gsap-emoji">👍</div>
-                        <div class="seotize-html">You have completed all available tasks.</div>
+                        <div class="seotize-welcome-container">
+                            <div class="seotize-welcome-icon">✅</div>
+                            <h2 class="seotize-welcome-title">All Done!</h2>
+                            <p class="seotize-welcome-text">You have completed all available tasks.</p>
+                        </div>
                     `,
+                    showConfirmButton: false,
+                    background: 'transparent',
+                    backdrop: 'rgba(0, 0, 0, 0.85)',
                     customClass: {
-                        popup: 'seotize-popup',
-                        title: 'seotize-title'
-                    },
-                    didOpen: (popup) => {
-                        const emoji = popup.querySelector('.seotize-gsap-emoji');
-                        gsap.from(emoji, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
+                        popup: 'seotize-welcome-popup'
                     }
                 });
                 return;
@@ -994,22 +1594,54 @@
 
             debugLog('✓ Showing welcome message', 'success');
             await Swal.fire({
-                title: 'Welcome Seotize Partner!',
                 html: `
-                    <div class="seotize-gsap-emoji">💎</div>
-                    <div class="seotize-html seotize-welcome">Thank you for starting the task, you are at the right place. After this popup closes, please follow the animated arrow to find and click on the first diamond.</div>
+                    <div class="seotize-welcome-container">
+                        <div class="seotize-welcome-icon">💎</div>
+                        <h2 class="seotize-welcome-title">Welcome Seotize Partner!</h2>
+                        <p class="seotize-welcome-text">Thank you for starting the task. Get ready to collect diamonds!</p>
+                        <div class="seotize-welcome-features">
+                            <div class="seotize-feature">
+                                <span class="seotize-feature-icon">🎯</span>
+                                <span>Follow the animated arrow</span>
+                            </div>
+                            <div class="seotize-feature">
+                                <span class="seotize-feature-icon">💎</span>
+                                <span>Click on each diamond</span>
+                            </div>
+                            <div class="seotize-feature">
+                                <span class="seotize-feature-icon">🏆</span>
+                                <span>Collect all ${state.coins.length} diamonds to win!</span>
+                            </div>
+                        </div>
+                        <p class="seotize-countdown">Starting in a few seconds...</p>
+                    </div>
                 `,
                 timer: CONFIG.TIMING.WELCOME_DURATION,
                 timerProgressBar: true,
                 showConfirmButton: false,
                 allowOutsideClick: false,
+                background: 'transparent',
+                backdrop: 'rgba(0, 0, 0, 0.85)',
                 customClass: {
-                    popup: 'seotize-popup',
-                    title: 'seotize-title'
+                    popup: 'seotize-welcome-popup'
                 },
                 didOpen: (popup) => {
-                    const emoji = popup.querySelector('.seotize-gsap-emoji');
-                    gsap.from(emoji, { scale: 0, opacity: 0, rotation: 180, duration: 1, ease: 'elastic.out(1, 0.5)' });
+                    const icon = popup.querySelector('.seotize-welcome-icon');
+                    
+                    if (typeof gsap !== 'undefined') {
+                        gsap.from(icon, { 
+                            scale: 0, 
+                            rotation: 180, 
+                            duration: 1, 
+                            ease: 'elastic.out(1, 0.5)' 
+                        });
+                        gsap.to(icon, {
+                            rotation: 360,
+                            duration: 20,
+                            ease: 'none',
+                            repeat: -1
+                        });
+                    }
                 }
             });
 
