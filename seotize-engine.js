@@ -23,9 +23,9 @@
             UPDATE_INTERVAL: 100
         },
         TIMING: {
-            WELCOME_DURATION: 8000,
-            SUCCESS_DURATION: 2500,
-            COMPLETION_DURATION: 3000,
+            WELCOME_DURATION: 6000,
+            SUCCESS_DURATION: 2000,
+            COMPLETION_DURATION: 2500,
             POLL_INTERVAL: 50,
             TURNSTILE_READY_TIMEOUT: 20000,
             TURNSTILE_TOKEN_TIMEOUT: 60000
@@ -264,18 +264,13 @@
         });
     }
 
-    // MODERN LOADING SCREEN
-    function showModernLoading(title = 'Processing...', message = '') {
+    function showModernLoading(title = 'Processing', message = '') {
         if (typeof Swal === 'undefined') return;
 
         Swal.fire({
             html: `
                 <div class="seotize-modern-loader">
-                    <div class="seotize-loader-rings">
-                        <div class="seotize-ring"></div>
-                        <div class="seotize-ring"></div>
-                        <div class="seotize-ring"></div>
-                    </div>
+                    <div class="seotize-spinner"></div>
                     <div class="seotize-loader-title">${title}</div>
                     ${message ? `<div class="seotize-loader-message">${message}</div>` : ''}
                 </div>
@@ -290,7 +285,6 @@
         });
     }
 
-    // CAPTCHA VERIFICATION LOADING
     function showCaptchaVerification() {
         if (typeof Swal === 'undefined') return;
 
@@ -298,20 +292,11 @@
             html: `
                 <div class="seotize-captcha-verification">
                     <div class="seotize-shield-container">
-                        <div class="seotize-shield">
-                            <div class="seotize-shield-inner">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2L4 6V12C4 16.5 7.5 20.5 12 22C16.5 20.5 20 16.5 20 12V6L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path class="seotize-check-mark" d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </div>
-                        </div>
+                        <div class="seotize-shield">🛡️</div>
                     </div>
                     <div class="seotize-captcha-title">Verifying Human</div>
-                    <div class="seotize-captcha-subtitle">Please wait while we verify you're not a robot</div>
-                    <div class="seotize-captcha-dots">
-                        <span></span><span></span><span></span>
-                    </div>
+                    <div class="seotize-captcha-subtitle">Please complete the security check</div>
+                    <div id="seotize-turnstile-widget"></div>
                 </div>
             `,
             allowOutsideClick: false,
@@ -320,6 +305,26 @@
             backdrop: 'rgba(0, 0, 0, 0.85)',
             customClass: {
                 popup: 'seotize-captcha-popup'
+            },
+            didOpen: () => {
+                if (typeof turnstile !== 'undefined' && state.turnstileWidgetId !== null) {
+                    const container = document.getElementById('seotize-turnstile-widget');
+                    if (container) {
+                        try {
+                            turnstile.render('#seotize-turnstile-widget', {
+                                sitekey: state.systemId,
+                                theme: 'light',
+                                size: 'normal',
+                                callback: function(token) {
+                                    state.turnstileTokenCache = token;
+                                    state.lastTokenTime = Date.now();
+                                }
+                            });
+                        } catch (error) {
+                            console.error('Turnstile render error:', error);
+                        }
+                    }
+                }
             }
         });
     }
@@ -359,7 +364,6 @@
                 
                 if (Date.now() - lastLogTime > 3000) {
                     debugLog(`Waiting for Turnstile ready... (${elapsed}s)`, 'info');
-                    debugLog(`turnstileReady: ${state.turnstileReady}, widgetId: ${state.turnstileWidgetId}`, 'info');
                     lastLogTime = Date.now();
                 }
                 
@@ -376,8 +380,6 @@
             
             setTimeout(() => {
                 debugLog('✗ Turnstile ready timeout', 'error');
-                debugLog(`Final state - ready: ${state.turnstileReady}, widgetId: ${state.turnstileWidgetId}`, 'error');
-                debugLog(`typeof turnstile: ${typeof turnstile}`, 'error');
                 reject(new Error('Turnstile ready timeout'));
             }, CONFIG.TIMING.TURNSTILE_READY_TIMEOUT);
         });
@@ -391,7 +393,7 @@
         
         try {
             if (!state.turnstileReady || state.turnstileWidgetId === null) {
-                debugLog('⚠ Turnstile not ready, waiting for initialization...', 'warning');
+                debugLog('⚠ Turnstile not ready, waiting...', 'warning');
                 await waitForTurnstileReady();
             }
             
@@ -403,68 +405,45 @@
             
             if (resetFirst) {
                 resetTurnstile();
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 300));
             }
 
             return new Promise((resolve, reject) => {
                 const startTime = Date.now();
-                let lastLogTime = startTime;
                 
                 const checkToken = () => {
                     const responseElement = document.getElementsByName('cf-turnstile-response')[0];
                     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-                    
-                    if (Date.now() - lastLogTime > 3000) {
-                        debugLog(`Still waiting for token... (${elapsed}s)`, 'info');
-                        lastLogTime = Date.now();
-                    }
 
                     if (responseElement?.value) {
                         const token = responseElement.value;
                         state.turnstileTokenCache = token;
                         state.lastTokenTime = Date.now();
-                        debugLog(`✓ Turnstile token received (${elapsed}s)`, 'success');
+                        debugLog(`✓ Token received (${elapsed}s)`, 'success');
                         resolve(token);
                         return;
                     }
 
                     if (state.turnstileTokenCache && (Date.now() - state.lastTokenTime < 2000)) {
-                        debugLog(`✓ Using token from cache (callback received)`, 'success');
+                        debugLog(`✓ Using cached token`, 'success');
                         resolve(state.turnstileTokenCache);
                         return;
                     }
 
-                    if (!responseElement) {
-                        const observer = new MutationObserver(() => {
-                            const elem = document.getElementsByName('cf-turnstile-response')[0];
-                            if (elem) {
-                                debugLog('✓ Turnstile element detected by observer', 'success');
-                                observer.disconnect();
-                                checkToken();
-                            }
-                        });
-
-                        observer.observe(domCache.body, {
-                            childList: true,
-                            subtree: true
-                        });
-                    } else {
-                        setTimeout(checkToken, CONFIG.TIMING.POLL_INTERVAL);
-                    }
+                    setTimeout(checkToken, CONFIG.TIMING.POLL_INTERVAL);
                 };
 
                 checkToken();
 
                 setTimeout(() => {
-                    debugLog(`✗ Turnstile timeout (${CONFIG.TIMING.TURNSTILE_TOKEN_TIMEOUT/1000}s) - Retry ${retryCount}/${MAX_RETRIES}`, 'error');
-                    debugLog(`Widget ID: ${state.turnstileWidgetId}, Ready: ${state.turnstileReady}`, 'error');
+                    debugLog(`✗ Token timeout - Retry ${retryCount}/${MAX_RETRIES}`, 'error');
                     reject(new Error('Turnstile timeout'));
                 }, CONFIG.TIMING.TURNSTILE_TOKEN_TIMEOUT);
             });
             
         } catch (error) {
             if (retryCount < MAX_RETRIES) {
-                debugLog(`Retrying Turnstile token request (attempt ${retryCount + 1})...`, 'warning');
+                debugLog(`Retrying... (attempt ${retryCount + 1})`, 'warning');
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 return waitForTurnstileToken(true, retryCount + 1);
             }
@@ -473,9 +452,7 @@
     }
 
     async function fetchPartnerSubtasks(uniqueId, siteKey) {
-        debugLog('Fetching partner subtasks from API (no captcha required)', 'info');
-        debugLog(`Unique ID: ${uniqueId.substring(0, 8)}...`, 'info');
-        debugLog(`Site Key: ${siteKey}`, 'info');
+        debugLog('Fetching tasks...', 'info');
         
         try {
             const response = await fetch(CONFIG.API_ENDPOINTS.GET_TASKS, {
@@ -487,24 +464,24 @@
                 })
             });
 
-            debugLog(`API Response Status: ${response.status}`, response.ok ? 'success' : 'error');
+            debugLog(`API Status: ${response.status}`, response.ok ? 'success' : 'error');
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
-            debugLog(`✓ API returned data: ${JSON.stringify(data).substring(0, 100)}...`, 'success');
+            debugLog(`✓ Tasks received`, 'success');
             
             return data;
         } catch (error) {
-            debugLog(`✗ API fetch error: ${error.message}`, 'error');
+            debugLog(`✗ API error: ${error.message}`, 'error');
             throw error;
         }
     }
 
     async function submitTask(subtaskId, turnstileToken) {
-        debugLog(`Submitting task: ${subtaskId}`, 'info');
+        debugLog(`Submitting task...`, 'info');
         
         try {
             const response = await fetch(CONFIG.API_ENDPOINTS.DO_TASK, {
@@ -517,18 +494,18 @@
                 })
             });
 
-            debugLog(`Task submit status: ${response.status}`, response.ok ? 'success' : 'error');
+            debugLog(`Submit status: ${response.status}`, response.ok ? 'success' : 'error');
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const result = await response.json();
-            debugLog(`✓ Task result: ${result.status || result.code}`, 'success');
+            debugLog(`✓ Task submitted`, 'success');
             
             return result;
         } catch (error) {
-            debugLog(`✗ Task submit error: ${error.message}`, 'error');
+            debugLog(`✗ Submit error: ${error.message}`, 'error');
             throw error;
         }
     }
@@ -549,10 +526,11 @@
             pointerEvents: 'auto',
             textShadow: '0 0 20px rgba(99, 102, 241, 0.8)',
             transition: 'transform 0.2s ease',
-            userSelect: 'none'
+            userSelect: 'none',
+            willChange: 'transform'
         });
 
-        coin.addEventListener('click', () => handleCoinClick(subtaskId));
+        coin.addEventListener('click', () => handleCoinClick(subtaskId), { passive: true });
 
         return coin;
     }
@@ -561,11 +539,7 @@
         const positions = [];
         const scrollHeight = Math.max(
             document.body.scrollHeight,
-            document.documentElement.scrollHeight,
-            document.body.offsetHeight,
-            document.documentElement.offsetHeight,
-            document.body.clientHeight,
-            document.documentElement.clientHeight
+            document.documentElement.scrollHeight
         );
 
         const viewportWidth = window.innerWidth;
@@ -573,8 +547,6 @@
         const margin = CONFIG.COIN.MIN_MARGIN;
         const sectionHeight = scrollHeight / count;
         const variance = CONFIG.COIN.SECTION_VARIANCE;
-
-        debugLog(`Calculating ${count} coin positions (viewport: ${viewportWidth}x${scrollHeight})`, 'info');
 
         for (let i = 0; i < count; i++) {
             const sectionStart = i * sectionHeight;
@@ -585,12 +557,10 @@
             positions.push({ x, y });
         }
 
-        debugLog(`✓ Coin positions calculated`, 'success');
         return positions;
     }
 
     function renderCoins() {
-        debugLog(`Rendering ${state.coins.length} coins`, 'info');
         const positions = calculateCoinPositions(state.coins.length);
 
         state.coins.forEach((subtaskId, index) => {
@@ -600,19 +570,14 @@
             domCache.body.appendChild(coin);
             state.coinElements.push(coin);
         });
-
-        debugLog(`✓ ${state.coinElements.length} coins rendered`, 'success');
     }
 
     function displayNextCoin() {
         state.currentCoinIndex++;
 
         if (state.currentCoinIndex >= state.coinElements.length) {
-            debugLog('No more coins to display', 'info');
             return;
         }
-
-        debugLog(`Displaying coin ${state.currentCoinIndex + 1}/${state.coinElements.length}`, 'info');
 
         const coin = state.coinElements[state.currentCoinIndex];
         coin.style.display = 'block';
@@ -621,24 +586,16 @@
             gsap.from(coin, {
                 scale: 0,
                 opacity: 0,
-                duration: 0.8,
-                ease: "elastic.out(1, 0.5)"
+                duration: 0.6,
+                ease: "back.out(1.7)"
             });
 
             gsap.to(coin, {
-                scale: 1.2,
+                scale: 1.15,
                 repeat: -1,
                 yoyo: true,
-                ease: "power1.inOut",
+                ease: "sine.inOut",
                 duration: 1.5
-            });
-
-            gsap.to(coin, {
-                textShadow: '0 0 30px rgba(99, 102, 241, 1), 0 0 60px rgba(139, 92, 246, 0.8)',
-                repeat: -1,
-                yoyo: true,
-                ease: "power1.inOut",
-                duration: 2
             });
         }
 
@@ -668,7 +625,8 @@
             pointerEvents: 'none',
             zIndex: '999998',
             textShadow: '0 0 15px rgba(255, 215, 0, 0.8)',
-            userSelect: 'none'
+            userSelect: 'none',
+            willChange: 'transform'
         });
 
         domCache.body.appendChild(arrow);
@@ -690,13 +648,10 @@
             const viewportHeight = window.innerHeight;
             const viewportWidth = window.innerWidth;
             const targetX = rect.left + rect.width / 2;
-            const arrowWidth = arrow.offsetWidth || CONFIG.ARROW.SIZE;
-            const arrowHeight = arrow.offsetHeight || CONFIG.ARROW.SIZE;
+            const arrowWidth = CONFIG.ARROW.SIZE;
+            const arrowHeight = CONFIG.ARROW.SIZE;
 
-            const isVisible = rect.top >= 0 &&
-                               rect.bottom <= viewportHeight &&
-                               rect.left >= 0 &&
-                               rect.right <= viewportWidth;
+            const isVisible = rect.top >= 0 && rect.bottom <= viewportHeight && rect.left >= 0 && rect.right <= viewportWidth;
 
             if (typeof gsap !== 'undefined') {
                 gsap.killTweensOf(arrow);
@@ -706,43 +661,35 @@
                 arrow.style.top = (rect.top - CONFIG.ARROW.OFFSET) + 'px';
                 arrow.style.left = (targetX - arrowWidth / 2) + 'px';
                 arrow.innerHTML = '👇';
-                arrow.style.transform = '';
                 
                 gsap.to(arrow, {
                     y: 10,
                     repeat: -1,
                     yoyo: true,
-                    ease: "power1.inOut",
-                    duration: 0.5
+                    ease: "sine.inOut",
+                    duration: 0.6
                 });
-
             } else {
-                arrow.style.opacity = '1';
-                arrow.style.transform = 'translateY(0)';
-
                 if (rect.bottom < 0) {
                     arrow.style.top = '10px';
                     arrow.style.left = (viewportWidth / 2 - arrowWidth / 2) + 'px';
                     arrow.innerHTML = '👆';
-                    gsap.to(arrow, { y: -10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 });
-
+                    gsap.to(arrow, { y: -10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
                 } else if (rect.top > viewportHeight) {
                     arrow.style.top = (viewportHeight - arrowHeight - 10) + 'px';
                     arrow.style.left = (viewportWidth / 2 - arrowWidth / 2) + 'px';
                     arrow.innerHTML = '👇';
-                    gsap.to(arrow, { y: 10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 });
-
+                    gsap.to(arrow, { y: 10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
                 } else if (rect.right < 0) {
                     arrow.style.top = (viewportHeight / 2 - arrowHeight / 2) + 'px';
                     arrow.style.left = '10px';
                     arrow.innerHTML = '👈';
-                    gsap.to(arrow, { x: -10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 });
-
+                    gsap.to(arrow, { x: -10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
                 } else if (rect.left > viewportWidth) {
                     arrow.style.top = (viewportHeight / 2 - arrowHeight / 2) + 'px';
                     arrow.style.left = (viewportWidth - arrowWidth - 10) + 'px';
                     arrow.innerHTML = '👉';
-                    gsap.to(arrow, { x: 10, repeat: -1, yoyo: true, ease: "power1.inOut", duration: 0.5 });
+                    gsap.to(arrow, { x: 10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
                 }
             }
         };
@@ -759,7 +706,6 @@
 
         if (clickedSubtaskId !== subtaskId) return;
 
-        debugLog(`Coin clicked: ${subtaskId}`, 'info');
         state.isProcessing = true;
 
         const coinElements = document.querySelectorAll('.seotize-coin');
@@ -771,7 +717,7 @@
                     scale: 2,
                     opacity: 0,
                     rotation: 360,
-                    duration: 0.6,
+                    duration: 0.5,
                     ease: "power2.in"
                 });
             }
@@ -788,14 +734,14 @@
                 state.arrowUpdateInterval = null;
             }
 
-            await new Promise(resolve => setTimeout(resolve, 600));
+            await new Promise(resolve => setTimeout(resolve, 500));
 
             showCaptchaVerification();
 
             const token = await waitForTurnstileToken(true);
             
             closeLoading();
-            showModernLoading('Submitting Task', 'Please wait...');
+            showModernLoading('Submitting Task', 'Please wait');
             
             const result = await submitTask(subtaskId, token);
 
@@ -806,7 +752,6 @@
                 clickedCoin.remove();
 
                 const remainingTasks = state.coinElements.length - (state.currentCoinIndex + 1);
-                debugLog(`✓ Task completed! ${remainingTasks} remaining`, 'success');
 
                 await Swal.fire({
                     html: `
@@ -817,19 +762,19 @@
                                 </div>
                             </div>
                             <h2 class="seotize-success-title">Diamond Collected!</h2>
-                            <p class="seotize-success-text">Amazing work! You're making great progress</p>
+                            <p class="seotize-success-text">Great work! Keep going</p>
                             <div class="seotize-progress-container">
                                 <div class="seotize-progress-label">
                                     <span class="seotize-completed">${state.completedTasks.length}</span>
                                     <span class="seotize-divider">/</span>
                                     <span class="seotize-total">${state.coinElements.length}</span>
-                                    <span class="seotize-tasks-text">Tasks Complete</span>
+                                    <span class="seotize-tasks-text">Complete</span>
                                 </div>
                                 <div class="seotize-progress-bar">
                                     <div class="seotize-progress-fill" style="width: ${(state.completedTasks.length / state.coinElements.length) * 100}%"></div>
                                 </div>
                             </div>
-                            ${remainingTasks > 0 ? `<p class="seotize-remaining"><strong>${remainingTasks}</strong> more diamond${remainingTasks !== 1 ? 's' : ''} to collect!</p>` : ''}
+                            ${remainingTasks > 0 ? `<p class="seotize-remaining">${remainingTasks} more to go!</p>` : ''}
                         </div>
                     `,
                     timer: CONFIG.TIMING.SUCCESS_DURATION,
@@ -843,13 +788,9 @@
                     },
                     didOpen: (popup) => {
                         const circle = popup.querySelector('.seotize-success-circle');
-                        const checkmark = popup.querySelector('.seotize-checkmark');
-                        const progressFill = popup.querySelector('.seotize-progress-fill');
                         
                         if (typeof gsap !== 'undefined') {
-                            gsap.from(circle, { scale: 0, duration: 0.5, ease: 'back.out(2)' });
-                            gsap.from(checkmark, { scale: 0, opacity: 0, duration: 0.3, delay: 0.3, ease: 'back.out(2)' });
-                            gsap.from(progressFill, { width: 0, duration: 1, delay: 0.5, ease: 'power2.out' });
+                            gsap.from(circle, { scale: 0, duration: 0.4, ease: 'back.out(2)' });
                         }
                     }
                 });
@@ -862,35 +803,21 @@
                     const coinElements = document.querySelectorAll('.seotize-coin');
                     coinElements.forEach(el => el.style.pointerEvents = 'auto');
                 } else {
-                    debugLog('🎉 All tasks completed!', 'success');
                     await Swal.fire({
                         html: `
                             <div class="seotize-completion-container">
                                 <div class="seotize-celebration-icon">
                                     <div class="seotize-trophy">🏆</div>
-                                    <div class="seotize-confetti">
-                                        <div class="seotize-confetti-piece"></div>
-                                        <div class="seotize-confetti-piece"></div>
-                                        <div class="seotize-confetti-piece"></div>
-                                        <div class="seotize-confetti-piece"></div>
-                                        <div class="seotize-confetti-piece"></div>
-                                        <div class="seotize-confetti-piece"></div>
-                                    </div>
                                 </div>
                                 <h2 class="seotize-completion-title">Congratulations!</h2>
-                                <p class="seotize-completion-subtitle">You've collected all the diamonds!</p>
+                                <p class="seotize-completion-subtitle">You collected all diamonds!</p>
                                 <div class="seotize-completion-stats">
                                     <div class="seotize-stat">
                                         <div class="seotize-stat-value">${state.coinElements.length}</div>
-                                        <div class="seotize-stat-label">Diamonds Collected</div>
+                                        <div class="seotize-stat-label">Diamonds</div>
                                     </div>
                                 </div>
-                                <p class="seotize-completion-message">Your reward is ready! Redirecting to dashboard...</p>
-                                <div class="seotize-redirect-loader">
-                                    <div class="seotize-redirect-dot"></div>
-                                    <div class="seotize-redirect-dot"></div>
-                                    <div class="seotize-redirect-dot"></div>
-                                </div>
+                                <p class="seotize-completion-message">Redirecting to dashboard...</p>
                             </div>
                         `,
                         timer: CONFIG.TIMING.COMPLETION_DURATION,
@@ -901,46 +828,23 @@
                         backdrop: 'rgba(0, 0, 0, 0.9)',
                         customClass: {
                             popup: 'seotize-completion-popup'
-                        },
-                        didOpen: (popup) => {
-                            const trophy = popup.querySelector('.seotize-trophy');
-                            const confettiPieces = popup.querySelectorAll('.seotize-confetti-piece');
-                            
-                            if (typeof gsap !== 'undefined') {
-                                gsap.from(trophy, { scale: 0, rotation: -180, duration: 0.8, ease: 'back.out(2)' });
-                                gsap.to(trophy, { y: -10, repeat: -1, yoyo: true, duration: 1, ease: 'power1.inOut' });
-                                
-                                confettiPieces.forEach((piece, index) => {
-                                    gsap.to(piece, {
-                                        y: 'random(-100, 100)',
-                                        x: 'random(-100, 100)',
-                                        rotation: 'random(-360, 360)',
-                                        opacity: 0,
-                                        duration: 2,
-                                        delay: index * 0.1,
-                                        repeat: -1,
-                                        ease: 'power1.out'
-                                    });
-                                });
-                            }
                         }
                     });
                     
                     window.location.href = 'https://seotize.net/partner/dashboard';
                 }
             } else {
-                throw new Error(result.data?.message || 'Task submission failed');
+                throw new Error(result.data?.message || 'Task failed');
             }
         } catch (error) {
             closeLoading();
-            debugLog(`✗ Coin click error: ${error.message}`, 'error');
             Swal.fire({
                 html: `
                     <div class="seotize-error-container">
                         <div class="seotize-error-icon">⚠️</div>
-                        <h2 class="seotize-error-title">Oops! Something went wrong</h2>
-                        <p class="seotize-error-message">${error.message || 'An unexpected error occurred'}</p>
-                        <button class="seotize-error-button" onclick="Swal.close()">Try Again</button>
+                        <h2 class="seotize-error-title">Something went wrong</h2>
+                        <p class="seotize-error-message">${error.message || 'Please try again'}</p>
+                        <button class="seotize-error-button" onclick="Swal.close()">OK</button>
                     </div>
                 `,
                 showConfirmButton: false,
@@ -953,7 +857,6 @@
             });
         } finally {
             state.isProcessing = false;
-
             const coinElements = document.querySelectorAll('.seotize-coin');
             coinElements.forEach(el => el.style.pointerEvents = 'auto');
         }
@@ -963,17 +866,17 @@
         const style = document.createElement('style');
         style.textContent = `
             .seotize-coin {
-                filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.6));
-                will-change: transform, filter;
+                filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.5));
+                will-change: transform;
             }
 
             .seotize-coin:hover {
-                transform: scale(1.3) !important;
+                transform: scale(1.2) !important;
             }
 
             .seotize-arrow {
                 will-change: transform;
-                filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+                filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
             }
 
             .cf-turnstile {
@@ -987,8 +890,8 @@
                 height: 0 !important;
             }
 
-            /* Modern Loader Styles */
-            .seotize-loader-popup {
+            .seotize-loader-popup, .seotize-captcha-popup, .seotize-success-popup, 
+            .seotize-completion-popup, .seotize-error-popup, .seotize-welcome-popup {
                 padding: 0 !important;
                 background: transparent !important;
                 box-shadow: none !important;
@@ -996,63 +899,29 @@
             }
 
             .seotize-modern-loader {
-                padding: 3rem 2rem;
+                padding: 2.5rem 2rem;
                 text-align: center;
             }
 
-            .seotize-loader-rings {
-                position: relative;
-                width: 100px;
-                height: 100px;
-                margin: 0 auto 2rem;
-            }
-
-            .seotize-ring {
-                position: absolute;
-                border: 3px solid transparent;
+            .seotize-spinner {
+                width: 60px;
+                height: 60px;
+                margin: 0 auto 1.5rem;
+                border: 4px solid rgba(99, 102, 241, 0.2);
                 border-top-color: #6366f1;
                 border-radius: 50%;
-                animation: seotize-spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-            }
-
-            .seotize-ring:nth-child(1) {
-                width: 100px;
-                height: 100px;
-                top: 0;
-                left: 0;
-            }
-
-            .seotize-ring:nth-child(2) {
-                width: 70px;
-                height: 70px;
-                top: 15px;
-                left: 15px;
-                border-top-color: #8b5cf6;
-                animation-delay: -0.3s;
-                animation-duration: 1.2s;
-            }
-
-            .seotize-ring:nth-child(3) {
-                width: 40px;
-                height: 40px;
-                top: 30px;
-                left: 30px;
-                border-top-color: #ec4899;
-                animation-delay: -0.6s;
-                animation-duration: 0.9s;
+                animation: seotize-spin 0.8s linear infinite;
             }
 
             @keyframes seotize-spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
+                to { transform: rotate(360deg); }
             }
 
             .seotize-loader-title {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
                 font-weight: 700;
-                color: #ffffff;
+                color: #fff;
                 margin-bottom: 0.5rem;
-                letter-spacing: -0.5px;
             }
 
             .seotize-loader-message {
@@ -1060,375 +929,198 @@
                 color: rgba(255, 255, 255, 0.7);
             }
 
-            /* Captcha Verification Styles */
-            .seotize-captcha-popup {
-                padding: 0 !important;
-                background: transparent !important;
-                box-shadow: none !important;
-                border: none !important;
-            }
-
             .seotize-captcha-verification {
-                padding: 3rem 2rem;
+                padding: 2.5rem 2rem;
                 text-align: center;
             }
 
             .seotize-shield-container {
-                margin: 0 auto 2rem;
-                width: 120px;
-                height: 120px;
+                margin: 0 auto 1.5rem;
             }
 
             .seotize-shield {
-                width: 100%;
-                height: 100%;
-                animation: seotize-shield-pulse 2s ease-in-out infinite;
+                font-size: 4rem;
+                animation: seotize-pulse 2s ease-in-out infinite;
             }
 
-            .seotize-shield-inner {
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                border-radius: 20px;
-                padding: 20px;
-                box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
-            }
-
-            .seotize-shield-inner svg {
-                width: 100%;
-                height: 100%;
-                color: white;
-            }
-
-            .seotize-check-mark {
-                stroke-dasharray: 20;
-                stroke-dashoffset: 20;
-                animation: seotize-draw-check 0.5s ease-out 0.5s forwards;
-            }
-
-            @keyframes seotize-shield-pulse {
+            @keyframes seotize-pulse {
                 0%, 100% { transform: scale(1); }
                 50% { transform: scale(1.05); }
             }
 
-            @keyframes seotize-draw-check {
-                to { stroke-dashoffset: 0; }
-            }
-
             .seotize-captcha-title {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
                 font-weight: 700;
-                color: #ffffff;
+                color: #fff;
                 margin-bottom: 0.5rem;
-                letter-spacing: -0.5px;
             }
 
             .seotize-captcha-subtitle {
-                font-size: 1rem;
+                font-size: 0.95rem;
                 color: rgba(255, 255, 255, 0.7);
                 margin-bottom: 1.5rem;
             }
 
-            .seotize-captcha-dots {
+            #seotize-turnstile-widget {
                 display: flex;
                 justify-content: center;
-                gap: 8px;
+                margin-top: 1rem;
             }
 
-            .seotize-captcha-dots span {
-                width: 8px;
-                height: 8px;
-                background: #6366f1;
-                border-radius: 50%;
-                animation: seotize-dot-bounce 1.4s infinite ease-in-out both;
-            }
-
-            .seotize-captcha-dots span:nth-child(1) { animation-delay: -0.32s; }
-            .seotize-captcha-dots span:nth-child(2) { animation-delay: -0.16s; }
-
-            @keyframes seotize-dot-bounce {
-                0%, 80%, 100% { transform: scale(0); }
-                40% { transform: scale(1); }
-            }
-
-            /* Success Popup Styles */
-            .seotize-success-popup {
-                padding: 0 !important;
-                background: transparent !important;
-                box-shadow: none !important;
-                border: none !important;
-            }
-
-            .seotize-success-container {
+            .seotize-success-container, .seotize-completion-container, .seotize-error-container, .seotize-welcome-container {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 3rem 2rem;
-                border-radius: 24px;
+                padding: 2.5rem 2rem;
+                border-radius: 20px;
                 text-align: center;
-                box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+                box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+                max-width: 90vw;
+                width: 400px;
+                margin: 0 auto;
             }
 
-            .seotize-success-icon {
-                margin: 0 auto 2rem;
+            .seotize-completion-container {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+
+            .seotize-error-container {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+
+            .seotize-success-icon, .seotize-celebration-icon {
+                margin-bottom: 1.5rem;
             }
 
             .seotize-success-circle {
-                width: 100px;
-                height: 100px;
+                width: 80px;
+                height: 80px;
                 background: rgba(255, 255, 255, 0.2);
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 margin: 0 auto;
-                backdrop-filter: blur(10px);
             }
 
             .seotize-checkmark {
-                font-size: 3rem;
-                color: white;
+                font-size: 2.5rem;
+                color: #fff;
                 font-weight: bold;
             }
 
-            .seotize-success-title {
-                font-size: 2rem;
-                font-weight: 900;
-                color: white;
-                margin: 0 0 0.5rem 0;
-                letter-spacing: -0.5px;
+            .seotize-trophy {
+                font-size: 4rem;
             }
 
-            .seotize-success-text {
+            .seotize-error-icon {
+                font-size: 3.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .seotize-success-title, .seotize-completion-title, .seotize-error-title, .seotize-welcome-title {
+                font-size: 1.8rem;
+                font-weight: 900;
+                color: #fff;
+                margin: 0 0 0.5rem 0;
+            }
+
+            .seotize-success-text, .seotize-completion-subtitle, .seotize-error-message, .seotize-welcome-text {
                 font-size: 1rem;
                 color: rgba(255, 255, 255, 0.9);
-                margin: 0 0 2rem 0;
+                margin: 0 0 1.5rem 0;
+                line-height: 1.5;
             }
 
             .seotize-progress-container {
-                background: rgba(255, 255, 255, 0.1);
-                padding: 1.5rem;
-                border-radius: 16px;
-                backdrop-filter: blur(10px);
+                background: rgba(255, 255, 255, 0.15);
+                padding: 1.2rem;
+                border-radius: 12px;
                 margin-bottom: 1rem;
             }
 
             .seotize-progress-label {
                 display: flex;
-                align-items: center;
+                align-items: baseline;
                 justify-content: center;
-                gap: 0.5rem;
-                margin-bottom: 1rem;
-                font-size: 1.8rem;
+                gap: 0.3rem;
+                margin-bottom: 0.8rem;
                 font-weight: 700;
-                color: white;
+                color: #fff;
             }
 
             .seotize-completed {
                 color: #10b981;
-                font-size: 2.5rem;
+                font-size: 2rem;
             }
 
             .seotize-divider {
+                font-size: 1.5rem;
                 color: rgba(255, 255, 255, 0.5);
             }
 
             .seotize-total {
+                font-size: 1.5rem;
                 color: rgba(255, 255, 255, 0.8);
             }
 
             .seotize-tasks-text {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
                 color: rgba(255, 255, 255, 0.7);
-                font-weight: 500;
-                margin-left: 0.5rem;
+                margin-left: 0.3rem;
             }
 
             .seotize-progress-bar {
                 width: 100%;
-                height: 12px;
+                height: 10px;
                 background: rgba(0, 0, 0, 0.2);
-                border-radius: 6px;
+                border-radius: 5px;
                 overflow: hidden;
             }
 
             .seotize-progress-fill {
                 height: 100%;
                 background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
-                border-radius: 6px;
-                transition: width 1s ease;
+                border-radius: 5px;
+                transition: width 0.8s ease;
             }
 
-            .seotize-remaining {
-                font-size: 1.1rem;
-                color: white;
+            .seotize-remaining, .seotize-completion-message {
+                font-size: 1rem;
+                color: #fff;
                 margin: 0;
                 font-weight: 500;
             }
 
-            /* Completion Popup Styles */
-            .seotize-completion-popup {
-                padding: 0 !important;
-                background: transparent !important;
-                box-shadow: none !important;
-                border: none !important;
-            }
-
-            .seotize-completion-container {
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                padding: 3rem 2rem;
-                border-radius: 24px;
-                text-align: center;
-                box-shadow: 0 20px 60px rgba(240, 147, 251, 0.4);
-                position: relative;
-                overflow: hidden;
-            }
-
-            .seotize-celebration-icon {
-                position: relative;
-                margin: 0 auto 2rem;
-                width: 120px;
-                height: 120px;
-            }
-
-            .seotize-trophy {
-                font-size: 5rem;
-                line-height: 1;
-            }
-
-            .seotize-confetti {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 200px;
-                height: 200px;
-            }
-
-            .seotize-confetti-piece {
-                position: absolute;
-                width: 10px;
-                height: 10px;
-                background: white;
-                top: 50%;
-                left: 50%;
-                opacity: 0.8;
-            }
-
-            .seotize-confetti-piece:nth-child(1) { background: #ffd700; }
-            .seotize-confetti-piece:nth-child(2) { background: #ff69b4; }
-            .seotize-confetti-piece:nth-child(3) { background: #00ff00; }
-            .seotize-confetti-piece:nth-child(4) { background: #00bfff; }
-            .seotize-confetti-piece:nth-child(5) { background: #ff4500; }
-            .seotize-confetti-piece:nth-child(6) { background: #9370db; }
-
-            .seotize-completion-title {
-                font-size: 2.5rem;
-                font-weight: 900;
-                color: white;
-                margin: 0 0 0.5rem 0;
-                letter-spacing: -1px;
-            }
-
-            .seotize-completion-subtitle {
-                font-size: 1.2rem;
-                color: rgba(255, 255, 255, 0.9);
-                margin: 0 0 2rem 0;
-            }
-
             .seotize-completion-stats {
-                display: flex;
-                justify-content: center;
-                margin-bottom: 2rem;
+                margin-bottom: 1.5rem;
             }
 
             .seotize-stat {
-                background: rgba(255, 255, 255, 0.2);
-                padding: 1.5rem 3rem;
-                border-radius: 16px;
-                backdrop-filter: blur(10px);
+                background: rgba(255, 255, 255, 0.15);
+                padding: 1.2rem 2.5rem;
+                border-radius: 12px;
+                display: inline-block;
             }
 
             .seotize-stat-value {
-                font-size: 3rem;
+                font-size: 2.5rem;
                 font-weight: 900;
-                color: white;
+                color: #fff;
                 line-height: 1;
-                margin-bottom: 0.5rem;
+                margin-bottom: 0.3rem;
             }
 
             .seotize-stat-label {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
                 color: rgba(255, 255, 255, 0.8);
                 font-weight: 600;
             }
 
-            .seotize-completion-message {
-                font-size: 1rem;
-                color: rgba(255, 255, 255, 0.9);
-                margin: 0 0 1rem 0;
-            }
-
-            .seotize-redirect-loader {
-                display: flex;
-                justify-content: center;
-                gap: 8px;
-            }
-
-            .seotize-redirect-dot {
-                width: 10px;
-                height: 10px;
-                background: white;
-                border-radius: 50%;
-                animation: seotize-redirect-bounce 1.4s infinite ease-in-out both;
-            }
-
-            .seotize-redirect-dot:nth-child(1) { animation-delay: -0.32s; }
-            .seotize-redirect-dot:nth-child(2) { animation-delay: -0.16s; }
-
-            @keyframes seotize-redirect-bounce {
-                0%, 80%, 100% { transform: scale(0); }
-                40% { transform: scale(1); }
-            }
-
-            /* Error Popup Styles */
-            .seotize-error-popup {
-                padding: 0 !important;
-                background: transparent !important;
-                box-shadow: none !important;
-                border: none !important;
-            }
-
-            .seotize-error-container {
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                padding: 3rem 2rem;
-                border-radius: 24px;
-                text-align: center;
-                box-shadow: 0 20px 60px rgba(245, 87, 108, 0.4);
-            }
-
-            .seotize-error-icon {
-                font-size: 4rem;
-                margin-bottom: 1rem;
-            }
-
-            .seotize-error-title {
-                font-size: 1.8rem;
-                font-weight: 700;
-                color: white;
-                margin: 0 0 1rem 0;
-            }
-
-            .seotize-error-message {
-                font-size: 1rem;
-                color: rgba(255, 255, 255, 0.9);
-                margin: 0 0 2rem 0;
-            }
-
             .seotize-error-button {
-                background: white;
+                background: #fff;
                 color: #f5576c;
                 border: none;
-                padding: 0.75rem 2rem;
-                border-radius: 12px;
+                padding: 0.7rem 2rem;
+                border-radius: 10px;
                 font-size: 1rem;
                 font-weight: 600;
                 cursor: pointer;
@@ -1439,61 +1131,26 @@
                 transform: scale(1.05);
             }
 
-            /* Welcome Popup Styles */
-            .seotize-welcome-popup {
-                padding: 0 !important;
-                background: transparent !important;
-                box-shadow: none !important;
-                border: none !important;
-            }
-
-            .seotize-welcome-container {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 3rem 2.5rem;
-                border-radius: 24px;
-                text-align: center;
-                box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
-                max-width: 500px;
-                margin: 0 auto;
-            }
-
             .seotize-welcome-icon {
-                font-size: 5rem;
-                margin-bottom: 1.5rem;
-                line-height: 1;
-            }
-
-            .seotize-welcome-title {
-                font-size: 2.2rem;
-                font-weight: 900;
-                color: white;
-                margin: 0 0 1rem 0;
-                letter-spacing: -0.5px;
-            }
-
-            .seotize-welcome-text {
-                font-size: 1.1rem;
-                color: rgba(255, 255, 255, 0.95);
-                line-height: 1.6;
-                margin: 0 0 2rem 0;
+                font-size: 4rem;
+                margin-bottom: 1rem;
             }
 
             .seotize-welcome-features {
-                background: rgba(255, 255, 255, 0.1);
-                padding: 1.5rem;
-                border-radius: 16px;
-                backdrop-filter: blur(10px);
-                margin-bottom: 1.5rem;
+                background: rgba(255, 255, 255, 0.15);
+                padding: 1.2rem;
+                border-radius: 12px;
+                margin-bottom: 1rem;
+                text-align: left;
             }
 
             .seotize-feature {
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                gap: 0.75rem;
-                margin-bottom: 1rem;
-                color: white;
-                font-size: 1rem;
+                gap: 0.6rem;
+                margin-bottom: 0.8rem;
+                color: #fff;
+                font-size: 0.95rem;
             }
 
             .seotize-feature:last-child {
@@ -1501,44 +1158,55 @@
             }
 
             .seotize-feature-icon {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
+                flex-shrink: 0;
             }
 
             .seotize-countdown {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
                 color: rgba(255, 255, 255, 0.7);
-            }
-
-            #seotize-debug-log::-webkit-scrollbar {
-                width: 8px;
-            }
-
-            #seotize-debug-log::-webkit-scrollbar-track {
-                background: rgba(0, 255, 0, 0.1);
-            }
-
-            #seotize-debug-log::-webkit-scrollbar-thumb {
-                background: #00ff00;
-                border-radius: 4px;
             }
 
             .swal2-timer-progress-bar {
                 background: rgba(255, 255, 255, 0.3) !important;
-                height: 4px !important;
+                height: 3px !important;
+            }
+
+            @media (max-width: 480px) {
+                .seotize-success-container, .seotize-completion-container, 
+                .seotize-error-container, .seotize-welcome-container {
+                    padding: 2rem 1.5rem;
+                    width: 95vw;
+                }
+                
+                .seotize-success-title, .seotize-completion-title, 
+                .seotize-error-title, .seotize-welcome-title {
+                    font-size: 1.5rem;
+                }
+                
+                .seotize-completed {
+                    font-size: 1.8rem;
+                }
+                
+                .seotize-total, .seotize-divider {
+                    font-size: 1.3rem;
+                }
+                
+                .seotize-stat-value {
+                    font-size: 2rem;
+                }
             }
         `;
         domCache.head.appendChild(style);
     }
 
     async function waitForDependencies() {
-        debugLog('Waiting for dependencies...', 'info');
         return new Promise((resolve) => {
             const checkDeps = () => {
                 if (typeof CryptoJS !== 'undefined' &&
                     typeof Swal !== 'undefined' &&
                     typeof gsap !== 'undefined') {
                     state.dependenciesLoaded = true;
-                    debugLog('✓ All dependencies loaded', 'success');
                     resolve();
                 } else {
                     setTimeout(checkDeps, 50);
@@ -1550,19 +1218,13 @@
 
     async function initializeEngine() {
         try {
-            debugLog('🚀 Starting initialization...', 'info');
-            
             await waitForDependencies();
 
             state.uniqueId = getUniqueId();
-            debugLog(`Generated Unique ID: ${state.uniqueId.substring(0, 8)}...`, 'info');
-            debugLog(`Site Key (System ID): ${state.systemId}`, 'info');
             
-            debugLog('⚡ Fast loading: Fetching tasks without captcha', 'info');
             const data = await fetchPartnerSubtasks(state.uniqueId, state.systemId);
 
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
-                debugLog('⚠ No subtasks info - silent exit', 'warning');
                 return;
             }
 
@@ -1570,16 +1232,13 @@
                 .filter(task => task.status === 'incomplete')
                 .map(task => task.subtask_id);
 
-            debugLog(`Found ${state.coins.length} incomplete tasks`, 'info');
-
             if (state.coins.length === 0) {
-                debugLog('All tasks complete - showing completion message', 'info');
                 Swal.fire({
                     html: `
                         <div class="seotize-welcome-container">
                             <div class="seotize-welcome-icon">✅</div>
                             <h2 class="seotize-welcome-title">All Done!</h2>
-                            <p class="seotize-welcome-text">You have completed all available tasks.</p>
+                            <p class="seotize-welcome-text">You have completed all tasks.</p>
                         </div>
                     `,
                     showConfirmButton: false,
@@ -1592,28 +1251,27 @@
                 return;
             }
 
-            debugLog('✓ Showing welcome message', 'success');
             await Swal.fire({
                 html: `
                     <div class="seotize-welcome-container">
                         <div class="seotize-welcome-icon">💎</div>
-                        <h2 class="seotize-welcome-title">Welcome Seotize Partner!</h2>
-                        <p class="seotize-welcome-text">Thank you for starting the task. Get ready to collect diamonds!</p>
+                        <h2 class="seotize-welcome-title">Welcome Partner!</h2>
+                        <p class="seotize-welcome-text">Get ready to collect diamonds and earn your reward</p>
                         <div class="seotize-welcome-features">
                             <div class="seotize-feature">
                                 <span class="seotize-feature-icon">🎯</span>
-                                <span>Follow the animated arrow</span>
+                                <span>Follow the arrow</span>
                             </div>
                             <div class="seotize-feature">
                                 <span class="seotize-feature-icon">💎</span>
-                                <span>Click on each diamond</span>
+                                <span>Click each diamond</span>
                             </div>
                             <div class="seotize-feature">
                                 <span class="seotize-feature-icon">🏆</span>
-                                <span>Collect all ${state.coins.length} diamonds to win!</span>
+                                <span>Collect all ${state.coins.length} to win</span>
                             </div>
                         </div>
-                        <p class="seotize-countdown">Starting in a few seconds...</p>
+                        <p class="seotize-countdown">Starting soon...</p>
                     </div>
                 `,
                 timer: CONFIG.TIMING.WELCOME_DURATION,
@@ -1624,43 +1282,18 @@
                 backdrop: 'rgba(0, 0, 0, 0.85)',
                 customClass: {
                     popup: 'seotize-welcome-popup'
-                },
-                didOpen: (popup) => {
-                    const icon = popup.querySelector('.seotize-welcome-icon');
-                    
-                    if (typeof gsap !== 'undefined') {
-                        gsap.from(icon, { 
-                            scale: 0, 
-                            rotation: 180, 
-                            duration: 1, 
-                            ease: 'elastic.out(1, 0.5)' 
-                        });
-                        gsap.to(icon, {
-                            rotation: 360,
-                            duration: 20,
-                            ease: 'none',
-                            repeat: -1
-                        });
-                    }
                 }
             });
 
             renderCoins();
             displayNextCoin();
-            debugLog('✓ Engine initialized successfully!', 'success');
 
         } catch (error) {
-            debugLog(`✗ FATAL ERROR: ${error.message}`, 'error');
-            debugLog(`Stack: ${error.stack}`, 'error');
-            console.error('Seotize initialization error:', error);
+            console.error('Init error:', error);
         }
     }
 
     function setupTurnstile() {
-        debugLog('Setting up Turnstile widget', 'info');
-        debugLog(`User Agent: ${navigator.userAgent.substring(0, 50)}...`, 'info');
-        debugLog(`Platform: ${navigator.platform}`, 'info');
-        
         const div = document.createElement('div');
         div.className = 'cf-turnstile';
         div.setAttribute('data-theme', 'light');
@@ -1670,21 +1303,13 @@
         div.setAttribute('data-retry', 'auto');
         div.setAttribute('data-retry-interval', '8000');
         div.setAttribute('data-refresh-expired', 'auto');
+        div.setAttribute('data-appearance', 'interaction-only');
         
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        if (isMobile) {
-            debugLog('📱 Mobile device detected', 'info');
-            div.setAttribute('data-appearance', 'always');
-        }
-
         domCache.body.insertBefore(div, domCache.body.firstChild);
-        debugLog('✓ Turnstile container created', 'success');
     }
 
     async function loadDependencies() {
         try {
-            debugLog('Loading dependencies...', 'info');
-            
             const scriptPromises = [
                 loadScript(CONFIG.CDN.CRYPTO),
                 loadScript(CONFIG.CDN.SWEETALERT),
@@ -1693,12 +1318,9 @@
             ];
 
             await Promise.all(scriptPromises);
-            debugLog('✓ All scripts loaded successfully', 'success');
-
             return true;
         } catch (error) {
-            debugLog(`✗ Failed to load dependencies: ${error.message}`, 'error');
-            console.error('Failed to load dependencies:', error);
+            console.error('Dependency load error:', error);
             return false;
         }
     }
@@ -1713,13 +1335,9 @@
             createDebugUI();
         }
 
-        debugLog('🔧 Bootstrap starting...', 'info');
-
         const engineScript = getEngineScriptTag();
 
         if (!engineScript) {
-            debugLog('✗ Seotize engine script not found', 'error');
-            console.error('Seotize engine script not found.');
             return;
         }
 
@@ -1727,26 +1345,19 @@
         state.systemId = getURLParameter(queryString, 'id');
 
         if (!state.systemId) {
-            debugLog('✗ System ID not found in script tag', 'error');
-            console.error('System ID not found in script tag.');
             return;
         }
 
-        debugLog(`System ID: ${state.systemId}`, 'info');
         window.SYSYID = state.systemId;
 
         if (!document.referrer.includes('google.com')) {
-            debugLog('⚠ Not from Google referrer - silent exit', 'warning');
             return;
         }
-
-        debugLog('✓ Google referrer detected', 'success');
 
         injectStyles();
 
         const loaded = await loadDependencies();
         if (!loaded) {
-            debugLog('✗ Dependencies failed to load', 'error');
             return;
         }
 
@@ -1755,15 +1366,10 @@
     }
 
     window.onloadTurnstileCallback = function() {
-        debugLog('Turnstile script loaded callback', 'info');
-        debugLog(`typeof turnstile: ${typeof turnstile}`, 'info');
-        
         if (typeof turnstile !== 'undefined') {
             const element = document.querySelector('.cf-turnstile');
             
             if (element) {
-                debugLog('Turnstile element found, attempting immediate render...', 'info');
-                
                 try {
                     state.turnstileWidgetId = turnstile.render(element, {
                         sitekey: state.systemId,
@@ -1772,41 +1378,32 @@
                         retry: 'auto',
                         'retry-interval': 8000,
                         'refresh-expired': 'auto',
+                        'appearance': 'interaction-only',
                         callback: function(token) {
-                            debugLog(`✓ Turnstile token auto-generated (length: ${token.length})`, 'success');
                             state.turnstileTokenCache = token;
                             state.lastTokenTime = Date.now();
                         },
                         'error-callback': function() {
-                            debugLog('✗ Turnstile error callback triggered', 'error');
                             state.turnstileTokenCache = null;
                         },
                         'expired-callback': function() {
-                            debugLog('⚠ Turnstile token expired', 'warning');
                             state.turnstileTokenCache = null;
                         },
                         'timeout-callback': function() {
-                            debugLog('✗ Turnstile timeout callback triggered', 'error');
                             state.turnstileTokenCache = null;
                         }
                     });
                     
                     state.turnstileReady = true;
-                    debugLog(`✓ Turnstile widget rendered immediately (ID: ${state.turnstileWidgetId})`, 'success');
                 } catch (error) {
-                    debugLog(`✗ Turnstile render error: ${error.message}`, 'error');
-                    debugLog(`Stack: ${error.stack}`, 'error');
+                    console.error('Turnstile error:', error);
                 }
-            } else {
-                debugLog('✗ Turnstile element not found for rendering', 'error');
             }
-        } else {
-            debugLog('✗ Turnstile object not available', 'error');
         }
     };
 
     window.onTurnstileCallback = function(token) {
-        debugLog(`Turnstile callback triggered (token length: ${token?.length || 0})`, 'info');
+        debugLog(`Token received`, 'info');
     };
 
     if (document.readyState === 'loading') {
