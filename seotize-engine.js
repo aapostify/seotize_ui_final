@@ -285,34 +285,6 @@
         });
     }
 
-    // FIXED: Verification screen that doesn't get stuck
-    function showCaptchaVerification() {
-        if (typeof Swal === 'undefined') return;
-
-        debugLog('Showing verification screen', 'info');
-
-        Swal.fire({
-            html: `
-                <div class="seotize-captcha-verification">
-                    <div class="seotize-shield-container">
-                        <div class="seotize-shield">🛡️</div>
-                    </div>
-                    <div class="seotize-captcha-title">Verifying</div>
-                    <div class="seotize-captcha-dots">
-                        <span></span><span></span><span></span>
-                    </div>
-                </div>
-            `,
-            allowOutsideClick: false,
-            showConfirmButton: false,
-            background: 'transparent',
-            backdrop: 'rgba(0, 0, 0, 0.85)',
-            customClass: {
-                popup: 'seotize-captcha-popup'
-            }
-        });
-    }
-
     function closeLoading() {
         if (typeof Swal !== 'undefined') {
             Swal.close();
@@ -320,40 +292,35 @@
     }
 
     function resetTurnstile() {
-        debugLog('Resetting Turnstile widget', 'info');
+        debugLog('Resetting Turnstile', 'info');
         if (typeof turnstile !== 'undefined' && state.turnstileWidgetId !== null) {
             try {
                 turnstile.reset(state.turnstileWidgetId);
                 state.turnstileTokenCache = null;
                 state.lastTokenTime = 0;
-                debugLog('✓ Turnstile reset successful', 'success');
+                debugLog('✓ Turnstile reset', 'success');
             } catch (error) {
-                debugLog(`✗ Turnstile reset error: ${error.message}`, 'error');
-                console.error('Error resetting Turnstile:', error);
+                debugLog(`✗ Reset error: ${error.message}`, 'error');
             }
-        } else {
-            debugLog('⚠ Turnstile not available for reset', 'warning');
         }
     }
 
     async function waitForTurnstileReady() {
-        debugLog('Waiting for Turnstile to be ready...', 'info');
+        debugLog('Waiting for Turnstile...', 'info');
         
         return new Promise((resolve, reject) => {
             const startTime = Date.now();
-            let lastLogTime = startTime;
             
             const checkReady = () => {
-                const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-                
-                if (Date.now() - lastLogTime > 3000) {
-                    debugLog(`Waiting for Turnstile ready... (${elapsed}s)`, 'info');
-                    lastLogTime = Date.now();
+                if (state.turnstileReady && state.turnstileWidgetId !== null) {
+                    debugLog(`✓ Turnstile ready`, 'success');
+                    resolve();
+                    return;
                 }
                 
-                if (state.turnstileReady && state.turnstileWidgetId !== null) {
-                    debugLog(`✓ Turnstile ready (${elapsed}s)`, 'success');
-                    resolve();
+                if (Date.now() - startTime > CONFIG.TIMING.TURNSTILE_READY_TIMEOUT) {
+                    debugLog('✗ Turnstile timeout', 'error');
+                    reject(new Error('Turnstile timeout'));
                     return;
                 }
                 
@@ -361,63 +328,54 @@
             };
             
             checkReady();
-            
-            setTimeout(() => {
-                debugLog('✗ Turnstile ready timeout', 'error');
-                reject(new Error('Turnstile ready timeout'));
-            }, CONFIG.TIMING.TURNSTILE_READY_TIMEOUT);
         });
     }
 
-    async function waitForTurnstileToken(resetFirst = false, retryCount = 0) {
-        const MAX_RETRIES = 2;
+    async function waitForTurnstileToken(resetFirst = false) {
         const TOKEN_CACHE_DURATION = 110000;
         
-        debugLog(`Waiting for Turnstile token (reset: ${resetFirst}, retry: ${retryCount}/${MAX_RETRIES})`, 'info');
+        debugLog(`Getting token (reset: ${resetFirst})`, 'info');
         
         try {
             if (!state.turnstileReady || state.turnstileWidgetId === null) {
-                debugLog('⚠ Turnstile not ready, waiting...', 'warning');
                 await waitForTurnstileReady();
             }
             
             const tokenAge = Date.now() - state.lastTokenTime;
             if (!resetFirst && state.turnstileTokenCache && tokenAge < TOKEN_CACHE_DURATION) {
-                debugLog(`✓ Using cached token (age: ${(tokenAge/1000).toFixed(1)}s)`, 'success');
+                debugLog(`✓ Using cached token`, 'success');
                 return state.turnstileTokenCache;
             }
             
             if (resetFirst) {
                 resetTurnstile();
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise(resolve => setTimeout(resolve, 50));
             }
 
             return new Promise((resolve, reject) => {
                 const startTime = Date.now();
-                let lastCheckLog = startTime;
                 
                 const checkToken = () => {
                     const responseElement = document.getElementsByName('cf-turnstile-response')[0];
-                    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-
-                    // Log every 2 seconds
-                    if (Date.now() - lastCheckLog > 2000) {
-                        debugLog(`Still waiting for token... (${elapsed}s)`, 'info');
-                        lastCheckLog = Date.now();
-                    }
 
                     if (responseElement?.value) {
                         const token = responseElement.value;
                         state.turnstileTokenCache = token;
                         state.lastTokenTime = Date.now();
-                        debugLog(`✓ Token received (${elapsed}s)`, 'success');
+                        debugLog(`✓ Token received`, 'success');
                         resolve(token);
                         return;
                     }
 
-                    if (state.turnstileTokenCache && (Date.now() - state.lastTokenTime < 2000)) {
-                        debugLog(`✓ Using cached token`, 'success');
+                    if (state.turnstileTokenCache && (Date.now() - state.lastTokenTime < 1000)) {
+                        debugLog(`✓ Using callback token`, 'success');
                         resolve(state.turnstileTokenCache);
+                        return;
+                    }
+
+                    if (Date.now() - startTime > CONFIG.TIMING.TURNSTILE_TOKEN_TIMEOUT) {
+                        debugLog(`✗ Token timeout`, 'error');
+                        reject(new Error('Token timeout'));
                         return;
                     }
 
@@ -425,26 +383,15 @@
                 };
 
                 checkToken();
-
-                setTimeout(() => {
-                    debugLog(`✗ Token timeout after ${CONFIG.TIMING.TURNSTILE_TOKEN_TIMEOUT/1000}s`, 'error');
-                    reject(new Error('Turnstile timeout'));
-                }, CONFIG.TIMING.TURNSTILE_TOKEN_TIMEOUT);
             });
             
         } catch (error) {
-            if (retryCount < MAX_RETRIES) {
-                debugLog(`Retrying token request (attempt ${retryCount + 1})...`, 'warning');
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return waitForTurnstileToken(true, retryCount + 1);
-            }
+            debugLog(`✗ Token error: ${error.message}`, 'error');
             throw error;
         }
     }
 
     async function fetchPartnerSubtasks(uniqueId, siteKey) {
-        debugLog('Fetching tasks...', 'info');
-        
         try {
             const response = await fetch(CONFIG.API_ENDPOINTS.GET_TASKS, {
                 method: 'POST',
@@ -455,16 +402,11 @@
                 })
             });
 
-            debugLog(`API Status: ${response.status}`, response.ok ? 'success' : 'error');
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
-            debugLog(`✓ Tasks received`, 'success');
-            
-            return data;
+            return await response.json();
         } catch (error) {
             debugLog(`✗ API error: ${error.message}`, 'error');
             throw error;
@@ -472,8 +414,6 @@
     }
 
     async function submitTask(subtaskId, turnstileToken) {
-        debugLog(`Submitting task...`, 'info');
-        
         try {
             const response = await fetch(CONFIG.API_ENDPOINTS.DO_TASK, {
                 method: 'POST',
@@ -485,16 +425,11 @@
                 })
             });
 
-            debugLog(`Submit status: ${response.status}`, response.ok ? 'success' : 'error');
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const result = await response.json();
-            debugLog(`✓ Task submitted`, 'success');
-            
-            return result;
+            return await response.json();
         } catch (error) {
             debugLog(`✗ Submit error: ${error.message}`, 'error');
             throw error;
@@ -577,7 +512,7 @@
             gsap.from(coin, {
                 scale: 0,
                 opacity: 0,
-                duration: 0.6,
+                duration: 0.5,
                 ease: "back.out(1.7)"
             });
 
@@ -704,16 +639,18 @@
         coinElements.forEach(el => el.style.pointerEvents = 'none');
 
         try {
+            // Animate coin
             if (typeof gsap !== 'undefined') {
                 gsap.to(clickedCoin, {
                     scale: 2,
                     opacity: 0,
                     rotation: 360,
-                    duration: 0.5,
+                    duration: 0.4,
                     ease: "power2.in"
                 });
             }
 
+            // Remove arrow
             if (state.currentArrow) {
                 if (typeof gsap !== 'undefined') {
                     gsap.killTweensOf(state.currentArrow);
@@ -726,25 +663,22 @@
                 state.arrowUpdateInterval = null;
             }
 
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 400));
 
-            // Show verification screen (stays visible during token fetch)
-            showCaptchaVerification();
+            // Show "Verifying" screen
+            debugLog('Showing verification', 'info');
+            showModernLoading('Verifying', 'Please wait');
 
-            // Fetch token while verification screen is showing
-            debugLog('Starting token fetch...', 'info');
-            const tokenPromise = waitForTurnstileToken(true);
+            // Do ALL the work here (get token + submit task)
+            debugLog('Fetching token...', 'info');
+            const token = await waitForTurnstileToken(true);
             
-            // Wait for token
-            const token = await tokenPromise;
-            debugLog('Token received, closing verification screen', 'success');
-            
-            // Close verification and show submitting
-            closeLoading();
-            showModernLoading('Submitting', 'Please wait');
-            
+            debugLog('Token received, submitting task...', 'info');
             const result = await submitTask(subtaskId, token);
+            
+            debugLog('Task submitted successfully', 'success');
 
+            // Close loading
             closeLoading();
 
             if (result.status === 'success' || result.code === 200) {
@@ -788,9 +722,8 @@
                     },
                     didOpen: (popup) => {
                         const circle = popup.querySelector('.seotize-success-circle');
-                        
                         if (typeof gsap !== 'undefined') {
-                            gsap.from(circle, { scale: 0, duration: 0.4, ease: 'back.out(2)' });
+                            gsap.from(circle, { scale: 0, duration: 0.3, ease: 'back.out(2)' });
                         }
                     }
                 });
@@ -800,7 +733,6 @@
                 if (state.currentCoinIndex < state.coinElements.length - 1 && !allTasksComplete) {
                     displayNextCoin();
                     state.isProcessing = false;
-                    const coinElements = document.querySelectorAll('.seotize-coin');
                     coinElements.forEach(el => el.style.pointerEvents = 'auto');
                 } else {
                     await Swal.fire({
@@ -838,7 +770,7 @@
             }
         } catch (error) {
             closeLoading();
-            debugLog(`Error in coin click handler: ${error.message}`, 'error');
+            debugLog(`Error: ${error.message}`, 'error');
             Swal.fire({
                 html: `
                     <div class="seotize-error-container">
@@ -858,7 +790,6 @@
             });
         } finally {
             state.isProcessing = false;
-            const coinElements = document.querySelectorAll('.seotize-coin');
             coinElements.forEach(el => el.style.pointerEvents = 'auto');
         }
     }
@@ -871,21 +802,19 @@
             }
 
             .seotize-coin {
-                filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.5));
+                filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.4));
                 will-change: transform;
                 transform: translateZ(0);
-                backface-visibility: hidden;
             }
 
-            .seotize-coin:hover {
-                transform: scale(1.2) !important;
+            .seotize-coin:active {
+                transform: scale(1.3) !important;
             }
 
             .seotize-arrow {
                 will-change: transform;
-                filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
+                filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
                 transform: translateZ(0);
-                backface-visibility: hidden;
             }
 
             .cf-turnstile {
@@ -907,82 +836,45 @@
                 border: none !important;
             }
 
-            .seotize-modern-loader, .seotize-captcha-verification {
-                padding: 2.5rem 2rem;
+            .seotize-modern-loader {
+                padding: 2rem 1.5rem;
                 text-align: center;
             }
 
             .seotize-spinner {
-                width: 60px;
-                height: 60px;
-                margin: 0 auto 1.5rem;
-                border: 4px solid rgba(99, 102, 241, 0.2);
+                width: 50px;
+                height: 50px;
+                margin: 0 auto 1rem;
+                border: 3px solid rgba(99, 102, 241, 0.2);
                 border-top-color: #6366f1;
                 border-radius: 50%;
-                animation: seotize-spin 0.8s linear infinite;
+                animation: seotize-spin 0.7s linear infinite;
             }
 
             @keyframes seotize-spin {
                 to { transform: rotate(360deg); }
             }
 
-            .seotize-loader-title, .seotize-captcha-title {
-                font-size: 1.4rem;
+            .seotize-loader-title {
+                font-size: 1.3rem;
                 font-weight: 700;
                 color: #fff;
-                margin-bottom: 0.5rem;
+                margin-bottom: 0.3rem;
             }
 
             .seotize-loader-message {
-                font-size: 0.95rem;
+                font-size: 0.9rem;
                 color: rgba(255, 255, 255, 0.7);
-            }
-
-            .seotize-shield-container {
-                margin: 0 auto 1.5rem;
-            }
-
-            .seotize-shield {
-                font-size: 4rem;
-                animation: seotize-pulse 2s ease-in-out infinite;
-            }
-
-            @keyframes seotize-pulse {
-                0%, 100% { transform: scale(1); }
-                50% { transform: scale(1.05); }
-            }
-
-            .seotize-captcha-dots {
-                display: flex;
-                justify-content: center;
-                gap: 8px;
-                margin-top: 1rem;
-            }
-
-            .seotize-captcha-dots span {
-                width: 8px;
-                height: 8px;
-                background: #6366f1;
-                border-radius: 50%;
-                animation: seotize-dot-bounce 1.4s infinite ease-in-out both;
-            }
-
-            .seotize-captcha-dots span:nth-child(1) { animation-delay: -0.32s; }
-            .seotize-captcha-dots span:nth-child(2) { animation-delay: -0.16s; }
-
-            @keyframes seotize-dot-bounce {
-                0%, 80%, 100% { transform: scale(0); }
-                40% { transform: scale(1); }
             }
 
             .seotize-success-container, .seotize-completion-container, .seotize-error-container, .seotize-welcome-container {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 2.5rem 2rem;
-                border-radius: 20px;
+                padding: 2rem 1.5rem;
+                border-radius: 16px;
                 text-align: center;
-                box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+                box-shadow: 0 12px 30px rgba(102, 126, 234, 0.25);
                 max-width: 90vw;
-                width: 400px;
+                width: 380px;
                 margin: 0 auto;
             }
 
@@ -995,12 +887,12 @@
             }
 
             .seotize-success-icon, .seotize-celebration-icon {
-                margin-bottom: 1.5rem;
+                margin-bottom: 1rem;
             }
 
             .seotize-success-circle {
-                width: 80px;
-                height: 80px;
+                width: 70px;
+                height: 70px;
                 background: rgba(255, 255, 255, 0.2);
                 border-radius: 50%;
                 display: flex;
@@ -1010,39 +902,39 @@
             }
 
             .seotize-checkmark {
-                font-size: 2.5rem;
+                font-size: 2.2rem;
                 color: #fff;
                 font-weight: bold;
             }
 
             .seotize-trophy {
-                font-size: 4rem;
+                font-size: 3.5rem;
             }
 
             .seotize-error-icon {
-                font-size: 3.5rem;
-                margin-bottom: 1rem;
+                font-size: 3rem;
+                margin-bottom: 0.8rem;
             }
 
             .seotize-success-title, .seotize-completion-title, .seotize-error-title, .seotize-welcome-title {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
                 font-weight: 900;
                 color: #fff;
-                margin: 0 0 0.5rem 0;
+                margin: 0 0 0.4rem 0;
             }
 
             .seotize-success-text, .seotize-completion-subtitle, .seotize-error-message, .seotize-welcome-text {
-                font-size: 1rem;
+                font-size: 0.95rem;
                 color: rgba(255, 255, 255, 0.9);
-                margin: 0 0 1.5rem 0;
-                line-height: 1.5;
+                margin: 0 0 1.2rem 0;
+                line-height: 1.4;
             }
 
             .seotize-progress-container {
                 background: rgba(255, 255, 255, 0.15);
-                padding: 1.2rem;
-                border-radius: 12px;
-                margin-bottom: 1rem;
+                padding: 1rem;
+                border-radius: 10px;
+                margin-bottom: 0.8rem;
             }
 
             .seotize-progress-label {
@@ -1050,75 +942,75 @@
                 align-items: baseline;
                 justify-content: center;
                 gap: 0.3rem;
-                margin-bottom: 0.8rem;
+                margin-bottom: 0.6rem;
                 font-weight: 700;
                 color: #fff;
             }
 
             .seotize-completed {
                 color: #10b981;
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
 
             .seotize-divider {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
                 color: rgba(255, 255, 255, 0.5);
             }
 
             .seotize-total {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
                 color: rgba(255, 255, 255, 0.8);
             }
 
             .seotize-tasks-text {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
                 color: rgba(255, 255, 255, 0.7);
-                margin-left: 0.3rem;
+                margin-left: 0.2rem;
             }
 
             .seotize-progress-bar {
                 width: 100%;
-                height: 10px;
+                height: 8px;
                 background: rgba(0, 0, 0, 0.2);
-                border-radius: 5px;
+                border-radius: 4px;
                 overflow: hidden;
             }
 
             .seotize-progress-fill {
                 height: 100%;
                 background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
-                border-radius: 5px;
-                transition: width 0.8s ease;
+                border-radius: 4px;
+                transition: width 0.6s ease;
             }
 
             .seotize-remaining, .seotize-completion-message {
-                font-size: 1rem;
+                font-size: 0.95rem;
                 color: #fff;
                 margin: 0;
                 font-weight: 500;
             }
 
             .seotize-completion-stats {
-                margin-bottom: 1.5rem;
+                margin-bottom: 1.2rem;
             }
 
             .seotize-stat {
                 background: rgba(255, 255, 255, 0.15);
-                padding: 1.2rem 2.5rem;
-                border-radius: 12px;
+                padding: 1rem 2rem;
+                border-radius: 10px;
                 display: inline-block;
             }
 
             .seotize-stat-value {
-                font-size: 2.5rem;
+                font-size: 2.2rem;
                 font-weight: 900;
                 color: #fff;
                 line-height: 1;
-                margin-bottom: 0.3rem;
+                margin-bottom: 0.2rem;
             }
 
             .seotize-stat-label {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
                 color: rgba(255, 255, 255, 0.8);
                 font-weight: 600;
             }
@@ -1127,38 +1019,38 @@
                 background: #fff;
                 color: #f5576c;
                 border: none;
-                padding: 0.7rem 2rem;
-                border-radius: 10px;
-                font-size: 1rem;
+                padding: 0.6rem 1.8rem;
+                border-radius: 8px;
+                font-size: 0.95rem;
                 font-weight: 600;
                 cursor: pointer;
                 transition: transform 0.2s;
             }
 
-            .seotize-error-button:hover {
-                transform: scale(1.05);
+            .seotize-error-button:active {
+                transform: scale(0.95);
             }
 
             .seotize-welcome-icon {
-                font-size: 4rem;
-                margin-bottom: 1rem;
+                font-size: 3.5rem;
+                margin-bottom: 0.8rem;
             }
 
             .seotize-welcome-features {
                 background: rgba(255, 255, 255, 0.15);
-                padding: 1.2rem;
-                border-radius: 12px;
-                margin-bottom: 1rem;
+                padding: 1rem;
+                border-radius: 10px;
+                margin-bottom: 0.8rem;
                 text-align: left;
             }
 
             .seotize-feature {
                 display: flex;
                 align-items: center;
-                gap: 0.6rem;
-                margin-bottom: 0.8rem;
+                gap: 0.5rem;
+                margin-bottom: 0.6rem;
                 color: #fff;
-                font-size: 0.95rem;
+                font-size: 0.9rem;
             }
 
             .seotize-feature:last-child {
@@ -1166,42 +1058,42 @@
             }
 
             .seotize-feature-icon {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
                 flex-shrink: 0;
             }
 
             .seotize-countdown {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
                 color: rgba(255, 255, 255, 0.7);
             }
 
             .swal2-timer-progress-bar {
                 background: rgba(255, 255, 255, 0.3) !important;
-                height: 3px !important;
+                height: 2px !important;
             }
 
             @media (max-width: 480px) {
                 .seotize-success-container, .seotize-completion-container, 
                 .seotize-error-container, .seotize-welcome-container {
-                    padding: 2rem 1.5rem;
+                    padding: 1.8rem 1.2rem;
                     width: 95vw;
                 }
                 
                 .seotize-success-title, .seotize-completion-title, 
                 .seotize-error-title, .seotize-welcome-title {
-                    font-size: 1.5rem;
+                    font-size: 1.4rem;
                 }
                 
                 .seotize-completed {
-                    font-size: 1.8rem;
+                    font-size: 1.6rem;
                 }
                 
                 .seotize-total, .seotize-divider {
-                    font-size: 1.3rem;
+                    font-size: 1.2rem;
                 }
                 
                 .seotize-stat-value {
-                    font-size: 2rem;
+                    font-size: 1.8rem;
                 }
             }
         `;
@@ -1328,7 +1220,7 @@
             await Promise.all(scriptPromises);
             return true;
         } catch (error) {
-            console.error('Dependency load error:', error);
+            console.error('Load error:', error);
             return false;
         }
     }
@@ -1344,30 +1236,20 @@
         }
 
         const engineScript = getEngineScriptTag();
-
-        if (!engineScript) {
-            return;
-        }
+        if (!engineScript) return;
 
         const queryString = engineScript.src.split('?')[1];
         state.systemId = getURLParameter(queryString, 'id');
-
-        if (!state.systemId) {
-            return;
-        }
+        if (!state.systemId) return;
 
         window.SYSYID = state.systemId;
 
-        if (!document.referrer.includes('google.com')) {
-            return;
-        }
+        if (!document.referrer.includes('google.com')) return;
 
         injectStyles();
 
         const loaded = await loadDependencies();
-        if (!loaded) {
-            return;
-        }
+        if (!loaded) return;
 
         setupTurnstile();
         initializeEngine();
@@ -1388,36 +1270,23 @@
                         'refresh-expired': 'auto',
                         'appearance': 'execute',
                         callback: function(token) {
-                            debugLog('✓ Turnstile callback fired', 'success');
+                            debugLog('✓ Callback fired', 'success');
                             state.turnstileTokenCache = token;
                             state.lastTokenTime = Date.now();
-                        },
-                        'error-callback': function() {
-                            debugLog('✗ Turnstile error callback', 'error');
-                            state.turnstileTokenCache = null;
-                        },
-                        'expired-callback': function() {
-                            debugLog('⚠ Turnstile expired callback', 'warning');
-                            state.turnstileTokenCache = null;
-                        },
-                        'timeout-callback': function() {
-                            debugLog('✗ Turnstile timeout callback', 'error');
-                            state.turnstileTokenCache = null;
                         }
                     });
                     
                     state.turnstileReady = true;
-                    debugLog(`✓ Turnstile initialized (ID: ${state.turnstileWidgetId})`, 'success');
+                    debugLog(`✓ Turnstile ready`, 'success');
                 } catch (error) {
-                    debugLog(`✗ Turnstile init error: ${error.message}`, 'error');
-                    console.error('Turnstile error:', error);
+                    debugLog(`✗ Init error: ${error.message}`, 'error');
                 }
             }
         }
     };
 
     window.onTurnstileCallback = function(token) {
-        debugLog(`Turnstile callback (length: ${token?.length || 0})`, 'info');
+        debugLog('Callback triggered', 'info');
     };
 
     if (document.readyState === 'loading') {
