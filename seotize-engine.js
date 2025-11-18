@@ -246,7 +246,7 @@
         return hashData(browserData);
     }
 
-    // NEW: Normalize URL function
+    // FIXED: Normalize URL function - keep trailing slash
     function normalizeURL(url) {
         let normalized = url;
         
@@ -254,8 +254,10 @@
         normalized = normalized.replace('https://www.', 'https://');
         normalized = normalized.replace('http://www.', 'http://');
         
-        // Remove trailing slash
-        normalized = normalized.replace(/\/$/, '');
+        // Ensure trailing slash exists
+        if (!normalized.endsWith('/')) {
+            normalized += '/';
+        }
         
         return normalized;
     }
