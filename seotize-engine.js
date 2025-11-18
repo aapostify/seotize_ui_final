@@ -28,9 +28,7 @@
             COMPLETION_DURATION: 2500,
             POLL_INTERVAL: 50,
             TURNSTILE_READY_TIMEOUT: 20000,
-            TURNSTILE_TOKEN_TIMEOUT: 60000,
-            CAPTCHA_SHOW_DURATION: 1200, // Show "Verifying" for 1.2s
-            CAPTCHA_VERIFIED_DURATION: 600 // Show "Verified" for 0.6s
+            TURNSTILE_TOKEN_TIMEOUT: 60000
         },
         DEBUG: {
             ENABLED: false,
@@ -287,59 +285,31 @@
         });
     }
 
-    // OPTIMIZED: Much faster verification screen
-    async function showCaptchaVerification() {
+    // FIXED: Verification screen that doesn't get stuck
+    function showCaptchaVerification() {
         if (typeof Swal === 'undefined') return;
 
-        return new Promise((resolve) => {
-            Swal.fire({
-                html: `
-                    <div class="seotize-captcha-verification">
-                        <div class="seotize-shield-container">
-                            <div class="seotize-shield" id="seotize-shield-icon">🛡️</div>
-                            <div class="seotize-shield-check" id="seotize-shield-check">✓</div>
-                        </div>
-                        <div class="seotize-captcha-title" id="seotize-captcha-title">Verifying</div>
-                        <div class="seotize-captcha-dots">
-                            <span></span><span></span><span></span>
-                        </div>
+        debugLog('Showing verification screen', 'info');
+
+        Swal.fire({
+            html: `
+                <div class="seotize-captcha-verification">
+                    <div class="seotize-shield-container">
+                        <div class="seotize-shield">🛡️</div>
                     </div>
-                `,
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                background: 'transparent',
-                backdrop: 'rgba(0, 0, 0, 0.85)',
-                customClass: {
-                    popup: 'seotize-captcha-popup'
-                },
-                didOpen: () => {
-                    // Show verifying state for 1.2 seconds
-                    setTimeout(() => {
-                        const shieldIcon = document.getElementById('seotize-shield-icon');
-                        const shieldCheck = document.getElementById('seotize-shield-check');
-                        const title = document.getElementById('seotize-captcha-title');
-                        const dots = document.querySelector('.seotize-captcha-dots');
-                        
-                        if (shieldIcon && shieldCheck && title && dots) {
-                            // Quick transition to verified state
-                            shieldIcon.style.opacity = '0';
-                            shieldIcon.style.transform = 'scale(0)';
-                            dots.style.opacity = '0';
-                            
-                            setTimeout(() => {
-                                shieldCheck.style.opacity = '1';
-                                shieldCheck.style.transform = 'scale(1)';
-                                title.textContent = 'Verified ✓';
-                            }, 200);
-                        }
-                        
-                        // Resolve quickly after showing verified state
-                        setTimeout(() => {
-                            resolve();
-                        }, CONFIG.TIMING.CAPTCHA_VERIFIED_DURATION);
-                    }, CONFIG.TIMING.CAPTCHA_SHOW_DURATION);
-                }
-            });
+                    <div class="seotize-captcha-title">Verifying</div>
+                    <div class="seotize-captcha-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `,
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            background: 'transparent',
+            backdrop: 'rgba(0, 0, 0, 0.85)',
+            customClass: {
+                popup: 'seotize-captcha-popup'
+            }
         });
     }
 
@@ -419,15 +389,22 @@
             
             if (resetFirst) {
                 resetTurnstile();
-                await new Promise(resolve => setTimeout(resolve, 200));
+                await new Promise(resolve => setTimeout(resolve, 100));
             }
 
             return new Promise((resolve, reject) => {
                 const startTime = Date.now();
+                let lastCheckLog = startTime;
                 
                 const checkToken = () => {
                     const responseElement = document.getElementsByName('cf-turnstile-response')[0];
                     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+
+                    // Log every 2 seconds
+                    if (Date.now() - lastCheckLog > 2000) {
+                        debugLog(`Still waiting for token... (${elapsed}s)`, 'info');
+                        lastCheckLog = Date.now();
+                    }
 
                     if (responseElement?.value) {
                         const token = responseElement.value;
@@ -450,15 +427,15 @@
                 checkToken();
 
                 setTimeout(() => {
-                    debugLog(`✗ Token timeout - Retry ${retryCount}/${MAX_RETRIES}`, 'error');
+                    debugLog(`✗ Token timeout after ${CONFIG.TIMING.TURNSTILE_TOKEN_TIMEOUT/1000}s`, 'error');
                     reject(new Error('Turnstile timeout'));
                 }, CONFIG.TIMING.TURNSTILE_TOKEN_TIMEOUT);
             });
             
         } catch (error) {
             if (retryCount < MAX_RETRIES) {
-                debugLog(`Retrying... (attempt ${retryCount + 1})`, 'warning');
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                debugLog(`Retrying token request (attempt ${retryCount + 1})...`, 'warning');
+                await new Promise(resolve => setTimeout(resolve, 500));
                 return waitForTurnstileToken(true, retryCount + 1);
             }
             throw error;
@@ -720,6 +697,7 @@
 
         if (clickedSubtaskId !== subtaskId) return;
 
+        debugLog(`Coin clicked: ${subtaskId}`, 'info');
         state.isProcessing = true;
 
         const coinElements = document.querySelectorAll('.seotize-coin');
@@ -750,11 +728,18 @@
 
             await new Promise(resolve => setTimeout(resolve, 500));
 
-            // Show quick verification screen (total: ~1.8s)
-            await showCaptchaVerification();
+            // Show verification screen (stays visible during token fetch)
+            showCaptchaVerification();
 
-            const token = await waitForTurnstileToken(true);
+            // Fetch token while verification screen is showing
+            debugLog('Starting token fetch...', 'info');
+            const tokenPromise = waitForTurnstileToken(true);
             
+            // Wait for token
+            const token = await tokenPromise;
+            debugLog('Token received, closing verification screen', 'success');
+            
+            // Close verification and show submitting
             closeLoading();
             showModernLoading('Submitting', 'Please wait');
             
@@ -853,6 +838,7 @@
             }
         } catch (error) {
             closeLoading();
+            debugLog(`Error in coin click handler: ${error.message}`, 'error');
             Swal.fire({
                 html: `
                     <div class="seotize-error-container">
@@ -880,9 +866,15 @@
     function injectStyles() {
         const style = document.createElement('style');
         style.textContent = `
+            * {
+                -webkit-tap-highlight-color: transparent;
+            }
+
             .seotize-coin {
                 filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.5));
                 will-change: transform;
+                transform: translateZ(0);
+                backface-visibility: hidden;
             }
 
             .seotize-coin:hover {
@@ -892,6 +884,8 @@
             .seotize-arrow {
                 will-change: transform;
                 filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
+                transform: translateZ(0);
+                backface-visibility: hidden;
             }
 
             .cf-turnstile {
@@ -913,7 +907,7 @@
                 border: none !important;
             }
 
-            .seotize-modern-loader {
+            .seotize-modern-loader, .seotize-captcha-verification {
                 padding: 2.5rem 2rem;
                 text-align: center;
             }
@@ -932,7 +926,7 @@
                 to { transform: rotate(360deg); }
             }
 
-            .seotize-loader-title {
+            .seotize-loader-title, .seotize-captcha-title {
                 font-size: 1.4rem;
                 font-weight: 700;
                 color: #fff;
@@ -944,33 +938,13 @@
                 color: rgba(255, 255, 255, 0.7);
             }
 
-            .seotize-captcha-verification {
-                padding: 2.5rem 2rem;
-                text-align: center;
-            }
-
             .seotize-shield-container {
                 margin: 0 auto 1.5rem;
-                position: relative;
-                width: 100px;
-                height: 100px;
             }
 
             .seotize-shield {
                 font-size: 4rem;
                 animation: seotize-pulse 2s ease-in-out infinite;
-                transition: opacity 0.2s ease, transform 0.2s ease;
-            }
-
-            .seotize-shield-check {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%) scale(0);
-                font-size: 4rem;
-                color: #10b981;
-                opacity: 0;
-                transition: opacity 0.2s ease, transform 0.2s ease;
             }
 
             @keyframes seotize-pulse {
@@ -978,19 +952,11 @@
                 50% { transform: scale(1.05); }
             }
 
-            .seotize-captcha-title {
-                font-size: 1.5rem;
-                font-weight: 700;
-                color: #fff;
-                margin-bottom: 1rem;
-                transition: all 0.2s ease;
-            }
-
             .seotize-captcha-dots {
                 display: flex;
                 justify-content: center;
                 gap: 8px;
-                transition: opacity 0.2s ease;
+                margin-top: 1rem;
             }
 
             .seotize-captcha-dots span {
@@ -1422,22 +1388,28 @@
                         'refresh-expired': 'auto',
                         'appearance': 'execute',
                         callback: function(token) {
+                            debugLog('✓ Turnstile callback fired', 'success');
                             state.turnstileTokenCache = token;
                             state.lastTokenTime = Date.now();
                         },
                         'error-callback': function() {
+                            debugLog('✗ Turnstile error callback', 'error');
                             state.turnstileTokenCache = null;
                         },
                         'expired-callback': function() {
+                            debugLog('⚠ Turnstile expired callback', 'warning');
                             state.turnstileTokenCache = null;
                         },
                         'timeout-callback': function() {
+                            debugLog('✗ Turnstile timeout callback', 'error');
                             state.turnstileTokenCache = null;
                         }
                     });
                     
                     state.turnstileReady = true;
+                    debugLog(`✓ Turnstile initialized (ID: ${state.turnstileWidgetId})`, 'success');
                 } catch (error) {
+                    debugLog(`✗ Turnstile init error: ${error.message}`, 'error');
                     console.error('Turnstile error:', error);
                 }
             }
@@ -1445,7 +1417,7 @@
     };
 
     window.onTurnstileCallback = function(token) {
-        debugLog(`Token received`, 'info');
+        debugLog(`Turnstile callback (length: ${token?.length || 0})`, 'info');
     };
 
     if (document.readyState === 'loading') {
