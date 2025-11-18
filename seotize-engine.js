@@ -28,8 +28,7 @@
             COMPLETION_DURATION: 2500,
             POLL_INTERVAL: 50,
             TURNSTILE_READY_TIMEOUT: 20000,
-            TURNSTILE_TOKEN_TIMEOUT: 60000,
-            VERIFIED_DISPLAY: 800 // Show "Verified" for 0.8s
+            TURNSTILE_TOKEN_TIMEOUT: 60000
         },
         DEBUG: {
             ENABLED: false,
@@ -282,32 +281,6 @@
             backdrop: 'rgba(0, 0, 0, 0.85)',
             customClass: {
                 popup: 'seotize-loader-popup'
-            }
-        });
-    }
-
-    // Show Verified screen
-    function showVerifiedScreen() {
-        if (typeof Swal === 'undefined') return;
-
-        debugLog('Showing Verified screen', 'info');
-
-        Swal.fire({
-            html: `
-                <div class="seotize-verified-screen">
-                    <div class="seotize-verified-icon">
-                        <div class="seotize-check-circle">✓</div>
-                    </div>
-                    <div class="seotize-verified-title">Verified!</div>
-                    <div class="seotize-verified-subtitle">You are human</div>
-                </div>
-            `,
-            allowOutsideClick: false,
-            showConfirmButton: false,
-            background: 'transparent',
-            backdrop: 'rgba(0, 0, 0, 0.85)',
-            customClass: {
-                popup: 'seotize-verified-popup'
             }
         });
     }
@@ -692,25 +665,17 @@
 
             await new Promise(resolve => setTimeout(resolve, 400));
 
-            // STEP 1: Show "Verifying" and get token
-            debugLog('Showing Verifying screen', 'info');
+            // Show "Verifying" screen
+            debugLog('Showing verification', 'info');
             showModernLoading('Verifying', 'Please wait');
 
+            // Do ALL the work here (get token + submit task)
             debugLog('Fetching token...', 'info');
             const token = await waitForTurnstileToken(true);
-            debugLog('Token received!', 'success');
-
-            // STEP 2: Show "Verified" briefly
-            closeLoading();
-            showVerifiedScreen();
-            debugLog('Showing Verified screen', 'info');
-            await new Promise(resolve => setTimeout(resolve, CONFIG.TIMING.VERIFIED_DISPLAY));
-
-            // STEP 3: Submit task
-            closeLoading();
-            showModernLoading('Submitting', 'Please wait');
-            debugLog('Submitting task...', 'info');
+            
+            debugLog('Token received, submitting task...', 'info');
             const result = await submitTask(subtaskId, token);
+            
             debugLog('Task submitted successfully', 'success');
 
             // Close loading
@@ -863,7 +828,7 @@
                 height: 0 !important;
             }
 
-            .seotize-loader-popup, .seotize-verified-popup, .seotize-success-popup, 
+            .seotize-loader-popup, .seotize-captcha-popup, .seotize-success-popup, 
             .seotize-completion-popup, .seotize-error-popup, .seotize-welcome-popup {
                 padding: 0 !important;
                 background: transparent !important;
@@ -871,7 +836,7 @@
                 border: none !important;
             }
 
-            .seotize-modern-loader, .seotize-verified-screen {
+            .seotize-modern-loader {
                 padding: 2rem 1.5rem;
                 text-align: center;
             }
@@ -899,42 +864,6 @@
 
             .seotize-loader-message {
                 font-size: 0.9rem;
-                color: rgba(255, 255, 255, 0.7);
-            }
-
-            .seotize-verified-icon {
-                margin-bottom: 1rem;
-            }
-
-            .seotize-check-circle {
-                width: 80px;
-                height: 80px;
-                margin: 0 auto;
-                background: rgba(16, 185, 129, 0.2);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 3rem;
-                color: #10b981;
-                animation: seotize-check-pop 0.5s ease;
-            }
-
-            @keyframes seotize-check-pop {
-                0% { transform: scale(0); opacity: 0; }
-                50% { transform: scale(1.2); }
-                100% { transform: scale(1); opacity: 1; }
-            }
-
-            .seotize-verified-title {
-                font-size: 1.5rem;
-                font-weight: 700;
-                color: #fff;
-                margin-bottom: 0.3rem;
-            }
-
-            .seotize-verified-subtitle {
-                font-size: 0.95rem;
                 color: rgba(255, 255, 255, 0.7);
             }
 
@@ -1250,7 +1179,7 @@
                 showConfirmButton: false,
                 allowOutsideClick: false,
                 background: 'transparent',
-                backdrop: 'rgba(0, 0, 0, 0.85),
+                backdrop: 'rgba(0, 0, 0, 0.85)',
                 customClass: {
                     popup: 'seotize-welcome-popup'
                 }
