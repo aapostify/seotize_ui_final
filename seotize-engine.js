@@ -28,8 +28,7 @@
             COMPLETION_DURATION: 2500,
             POLL_INTERVAL: 50,
             TURNSTILE_READY_TIMEOUT: 20000,
-            TURNSTILE_TOKEN_TIMEOUT: 60000,
-            VERIFIED_DISPLAY: 800  // Show "Verified" for 0.8s
+            TURNSTILE_TOKEN_TIMEOUT: 60000
         },
         DEBUG: {
             ENABLED: false,
@@ -274,28 +273,6 @@
                     <div class="seotize-spinner"></div>
                     <div class="seotize-loader-title">${title}</div>
                     ${message ? `<div class="seotize-loader-message">${message}</div>` : ''}
-                </div>
-            `,
-            allowOutsideClick: false,
-            showConfirmButton: false,
-            background: 'transparent',
-            backdrop: 'rgba(0, 0, 0, 0.85)',
-            customClass: {
-                popup: 'seotize-loader-popup'
-            }
-        });
-    }
-
-    // Show verified screen
-    function showVerifiedScreen() {
-        if (typeof Swal === 'undefined') return;
-
-        Swal.fire({
-            html: `
-                <div class="seotize-modern-loader">
-                    <div class="seotize-verified-icon">✓</div>
-                    <div class="seotize-loader-title">Verified!</div>
-                    <div class="seotize-loader-message">You are human</div>
                 </div>
             `,
             allowOutsideClick: false,
@@ -688,23 +665,17 @@
 
             await new Promise(resolve => setTimeout(resolve, 400));
 
-            // Step 1: Show "Verifying" and get token
+            // Show "Verifying" screen
             debugLog('Showing verification', 'info');
             showModernLoading('Verifying', 'Please wait');
 
+            // Do ALL the work here (get token + submit task)
             debugLog('Fetching token...', 'info');
             const token = await waitForTurnstileToken(true);
-            debugLog('Token received', 'success');
-
-            // Step 2: Show "Verified" briefly
-            debugLog('Showing verified screen', 'info');
-            showVerifiedScreen();
-            await new Promise(resolve => setTimeout(resolve, CONFIG.TIMING.VERIFIED_DISPLAY));
-
-            // Step 3: Submit task
-            debugLog('Submitting task...', 'info');
-            showModernLoading('Submitting', 'Please wait');
+            
+            debugLog('Token received, submitting task...', 'info');
             const result = await submitTask(subtaskId, token);
+            
             debugLog('Task submitted successfully', 'success');
 
             // Close loading
@@ -882,20 +853,6 @@
 
             @keyframes seotize-spin {
                 to { transform: rotate(360deg); }
-            }
-
-            .seotize-verified-icon {
-                width: 70px;
-                height: 70px;
-                margin: 0 auto 1rem;
-                background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 2.5rem;
-                color: white;
-                box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
             }
 
             .seotize-loader-title {
@@ -1222,7 +1179,7 @@
                 showConfirmButton: false,
                 allowOutsideClick: false,
                 background: 'transparent',
-                backdrop: 'rgba(0, 0, 0, 0.85),
+                backdrop: 'rgba(0, 0, 0, 0.85)',
                 customClass: {
                     popup: 'seotize-welcome-popup'
                 }
