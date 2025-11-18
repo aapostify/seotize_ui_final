@@ -31,7 +31,7 @@
             TURNSTILE_TOKEN_TIMEOUT: 60000
         },
         DEBUG: {
-            ENABLED: false, // Set to true to enable debug mode
+            ENABLED: false,
             LOG_POSITION: 'bottom-right'
         }
     };
@@ -246,22 +246,6 @@
         return hashData(browserData);
     }
 
-    // FIXED: Normalize URL function - keep trailing slash
-    function normalizeURL(url) {
-        let normalized = url;
-        
-        // Remove www. subdomain
-        normalized = normalized.replace('https://www.', 'https://');
-        normalized = normalized.replace('http://www.', 'http://');
-        
-        // Ensure trailing slash exists
-        if (!normalized.endsWith('/')) {
-            normalized += '/';
-        }
-        
-        return normalized;
-    }
-
     function loadScript(src, defer = false) {
         return new Promise((resolve, reject) => {
             debugLog(`Loading script: ${src}`, 'info');
@@ -439,10 +423,10 @@
         }
     }
 
-    async function fetchPartnerSubtasks(uniqueId, url) {
+    async function fetchPartnerSubtasks(uniqueId, siteKey) {
         debugLog('Fetching partner subtasks from API (no captcha required)', 'info');
         debugLog(`Unique ID: ${uniqueId.substring(0, 8)}...`, 'info');
-        debugLog(`URL: ${url}`, 'info');
+        debugLog(`Site Key: ${siteKey}`, 'info');
         
         try {
             const response = await fetch(CONFIG.API_ENDPOINTS.GET_TASKS, {
@@ -450,7 +434,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     unique_id: uniqueId,
-                    url: url
+                    site_key: siteKey
                 })
             });
 
@@ -972,16 +956,10 @@
 
             state.uniqueId = getUniqueId();
             debugLog(`Generated Unique ID: ${state.uniqueId.substring(0, 8)}...`, 'info');
-            
-            // Get current URL and normalize it
-            const rawUrl = window.location.href;
-            const normalizedUrl = normalizeURL(rawUrl);
-            
-            debugLog(`Raw URL: ${rawUrl}`, 'info');
-            debugLog(`Normalized URL: ${normalizedUrl}`, 'info');
+            debugLog(`Site Key (System ID): ${state.systemId}`, 'info');
             
             debugLog('⚡ Fast loading: Fetching tasks without captcha', 'info');
-            const data = await fetchPartnerSubtasks(state.uniqueId, normalizedUrl);
+            const data = await fetchPartnerSubtasks(state.uniqueId, state.systemId);
 
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
                 debugLog('⚠ No subtasks info - silent exit', 'warning');
