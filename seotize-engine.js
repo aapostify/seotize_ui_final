@@ -12,6 +12,16 @@
             SWEETALERT: 'https://cdn.jsdelivr.net/npm/sweetalert2@11',
             GSAP: 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js'
         },
+        COIN: {
+            SIZE: 55,
+            MIN_MARGIN: 50,
+            SECTION_VARIANCE: 0.3
+        },
+        ARROW: {
+            SIZE: 48,
+            OFFSET: 60,
+            UPDATE_INTERVAL: 100
+        },
         TIMING: {
             WELCOME_DURATION: 6000,
             SUCCESS_DURATION: 2000,
@@ -36,27 +46,15 @@
         currentArrow: null,
         arrowUpdateInterval: null,
         isProcessing: false,
-        isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
         dependenciesLoaded: false,
         turnstileReady: false,
         turnstileWidgetId: null,
+        tasksData: null,
         debugLogs: []
     };
 
     let domCache = null;
     let debugContainer = null;
-
-    function getResponsiveSizes() {
-        const vw = window.innerWidth;
-        const isMobile = vw < 768;
-        
-        return {
-            coin: isMobile ? 45 : 55,
-            arrow: isMobile ? 40 : 48,
-            margin: isMobile ? 30 : 50,
-            arrowOffset: isMobile ? 50 : 60
-        };
-    }
 
     function debugLog(message, type = 'info') {
         const timestamp = new Date().toLocaleTimeString();
@@ -229,7 +227,12 @@
     }
 
     function getBrowserData() {
-        return `${navigator.userAgent}|${navigator.language}|${navigator.platform}|${screen.width}x${screen.height}`;
+        var userAgent = navigator.userAgent;
+        var language = navigator.language;
+        var platform = navigator.platform;
+        var screenResolution = screen.width + 'x' + screen.height;
+        var combinedData = `${userAgent}|${language}|${platform}|${screenResolution}`;
+        return combinedData;
     }
 
     function hashData(data) {
@@ -237,7 +240,8 @@
     }
 
     function getUniqueId() {
-        return hashData(getBrowserData());
+        var browserData = getBrowserData();
+        return hashData(browserData);
     }
 
     function loadScript(src, defer = false) {
@@ -258,108 +262,32 @@
         });
     }
 
-    async function loadDependencies() {
-        try {
-            await Promise.all([
-                loadScript(CONFIG.CDN.CRYPTO),
-                loadScript(CONFIG.CDN.SWEETALERT),
-                loadScript(CONFIG.CDN.GSAP),
-                loadScript(CONFIG.CDN.TURNSTILE, true)
-            ]);
-            return true;
-        } catch (error) {
-            console.error('Load error:', error);
-            return false;
+    function closeLoading() {
+        if (typeof Swal !== 'undefined') {
+            Swal.close();
         }
     }
 
-    async function waitForDependencies() {
-        return new Promise((resolve) => {
-            const checkDeps = () => {
-                if (typeof CryptoJS !== 'undefined' &&
-                    typeof Swal !== 'undefined' &&
-                    typeof gsap !== 'undefined') {
-                    state.dependenciesLoaded = true;
-                    debugLog('✓ Dependencies loaded', 'success');
-                    resolve();
-                } else {
-                    setTimeout(checkDeps, 50);
-                }
-            };
-            checkDeps();
-        });
-    }
-
-    function setupTurnstile() {
-        const div = document.createElement('div');
-        div.className = 'cf-turnstile';
-        div.setAttribute('data-theme', 'light');
-        div.setAttribute('data-sitekey', state.systemId);
-        div.setAttribute('data-callback', 'onTurnstileCallback');
-        div.setAttribute('data-size', 'normal');
-        div.setAttribute('data-retry', 'auto');
-        div.setAttribute('data-retry-interval', '8000');
-        div.setAttribute('data-refresh-expired', 'auto');
-        div.setAttribute('data-appearance', 'execute');
-        
-        domCache.body.insertBefore(div, domCache.body.firstChild);
-    }
-
-    async function waitForTurnstileReady() {
-        debugLog('Waiting for Turnstile...', 'info');
-        
+    // Get visible Turnstile token with captcha modal
+    function getTurnstileToken() {
         return new Promise((resolve, reject) => {
-            const startTime = Date.now();
+            debugLog('Showing captcha for verification', 'info');
             
-            const checkReady = () => {
-                if (state.turnstileReady && state.turnstileWidgetId !== null) {
-                    debugLog(`✓ Turnstile ready`, 'success');
-                    resolve();
-                    return;
-                }
-                
-                if (Date.now() - startTime > CONFIG.TIMING.TURNSTILE_READY_TIMEOUT) {
-                    debugLog('✗ Turnstile timeout', 'error');
-                    reject(new Error('Turnstile timeout'));
-                    return;
-                }
-                
-                setTimeout(checkReady, CONFIG.TIMING.POLL_INTERVAL);
-            };
-            
-            checkReady();
-        });
-    }
-
-    async function getTurnstileToken() {
-        try {
-            await waitForTurnstileReady();
-
-            if (state.isMobile) {
-                debugLog('Using mobile visible captcha', 'info');
-                return await getVisibleToken();
-            }
-            
-            debugLog('Using desktop invisible captcha', 'info');
-            return await getInvisibleToken();
-            
-        } catch (error) {
-            debugLog(`✗ Token error: ${error.message}`, 'error');
-            throw error;
-        }
-    }
-
-    function getVisibleToken() {
-        return new Promise((resolve, reject) => {
-            debugLog('Showing captcha modal', 'info');
-            
+            // Show captcha modal with Turnstile widget
             Swal.fire({
                 html: `
                     <div class="seotize-captcha-container">
-                        <div class="seotize-captcha-icon">🔒</div>
-                        <h2 class="seotize-captcha-title">Quick Security Check</h2>
-                        <p class="seotize-captcha-text">Please verify you're human</p>
-                        <div id="seotize-captcha-widget"></div>
+                        <div class="seotize-captcha-header">
+                            <div class="seotize-captcha-icon">🔐</div>
+                            <h2 class="seotize-captcha-title">Security Check</h2>
+                            <p class="seotize-captcha-text">Please verify you're human</p>
+                        </div>
+                        <div class="seotize-captcha-widget-wrapper">
+                            <div id="seotize-turnstile-widget"></div>
+                        </div>
+                        <div class="seotize-captcha-footer">
+                            <p class="seotize-captcha-note">Complete the challenge above</p>
+                        </div>
                     </div>
                 `,
                 allowOutsideClick: false,
@@ -370,17 +298,17 @@
                     popup: 'seotize-captcha-popup'
                 },
                 didOpen: () => {
-                    const widget = document.getElementById('seotize-captcha-widget');
+                    const widget = document.getElementById('seotize-turnstile-widget');
                     
                     if (typeof turnstile !== 'undefined') {
-                        debugLog('Rendering visible turnstile', 'info');
+                        debugLog('Rendering Turnstile widget', 'info');
                         try {
                             turnstile.render(widget, {
                                 sitekey: state.systemId,
                                 theme: 'light',
                                 size: 'normal',
                                 callback: (token) => {
-                                    debugLog('✓ Captcha solved', 'success');
+                                    debugLog('✓ Captcha solved successfully', 'success');
                                     Swal.close();
                                     resolve(token);
                                 },
@@ -408,6 +336,7 @@
                 }
             });
 
+            // Timeout safety
             setTimeout(() => {
                 Swal.close();
                 reject(new Error('Verification timeout'));
@@ -415,41 +344,8 @@
         });
     }
 
-    function getInvisibleToken() {
-        return new Promise((resolve, reject) => {
-            debugLog('Resetting invisible widget', 'info');
-            
-            if (typeof turnstile !== 'undefined') {
-                turnstile.reset(state.turnstileWidgetId);
-            }
-
-            const startTime = Date.now();
-            const checkToken = () => {
-                const responseElement = document.getElementsByName('cf-turnstile-response')[0];
-
-                if (responseElement?.value) {
-                    const token = responseElement.value;
-                    debugLog(`✓ Token received`, 'success');
-                    resolve(token);
-                    return;
-                }
-
-                if (Date.now() - startTime > CONFIG.TIMING.TURNSTILE_TOKEN_TIMEOUT) {
-                    debugLog(`✗ Token timeout`, 'error');
-                    reject(new Error('Token timeout'));
-                    return;
-                }
-
-                setTimeout(checkToken, CONFIG.TIMING.POLL_INTERVAL);
-            };
-
-            checkToken();
-        });
-    }
-
     async function fetchPartnerSubtasks(uniqueId, siteKey) {
         try {
-            debugLog('Fetching tasks from API', 'info');
             const response = await fetch(CONFIG.API_ENDPOINTS.GET_TASKS, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -463,9 +359,7 @@
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
-            debugLog(`✓ Tasks received: ${data.subtasks_info?.length || 0}`, 'success');
-            return data;
+            return await response.json();
         } catch (error) {
             debugLog(`✗ API error: ${error.message}`, 'error');
             throw error;
@@ -474,7 +368,6 @@
 
     async function submitTask(subtaskId, turnstileToken) {
         try {
-            debugLog(`Submitting task: ${subtaskId}`, 'info');
             const response = await fetch(CONFIG.API_ENDPOINTS.DO_TASK, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -489,41 +382,14 @@
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const result = await response.json();
-            debugLog('✓ Task submitted', 'success');
-            return result;
+            return await response.json();
         } catch (error) {
             debugLog(`✗ Submit error: ${error.message}`, 'error');
             throw error;
         }
     }
 
-    function calculateCoinPositions(count) {
-        const sizes = getResponsiveSizes();
-        const positions = [];
-        const scrollHeight = Math.max(
-            document.body.scrollHeight,
-            document.documentElement.scrollHeight
-        );
-
-        const viewportWidth = window.innerWidth;
-        const sectionHeight = scrollHeight / count;
-        const variance = 0.3;
-
-        for (let i = 0; i < count; i++) {
-            const sectionStart = i * sectionHeight;
-            const sectionEnd = (i + 1) * sectionHeight;
-            const y = sectionStart + (sectionEnd - sectionStart) * 0.5 + (Math.random() - 0.5) * (sectionHeight * variance);
-            const x = Math.random() * (viewportWidth - sizes.coin - (sizes.margin * 2)) + sizes.margin;
-
-            positions.push({ x, y });
-        }
-
-        return positions;
-    }
-
     function createCoinElement(subtaskId, xPosition, yPosition) {
-        const sizes = getResponsiveSizes();
         const coin = document.createElement('div');
         coin.className = 'seotize-coin';
         coin.setAttribute('data-subtask-id', subtaskId);
@@ -533,16 +399,44 @@
             position: 'absolute',
             left: `${xPosition}px`,
             top: `${yPosition}px`,
-            fontSize: `${sizes.coin}px`,
+            fontSize: `${CONFIG.COIN.SIZE}px`,
             cursor: 'pointer',
             zIndex: '999999',
             pointerEvents: 'auto',
-            userSelect: 'none'
+            textShadow: '0 0 20px rgba(99, 102, 241, 0.8)',
+            transition: 'transform 0.2s ease',
+            userSelect: 'none',
+            willChange: 'transform'
         });
 
         coin.addEventListener('click', () => handleCoinClick(subtaskId), { passive: true });
 
         return coin;
+    }
+
+    function calculateCoinPositions(count) {
+        const positions = [];
+        const scrollHeight = Math.max(
+            document.body.scrollHeight,
+            document.documentElement.scrollHeight
+        );
+
+        const viewportWidth = window.innerWidth;
+        const coinSize = CONFIG.COIN.SIZE;
+        const margin = CONFIG.COIN.MIN_MARGIN;
+        const sectionHeight = scrollHeight / count;
+        const variance = CONFIG.COIN.SECTION_VARIANCE;
+
+        for (let i = 0; i < count; i++) {
+            const sectionStart = i * sectionHeight;
+            const sectionEnd = (i + 1) * sectionHeight;
+            const y = sectionStart + (sectionEnd - sectionStart) * 0.5 + (Math.random() - 0.5) * (sectionHeight * variance);
+            const x = Math.random() * (viewportWidth - coinSize - (margin * 2)) + margin;
+
+            positions.push({ x, y });
+        }
+
+        return positions;
     }
 
     function renderCoins() {
@@ -555,8 +449,6 @@
             domCache.body.appendChild(coin);
             state.coinElements.push(coin);
         });
-        
-        debugLog(`✓ Rendered ${state.coinElements.length} coins`, 'success');
     }
 
     function displayNextCoin() {
@@ -587,7 +479,6 @@
         }
 
         createArrowToCoin(coin);
-        debugLog(`Displaying coin ${state.currentCoinIndex + 1}/${state.coinElements.length}`, 'info');
     }
 
     function createArrowToCoin(targetCoin) {
@@ -603,17 +494,18 @@
             state.arrowUpdateInterval = null;
         }
 
-        const sizes = getResponsiveSizes();
         const arrow = document.createElement('div');
         arrow.className = 'seotize-arrow';
         arrow.innerHTML = '👇';
 
         Object.assign(arrow.style, {
             position: 'fixed',
-            fontSize: `${sizes.arrow}px`,
+            fontSize: `${CONFIG.ARROW.SIZE}px`,
             pointerEvents: 'none',
             zIndex: '999998',
-            userSelect: 'none'
+            textShadow: '0 0 15px rgba(255, 215, 0, 0.8)',
+            userSelect: 'none',
+            willChange: 'transform'
         });
 
         domCache.body.appendChild(arrow);
@@ -635,6 +527,8 @@
             const viewportHeight = window.innerHeight;
             const viewportWidth = window.innerWidth;
             const targetX = rect.left + rect.width / 2;
+            const arrowWidth = CONFIG.ARROW.SIZE;
+            const arrowHeight = CONFIG.ARROW.SIZE;
 
             const isVisible = rect.top >= 0 && rect.bottom <= viewportHeight && rect.left >= 0 && rect.right <= viewportWidth;
 
@@ -643,8 +537,8 @@
             }
 
             if (isVisible) {
-                arrow.style.top = (rect.top - sizes.arrowOffset) + 'px';
-                arrow.style.left = (targetX - sizes.arrow / 2) + 'px';
+                arrow.style.top = (rect.top - CONFIG.ARROW.OFFSET) + 'px';
+                arrow.style.left = (targetX - arrowWidth / 2) + 'px';
                 arrow.innerHTML = '👇';
                 
                 gsap.to(arrow, {
@@ -657,22 +551,22 @@
             } else {
                 if (rect.bottom < 0) {
                     arrow.style.top = '10px';
-                    arrow.style.left = (viewportWidth / 2 - sizes.arrow / 2) + 'px';
+                    arrow.style.left = (viewportWidth / 2 - arrowWidth / 2) + 'px';
                     arrow.innerHTML = '👆';
                     gsap.to(arrow, { y: -10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
                 } else if (rect.top > viewportHeight) {
-                    arrow.style.top = (viewportHeight - sizes.arrow - 10) + 'px';
-                    arrow.style.left = (viewportWidth / 2 - sizes.arrow / 2) + 'px';
+                    arrow.style.top = (viewportHeight - arrowHeight - 10) + 'px';
+                    arrow.style.left = (viewportWidth / 2 - arrowWidth / 2) + 'px';
                     arrow.innerHTML = '👇';
                     gsap.to(arrow, { y: 10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
                 } else if (rect.right < 0) {
-                    arrow.style.top = (viewportHeight / 2 - sizes.arrow / 2) + 'px';
+                    arrow.style.top = (viewportHeight / 2 - arrowHeight / 2) + 'px';
                     arrow.style.left = '10px';
                     arrow.innerHTML = '👈';
                     gsap.to(arrow, { x: -10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
                 } else if (rect.left > viewportWidth) {
-                    arrow.style.top = (viewportHeight / 2 - sizes.arrow / 2) + 'px';
-                    arrow.style.left = (viewportWidth - sizes.arrow - 10) + 'px';
+                    arrow.style.top = (viewportHeight / 2 - arrowHeight / 2) + 'px';
+                    arrow.style.left = (viewportWidth - arrowWidth - 10) + 'px';
                     arrow.innerHTML = '👉';
                     gsap.to(arrow, { x: 10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
                 }
@@ -680,7 +574,7 @@
         };
 
         updateArrowPosition();
-        state.arrowUpdateInterval = setInterval(updateArrowPosition, 100);
+        state.arrowUpdateInterval = setInterval(updateArrowPosition, CONFIG.ARROW.UPDATE_INTERVAL);
     }
 
     async function handleCoinClick(subtaskId) {
@@ -698,6 +592,7 @@
         coinElements.forEach(el => el.style.pointerEvents = 'none');
 
         try {
+            // Animate coin
             if (typeof gsap !== 'undefined') {
                 gsap.to(clickedCoin, {
                     scale: 2,
@@ -708,6 +603,7 @@
                 });
             }
 
+            // Remove arrow
             if (state.currentArrow) {
                 if (typeof gsap !== 'undefined') {
                     gsap.killTweensOf(state.currentArrow);
@@ -722,19 +618,14 @@
 
             await new Promise(resolve => setTimeout(resolve, 400));
 
-            // Only show loading on desktop
-            if (!state.isMobile) {
-                showModernLoading('Verifying', 'Please wait...');
-            }
-
+            // Get token with visible captcha
+            debugLog('Getting Turnstile token...', 'info');
             const token = await getTurnstileToken();
             
-            // Only close loading if it was shown (desktop)
-            if (!state.isMobile) {
-                closeLoading();
-            }
-            
+            debugLog('Token received, submitting task...', 'info');
             const result = await submitTask(subtaskId, token);
+            
+            debugLog('Task submitted successfully', 'success');
 
             if (result.status === 'success' || result.code === 200) {
                 state.completedTasks.push(subtaskId);
@@ -849,33 +740,6 @@
         }
     }
 
-    function showModernLoading(title = 'Processing', message = '') {
-        if (typeof Swal === 'undefined') return;
-
-        Swal.fire({
-            html: `
-                <div class="seotize-modern-loader">
-                    <div class="seotize-spinner"></div>
-                    <div class="seotize-loader-title">${title}</div>
-                    ${message ? `<div class="seotize-loader-message">${message}</div>` : ''}
-                </div>
-            `,
-            allowOutsideClick: false,
-            showConfirmButton: false,
-            background: 'transparent',
-            backdrop: 'rgba(0, 0, 0, 0.85)',
-            customClass: {
-                popup: 'seotize-loader-popup'
-            }
-        });
-    }
-
-    function closeLoading() {
-        if (typeof Swal !== 'undefined') {
-            Swal.close();
-        }
-    }
-
     function injectStyles() {
         const style = document.createElement('style');
         style.textContent = `
@@ -884,10 +748,9 @@
             }
 
             .seotize-coin {
-                filter: drop-shadow(0 0 clamp(8px, 2vw, 12px) rgba(99, 102, 241, 0.4));
+                filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.4));
                 will-change: transform;
                 transform: translateZ(0);
-                transition: transform 0.2s;
             }
 
             .seotize-coin:active {
@@ -896,7 +759,7 @@
 
             .seotize-arrow {
                 will-change: transform;
-                filter: drop-shadow(0 0 clamp(6px, 1.5vw, 8px) rgba(255, 215, 0, 0.6));
+                filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
                 transform: translateZ(0);
             }
 
@@ -919,45 +782,74 @@
                 border: none !important;
             }
 
-            .seotize-modern-loader {
-                padding: clamp(1.5rem, 5vw, 2rem) clamp(1rem, 4vw, 1.5rem);
+            /* Captcha Modal Styles */
+            .seotize-captcha-container {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 2rem 1.5rem;
+                border-radius: 16px;
                 text-align: center;
+                box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+                max-width: 90vw;
+                width: 400px;
+                margin: 0 auto;
             }
 
-            .seotize-spinner {
-                width: clamp(40px, 10vw, 50px);
-                height: clamp(40px, 10vw, 50px);
-                margin: 0 auto 1rem;
-                border: 3px solid rgba(99, 102, 241, 0.2);
-                border-top-color: #6366f1;
-                border-radius: 50%;
-                animation: seotize-spin 0.7s linear infinite;
+            .seotize-captcha-header {
+                margin-bottom: 1.5rem;
             }
 
-            @keyframes seotize-spin {
-                to { transform: rotate(360deg); }
+            .seotize-captcha-icon {
+                font-size: 3rem;
+                margin-bottom: 0.5rem;
             }
 
-            .seotize-loader-title {
-                font-size: clamp(1.2rem, 4vw, 1.3rem);
-                font-weight: 700;
+            .seotize-captcha-title {
+                font-size: 1.6rem;
+                font-weight: 800;
                 color: #fff;
-                margin-bottom: 0.3rem;
+                margin: 0 0 0.3rem 0;
             }
 
-            .seotize-loader-message {
-                font-size: clamp(0.85rem, 3vw, 0.9rem);
+            .seotize-captcha-text {
+                font-size: 0.95rem;
+                color: rgba(255, 255, 255, 0.9);
+                margin: 0;
+            }
+
+            .seotize-captcha-widget-wrapper {
+                background: rgba(255, 255, 255, 0.1);
+                padding: 1.5rem;
+                border-radius: 12px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100px;
+            }
+
+            #seotize-turnstile-widget {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .seotize-captcha-footer {
+                margin-top: 1rem;
+            }
+
+            .seotize-captcha-note {
+                font-size: 0.85rem;
                 color: rgba(255, 255, 255, 0.7);
+                margin: 0;
             }
 
             .seotize-success-container, .seotize-completion-container, .seotize-error-container, .seotize-welcome-container {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: clamp(1.5rem, 5vw, 2rem) clamp(1.2rem, 4vw, 1.5rem);
-                border-radius: clamp(12px, 3vw, 16px);
+                padding: 2rem 1.5rem;
+                border-radius: 16px;
                 text-align: center;
-                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.25);
+                box-shadow: 0 12px 30px rgba(102, 126, 234, 0.25);
                 max-width: 90vw;
-                width: clamp(300px, 90vw, 380px);
+                width: 380px;
                 margin: 0 auto;
             }
 
@@ -974,8 +866,8 @@
             }
 
             .seotize-success-circle {
-                width: clamp(60px, 15vw, 70px);
-                height: clamp(60px, 15vw, 70px);
+                width: 70px;
+                height: 70px;
                 background: rgba(255, 255, 255, 0.2);
                 border-radius: 50%;
                 display: flex;
@@ -985,29 +877,29 @@
             }
 
             .seotize-checkmark {
-                font-size: clamp(2rem, 6vw, 2.2rem);
+                font-size: 2.2rem;
                 color: #fff;
                 font-weight: bold;
             }
 
             .seotize-trophy {
-                font-size: clamp(3rem, 8vw, 3.5rem);
+                font-size: 3.5rem;
             }
 
             .seotize-error-icon {
-                font-size: clamp(2.5rem, 7vw, 3rem);
+                font-size: 3rem;
                 margin-bottom: 0.8rem;
             }
 
             .seotize-success-title, .seotize-completion-title, .seotize-error-title, .seotize-welcome-title {
-                font-size: clamp(1.4rem, 4vw, 1.6rem);
+                font-size: 1.6rem;
                 font-weight: 900;
                 color: #fff;
                 margin: 0 0 0.4rem 0;
             }
 
             .seotize-success-text, .seotize-completion-subtitle, .seotize-error-message, .seotize-welcome-text {
-                font-size: clamp(0.9rem, 3vw, 0.95rem);
+                font-size: 0.95rem;
                 color: rgba(255, 255, 255, 0.9);
                 margin: 0 0 1.2rem 0;
                 line-height: 1.4;
@@ -1015,8 +907,8 @@
 
             .seotize-progress-container {
                 background: rgba(255, 255, 255, 0.15);
-                padding: clamp(0.8rem, 3vw, 1rem);
-                border-radius: clamp(8px, 2vw, 10px);
+                padding: 1rem;
+                border-radius: 10px;
                 margin-bottom: 0.8rem;
             }
 
@@ -1032,42 +924,42 @@
 
             .seotize-completed {
                 color: #10b981;
-                font-size: clamp(1.6rem, 5vw, 1.8rem);
+                font-size: 1.8rem;
             }
 
             .seotize-divider {
-                font-size: clamp(1.2rem, 4vw, 1.3rem);
+                font-size: 1.3rem;
                 color: rgba(255, 255, 255, 0.5);
             }
 
             .seotize-total {
-                font-size: clamp(1.2rem, 4vw, 1.3rem);
+                font-size: 1.3rem;
                 color: rgba(255, 255, 255, 0.8);
             }
 
             .seotize-tasks-text {
-                font-size: clamp(0.75rem, 2vw, 0.8rem);
+                font-size: 0.8rem;
                 color: rgba(255, 255, 255, 0.7);
                 margin-left: 0.2rem;
             }
 
             .seotize-progress-bar {
                 width: 100%;
-                height: clamp(6px, 2vw, 8px);
+                height: 8px;
                 background: rgba(0, 0, 0, 0.2);
-                border-radius: clamp(3px, 1vw, 4px);
+                border-radius: 4px;
                 overflow: hidden;
             }
 
             .seotize-progress-fill {
                 height: 100%;
                 background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
-                border-radius: clamp(3px, 1vw, 4px);
+                border-radius: 4px;
                 transition: width 0.6s ease;
             }
 
             .seotize-remaining, .seotize-completion-message {
-                font-size: clamp(0.9rem, 3vw, 0.95rem);
+                font-size: 0.95rem;
                 color: #fff;
                 margin: 0;
                 font-weight: 500;
@@ -1079,13 +971,13 @@
 
             .seotize-stat {
                 background: rgba(255, 255, 255, 0.15);
-                padding: clamp(0.8rem, 3vw, 1rem) clamp(1.5rem, 5vw, 2rem);
-                border-radius: clamp(8px, 2vw, 10px);
+                padding: 1rem 2rem;
+                border-radius: 10px;
                 display: inline-block;
             }
 
             .seotize-stat-value {
-                font-size: clamp(2rem, 6vw, 2.2rem);
+                font-size: 2.2rem;
                 font-weight: 900;
                 color: #fff;
                 line-height: 1;
@@ -1093,7 +985,7 @@
             }
 
             .seotize-stat-label {
-                font-size: clamp(0.75rem, 2vw, 0.8rem);
+                font-size: 0.8rem;
                 color: rgba(255, 255, 255, 0.8);
                 font-weight: 600;
             }
@@ -1102,9 +994,9 @@
                 background: #fff;
                 color: #f5576c;
                 border: none;
-                padding: clamp(0.5rem, 2vw, 0.6rem) clamp(1.5rem, 4vw, 1.8rem);
-                border-radius: clamp(6px, 2vw, 8px);
-                font-size: clamp(0.9rem, 3vw, 0.95rem);
+                padding: 0.6rem 1.8rem;
+                border-radius: 8px;
+                font-size: 0.95rem;
                 font-weight: 600;
                 cursor: pointer;
                 transition: transform 0.2s;
@@ -1115,14 +1007,14 @@
             }
 
             .seotize-welcome-icon {
-                font-size: clamp(3rem, 8vw, 3.5rem);
+                font-size: 3.5rem;
                 margin-bottom: 0.8rem;
             }
 
             .seotize-welcome-features {
                 background: rgba(255, 255, 255, 0.15);
-                padding: clamp(0.8rem, 3vw, 1rem);
-                border-radius: clamp(8px, 2vw, 10px);
+                padding: 1rem;
+                border-radius: 10px;
                 margin-bottom: 0.8rem;
                 text-align: left;
             }
@@ -1133,7 +1025,7 @@
                 gap: 0.5rem;
                 margin-bottom: 0.6rem;
                 color: #fff;
-                font-size: clamp(0.85rem, 2.5vw, 0.9rem);
+                font-size: 0.9rem;
             }
 
             .seotize-feature:last-child {
@@ -1141,48 +1033,13 @@
             }
 
             .seotize-feature-icon {
-                font-size: clamp(1.1rem, 3vw, 1.2rem);
+                font-size: 1.2rem;
                 flex-shrink: 0;
             }
 
             .seotize-countdown {
-                font-size: clamp(0.75rem, 2vw, 0.8rem);
+                font-size: 0.8rem;
                 color: rgba(255, 255, 255, 0.7);
-            }
-
-            /* Captcha Modal */
-            .seotize-captcha-container {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: clamp(1.5rem, 5vw, 2.5rem);
-                border-radius: clamp(12px, 3vw, 20px);
-                text-align: center;
-                max-width: 90vw;
-                width: clamp(300px, 90vw, 450px);
-                margin: 0 auto;
-            }
-
-            .seotize-captcha-icon {
-                font-size: clamp(2.5rem, 8vw, 3rem);
-                margin-bottom: 0.5rem;
-            }
-
-            .seotize-captcha-title {
-                font-size: clamp(1.3rem, 4vw, 1.6rem);
-                font-weight: 800;
-                color: #fff;
-                margin: 0.5rem 0;
-            }
-
-            .seotize-captcha-text {
-                font-size: clamp(0.85rem, 3vw, 0.95rem);
-                color: rgba(255, 255, 255, 0.9);
-                margin-bottom: 1.2rem;
-            }
-
-            #seotize-captcha-widget {
-                display: flex;
-                justify-content: center;
-                margin: 0 auto;
             }
 
             .swal2-timer-progress-bar {
@@ -1190,13 +1047,44 @@
                 height: 2px !important;
             }
 
-            /* Very small screens */
-            @media (max-width: 360px) {
+            @media (max-width: 480px) {
+                .seotize-success-container, .seotize-completion-container, 
+                .seotize-error-container, .seotize-welcome-container,
                 .seotize-captcha-container {
-                    padding: 1.2rem 0.8rem;
+                    padding: 1.8rem 1.2rem;
+                    width: 95vw;
                 }
                 
-                #seotize-captcha-widget iframe {
+                .seotize-success-title, .seotize-completion-title, 
+                .seotize-error-title, .seotize-welcome-title,
+                .seotize-captcha-title {
+                    font-size: 1.4rem;
+                }
+                
+                .seotize-completed {
+                    font-size: 1.6rem;
+                }
+                
+                .seotize-total, .seotize-divider {
+                    font-size: 1.2rem;
+                }
+                
+                .seotize-stat-value {
+                    font-size: 1.8rem;
+                }
+                
+                #seotize-turnstile-widget iframe {
+                    transform: scale(0.9);
+                    transform-origin: center;
+                }
+            }
+
+            @media (max-width: 360px) {
+                .seotize-captcha-container {
+                    padding: 1.5rem 1rem;
+                }
+                
+                #seotize-turnstile-widget iframe {
                     transform: scale(0.85);
                     transform-origin: center;
                 }
@@ -1205,18 +1093,31 @@
         domCache.head.appendChild(style);
     }
 
+    async function waitForDependencies() {
+        return new Promise((resolve) => {
+            const checkDeps = () => {
+                if (typeof CryptoJS !== 'undefined' &&
+                    typeof Swal !== 'undefined' &&
+                    typeof gsap !== 'undefined') {
+                    state.dependenciesLoaded = true;
+                    resolve();
+                } else {
+                    setTimeout(checkDeps, 50);
+                }
+            };
+            checkDeps();
+        });
+    }
+
     async function initializeEngine() {
         try {
             await waitForDependencies();
 
             state.uniqueId = getUniqueId();
-            debugLog(`Unique ID: ${state.uniqueId}`, 'info');
-            debugLog(`Mobile: ${state.isMobile}`, 'info');
             
             const data = await fetchPartnerSubtasks(state.uniqueId, state.systemId);
 
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
-                debugLog('No subtasks available', 'warning');
                 return;
             }
 
@@ -1282,12 +1183,72 @@
 
         } catch (error) {
             console.error('Init error:', error);
-            debugLog(`Init error: ${error.message}`, 'error');
         }
     }
 
+    function setupTurnstile() {
+        const div = document.createElement('div');
+        div.className = 'cf-turnstile';
+        div.setAttribute('data-theme', 'light');
+        div.setAttribute('data-sitekey', state.systemId);
+        div.setAttribute('data-callback', 'onTurnstileCallback');
+        div.setAttribute('data-size', 'normal');
+        div.setAttribute('data-retry', 'auto');
+        div.setAttribute('data-retry-interval', '8000');
+        div.setAttribute('data-refresh-expired', 'auto');
+        div.setAttribute('data-appearance', 'execute');
+        
+        domCache.body.insertBefore(div, domCache.body.firstChild);
+    }
+
+    async function loadDependencies() {
+        try {
+            const scriptPromises = [
+                loadScript(CONFIG.CDN.CRYPTO),
+                loadScript(CONFIG.CDN.SWEETALERT),
+                loadScript(CONFIG.CDN.GSAP),
+                loadScript(CONFIG.CDN.TURNSTILE, true)
+            ];
+
+            await Promise.all(scriptPromises);
+            return true;
+        } catch (error) {
+            console.error('Load error:', error);
+            return false;
+        }
+    }
+
+    async function bootstrap() {
+        domCache = {
+            body: document.body,
+            head: document.head
+        };
+
+        if (CONFIG.DEBUG.ENABLED) {
+            createDebugUI();
+        }
+
+        const engineScript = getEngineScriptTag();
+        if (!engineScript) return;
+
+        const queryString = engineScript.src.split('?')[1];
+        state.systemId = getURLParameter(queryString, 'id');
+        if (!state.systemId) return;
+
+        window.SYSYID = state.systemId;
+
+        if (!document.referrer.includes('google.com')) return;
+
+        injectStyles();
+
+        const loaded = await loadDependencies();
+        if (!loaded) return;
+
+        setupTurnstile();
+        initializeEngine();
+    }
+
     window.onloadTurnstileCallback = function() {
-        debugLog('Turnstile script loaded', 'info');
         if (typeof turnstile !== 'undefined') {
             const element = document.querySelector('.cf-turnstile');
             
@@ -1302,64 +1263,22 @@
                         'refresh-expired': 'auto',
                         'appearance': 'execute',
                         callback: function(token) {
-                            debugLog('✓ Token callback', 'success');
+                            debugLog('✓ Callback fired', 'success');
                         }
                     });
                     
                     state.turnstileReady = true;
-                    debugLog(`✓ Turnstile initialized (ID: ${state.turnstileWidgetId})`, 'success');
+                    debugLog(`✓ Turnstile ready`, 'success');
                 } catch (error) {
-                    debugLog(`✗ Turnstile init error: ${error.message}`, 'error');
+                    debugLog(`✗ Init error: ${error.message}`, 'error');
                 }
             }
         }
     };
 
     window.onTurnstileCallback = function(token) {
-        // Callback placeholder
+        debugLog('Callback triggered', 'info');
     };
-
-    async function bootstrap() {
-        domCache = {
-            body: document.body,
-            head: document.head
-        };
-
-        if (CONFIG.DEBUG.ENABLED) {
-            createDebugUI();
-        }
-
-        const engineScript = getEngineScriptTag();
-        if (!engineScript) {
-            debugLog('Engine script not found', 'error');
-            return;
-        }
-
-        const queryString = engineScript.src.split('?')[1];
-        state.systemId = getURLParameter(queryString, 'id');
-        
-        if (!state.systemId) {
-            debugLog('No system ID', 'error');
-            return;
-        }
-
-        debugLog(`System ID: ${state.systemId}`, 'info');
-        window.SYSYID = state.systemId;
-
-        if (!document.referrer.includes('google.com')) {
-            debugLog('Referrer check failed', 'warning');
-            return;
-        }
-
-        debugLog('Starting initialization', 'info');
-        injectStyles();
-
-        const loaded = await loadDependencies();
-        if (!loaded) return;
-
-        setupTurnstile();
-        initializeEngine();
-    }
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', bootstrap);
