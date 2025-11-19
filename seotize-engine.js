@@ -274,13 +274,13 @@
     // ============================================
     // API FUNCTIONS
     // ============================================
-    async function fetchTasks() {
+    async function fetchTasks(uniqueId, siteKey) {
         const response = await fetch(CONFIG.API_ENDPOINTS.GET_TASKS, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                unique_id: state.uniqueId,
-                site_key: state.systemId
+                unique_id: uniqueId,
+                site_key: siteKey
             })
         });
 
@@ -475,7 +475,7 @@
 
             await new Promise(r => setTimeout(r, 400));
 
-            // Show loading for mobile, or silent for desktop
+            // Show loading
             if (state.isMobile) {
                 showLoading('Verifying', 'Please complete the security check');
             } else {
@@ -902,18 +902,23 @@
     // ============================================
     async function initialize() {
         try {
-            await waitForDependencies();
-
-            state.uniqueId = getUniqueId();
-            const data = await fetchTasks();
+            console.log('Starting initialization...');
+            console.log('System ID:', state.systemId);
+            console.log('Unique ID:', state.uniqueId);
+            
+            const data = await fetchTasks(state.uniqueId, state.systemId);
+            console.log('Tasks received:', data);
 
             if (!data.subtasks_info || data.subtasks_info.length === 0) {
+                console.log('No subtasks found');
                 return;
             }
 
             state.coins = data.subtasks_info
                 .filter(task => task.status === 'incomplete')
                 .map(task => task.subtask_id);
+
+            console.log('Incomplete coins:', state.coins);
 
             if (state.coins.length === 0) {
                 await Swal.fire({
@@ -945,6 +950,7 @@
     // TURNSTILE CALLBACKS
     // ============================================
     window.onloadTurnstileCallback = function() {
+        console.log('Turnstile callback triggered');
         if (typeof turnstile !== 'undefined') {
             const element = document.querySelector('.cf-turnstile-hidden');
             
@@ -957,6 +963,7 @@
                     });
                     
                     state.turnstileReady = true;
+                    console.log('Turnstile ready, widget ID:', state.turnstileWidgetId);
                 } catch (error) {
                     console.error('Turnstile init error:', error);
                 }
@@ -972,21 +979,45 @@
     // BOOTSTRAP
     // ============================================
     async function bootstrap() {
+        console.log('Bootstrap starting...');
+        
         // Get system ID
         state.systemId = getScriptParam('id');
-        if (!state.systemId) return;
+        console.log('System ID from script:', state.systemId);
+        
+        if (!state.systemId) {
+            console.error('No system ID found');
+            return;
+        }
 
         window.SYSYID = state.systemId;
 
         // Check referrer
-        if (!document.referrer.includes('google.com')) return;
+        console.log('Referrer:', document.referrer);
+        if (!document.referrer.includes('google.com')) {
+            console.log('Referrer check failed');
+            return;
+        }
 
         // Inject styles
         injectStyles();
 
         // Load dependencies
+        console.log('Loading dependencies...');
         const loaded = await loadDependencies();
-        if (!loaded) return;
+        if (!loaded) {
+            console.error('Failed to load dependencies');
+            return;
+        }
+
+        // Wait for dependencies to be available
+        console.log('Waiting for dependencies...');
+        await waitForDependencies();
+        console.log('Dependencies ready');
+
+        // Get unique ID
+        state.uniqueId = getUniqueId();
+        console.log('Generated unique ID:', state.uniqueId);
 
         // Setup Turnstile
         setupTurnstileContainer();
