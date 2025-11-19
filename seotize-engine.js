@@ -28,7 +28,7 @@
             COMPLETION_DURATION: 2500,
             POLL_INTERVAL: 50,
             TURNSTILE_READY_TIMEOUT: 20000,
-            TURNSTILE_TOKEN_TIMEOUT: 30000
+            TURNSTILE_TOKEN_TIMEOUT: 60000
         },
         DEBUG: {
             ENABLED: false,
@@ -50,7 +50,10 @@
         turnstileReady: false,
         turnstileWidgetId: null,
         tasksData: null,
-        debugLogs: []
+        debugLogs: [],
+        turnstileTokenCache: null,
+        lastTokenTime: 0,
+        totalCoins: 0
     };
 
     let domCache = null;
@@ -262,86 +265,131 @@
         });
     }
 
+    function showModernLoading(title = 'Processing', message = '') {
+        if (typeof Swal === 'undefined') return;
+
+        Swal.fire({
+            html: `
+                <div class="seotize-modern-loader">
+                    <div class="seotize-spinner"></div>
+                    <div class="seotize-loader-title">${title}</div>
+                    ${message ? `<div class="seotize-loader-message">${message}</div>` : ''}
+                </div>
+            `,
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            background: 'transparent',
+            backdrop: 'rgba(0, 0, 0, 0.85)',
+            customClass: {
+                popup: 'seotize-loader-popup'
+            }
+        });
+    }
+
     function closeLoading() {
         if (typeof Swal !== 'undefined') {
             Swal.close();
         }
     }
 
-    // Get visible Turnstile token with captcha modal
-    function getTurnstileToken() {
-        return new Promise((resolve, reject) => {
-            debugLog('Showing captcha for verification', 'info');
-            
-            // Show captcha modal with Turnstile widget
-            Swal.fire({
-                html: `
-                    <div class="seotize-captcha-container">
-                        <div class="seotize-captcha-header">
-                            <div class="seotize-captcha-icon">🔐</div>
-                            <h2 class="seotize-captcha-title">Security Check</h2>
-                            <p class="seotize-captcha-text">Please verify you're human</p>
-                        </div>
-                        <div class="seotize-captcha-widget-wrapper">
-                            <div id="seotize-turnstile-widget"></div>
-                        </div>
-                        <div class="seotize-captcha-footer">
-                            <p class="seotize-captcha-note">Complete the challenge above</p>
-                        </div>
-                    </div>
-                `,
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                background: 'transparent',
-                backdrop: 'rgba(0, 0, 0, 0.9)',
-                customClass: {
-                    popup: 'seotize-captcha-popup'
-                },
-                didOpen: () => {
-                    const widget = document.getElementById('seotize-turnstile-widget');
-                    
-                    if (typeof turnstile !== 'undefined') {
-                        debugLog('Rendering Turnstile widget', 'info');
-                        try {
-                            turnstile.render(widget, {
-                                sitekey: state.systemId,
-                                theme: 'light',
-                                size: 'normal',
-                                callback: (token) => {
-                                    debugLog('✓ Captcha solved successfully', 'success');
-                                    Swal.close();
-                                    resolve(token);
-                                },
-                                'error-callback': () => {
-                                    debugLog('✗ Captcha error', 'error');
-                                    Swal.close();
-                                    reject(new Error('Verification failed'));
-                                },
-                                'timeout-callback': () => {
-                                    debugLog('✗ Captcha timeout', 'error');
-                                    Swal.close();
-                                    reject(new Error('Verification timeout'));
-                                }
-                            });
-                        } catch (err) {
-                            debugLog('✗ Render error: ' + err.message, 'error');
-                            Swal.close();
-                            reject(err);
-                        }
-                    } else {
-                        debugLog('✗ Turnstile not loaded', 'error');
-                        Swal.close();
-                        reject(new Error('Turnstile not loaded'));
-                    }
-                }
-            });
+    function resetTurnstile() {
+        debugLog('Resetting Turnstile', 'info');
+        if (typeof turnstile !== 'undefined' && state.turnstileWidgetId !== null) {
+            try {
+                turnstile.reset(state.turnstileWidgetId);
+                state.turnstileTokenCache = null;
+                state.lastTokenTime = 0;
+                debugLog('✓ Turnstile reset', 'success');
+            } catch (error) {
+                debugLog(`✗ Reset error: ${error.message}`, 'error');
+            }
+        }
+    }
 
-            // Timeout safety
-            setTimeout(() => {
-                Swal.close();
-                reject(new Error('Verification timeout'));
-            }, CONFIG.TIMING.TURNSTILE_TOKEN_TIMEOUT);
+    async function waitForTurnstileReady() {
+        debugLog('Waiting for Turnstile...', 'info');
+        
+        return new Promise((resolve, reject) => {
+            const startTime = Date.now();
+            
+            const checkReady = () => {
+                if (state.turnstileReady && state.turnstileWidgetId !== null) {
+                    debugLog(`✓ Turnstile ready`, 'success');
+                    resolve();
+                    return;
+                }
+                
+                if (Date.now() - startTime > CONFIG.TIMING.TURNSTILE_READY_TIMEOUT) {
+                    debugLog('✗ Turnstile timeout', 'error');
+                    reject(new Error('Turnstile timeout'));
+                    return;
+                }
+                
+                setTimeout(checkReady, CONFIG.TIMING.POLL_INTERVAL);
+            };
+            
+            checkReady();
         });
+    }
+
+    async function waitForTurnstileToken(resetFirst = false) {
+        const TOKEN_CACHE_DURATION = 110000;
+        
+        debugLog(`Getting token (reset: ${resetFirst})`, 'info');
+        
+        try {
+            if (!state.turnstileReady || state.turnstileWidgetId === null) {
+                await waitForTurnstileReady();
+            }
+            
+            const tokenAge = Date.now() - state.lastTokenTime;
+            if (!resetFirst && state.turnstileTokenCache && tokenAge < TOKEN_CACHE_DURATION) {
+                debugLog(`✓ Using cached token`, 'success');
+                return state.turnstileTokenCache;
+            }
+            
+            if (resetFirst) {
+                resetTurnstile();
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            return new Promise((resolve, reject) => {
+                const startTime = Date.now();
+                
+                const checkToken = () => {
+                    const responseElement = document.getElementsByName('cf-turnstile-response')[0];
+
+                    if (responseElement?.value) {
+                        const token = responseElement.value;
+                        state.turnstileTokenCache = token;
+                        state.lastTokenTime = Date.now();
+                        debugLog(`✓ Token received`, 'success');
+                        resolve(token);
+                        return;
+                    }
+
+                    if (state.turnstileTokenCache && (Date.now() - state.lastTokenTime < 1000)) {
+                        debugLog(`✓ Using callback token`, 'success');
+                        resolve(state.turnstileTokenCache);
+                        return;
+                    }
+
+                    if (Date.now() - startTime > CONFIG.TIMING.TURNSTILE_TOKEN_TIMEOUT) {
+                        debugLog(`✗ Token timeout`, 'error');
+                        reject(new Error('Token timeout'));
+                        return;
+                    }
+
+                    setTimeout(checkToken, CONFIG.TIMING.POLL_INTERVAL);
+                };
+
+                checkToken();
+            });
+            
+        } catch (error) {
+            debugLog(`✗ Token error: ${error.message}`, 'error');
+            throw error;
+        }
     }
 
     async function fetchPartnerSubtasks(uniqueId, siteKey) {
@@ -459,6 +507,10 @@
         }
 
         const coin = state.coinElements[state.currentCoinIndex];
+        if (!coin || !coin.parentNode) {
+            return;
+        }
+
         coin.style.display = 'block';
 
         if (typeof gsap !== 'undefined') {
@@ -541,34 +593,44 @@
                 arrow.style.left = (targetX - arrowWidth / 2) + 'px';
                 arrow.innerHTML = '👇';
                 
-                gsap.to(arrow, {
-                    y: 10,
-                    repeat: -1,
-                    yoyo: true,
-                    ease: "sine.inOut",
-                    duration: 0.6
-                });
+                if (typeof gsap !== 'undefined') {
+                    gsap.to(arrow, {
+                        y: 10,
+                        repeat: -1,
+                        yoyo: true,
+                        ease: "sine.inOut",
+                        duration: 0.6
+                    });
+                }
             } else {
                 if (rect.bottom < 0) {
                     arrow.style.top = '10px';
                     arrow.style.left = (viewportWidth / 2 - arrowWidth / 2) + 'px';
                     arrow.innerHTML = '👆';
-                    gsap.to(arrow, { y: -10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
+                    if (typeof gsap !== 'undefined') {
+                        gsap.to(arrow, { y: -10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
+                    }
                 } else if (rect.top > viewportHeight) {
                     arrow.style.top = (viewportHeight - arrowHeight - 10) + 'px';
                     arrow.style.left = (viewportWidth / 2 - arrowWidth / 2) + 'px';
                     arrow.innerHTML = '👇';
-                    gsap.to(arrow, { y: 10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
+                    if (typeof gsap !== 'undefined') {
+                        gsap.to(arrow, { y: 10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
+                    }
                 } else if (rect.right < 0) {
                     arrow.style.top = (viewportHeight / 2 - arrowHeight / 2) + 'px';
                     arrow.style.left = '10px';
                     arrow.innerHTML = '👈';
-                    gsap.to(arrow, { x: -10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
+                    if (typeof gsap !== 'undefined') {
+                        gsap.to(arrow, { x: -10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
+                    }
                 } else if (rect.left > viewportWidth) {
                     arrow.style.top = (viewportHeight / 2 - arrowHeight / 2) + 'px';
                     arrow.style.left = (viewportWidth - arrowWidth - 10) + 'px';
                     arrow.innerHTML = '👉';
-                    gsap.to(arrow, { x: 10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
+                    if (typeof gsap !== 'undefined') {
+                        gsap.to(arrow, { x: 10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
+                    }
                 }
             }
         };
@@ -581,6 +643,10 @@
         if (state.isProcessing) return;
 
         const clickedCoin = state.coinElements[state.currentCoinIndex];
+        if (!clickedCoin || !clickedCoin.parentNode) {
+            return;
+        }
+
         const clickedSubtaskId = clickedCoin.getAttribute('data-subtask-id');
 
         if (clickedSubtaskId !== subtaskId) return;
@@ -618,20 +684,32 @@
 
             await new Promise(resolve => setTimeout(resolve, 400));
 
-            // Get token with visible captcha
-            debugLog('Getting Turnstile token...', 'info');
-            const token = await getTurnstileToken();
+            // Show "Verifying" screen
+            debugLog('Showing verification', 'info');
+            showModernLoading('Verifying', 'Please wait');
+
+            // Get token and submit task
+            debugLog('Fetching token...', 'info');
+            const token = await waitForTurnstileToken(true);
             
             debugLog('Token received, submitting task...', 'info');
             const result = await submitTask(subtaskId, token);
             
             debugLog('Task submitted successfully', 'success');
 
+            // Close loading
+            closeLoading();
+
             if (result.status === 'success' || result.code === 200) {
                 state.completedTasks.push(subtaskId);
-                clickedCoin.remove();
+                
+                // Remove coin from DOM and array
+                if (clickedCoin.parentNode) {
+                    clickedCoin.remove();
+                }
+                state.coinElements = state.coinElements.filter(el => el !== clickedCoin);
 
-                const remainingTasks = state.coinElements.length - (state.currentCoinIndex + 1);
+                const remainingTasks = state.totalCoins - state.completedTasks.length;
 
                 await Swal.fire({
                     html: `
@@ -647,11 +725,11 @@
                                 <div class="seotize-progress-label">
                                     <span class="seotize-completed">${state.completedTasks.length}</span>
                                     <span class="seotize-divider">/</span>
-                                    <span class="seotize-total">${state.coinElements.length}</span>
+                                    <span class="seotize-total">${state.totalCoins}</span>
                                     <span class="seotize-tasks-text">Complete</span>
                                 </div>
                                 <div class="seotize-progress-bar">
-                                    <div class="seotize-progress-fill" style="width: ${(state.completedTasks.length / state.coinElements.length) * 100}%"></div>
+                                    <div class="seotize-progress-fill" style="width: ${(state.completedTasks.length / state.totalCoins) * 100}%"></div>
                                 </div>
                             </div>
                             ${remainingTasks > 0 ? `<p class="seotize-remaining">${remainingTasks} more to go!</p>` : ''}
@@ -668,7 +746,7 @@
                     },
                     didOpen: (popup) => {
                         const circle = popup.querySelector('.seotize-success-circle');
-                        if (typeof gsap !== 'undefined') {
+                        if (typeof gsap !== 'undefined' && circle) {
                             gsap.from(circle, { scale: 0, duration: 0.3, ease: 'back.out(2)' });
                         }
                     }
@@ -679,7 +757,8 @@
                 if (state.currentCoinIndex < state.coinElements.length - 1 && !allTasksComplete) {
                     displayNextCoin();
                     state.isProcessing = false;
-                    coinElements.forEach(el => el.style.pointerEvents = 'auto');
+                    const remainingCoins = document.querySelectorAll('.seotize-coin');
+                    remainingCoins.forEach(el => el.style.pointerEvents = 'auto');
                 } else {
                     await Swal.fire({
                         html: `
@@ -691,7 +770,7 @@
                                 <p class="seotize-completion-subtitle">You collected all diamonds!</p>
                                 <div class="seotize-completion-stats">
                                     <div class="seotize-stat">
-                                        <div class="seotize-stat-value">${state.coinElements.length}</div>
+                                        <div class="seotize-stat-value">${state.totalCoins}</div>
                                         <div class="seotize-stat-label">Diamonds</div>
                                     </div>
                                 </div>
@@ -736,7 +815,8 @@
             });
         } finally {
             state.isProcessing = false;
-            coinElements.forEach(el => el.style.pointerEvents = 'auto');
+            const remainingCoins = document.querySelectorAll('.seotize-coin');
+            remainingCoins.forEach(el => el.style.pointerEvents = 'auto');
         }
     }
 
@@ -763,67 +843,31 @@
                 transform: translateZ(0);
             }
 
-            .cf-turnstile {
-                position: fixed !important;
-                top: -9999px !important;
-                left: -9999px !important;
-                opacity: 0 !important;
-                visibility: hidden !important;
-                pointer-events: none !important;
-                width: 0 !important;
-                height: 0 !important;
-            }
-
-            .seotize-loader-popup, .seotize-captcha-popup, .seotize-success-popup, 
-            .seotize-completion-popup, .seotize-error-popup, .seotize-welcome-popup {
-                padding: 0 !important;
-                background: transparent !important;
-                box-shadow: none !important;
-                border: none !important;
-            }
-
-            /* Captcha Modal Styles */
             .seotize-captcha-container {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 2rem 1.5rem;
-                border-radius: 16px;
-                text-align: center;
-                box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
-                max-width: 90vw;
-                width: 400px;
-                margin: 0 auto;
-            }
-
-            .seotize-captcha-header {
-                margin-bottom: 1.5rem;
-            }
-
-            .seotize-captcha-icon {
-                font-size: 3rem;
-                margin-bottom: 0.5rem;
-            }
-
-            .seotize-captcha-title {
-                font-size: 1.6rem;
-                font-weight: 800;
-                color: #fff;
-                margin: 0 0 0.3rem 0;
-            }
-
-            .seotize-captcha-text {
-                font-size: 0.95rem;
-                color: rgba(255, 255, 255, 0.9);
-                margin: 0;
-            }
-
-            .seotize-captcha-widget-wrapper {
-                background: rgba(255, 255, 255, 0.1);
-                padding: 1.5rem;
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 1rem;
                 border-radius: 12px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 100px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+                z-index: 999997;
+                min-width: 300px;
+                transition: opacity 0.3s ease, transform 0.3s ease;
+            }
+
+            .seotize-captcha-container.hidden {
+                opacity: 0;
+                pointer-events: none;
+                transform: translateY(10px);
+            }
+
+            .seotize-captcha-label {
+                font-size: 0.85rem;
+                color: #666;
+                margin-bottom: 0.5rem;
+                font-weight: 500;
             }
 
             #seotize-turnstile-widget {
@@ -832,14 +876,43 @@
                 align-items: center;
             }
 
-            .seotize-captcha-footer {
-                margin-top: 1rem;
+            .seotize-loader-popup, .seotize-success-popup, 
+            .seotize-completion-popup, .seotize-error-popup, .seotize-welcome-popup {
+                padding: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
             }
 
-            .seotize-captcha-note {
-                font-size: 0.85rem;
+            .seotize-modern-loader {
+                padding: 2rem 1.5rem;
+                text-align: center;
+            }
+
+            .seotize-spinner {
+                width: 50px;
+                height: 50px;
+                margin: 0 auto 1rem;
+                border: 3px solid rgba(99, 102, 241, 0.2);
+                border-top-color: #6366f1;
+                border-radius: 50%;
+                animation: seotize-spin 0.7s linear infinite;
+            }
+
+            @keyframes seotize-spin {
+                to { transform: rotate(360deg); }
+            }
+
+            .seotize-loader-title {
+                font-size: 1.3rem;
+                font-weight: 700;
+                color: #fff;
+                margin-bottom: 0.3rem;
+            }
+
+            .seotize-loader-message {
+                font-size: 0.9rem;
                 color: rgba(255, 255, 255, 0.7);
-                margin: 0;
             }
 
             .seotize-success-container, .seotize-completion-container, .seotize-error-container, .seotize-welcome-container {
@@ -1048,16 +1121,22 @@
             }
 
             @media (max-width: 480px) {
-                .seotize-success-container, .seotize-completion-container, 
-                .seotize-error-container, .seotize-welcome-container,
                 .seotize-captcha-container {
+                    bottom: 10px;
+                    right: 10px;
+                    left: 10px;
+                    min-width: auto;
+                    width: auto;
+                }
+
+                .seotize-success-container, .seotize-completion-container, 
+                .seotize-error-container, .seotize-welcome-container {
                     padding: 1.8rem 1.2rem;
                     width: 95vw;
                 }
                 
                 .seotize-success-title, .seotize-completion-title, 
-                .seotize-error-title, .seotize-welcome-title,
-                .seotize-captcha-title {
+                .seotize-error-title, .seotize-welcome-title {
                     font-size: 1.4rem;
                 }
                 
@@ -1071,22 +1150,6 @@
                 
                 .seotize-stat-value {
                     font-size: 1.8rem;
-                }
-                
-                #seotize-turnstile-widget iframe {
-                    transform: scale(0.9);
-                    transform-origin: center;
-                }
-            }
-
-            @media (max-width: 360px) {
-                .seotize-captcha-container {
-                    padding: 1.5rem 1rem;
-                }
-                
-                #seotize-turnstile-widget iframe {
-                    transform: scale(0.85);
-                    transform-origin: center;
                 }
             }
         `;
@@ -1109,6 +1172,25 @@
         });
     }
 
+    function createVisibleCaptcha() {
+        const container = document.createElement('div');
+        container.className = 'seotize-captcha-container';
+        container.id = 'seotize-captcha-container';
+        
+        const label = document.createElement('div');
+        label.className = 'seotize-captcha-label';
+        label.textContent = 'Security Verification';
+        container.appendChild(label);
+        
+        const widget = document.createElement('div');
+        widget.id = 'seotize-turnstile-widget';
+        container.appendChild(widget);
+        
+        domCache.body.appendChild(container);
+        
+        return widget;
+    }
+
     async function initializeEngine() {
         try {
             await waitForDependencies();
@@ -1124,6 +1206,8 @@
             state.coins = data.subtasks_info
                 .filter(task => task.status === 'incomplete')
                 .map(task => task.subtask_id);
+
+            state.totalCoins = state.coins.length;
 
             if (state.coins.length === 0) {
                 Swal.fire({
@@ -1183,22 +1267,46 @@
 
         } catch (error) {
             console.error('Init error:', error);
+            debugLog(`Init error: ${error.message}`, 'error');
         }
     }
 
     function setupTurnstile() {
-        const div = document.createElement('div');
-        div.className = 'cf-turnstile';
-        div.setAttribute('data-theme', 'light');
-        div.setAttribute('data-sitekey', state.systemId);
-        div.setAttribute('data-callback', 'onTurnstileCallback');
-        div.setAttribute('data-size', 'normal');
-        div.setAttribute('data-retry', 'auto');
-        div.setAttribute('data-retry-interval', '8000');
-        div.setAttribute('data-refresh-expired', 'auto');
-        div.setAttribute('data-appearance', 'execute');
+        const widget = createVisibleCaptcha();
         
-        domCache.body.insertBefore(div, domCache.body.firstChild);
+        // Wait for Turnstile to be ready, then render
+        const checkAndRender = () => {
+            if (typeof turnstile !== 'undefined' && state.systemId) {
+                try {
+                    state.turnstileWidgetId = turnstile.render(widget, {
+                        sitekey: state.systemId,
+                        theme: 'light',
+                        size: 'normal',
+                        retry: 'auto',
+                        'retry-interval': 8000,
+                        'refresh-expired': 'auto',
+                        callback: function(token) {
+                            debugLog('✓ Callback fired', 'success');
+                            state.turnstileTokenCache = token;
+                            state.lastTokenTime = Date.now();
+                        },
+                        'error-callback': function() {
+                            debugLog('✗ Turnstile error', 'error');
+                        }
+                    });
+                    
+                    state.turnstileReady = true;
+                    debugLog(`✓ Turnstile ready and visible`, 'success');
+                } catch (error) {
+                    debugLog(`✗ Render error: ${error.message}`, 'error');
+                    setTimeout(checkAndRender, 100);
+                }
+            } else {
+                setTimeout(checkAndRender, 50);
+            }
+        };
+        
+        checkAndRender();
     }
 
     async function loadDependencies() {
@@ -1214,6 +1322,7 @@
             return true;
         } catch (error) {
             console.error('Load error:', error);
+            debugLog(`Load error: ${error.message}`, 'error');
             return false;
         }
     }
@@ -1249,28 +1358,32 @@
     }
 
     window.onloadTurnstileCallback = function() {
-        if (typeof turnstile !== 'undefined') {
-            const element = document.querySelector('.cf-turnstile');
-            
-            if (element) {
+        debugLog('Turnstile script loaded', 'info');
+        if (typeof turnstile !== 'undefined' && state.systemId) {
+            const widget = document.getElementById('seotize-turnstile-widget');
+            if (widget && !state.turnstileReady) {
                 try {
-                    state.turnstileWidgetId = turnstile.render(element, {
+                    state.turnstileWidgetId = turnstile.render(widget, {
                         sitekey: state.systemId,
                         theme: 'light',
                         size: 'normal',
                         retry: 'auto',
                         'retry-interval': 8000,
                         'refresh-expired': 'auto',
-                        'appearance': 'execute',
                         callback: function(token) {
                             debugLog('✓ Callback fired', 'success');
+                            state.turnstileTokenCache = token;
+                            state.lastTokenTime = Date.now();
+                        },
+                        'error-callback': function() {
+                            debugLog('✗ Turnstile error', 'error');
                         }
                     });
                     
                     state.turnstileReady = true;
-                    debugLog(`✓ Turnstile ready`, 'success');
+                    debugLog(`✓ Turnstile ready and visible`, 'success');
                 } catch (error) {
-                    debugLog(`✗ Init error: ${error.message}`, 'error');
+                    debugLog(`✗ Render error: ${error.message}`, 'error');
                 }
             }
         }
@@ -1278,6 +1391,8 @@
 
     window.onTurnstileCallback = function(token) {
         debugLog('Callback triggered', 'info');
+        state.turnstileTokenCache = token;
+        state.lastTokenTime = Date.now();
     };
 
     if (document.readyState === 'loading') {
