@@ -1,9 +1,6 @@
 (function() {
     'use strict';
 
-    // ============================================
-    // CONFIGURATION
-    // ============================================
     const CONFIG = {
         API_ENDPOINTS: {
             GET_TASKS: 'https://api.seotize.net/get-partner-subtasks',
@@ -29,9 +26,6 @@
         }
     };
 
-    // ============================================
-    // STATE MANAGEMENT
-    // ============================================
     const state = {
         systemId: null,
         uniqueId: null,
@@ -52,9 +46,6 @@
     let domCache = null;
     let debugContainer = null;
 
-    // ============================================
-    // UTILITY FUNCTIONS
-    // ============================================
     function getResponsiveSizes() {
         const vw = window.innerWidth;
         const isMobile = vw < 768;
@@ -249,9 +240,6 @@
         return hashData(getBrowserData());
     }
 
-    // ============================================
-    // LOADING FUNCTIONS
-    // ============================================
     function loadScript(src, defer = false) {
         return new Promise((resolve, reject) => {
             debugLog(`Loading script: ${src}`, 'info');
@@ -302,9 +290,6 @@
         });
     }
 
-    // ============================================
-    // TURNSTILE MANAGEMENT
-    // ============================================
     function setupTurnstile() {
         const div = document.createElement('div');
         div.className = 'cf-turnstile';
@@ -350,13 +335,11 @@
         try {
             await waitForTurnstileReady();
 
-            // Mobile: Show visible widget
             if (state.isMobile) {
                 debugLog('Using mobile visible captcha', 'info');
                 return await getVisibleToken();
             }
             
-            // Desktop: Use invisible widget
             debugLog('Using desktop invisible captcha', 'info');
             return await getInvisibleToken();
             
@@ -391,26 +374,36 @@
                     
                     if (typeof turnstile !== 'undefined') {
                         debugLog('Rendering visible turnstile', 'info');
-                        turnstile.render(widget, {
-                            sitekey: state.systemId,
-                            theme: 'light',
-                            size: 'normal',
-                            callback: (token) => {
-                                debugLog('✓ Captcha solved', 'success');
-                                Swal.close();
-                                resolve(token);
-                            },
-                            'error-callback': () => {
-                                debugLog('✗ Captcha error', 'error');
-                                Swal.close();
-                                reject(new Error('Verification failed'));
-                            },
-                            'timeout-callback': () => {
-                                debugLog('✗ Captcha timeout', 'error');
-                                Swal.close();
-                                reject(new Error('Verification timeout'));
-                            }
-                        });
+                        try {
+                            turnstile.render(widget, {
+                                sitekey: state.systemId,
+                                theme: 'light',
+                                size: 'normal',
+                                callback: (token) => {
+                                    debugLog('✓ Captcha solved', 'success');
+                                    Swal.close();
+                                    resolve(token);
+                                },
+                                'error-callback': () => {
+                                    debugLog('✗ Captcha error', 'error');
+                                    Swal.close();
+                                    reject(new Error('Verification failed'));
+                                },
+                                'timeout-callback': () => {
+                                    debugLog('✗ Captcha timeout', 'error');
+                                    Swal.close();
+                                    reject(new Error('Verification timeout'));
+                                }
+                            });
+                        } catch (err) {
+                            debugLog('✗ Render error: ' + err.message, 'error');
+                            Swal.close();
+                            reject(err);
+                        }
+                    } else {
+                        debugLog('✗ Turnstile not loaded', 'error');
+                        Swal.close();
+                        reject(new Error('Turnstile not loaded'));
                     }
                 }
             });
@@ -454,9 +447,6 @@
         });
     }
 
-    // ============================================
-    // API FUNCTIONS
-    // ============================================
     async function fetchPartnerSubtasks(uniqueId, siteKey) {
         try {
             debugLog('Fetching tasks from API', 'info');
@@ -508,9 +498,6 @@
         }
     }
 
-    // ============================================
-    // COIN & ARROW MANAGEMENT
-    // ============================================
     function calculateCoinPositions(count) {
         const sizes = getResponsiveSizes();
         const positions = [];
@@ -696,9 +683,6 @@
         state.arrowUpdateInterval = setInterval(updateArrowPosition, 100);
     }
 
-    // ============================================
-    // COIN CLICK HANDLER
-    // ============================================
     async function handleCoinClick(subtaskId) {
         if (state.isProcessing) return;
 
@@ -714,7 +698,6 @@
         coinElements.forEach(el => el.style.pointerEvents = 'none');
 
         try {
-            // Animate coin
             if (typeof gsap !== 'undefined') {
                 gsap.to(clickedCoin, {
                     scale: 2,
@@ -725,7 +708,6 @@
                 });
             }
 
-            // Remove arrow
             if (state.currentArrow) {
                 if (typeof gsap !== 'undefined') {
                     gsap.killTweensOf(state.currentArrow);
@@ -740,20 +722,19 @@
 
             await new Promise(resolve => setTimeout(resolve, 400));
 
-            // Show loading (different message for mobile)
-            if (state.isMobile) {
-                showModernLoading('Verifying', 'Complete the security check');
-            } else {
+            // Only show loading on desktop
+            if (!state.isMobile) {
                 showModernLoading('Verifying', 'Please wait...');
             }
 
-            // Get token (visible on mobile, invisible on desktop)
             const token = await getTurnstileToken();
             
-            // Submit task
-            const result = await submitTask(subtaskId, token);
+            // Only close loading if it was shown (desktop)
+            if (!state.isMobile) {
+                closeLoading();
+            }
             
-            closeLoading();
+            const result = await submitTask(subtaskId, token);
 
             if (result.status === 'success' || result.code === 200) {
                 state.completedTasks.push(subtaskId);
@@ -868,9 +849,6 @@
         }
     }
 
-    // ============================================
-    // UI FUNCTIONS
-    // ============================================
     function showModernLoading(title = 'Processing', message = '') {
         if (typeof Swal === 'undefined') return;
 
@@ -898,9 +876,6 @@
         }
     }
 
-    // ============================================
-    // STYLES
-    // ============================================
     function injectStyles() {
         const style = document.createElement('style');
         style.textContent = `
@@ -1230,9 +1205,6 @@
         domCache.head.appendChild(style);
     }
 
-    // ============================================
-    // INITIALIZATION
-    // ============================================
     async function initializeEngine() {
         try {
             await waitForDependencies();
@@ -1314,9 +1286,6 @@
         }
     }
 
-    // ============================================
-    // TURNSTILE CALLBACKS
-    // ============================================
     window.onloadTurnstileCallback = function() {
         debugLog('Turnstile script loaded', 'info');
         if (typeof turnstile !== 'undefined') {
@@ -1350,9 +1319,6 @@
         // Callback placeholder
     };
 
-    // ============================================
-    // BOOTSTRAP
-    // ============================================
     async function bootstrap() {
         domCache = {
             body: document.body,
