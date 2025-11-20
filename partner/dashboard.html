@@ -12,62 +12,57 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
 
 <style>
-/* CSS Variables */
+/* CSS Variables - Minimal Claude-Inspired Design */
 :root {
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #818cf8;
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --primary-light: #60a5fa;
     --secondary: #10b981;
-    --secondary-dark: #059669;
     --accent: #f59e0b;
     --error: #ef4444;
     --warning: #f59e0b;
     --success: #10b981;
-    --info: #3b82f6;
-
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     
-    --radius-sm: 8px;
-    --radius: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
+    --radius-sm: 6px;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
 
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    
+    --transition: all 0.2s ease;
 }
 
 /* Light Theme */
 [data-theme="light"] {
-    --bg: #f8f9fa;
+    --bg: #f9fafb;
     --bg-secondary: #ffffff;
-    --bg-tertiary: #e9ecef;
+    --bg-tertiary: #f3f4f6;
     --sidebar: #ffffff;
     --card: #ffffff;
-    --card-hover: #f8f9fa;
-    --text: #212529;
-    --text-secondary: #6c757d;
-    --text-tertiary: #adb5bd;
-    --border: #dee2e6;
+    --card-hover: #f9fafb;
+    --text: #111827;
+    --text-secondary: #6b7280;
+    --text-tertiary: #9ca3af;
+    --border: #e5e7eb;
     --input-bg: #ffffff;
 }
 
 /* Dark Theme */
 [data-theme="dark"] {
-    --bg: #0a0a0a;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #2a2a2a;
-    --sidebar: #141414;
-    --card: #1f1f1f;
-    --card-hover: #2a2a2a;
-    --text: #ffffff;
-    --text-secondary: #a0a0a0;
-    --text-tertiary: #6b6b6b;
-    --border: rgba(255, 255, 255, 0.1);
-    --input-bg: #1a1a1a;
+    --bg: #111827;
+    --bg-secondary: #1f2937;
+    --bg-tertiary: #374151;
+    --sidebar: #1f2937;
+    --card: #1f2937;
+    --card-hover: #374151;
+    --text: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-tertiary: #9ca3af;
+    --border: #374151;
+    --input-bg: #374151;
 }
 
 /* Base Styles */
@@ -83,8 +78,10 @@ body {
     color: var(--text);
     min-height: 100vh;
     transition: var(--transition);
-    line-height: 1.6;
+    line-height: 1.5;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Layout */
@@ -95,7 +92,7 @@ body {
 
 /* Sidebar */
 .sidebar {
-    width: 280px;
+    width: 260px;
     background: var(--sidebar);
     border-right: 1px solid var(--border);
     display: flex;
@@ -104,16 +101,16 @@ body {
 }
 
 .sidebar-header {
-    padding: 1.5rem;
+    padding: 1.25rem;
     border-bottom: 1px solid var(--border);
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    font-size: 1.5rem;
-    font-weight: 800;
+    gap: 0.625rem;
+    font-size: 1.25rem;
+    font-weight: 700;
     color: var(--primary);
     text-decoration: none;
 }
@@ -125,7 +122,7 @@ body {
 }
 
 .nav-section-title {
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
     font-weight: 600;
     color: var(--text-tertiary);
     text-transform: uppercase;
@@ -138,13 +135,14 @@ body {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.75rem;
+    padding: 0.625rem 0.75rem;
     border-radius: var(--radius);
     color: var(--text-secondary);
     text-decoration: none;
     transition: var(--transition);
     cursor: pointer;
     margin-bottom: 0.25rem;
+    font-size: 0.875rem;
 }
 
 .nav-item:hover {
@@ -158,9 +156,8 @@ body {
 }
 
 .nav-item i {
-    font-size: 1.25rem;
-    width: 1.5rem;
-    text-align: center;
+    font-size: 1.125rem;
+    width: 1.25rem;
 }
 
 /* Main Content */
@@ -182,14 +179,15 @@ body {
 }
 
 .header-left h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text);
 }
 
 .header-right {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .theme-toggle {
@@ -197,61 +195,59 @@ body {
     border-radius: var(--radius);
     background: transparent;
     border: none;
-    color: var(--text);
+    color: var(--text-secondary);
     cursor: pointer;
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     transition: var(--transition);
 }
 
 .theme-toggle:hover {
     background: var(--bg-tertiary);
+    color: var(--text);
 }
 
-/* Mobile Profile Menu - Google Style */
+/* Mobile Profile Menu */
 .mobile-profile-menu {
     display: none;
     padding: 0;
     border-radius: 50%;
     background: transparent;
     border: none;
-    color: var(--text);
     cursor: pointer;
-    font-size: 1.25rem;
-    transition: var(--transition);
-    position: relative;
-}
-
-.mobile-profile-menu:hover .user-avatar {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .mobile-profile-menu .user-avatar {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: var(--gradient-primary);
+    background: var(--primary);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: 600;
     font-size: 0.875rem;
-    transition: box-shadow 0.2s ease;
+    transition: var(--transition);
 }
 
-/* Google-style Profile Dropdown */
+.mobile-profile-menu .user-avatar:hover {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Profile Dropdown */
 .mobile-profile-dropdown {
     display: none;
     position: fixed;
     top: 60px;
     right: 1rem;
     background: var(--card);
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
     z-index: 10001;
     overflow: hidden;
-    animation: slideDown 0.2s ease;
-    min-width: 280px;
+    min-width: 260px;
+    animation: slideDown 0.15s ease;
 }
 
 .mobile-profile-dropdown.active {
@@ -261,7 +257,7 @@ body {
 @keyframes slideDown {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-8px);
     }
     to {
         opacity: 1;
@@ -276,8 +272,8 @@ body {
 .user-menu {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 1rem;
+    gap: 0.625rem;
+    padding: 0.5rem 0.75rem;
     border-radius: var(--radius);
     background: var(--bg-tertiary);
     cursor: pointer;
@@ -289,26 +285,27 @@ body {
 }
 
 .user-avatar {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    background: var(--gradient-primary);
+    background: var(--primary);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: 600;
+    font-size: 0.75rem;
 }
 
 .user-dropdown {
     position: absolute;
     top: calc(100% + 0.5rem);
     right: 0;
-    min-width: 220px;
+    min-width: 200px;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
     display: none;
     z-index: 1000;
 }
@@ -320,12 +317,13 @@ body {
 .user-dropdown-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
+    gap: 0.625rem;
+    padding: 0.625rem 1rem;
     color: var(--text);
     text-decoration: none;
     transition: var(--transition);
     cursor: pointer;
+    font-size: 0.875rem;
 }
 
 .user-dropdown-item:hover {
@@ -333,7 +331,7 @@ body {
 }
 
 .user-dropdown-item i {
-    width: 1.25rem;
+    width: 1.125rem;
 }
 
 .user-dropdown-item.danger {
@@ -357,7 +355,7 @@ body {
 }
 
 .card-header {
-    padding: 1.25rem;
+    padding: 1rem 1.25rem;
     border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
@@ -365,7 +363,7 @@ body {
 }
 
 .card-title {
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--text);
 }
@@ -377,42 +375,29 @@ body {
 /* Stats Grid */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
     margin-bottom: 1.5rem;
 }
 
 .stat-card {
     background: var(--card);
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
     padding: 1.25rem;
     border: 1px solid var(--border);
     display: flex;
     align-items: center;
     gap: 1rem;
     transition: var(--transition);
-    position: relative;
-    overflow: hidden;
 }
 
 .stat-card:hover {
-    transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
 }
 
-.stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--gradient-primary);
-}
-
 .stat-icon {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius);
     display: flex;
     align-items: center;
@@ -421,30 +406,29 @@ body {
     flex-shrink: 0;
 }
 
-.stat-icon.primary { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+.stat-icon.primary { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
 .stat-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
 .stat-icon.warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
 
 .stat-content {
     flex: 1;
-    min-width: 0;
 }
 
 .stat-value {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--text);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.125rem;
 }
 
 .stat-label {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: var(--text-secondary);
 }
 
 /* Buttons */
 .btn {
-    padding: 0.625rem 1.25rem;
+    padding: 0.5rem 1rem;
     border-radius: var(--radius);
     font-weight: 500;
     font-size: 0.875rem;
@@ -459,20 +443,21 @@ body {
 }
 
 .btn-primary { background: var(--primary); color: white; }
-.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.btn-primary:hover { background: var(--primary-dark); }
 .btn-secondary { background: var(--bg-tertiary); color: var(--text); }
 .btn-secondary:hover { background: var(--border); }
 .btn-danger { background: var(--error); color: white; }
 .btn-danger:hover { background: #dc2626; }
 .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.8125rem; }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn:active { transform: scale(0.98); }
 
 /* Forms */
-.form-group { margin-bottom: 1.5rem; }
-.form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text); }
+.form-group { margin-bottom: 1.25rem; }
+.form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text); font-size: 0.875rem; }
 .form-input, .form-select, .form-textarea {
     width: 100%;
-    padding: 0.625rem 1rem;
+    padding: 0.625rem 0.875rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--input-bg);
@@ -483,7 +468,7 @@ body {
 .form-input:focus, .form-select:focus, .form-textarea:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 /* Tables */
@@ -498,16 +483,55 @@ th {
     padding: 0.75rem 1rem; 
     text-align: left; 
     font-weight: 600;
+    font-size: 0.8125rem;
     color: var(--text);
     border-bottom: 1px solid var(--border); 
 }
 td { 
     padding: 0.75rem 1rem; 
     border-bottom: 1px solid var(--border); 
-    color: var(--text-secondary); 
+    color: var(--text-secondary);
+    font-size: 0.875rem;
 }
 tr:last-child td { border-bottom: none; }
 tr:hover { background: var(--card-hover); }
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+}
+
+.tab {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.tab:hover {
+    color: var(--text);
+}
+
+.tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
 
 /* Pagination */
 .pagination {
@@ -515,7 +539,7 @@ tr:hover { background: var(--card-hover); }
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     padding: 1rem;
     background: var(--card);
     border-radius: var(--radius);
@@ -524,14 +548,14 @@ tr:hover { background: var(--card-hover); }
 }
 
 .pagination-btn {
-    padding: 0.5rem 0.75rem;
+    padding: 0.4rem 0.7rem;
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     background: var(--bg-secondary);
     color: var(--text);
     cursor: pointer;
     transition: var(--transition);
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
 }
 
 .pagination-btn:hover:not(:disabled) {
@@ -541,7 +565,7 @@ tr:hover { background: var(--card-hover); }
 }
 
 .pagination-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
 }
 
@@ -552,9 +576,9 @@ tr:hover { background: var(--card-hover); }
 }
 
 .pagination-info {
-    margin: 0 1rem;
+    margin: 0 0.75rem;
     color: var(--text-secondary);
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
 }
 
 /* Modal */
@@ -565,10 +589,9 @@ tr:hover { background: var(--card-hover); }
     left: 0; 
     right: 0; 
     bottom: 0; 
-    background: rgba(0, 0, 0, 0.5); 
-    backdrop-filter: blur(4px); 
+    background: rgba(0, 0, 0, 0.6); 
     z-index: 1000; 
-    animation: fadeIn 0.3s; 
+    animation: fadeIn 0.2s; 
 }
 .modal-overlay.active { 
     display: flex; 
@@ -579,20 +602,21 @@ tr:hover { background: var(--card-hover); }
     background: var(--card); 
     border-radius: var(--radius-xl); 
     max-width: 90vw; 
-    width: 600px; 
+    width: 500px; 
     max-height: 90vh; 
     overflow: hidden; 
-    animation: slideUp 0.3s; 
+    animation: slideUp 0.2s;
+    border: 1px solid var(--border);
 }
 .modal-header { 
-    padding: 1.5rem; 
+    padding: 1.25rem; 
     border-bottom: 1px solid var(--border); 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
 }
 .modal-title { 
-    font-size: 1.25rem; 
+    font-size: 1.125rem; 
     font-weight: 600; 
     color: var(--text);
 }
@@ -600,44 +624,47 @@ tr:hover { background: var(--card-hover); }
     background: transparent; 
     border: none; 
     color: var(--text-secondary); 
-    font-size: 1.5rem; 
+    font-size: 1.25rem; 
     cursor: pointer;
     transition: var(--transition);
+    padding: 0.25rem;
 }
 .modal-close:hover {
     color: var(--text);
 }
 .modal-body { 
-    padding: 1.5rem; 
-    max-height: calc(90vh - 140px); 
+    padding: 1.25rem; 
+    max-height: calc(90vh - 100px); 
     overflow-y: auto; 
 }
 
 /* Toast */
 .toast { 
     position: fixed; 
-    bottom: 2rem; 
-    right: 2rem; 
-    padding: 1rem 1.5rem; 
+    bottom: 1.5rem; 
+    right: 1.5rem; 
+    padding: 0.875rem 1.25rem; 
     background: var(--card); 
-    border-radius: var(--radius); 
-    box-shadow: var(--shadow-xl); 
+    border-radius: var(--radius-lg); 
+    box-shadow: var(--shadow-lg); 
+    border: 1px solid var(--border);
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    animation: slideInRight 0.3s; 
-    z-index: 2000; 
+    gap: 0.625rem;
+    animation: slideInRight 0.2s; 
+    z-index: 2000;
+    font-size: 0.875rem;
 }
-.toast.success { border-left: 4px solid var(--success); }
-.toast.error { border-left: 4px solid var(--error); }
-.toast.warning { border-left: 4px solid var(--warning); }
-.toast.info { border-left: 4px solid var(--info); }
+.toast.success { border-left: 3px solid var(--success); }
+.toast.error { border-left: 3px solid var(--error); }
+.toast.warning { border-left: 3px solid var(--warning); }
+.toast.info { border-left: 3px solid var(--primary); }
 
 /* Task Cards */
 .task-grid { 
     display: grid; 
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-    gap: 1.5rem; 
+    gap: 1rem; 
 }
 
 .available-task-card { 
@@ -653,7 +680,6 @@ tr:hover { background: var(--card-hover); }
 }
 
 .available-task-card.active-task:hover { 
-    transform: translateY(-3px); 
     box-shadow: var(--shadow-lg); 
     border-color: var(--primary);
 }
@@ -664,19 +690,23 @@ tr:hover { background: var(--card-hover); }
 
 .task-url { 
     font-weight: 600; 
-    word-break: break-all; 
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 0.875rem;
     line-height: 1.4;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
 }
 
 .task-priority-badge {
     display: inline-block;
-    padding: 0.25rem 0.6rem;
+    padding: 0.25rem 0.625rem;
     border-radius: 99px;
-    font-size: 0.7rem;
+    font-size: 0.6875rem;
     font-weight: 600;
-    margin-top: 0.5rem;
 }
 
 .task-priority-badge.high {
@@ -704,16 +734,16 @@ tr:hover { background: var(--card-hover); }
 .keyword-badge { 
     background: var(--bg-tertiary); 
     color: var(--text-secondary); 
-    padding: 0.25rem 0.6rem; 
+    padding: 0.25rem 0.625rem; 
     border-radius: 99px; 
-    font-size: 0.75rem; 
+    font-size: 0.6875rem; 
 }
 
 .task-footer { 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    margin-top: 1.5rem; 
+    margin-top: 1.25rem; 
     padding-top: 1rem; 
     border-top: 1px solid var(--border); 
 }
@@ -726,7 +756,6 @@ tr:hover { background: var(--card-hover); }
 
 .available-task-card.inactive-task { 
     opacity: 0.6; 
-    background: var(--bg-tertiary); 
     cursor: not-allowed;
 }
 
@@ -756,7 +785,7 @@ tr:hover { background: var(--card-hover); }
     font-size: 0.75rem; 
     font-weight: 600; 
 }
-.badge-primary { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+.badge-primary { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
 .badge-success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
 .badge-warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
 .badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--error); }
@@ -774,22 +803,23 @@ tr:hover { background: var(--card-hover); }
 /* Empty State */
 .empty-state { 
     text-align: center; 
-    padding: 3rem; 
+    padding: 3rem 1.5rem; 
 }
 .empty-state-icon { 
-    font-size: 4rem; 
+    font-size: 3rem; 
     color: var(--text-tertiary); 
     margin-bottom: 1rem; 
 }
 .empty-state-title { 
-    font-size: 1.5rem; 
+    font-size: 1.25rem; 
     font-weight: 600; 
     margin-bottom: 0.5rem;
     color: var(--text);
 }
 .empty-state-description { 
     color: var(--text-secondary); 
-    margin-bottom: 1.5rem; 
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
 }
 
 /* Mobile Bottom Navigation */
@@ -803,7 +833,6 @@ tr:hover { background: var(--card-hover); }
     border-top: 1px solid var(--border); 
     z-index: 50; 
     padding: 0.5rem;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 .mobile-nav-items { 
     display: flex; 
@@ -817,7 +846,7 @@ tr:hover { background: var(--card-hover); }
     padding: 0.5rem; 
     color: var(--text-secondary); 
     text-decoration: none; 
-    font-size: 0.75rem; 
+    font-size: 0.6875rem; 
     flex: 1;
     border-radius: var(--radius);
     transition: var(--transition);
@@ -827,7 +856,7 @@ tr:hover { background: var(--card-hover); }
 }
 .mobile-nav-item.active { 
     color: var(--primary);
-    background: rgba(99, 102, 241, 0.1);
+    background: rgba(59, 130, 246, 0.1);
 }
 .mobile-nav-item i { 
     font-size: 1.25rem; 
@@ -848,14 +877,14 @@ tr:hover { background: var(--card-hover); }
     }
     
     .header { 
-        padding: 0.75rem;
+        padding: 0.75rem 1rem;
         position: sticky;
         top: 0;
         z-index: 100;
     }
     
     .header-left h2 {
-        font-size: 1.1rem;
+        font-size: 1.125rem;
     }
     
     .user-menu-container {
@@ -866,33 +895,23 @@ tr:hover { background: var(--card-hover); }
         display: flex;
     }
     
-    .user-dropdown {
-        position: fixed;
-        top: auto;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        min-width: 100%;
-        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-        max-height: 50vh;
-        overflow-y: auto;
-    }
-    
     .stats-grid { 
         grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
     }
     
     .stat-card {
-        padding: 0.875rem;
+        padding: 1rem;
     }
     
     .stat-icon {
-        display: none;
+        width: 36px;
+        height: 36px;
+        font-size: 1.125rem;
     }
     
     .stat-value {
-        font-size: 1.5rem;
+        font-size: 1.375rem;
     }
     
     .stat-label {
@@ -916,89 +935,23 @@ tr:hover { background: var(--card-hover); }
         border-radius: 0;
     }
     
-    .modal-body {
-        max-height: calc(100vh - 60px);
-    }
-    
     .card-header {
         padding: 1rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
     }
     
     .card-body {
         padding: 1rem;
     }
     
-    .table-container {
+    .tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .tab {
+        padding: 0.625rem 1rem;
         font-size: 0.8125rem;
-    }
-    
-    th, td {
-        padding: 0.5rem;
-    }
-    
-    .pagination {
-        padding: 0.75rem;
-        gap: 0.35rem;
-    }
-    
-    .pagination-btn {
-        padding: 0.4rem 0.6rem;
-        font-size: 0.8rem;
-    }
-    
-    .pagination-info {
-        font-size: 0.75rem;
-        margin: 0.5rem 0;
-        width: 100%;
-        text-align: center;
-    }
-    
-    .btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-    }
-    
-    .btn-sm {
-        padding: 0.375rem 0.75rem;
-        font-size: 0.8rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .header-left h2 {
-        font-size: 1rem;
-    }
-    
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
-    }
-
-    .stat-card {
-        padding: 0.75rem;
-    }
-
-    .stat-value {
-        font-size: 1.25rem;
-    }
-
-    .stat-label {
-        font-size: 0.7rem;
-    }
-
-    .mobile-nav-item span {
-        font-size: 0.625rem;
-    }
-
-    .mobile-nav-item i {
-        font-size: 1.125rem;
-    }
-    
-    .task-credit {
-        font-size: 1.1rem;
+        white-space: nowrap;
     }
 }
 
@@ -1032,25 +985,6 @@ tr:hover { background: var(--card-hover); }
 
 @keyframes spin { 
     to { transform: rotate(360deg); } 
-}
-
-/* Desktop/Mobile visibility classes */
-.desktop-only {
-    display: block !important;
-}
-
-.mobile-only {
-    display: none !important;
-}
-
-@media (max-width: 768px) {
-    .desktop-only {
-        display: none !important;
-    }
-
-    .mobile-only {
-        display: block !important;
-    }
 }
 </style>
 </head>
@@ -1101,21 +1035,19 @@ tr:hover { background: var(--card-hover); }
                 <i class="ri-moon-line" id="themeIcon"></i>
             </button>
 
-            <!-- Mobile Profile Menu Icon -->
             <button class="mobile-profile-menu" onclick="toggleMobileProfileDropdown(event)">
                 <div class="user-avatar" id="mobileUserAvatar">P</div>
             </button>
 
-            <!-- Mobile Profile Dropdown -->
             <div id="mobileProfileDropdown" class="mobile-profile-dropdown">
                 <div style="padding: 1rem; background: var(--bg-tertiary); border-bottom: 1px solid var(--border);">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div class="user-avatar" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="user-avatar" style="width: 44px; height: 44px; font-size: 1.125rem;">
                             <span id="mobileDropdownUserInitial">P</span>
                         </div>
                         <div style="flex: 1;">
-                            <div style="font-weight: 600; color: var(--text);" id="mobileDropdownUserName">Partner</div>
-                            <div style="font-size: 0.875rem; color: var(--text-secondary);" id="mobileDropdownUserEmail">partner@example.com</div>
+                            <div style="font-weight: 600; color: var(--text); font-size: 0.875rem;" id="mobileDropdownUserName">Partner</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);" id="mobileDropdownUserEmail">partner@example.com</div>
                         </div>
                     </div>
                 </div>
@@ -1131,8 +1063,8 @@ tr:hover { background: var(--card-hover); }
                 <div class="user-menu" onclick="toggleUserDropdown()">
                     <div class="user-avatar"><span id="userInitial">P</span></div>
                     <div>
-                        <div style="font-weight: 500;" id="userName">Partner</div>
-                        <div style="font-size: 0.75rem; color: var(--text-secondary);" id="userEmail">partner@example.com</div>
+                        <div style="font-weight: 500; font-size: 0.8125rem;" id="userName">Partner</div>
+                        <div style="font-size: 0.6875rem; color: var(--text-secondary);" id="userEmail">partner@example.com</div>
                     </div>
                 </div>
                 <div class="user-dropdown" id="userDropdown">
@@ -1353,10 +1285,8 @@ async function loadPartnerDashboard(page = 1) {
         if (data.incomplete_task) {
             renderIncompleteTaskView(data.tasks);
         } else {
-            // Process and sort tasks
             currentData.tasks = sortTasks(data.tasks || []);
             
-            // Fix pagination state
             paginationState.tasks = {
                 current: pagination.tasks?.current || page,
                 page: pagination.tasks?.current || page,
@@ -1376,28 +1306,23 @@ async function loadPartnerDashboard(page = 1) {
 
 function sortTasks(tasks) {
     return tasks.sort((a, b) => {
-        // First, sort by priority (higher priority first)
         const priorityDiff = (b.task_priority || 0) - (a.task_priority || 0);
         if (priorityDiff !== 0) return priorityDiff;
-        
-        // Then by created date (newer first)
         return new Date(b.created_at || 0) - new Date(a.created_at || 0);
     });
 }
 
 function getPriorityLevel(priority) {
     if (priority >= 0.15) return { class: 'high', text: 'High Priority' };
-    if (priority >= 0.12) return { class: 'medium', text: 'Medium Priority' };
+    if (priority >= 0.12) return { class: 'medium', text: 'Medium' };
     return { class: 'low', text: 'Standard' };
 }
 
 function renderIncompleteTaskView(task) {
-    // 1. Randomly pick one keyword from the task's list.
     const randomKeyword = task.keywords && task.keywords.length > 0
         ? task.keywords[Math.floor(Math.random() * task.keywords.length)]
         : '';
 
-    // 2. Clean the URL to make it suitable for Google's "site:" search operator.
     const searchSite = task.url.replace(/(^\w+:|^)\/\//, '').replace(/^www\./, '');
 
     document.getElementById('content').innerHTML = `
@@ -1425,17 +1350,17 @@ function renderIncompleteTaskView(task) {
                 </h3>
             </div>
             <div class="card-body">
-                <p style="color: var(--text-secondary); text-align: center; margin-bottom: 2rem;">
+                <p style="color: var(--text-secondary); text-align: center; margin-bottom: 1.5rem; font-size: 0.875rem;">
                     Follow these steps carefully to earn your reward.
                 </p>
 
-                <div style="background: var(--bg-tertiary); padding: 1.5rem; border-radius: var(--radius-lg); text-align: left;">
-                    <h4 style="margin-bottom: 1rem;">Your Instructions:</h4>
-                    <ol style="padding-left: 1.5rem; line-height: 2;">
+                <div style="background: var(--bg-tertiary); padding: 1.25rem; border-radius: var(--radius-lg); text-align: left;">
+                    <h4 style="margin-bottom: 1rem; font-size: 0.9375rem;">Your Instructions:</h4>
+                    <ol style="padding-left: 1.5rem; line-height: 1.8; font-size: 0.875rem;">
                         <li>On this <strong>same device</strong>, open a new browser tab and go to <strong>Google.com</strong>.</li>
                         <li>
                             Copy the text below and paste it into the Google search bar:
-                            <div style="background: var(--bg); padding: 0.75rem 1rem; border-radius: var(--radius); margin: 0.75rem 0; font-family: monospace; font-size: 1rem; user-select: all; word-break: break-all;">
+                            <div style="background: var(--bg); padding: 0.75rem; border-radius: var(--radius); margin: 0.625rem 0; font-family: monospace; font-size: 0.875rem; user-select: all; word-break: break-all; border: 1px solid var(--border);">
                                 site:${searchSite} ${randomKeyword}
                             </div>
                         </li>
@@ -1446,8 +1371,8 @@ function renderIncompleteTaskView(task) {
                     </ol>
                 </div>
 
-                <div style="text-align: center; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
-                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">If you don't want to complete this task, you can cancel it.</p>
+                <div style="text-align: center; margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border);">
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.875rem;">If you don't want to complete this task, you can cancel it.</p>
                     <button class="btn btn-danger" onclick="cancelInProgressTask('${task._id}')">
                         <i class="ri-close-circle-line"></i> Cancel & Forfeit Reward
                     </button>
@@ -1484,8 +1409,8 @@ function renderAvailableTasksView() {
             ${currentData.tasks.length > 0 ? currentData.tasks.map(renderTaskCard).join('') : `
                 <div class="empty-state" style="grid-column: 1 / -1;">
                     <div class="empty-state-icon"><i class="ri-task-line"></i></div>
-                    <div class="empty-state-title">No Tasks Available Right Now</div>
-                    <div class="empty-state-description">Please check back later for more opportunities to earn.</div>
+                    <div class="empty-state-title">No Tasks Available</div>
+                    <div class="empty-state-description">Check back later for more opportunities to earn.</div>
                 </div>
             `}
         </div>
@@ -1507,7 +1432,7 @@ function renderTaskCard(task) {
     return `
         <div class="available-task-card ${isActive ? 'active-task' : 'inactive-task'}" ${isActive ? `onclick="initiateTask('${task._id}')"` : ''}>
             <div class="task-card-header">
-                <p class="task-url">${task.url}</p>
+                <div class="task-url">${task.url}</div>
                 <span class="task-priority-badge ${priority.class}">${priority.text}</span>
             </div>
             <div class="task-keywords">
@@ -1516,15 +1441,15 @@ function renderTaskCard(task) {
             </div>
             <div class="task-footer">
                 <div>
-                    <span style="font-size: 0.75rem; color: var(--text-secondary);">Reward</span>
+                    <span style="font-size: 0.6875rem; color: var(--text-secondary);">Reward</span>
                     <div class="task-credit">$${credit.toFixed(2)}</div>
                 </div>
                 ${isActive ? `
                     <button class="btn btn-primary btn-sm">Start Task <i class="ri-arrow-right-s-line"></i></button>
                 ` : `
                     <div class="inactive-overlay">
-                        <div id="countdown-${task._id}" style="font-weight: 600; font-size: 1rem; color: var(--text-secondary);">Available in ${task.remaining_time}m</div>
-                        <small style="color: var(--text-tertiary); font-size: 0.7rem;">45 min cooldown</small>
+                        <div id="countdown-${task._id}" style="font-weight: 600; font-size: 0.9375rem; color: var(--text-secondary);">Available in ${task.remaining_time}m</div>
+                        <small style="color: var(--text-tertiary); font-size: 0.6875rem;">45 min cooldown</small>
                     </div>
                 `}
             </div>
@@ -1568,7 +1493,6 @@ async function loadBalanceManagement(doneTasksPage = 1, withdrawalsPage = 1) {
         const { data, pagination } = response;
         currentData.balance = data;
         
-        // Fix pagination state for balance page
         paginationState.done_tasks = {
             current: pagination.done_tasks?.current || doneTasksPage,
             page: pagination.done_tasks?.current || doneTasksPage,
@@ -1587,45 +1511,61 @@ async function loadBalanceManagement(doneTasksPage = 1, withdrawalsPage = 1) {
             hasNext: pagination.withdrawals?.has_next || false
         };
 
-        document.getElementById('content').innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0;">Balance & Withdrawals</h2>
-                <button class="btn btn-primary" onclick="showWithdrawalModal()">
-                    <i class="ri-send-plane-line"></i> Withdraw Funds
+        renderBalanceView();
+    } catch (error) {
+        console.error('Balance error:', error);
+        showErrorState('Failed to load balance information: ' + error.message);
+    }
+}
+
+function renderBalanceView() {
+    const data = currentData.balance;
+    
+    document.getElementById('content').innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Balance & Withdrawals</h2>
+            <button class="btn btn-primary" onclick="showWithdrawalModal()">
+                <i class="ri-send-plane-line"></i> Withdraw Funds
+            </button>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon primary"><i class="ri-wallet-3-line"></i></div>
+                <div class="stat-content">
+                    <div class="stat-value">$${(data.balance || 0).toFixed(2)}</div>
+                    <div class="stat-label">Available Balance</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon success"><i class="ri-line-chart-line"></i></div>
+                <div class="stat-content">
+                    <div class="stat-value">$${(data.total_earn || 0).toFixed(2)}</div>
+                    <div class="stat-label">Total Earned</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon warning"><i class="ri-task-line"></i></div>
+                <div class="stat-content">
+                    <div class="stat-value">${data.number_of_done_tasks || 0}</div>
+                    <div class="stat-label">Tasks Completed</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('earnings')">
+                    <i class="ri-money-dollar-circle-line"></i> Earning History
+                </button>
+                <button class="tab" onclick="switchTab('withdrawals')">
+                    <i class="ri-exchange-line"></i> Withdrawal History
                 </button>
             </div>
             
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon primary"><i class="ri-wallet-3-line"></i></div>
-                    <div class="stat-content">
-                        <div class="stat-value">$${(data.balance || 0).toFixed(2)}</div>
-                        <div class="stat-label">Available Balance</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon success"><i class="ri-line-chart-line"></i></div>
-                    <div class="stat-content">
-                        <div class="stat-value">$${(data.total_earn || 0).toFixed(2)}</div>
-                        <div class="stat-label">Total Earned</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon warning"><i class="ri-task-line"></i></div>
-                    <div class="stat-content">
-                        <div class="stat-value">${data.number_of_done_tasks || 0}</div>
-                        <div class="stat-label">Tasks Completed</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Earning History</h3>
-                </div>
-                <div class="card-body">
-                    <!-- Desktop Table -->
-                    <div class="table-container desktop-only">
+            <div id="earnings-tab" class="tab-content active">
+                <div class="card-body" style="padding-top: 0;">
+                    <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
@@ -1636,60 +1576,33 @@ async function loadBalanceManagement(doneTasksPage = 1, withdrawalsPage = 1) {
                                 </tr>
                             </thead>
                             <tbody>
-                                ${(data.done_tasks_details || []).map(t => `
+                                ${(data.done_tasks_details || []).length > 0 ? data.done_tasks_details.map(t => `
                                     <tr>
-                                        <td>${new Date(t.time).toLocaleString()}</td>
+                                        <td style="white-space: nowrap;">${new Date(t.time).toLocaleDateString()}<br><span style="font-size: 0.75rem; color: var(--text-tertiary);">${new Date(t.time).toLocaleTimeString()}</span></td>
                                         <td style="max-width: 300px; word-break: break-all;">${t.url}</td>
                                         <td>${t.country_code}</td>
                                         <td><span class="badge badge-success">$${(t.credit || 0).toFixed(2)}</span></td>
                                     </tr>
-                                `).join('')}
+                                `).join('') : `
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; padding: 2rem;">
+                                            <div style="color: var(--text-tertiary);">
+                                                <i class="ri-file-list-line" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+                                                No earning history yet
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `}
                             </tbody>
                         </table>
                     </div>
-                    
-                    <!-- Mobile Cards -->
-                    <div class="mobile-only">
-                        ${(data.done_tasks_details || []).length > 0 ? data.done_tasks_details.map(t => {
-                            const date = new Date(t.time).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            });
-                            return `
-                            <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
-                                    <div style="flex: 1;">
-                                        <div style="font-size: 0.85rem; color: var(--text); margin-bottom: 0.5rem; word-break: break-all; line-height: 1.3;">${t.url}</div>
-                                        <div style="font-size: 0.75rem; color: var(--text-tertiary);">${date}</div>
-                                    </div>
-                                    <span class="badge badge-success" style="margin-left: 0.5rem;">$${(t.credit || 0).toFixed(2)}</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-secondary);">
-                                    <i class="ri-map-pin-line"></i>
-                                    <span>${t.country_code}</span>
-                                </div>
-                            </div>
-                            `;
-                        }).join('') : `
-                            <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
-                                <i class="ri-file-list-line" style="font-size: 2.5rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
-                                <p style="margin: 0; font-weight: 500;">No earning history yet</p>
-                            </div>
-                        `}
-                    </div>
+                    ${generatePagination('done_tasks', (page) => loadBalanceManagement(page, paginationState.withdrawals.current))}
                 </div>
-                ${generatePagination('done_tasks', (page) => loadBalanceManagement(page, paginationState.withdrawals.current))}
             </div>
             
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Withdrawal History</h3>
-                </div>
-                <div class="card-body">
-                    <!-- Desktop Table -->
-                    <div class="table-container desktop-only">
+            <div id="withdrawals-tab" class="tab-content">
+                <div class="card-body" style="padding-top: 0;">
+                    <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
@@ -1701,7 +1614,7 @@ async function loadBalanceManagement(doneTasksPage = 1, withdrawalsPage = 1) {
                                 </tr>
                             </thead>
                             <tbody>
-                                ${(data.withdrawals_details || []).map(w => {
+                                ${(data.withdrawals_details || []).length > 0 ? data.withdrawals_details.map(w => {
                                     const status = w.status || 'Unknown';
                                     let badgeClass = 'warning';
                                     if (status.toLowerCase() === 'complete') badgeClass = 'success';
@@ -1709,13 +1622,13 @@ async function loadBalanceManagement(doneTasksPage = 1, withdrawalsPage = 1) {
                                     
                                     return `
                                     <tr>
-                                        <td>${new Date(w.date).toLocaleString()}</td>
+                                        <td style="white-space: nowrap;">${new Date(w.date).toLocaleDateString()}<br><span style="font-size: 0.75rem; color: var(--text-tertiary);">${new Date(w.date).toLocaleTimeString()}</span></td>
                                         <td style="font-weight: 600;">$${(w.amount || 0).toFixed(2)}</td>
-                                        <td style="font-family: monospace; font-size: 0.8rem;">${w.address.substring(0, 10)}...${w.address.substring(w.address.length - 10)}</td>
+                                        <td style="font-family: monospace; font-size: 0.75rem;">${w.address.substring(0, 10)}...${w.address.substring(w.address.length - 10)}</td>
                                         <td><span class="badge badge-${badgeClass}">${status}</span></td>
-                                        <td style="font-family: monospace; font-size: 0.8rem;">
+                                        <td style="font-family: monospace; font-size: 0.75rem;">
                                             ${w.txID ? `
-                                                <a href="https://bscscan.com/tx/${w.txID}" target="_blank" style="color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 0.25rem;">
+                                                <a href="https://bscscan.com/tx/${w.txID}" target="_blank" style="color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
                                                     ${w.txID.substring(0,10)}...
                                                     <i class="ri-external-link-line"></i>
                                                 </a>
@@ -1723,67 +1636,32 @@ async function loadBalanceManagement(doneTasksPage = 1, withdrawalsPage = 1) {
                                         </td>
                                     </tr>
                                     `;
-                                }).join('')}
+                                }).join('') : `
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; padding: 2rem;">
+                                            <div style="color: var(--text-tertiary);">
+                                                <i class="ri-exchange-line" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+                                                No withdrawal history
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `}
                             </tbody>
                         </table>
                     </div>
-                    
-                    <!-- Mobile Cards -->
-                    <div class="mobile-only">
-                        ${(data.withdrawals_details || []).length > 0 ? data.withdrawals_details.map(w => {
-                            const status = w.status || 'Unknown';
-                            let badgeClass = 'warning';
-                            if (status.toLowerCase() === 'complete') badgeClass = 'success';
-                            if (['failed', 'rejected'].includes(status.toLowerCase())) badgeClass = 'danger';
-                            
-                            const date = new Date(w.date).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: new Date(w.date).getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
-                            });
-                            
-                            return `
-                            <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
-                                    <div style="flex: 1;">
-                                        <div style="font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem;">$${(w.amount || 0).toFixed(2)}</div>
-                                        <div style="font-size: 0.75rem; color: var(--text-tertiary);">${date}</div>
-                                    </div>
-                                    <span class="badge badge-${badgeClass}" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;">${status}</span>
-                                </div>
-                                
-                                <div style="background: var(--bg-tertiary); padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 0.75rem;">
-                                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Address:</div>
-                                    <div style="font-family: monospace; font-size: 0.75rem; color: var(--text); word-break: break-all;">${w.address}</div>
-                                </div>
-                                
-                                ${w.txID ? `
-                                    <a href="https://bscscan.com/tx/${w.txID}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.5rem; background: var(--primary); color: white; border-radius: var(--radius); text-decoration: none; font-size: 0.85rem;">
-                                        <i class="ri-external-link-line"></i>
-                                        <span>View on BSCScan</span>
-                                    </a>
-                                ` : `
-                                    <div style="text-align: center; padding: 0.5rem; background: var(--bg-tertiary); border-radius: var(--radius); font-size: 0.85rem; color: var(--text-secondary);">
-                                        Transaction pending...
-                                    </div>
-                                `}
-                            </div>
-                            `;
-                        }).join('') : `
-                            <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
-                                <i class="ri-exchange-line" style="font-size: 2.5rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
-                                <p style="margin: 0; font-weight: 500;">No withdrawal history</p>
-                            </div>
-                        `}
-                    </div>
+                    ${generatePagination('withdrawals', (page) => loadBalanceManagement(paginationState.done_tasks.current, page))}
                 </div>
-                ${generatePagination('withdrawals', (page) => loadBalanceManagement(paginationState.done_tasks.current, page))}
             </div>
-        `;
-    } catch (error) {
-        console.error('Balance error:', error);
-        showErrorState('Failed to load balance information: ' + error.message);
-    }
+        </div>
+    `;
+}
+
+function switchTab(tabName) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    event.target.classList.add('active');
+    document.getElementById(`${tabName}-tab`).classList.add('active');
 }
 
 function showWithdrawalModal() {
@@ -1801,7 +1679,7 @@ function showWithdrawalModal() {
             <div class="form-group">
                 <label class="form-label">Withdrawal Amount ($)</label>
                 <input type="number" class="form-input" id="withdrawAmount" name="amount" required min="${minWithdrawal}" max="${balance}" step="0.01" placeholder="Enter amount">
-                <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem;">
+                <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem; font-size: 0.8125rem;">
                     Minimum withdrawal: $${minWithdrawal.toFixed(2)}
                 </small>
             </div>
@@ -1809,12 +1687,12 @@ function showWithdrawalModal() {
             <div class="form-group">
                 <label class="form-label">USDT (BEP20) Address</label>
                 <input type="text" class="form-input" name="address" required placeholder="0x...">
-                <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem;">
+                <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem; font-size: 0.8125rem;">
                     Make sure this is a valid BEP20 (BSC) address
                 </small>
             </div>
             
-            <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius); font-size: 0.875rem; margin-bottom: 1.5rem;">
+            <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius); font-size: 0.875rem; margin-bottom: 1.25rem;">
                 <div style="display:flex; justify-content: space-between; margin-bottom: 0.5rem;">
                     <span>Amount:</span> 
                     <span id="summaryAmount" style="font-weight: 600;">$0.00</span>
@@ -1823,14 +1701,14 @@ function showWithdrawalModal() {
                     <span>Network Fee:</span> 
                     <span style="color: var(--error);">-$${fee.toFixed(2)}</span>
                 </div>
-                <hr style="border: none; border-top: 1px solid var(--border); margin: 0.75rem 0;">
-                <div style="display:flex; justify-content: space-between; font-weight: 700; font-size: 1rem;">
+                <hr style="border: none; border-top: 1px solid var(--border); margin: 0.625rem 0;">
+                <div style="display:flex; justify-content: space-between; font-weight: 700;">
                     <span>You Receive:</span> 
                     <span id="summaryNet" style="color: var(--success);">$0.00</span>
                 </div>
             </div>
             
-            <div style="display: flex; gap: 1rem;">
+            <div style="display: flex; gap: 0.75rem;">
                 <button type="button" class="btn btn-secondary" onclick="closeModal()" style="flex: 1;">Cancel</button>
                 <button type="submit" class="btn btn-primary" style="flex: 2;">
                     <i class="ri-send-plane-line"></i> Request Withdrawal
@@ -1919,12 +1797,10 @@ function generatePagination(type, loadFunction) {
 
     let paginationHTML = '<div class="pagination">';
 
-    // Previous button
     paginationHTML += `<button class="pagination-btn" ${currentPage <= 1 ? 'disabled' : ''} onclick="callPaginationHandler('${handlerId}', ${currentPage - 1})">
         <i class="ri-arrow-left-s-line"></i> Previous
     </button>`;
 
-    // Page numbers
     if (totalPages <= 5) {
         for (let i = 1; i <= totalPages; i++) {
             paginationHTML += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="callPaginationHandler('${handlerId}', ${i})">${i}</button>`;
@@ -1952,13 +1828,12 @@ function generatePagination(type, loadFunction) {
         }
     }
 
-    // Next button
     paginationHTML += `<button class="pagination-btn" ${!pagination.hasNext ? 'disabled' : ''} onclick="callPaginationHandler('${handlerId}', ${currentPage + 1})">
         Next <i class="ri-arrow-right-s-line"></i>
     </button>`;
 
     paginationHTML += `<div class="pagination-info">
-        Page ${currentPage} of ${totalPages} | Showing ${startItem} to ${endItem} of ${pagination.total} results
+        Page ${currentPage} of ${totalPages} | Showing ${startItem}-${endItem} of ${pagination.total}
     </div>`;
 
     paginationHTML += '</div>';
@@ -2011,7 +1886,7 @@ function closeModal() {
     document.getElementById('modalOverlay').classList.remove('active');
 }
 
-function showModal(title, content, width = '600px') {
+function showModal(title, content, width = '500px') {
     document.getElementById('modalTitle').textContent = title;
     document.getElementById('modalBody').innerHTML = content;
     const modal = document.querySelector('.modal');
@@ -2025,15 +1900,6 @@ async function logout() {
     localStorage.removeItem('partnerAuthToken');
     window.location.href = '/partner/login';
 }
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-    const dropdown = document.getElementById('mobileProfileDropdown');
-    const button = document.querySelector('.mobile-profile-menu');
-    if (dropdown && button && !dropdown.contains(event.target) && !button.contains(event.target)) {
-        closeMobileProfileDropdown();
-    }
-});
 </script>
 </body>
 </html>
