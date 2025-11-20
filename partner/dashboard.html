@@ -12,11 +12,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
 
 <style>
-/* CSS Variables - Minimal Claude-Inspired Design */
+/* CSS Variables - Claude-Inspired Neutral Design */
 :root {
-    --primary: #3b82f6;
-    --primary-dark: #2563eb;
-    --primary-light: #60a5fa;
+    --primary: #6b7280;
+    --primary-dark: #4b5563;
+    --primary-light: #9ca3af;
     --secondary: #10b981;
     --accent: #f59e0b;
     --error: #ef4444;
@@ -231,7 +231,7 @@ body {
 }
 
 .mobile-profile-menu .user-avatar:hover {
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2);
 }
 
 /* Profile Dropdown */
@@ -406,7 +406,7 @@ body {
     flex-shrink: 0;
 }
 
-.stat-icon.primary { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
+.stat-icon.primary { background: rgba(107, 114, 128, 0.1); color: var(--primary); }
 .stat-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
 .stat-icon.warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
 
@@ -468,7 +468,7 @@ body {
 .form-input:focus, .form-select:focus, .form-textarea:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
 }
 
 /* Tables */
@@ -476,8 +476,13 @@ body {
     overflow-x: auto; 
     border-radius: var(--radius);
     border: 1px solid var(--border);
+    -webkit-overflow-scrolling: touch;
 }
-table { width: 100%; border-collapse: collapse; }
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    min-width: 600px;
+}
 th { 
     background: var(--bg-tertiary); 
     padding: 0.75rem 1rem; 
@@ -485,13 +490,16 @@ th {
     font-weight: 600;
     font-size: 0.8125rem;
     color: var(--text);
-    border-bottom: 1px solid var(--border); 
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
 }
 td { 
     padding: 0.75rem 1rem; 
     border-bottom: 1px solid var(--border); 
     color: var(--text-secondary);
     font-size: 0.875rem;
+    word-break: break-word;
+    white-space: normal;
 }
 tr:last-child td { border-bottom: none; }
 tr:hover { background: var(--card-hover); }
@@ -785,7 +793,7 @@ tr:hover { background: var(--card-hover); }
     font-size: 0.75rem; 
     font-weight: 600; 
 }
-.badge-primary { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
+.badge-primary { background: rgba(107, 114, 128, 0.1); color: var(--primary); }
 .badge-success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
 .badge-warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
 .badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--error); }
@@ -856,7 +864,7 @@ tr:hover { background: var(--card-hover); }
 }
 .mobile-nav-item.active { 
     color: var(--primary);
-    background: rgba(59, 130, 246, 0.1);
+    background: rgba(107, 114, 128, 0.1);
 }
 .mobile-nav-item i { 
     font-size: 1.25rem; 
@@ -952,6 +960,56 @@ tr:hover { background: var(--card-hover); }
         padding: 0.625rem 1rem;
         font-size: 0.8125rem;
         white-space: nowrap;
+    }
+    
+    /* Mobile Table Improvements */
+    .table-container {
+        font-size: 0.8125rem;
+    }
+    
+    table {
+        min-width: 100%;
+        display: block;
+        overflow-x: auto;
+    }
+    
+    thead, tbody, tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+    
+    th, td {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+    }
+    
+    th {
+        font-size: 0.75rem;
+        padding: 0.625rem 0.75rem;
+    }
+    
+    /* Mobile-specific table cell adjustments */
+    td {
+        min-width: 0;
+        max-width: 100%;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    /* Specific handling for table cells with URLs */
+    td[style*="word-break"] {
+        word-break: break-all;
+        overflow-wrap: anywhere;
+    }
+    
+    /* Ensure date columns stay compact */
+    td[style*="white-space: nowrap"] {
+        white-space: nowrap !important;
+        min-width: auto;
     }
 }
 
@@ -1133,6 +1191,8 @@ let paginationState = {
 
 let countdownIntervals = {};
 let paginationHandlers = {};
+let incompleteTaskReloadInterval = null;
+let dashboardDataReloadInterval = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -1144,6 +1204,17 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
     loadPartnerDashboard();
     initializeTheme();
+});
+
+// Cleanup intervals on page unload
+window.addEventListener('beforeunload', () => {
+    if (incompleteTaskReloadInterval) {
+        clearInterval(incompleteTaskReloadInterval);
+    }
+    if (dashboardDataReloadInterval) {
+        clearInterval(dashboardDataReloadInterval);
+    }
+    clearCountdownIntervals();
 });
 
 // Event Listeners
@@ -1229,6 +1300,16 @@ function updateThemeIcon(theme) {
 }
 
 function navigateTo(page) {
+    // Clear any existing intervals when navigating
+    if (incompleteTaskReloadInterval) {
+        clearInterval(incompleteTaskReloadInterval);
+        incompleteTaskReloadInterval = null;
+    }
+    if (dashboardDataReloadInterval) {
+        clearInterval(dashboardDataReloadInterval);
+        dashboardDataReloadInterval = null;
+    }
+    
     document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(item => item.classList.remove('active'));
     document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add('active');
     document.querySelector(`.mobile-nav-item[data-page="${page}"]`)?.classList.add('active');
@@ -1273,9 +1354,12 @@ function callPaginationHandler(handlerId, page) {
     }
 }
 
-async function loadPartnerDashboard(page = 1) {
+async function loadPartnerDashboard(page = 1, showLoader = true) {
     try {
-        showSpinner();
+        if (showLoader) {
+            showSpinner();
+        }
+        
         const response = await api(`/partner/dashboard?page=${page}&page_size=12`);
         
         const { data, pagination } = response;
@@ -1285,6 +1369,12 @@ async function loadPartnerDashboard(page = 1) {
         if (data.incomplete_task) {
             renderIncompleteTaskView(data.tasks);
         } else {
+            // Clear incomplete task reload interval if switching to available tasks
+            if (incompleteTaskReloadInterval) {
+                clearInterval(incompleteTaskReloadInterval);
+                incompleteTaskReloadInterval = null;
+            }
+            
             currentData.tasks = sortTasks(data.tasks || []);
             
             paginationState.tasks = {
@@ -1297,6 +1387,44 @@ async function loadPartnerDashboard(page = 1) {
             };
             
             renderAvailableTasksView();
+            
+            // Set up 10-second data refresh for available tasks view (without full reload)
+            if (dashboardDataReloadInterval) {
+                clearInterval(dashboardDataReloadInterval);
+            }
+            
+            dashboardDataReloadInterval = setInterval(async () => {
+                try {
+                    const refreshResponse = await api(`/partner/dashboard?page=${paginationState.tasks.current}&page_size=12`);
+                    const { data: refreshData, pagination: refreshPagination } = refreshResponse;
+                    
+                    // Only update if we're still on the available tasks view
+                    if (!refreshData.incomplete_task) {
+                        currentData.user = refreshData.user;
+                        updateUserInfo(refreshData.user);
+                        currentData.tasks = sortTasks(refreshData.tasks || []);
+                        
+                        paginationState.tasks = {
+                            current: refreshPagination.tasks?.current || paginationState.tasks.current,
+                            page: refreshPagination.tasks?.current || paginationState.tasks.current,
+                            size: refreshPagination.tasks?.size || 12,
+                            total: refreshPagination.tasks?.total || 0,
+                            pages: refreshPagination.tasks?.pages || 1,
+                            hasNext: refreshPagination.tasks?.has_next || false
+                        };
+                        
+                        // Update the view without showing spinner
+                        renderAvailableTasksView();
+                    } else {
+                        // Task became incomplete, reload properly
+                        clearInterval(dashboardDataReloadInterval);
+                        dashboardDataReloadInterval = null;
+                        loadPartnerDashboard(1, true);
+                    }
+                } catch (error) {
+                    console.error('Data refresh error:', error);
+                }
+            }, 10000); // 10 seconds
         }
     } catch (error) {
         console.error('Dashboard error:', error);
@@ -1319,6 +1447,12 @@ function getPriorityLevel(priority) {
 }
 
 function renderIncompleteTaskView(task) {
+    // Clear any existing reload interval
+    if (incompleteTaskReloadInterval) {
+        clearInterval(incompleteTaskReloadInterval);
+        incompleteTaskReloadInterval = null;
+    }
+    
     const randomKeyword = task.keywords && task.keywords.length > 0
         ? task.keywords[Math.floor(Math.random() * task.keywords.length)]
         : '';
@@ -1332,13 +1466,6 @@ function renderIncompleteTaskView(task) {
                 <div class="stat-content">
                     <div class="stat-value">$${(currentData.user?.credit || 0).toFixed(2)}</div>
                     <div class="stat-label">Current Credit</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon warning"><i class="ri-loader-4-line"></i></div>
-                <div class="stat-content">
-                    <div class="stat-value">1</div>
-                    <div class="stat-label">Task In Progress</div>
                 </div>
             </div>
         </div>
@@ -1380,6 +1507,43 @@ function renderIncompleteTaskView(task) {
             </div>
         </div>
     `;
+    
+    // Set up 10-second auto-reload for incomplete task
+    incompleteTaskReloadInterval = setInterval(async () => {
+        try {
+            const response = await api(`/partner/dashboard?page=1&page_size=12`);
+            const { data } = response;
+            
+            // If task is no longer incomplete, reload the dashboard
+            if (!data.incomplete_task) {
+                clearInterval(incompleteTaskReloadInterval);
+                incompleteTaskReloadInterval = null;
+                currentData.user = data.user;
+                updateUserInfo(data.user);
+                currentData.tasks = sortTasks(data.tasks || []);
+                paginationState.tasks = {
+                    current: 1,
+                    page: 1,
+                    size: 12,
+                    total: data.tasks?.length || 0,
+                    pages: 1,
+                    hasNext: false
+                };
+                renderAvailableTasksView();
+            } else {
+                // Just update the credit if task is still incomplete
+                currentData.user = data.user;
+                updateUserInfo(data.user);
+                // Update credit display without full reload
+                const creditEl = document.querySelector('.stat-value');
+                if (creditEl && creditEl.textContent.includes('$')) {
+                    creditEl.textContent = `$${(data.user?.credit || 0).toFixed(2)}`;
+                }
+            }
+        } catch (error) {
+            console.error('Auto-reload error:', error);
+        }
+    }, 10000); // 10 seconds
 }
 
 function renderAvailableTasksView() {
@@ -1414,7 +1578,7 @@ function renderAvailableTasksView() {
                 </div>
             `}
         </div>
-        ${generatePagination('tasks', loadPartnerDashboard)}
+        ${generatePagination('tasks', (page) => loadPartnerDashboard(page, true))}
     `;
 
     currentData.tasks.forEach(task => {
@@ -1578,10 +1742,10 @@ function renderBalanceView() {
                             <tbody>
                                 ${(data.done_tasks_details || []).length > 0 ? data.done_tasks_details.map(t => `
                                     <tr>
-                                        <td style="white-space: nowrap;">${new Date(t.time).toLocaleDateString()}<br><span style="font-size: 0.75rem; color: var(--text-tertiary);">${new Date(t.time).toLocaleTimeString()}</span></td>
-                                        <td style="max-width: 300px; word-break: break-all;">${t.url}</td>
-                                        <td>${t.country_code}</td>
-                                        <td><span class="badge badge-success">$${(t.credit || 0).toFixed(2)}</span></td>
+                                        <td style="white-space: nowrap; min-width: 100px;">${new Date(t.time).toLocaleDateString()}<br><span style="font-size: 0.75rem; color: var(--text-tertiary);">${new Date(t.time).toLocaleTimeString()}</span></td>
+                                        <td style="max-width: 300px; word-break: break-word; overflow-wrap: break-word; hyphens: auto;">${t.url}</td>
+                                        <td style="white-space: nowrap;">${t.country_code}</td>
+                                        <td style="white-space: nowrap;"><span class="badge badge-success">$${(t.credit || 0).toFixed(2)}</span></td>
                                     </tr>
                                 `).join('') : `
                                     <tr>
@@ -1622,11 +1786,11 @@ function renderBalanceView() {
                                     
                                     return `
                                     <tr>
-                                        <td style="white-space: nowrap;">${new Date(w.date).toLocaleDateString()}<br><span style="font-size: 0.75rem; color: var(--text-tertiary);">${new Date(w.date).toLocaleTimeString()}</span></td>
-                                        <td style="font-weight: 600;">$${(w.amount || 0).toFixed(2)}</td>
-                                        <td style="font-family: monospace; font-size: 0.75rem;">${w.address.substring(0, 10)}...${w.address.substring(w.address.length - 10)}</td>
-                                        <td><span class="badge badge-${badgeClass}">${status}</span></td>
-                                        <td style="font-family: monospace; font-size: 0.75rem;">
+                                        <td style="white-space: nowrap; min-width: 100px;">${new Date(w.date).toLocaleDateString()}<br><span style="font-size: 0.75rem; color: var(--text-tertiary);">${new Date(w.date).toLocaleTimeString()}</span></td>
+                                        <td style="font-weight: 600; white-space: nowrap;">$${(w.amount || 0).toFixed(2)}</td>
+                                        <td style="font-family: monospace; font-size: 0.75rem; word-break: break-all; overflow-wrap: break-word; max-width: 200px;">${w.address.substring(0, 10)}...${w.address.substring(w.address.length - 10)}</td>
+                                        <td style="white-space: nowrap;"><span class="badge badge-${badgeClass}">${status}</span></td>
+                                        <td style="font-family: monospace; font-size: 0.75rem; word-break: break-all; overflow-wrap: break-word;">
                                             ${w.txID ? `
                                                 <a href="https://bscscan.com/tx/${w.txID}" target="_blank" style="color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
                                                     ${w.txID.substring(0,10)}...
@@ -1768,7 +1932,7 @@ function startCountdown(taskId, minutes) {
         
         if (distance < 0) {
             clearInterval(countdownIntervals[taskId]);
-            loadPartnerDashboard(paginationState.tasks.current);
+            loadPartnerDashboard(paginationState.tasks.current, true);
         } else {
             el.textContent = `Available in ${minsLeft}m ${secsLeft}s`;
         }
