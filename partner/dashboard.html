@@ -1782,7 +1782,7 @@ async function loadPartnerDashboard(page = 1, showLoader = true) {
                 } finally {
                     isRefreshing = false;
                 }
-            }, 10000); // 10 seconds
+            }, 60000); // 10 seconds
         }
     } catch (error) {
         console.error('Dashboard error:', error);
