@@ -52,17 +52,17 @@
 
 /* Dark Theme */
 [data-theme="dark"] {
-    --bg: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    --sidebar: #1e293b;
-    --card: #1e293b;
-    --card-hover: #334155;
-    --text: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-tertiary: #94a3b8;
-    --border: #334155;
-    --input-bg: #334155;
+    --bg: #0a0a0a;
+    --bg-secondary: #151515;
+    --bg-tertiary: #1f1f1f;
+    --sidebar: #151515;
+    --card: #151515;
+    --card-hover: #1f1f1f;
+    --text: #ffffff;
+    --text-secondary: #b3b3b3;
+    --text-tertiary: #808080;
+    --border: #2a2a2a;
+    --input-bg: #1f1f1f;
 }
 
 /* Base Styles */
@@ -1566,23 +1566,57 @@ function updateUserInfo(user) {
 }
 
 async function api(endpoint, options = {}) {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-        ...options,
-        headers: { 
-            'Session-Token': sessionToken, 
-            'Content-Type': 'application/json', 
-            ...(options.headers || {}) 
+    try {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
+            ...options,
+            headers: { 
+                'Session-Token': sessionToken, 
+                'Content-Type': 'application/json', 
+                ...(options.headers || {}) 
+            }
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error?.message || errorData.message || `HTTP ${response.status}: ${response.statusText}`);
         }
-    });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error?.message || data.message || 'API Error');
-    return data;
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        if (error.message) {
+            throw error;
+        }
+        throw new Error('Network error: Failed to connect to server');
+    }
 }
 
 function callPaginationHandler(handlerId, page) {
     if (paginationHandlers[handlerId]) {
         paginationHandlers[handlerId](page);
     }
+}
+
+// Helper function to safely extract pagination data
+function getPaginationData(pagination, page = 1, fallbackTotal = 0) {
+    if (pagination && pagination.tasks) {
+        return {
+            current: pagination.tasks.current || page,
+            page: pagination.tasks.current || page,
+            size: pagination.tasks.size || 12,
+            total: pagination.tasks.total || fallbackTotal,
+            pages: pagination.tasks.pages || 1,
+            hasNext: pagination.tasks.has_next || false
+        };
+    }
+    return {
+        current: page,
+        page: page,
+        size: 12,
+        total: fallbackTotal,
+        pages: 1,
+        hasNext: false
+    };
 }
 
 async function loadPartnerDashboard(page = 1, showLoader = true) {
@@ -1593,35 +1627,22 @@ async function loadPartnerDashboard(page = 1, showLoader = true) {
         
         const response = await api(`/partner/dashboard?page=${page}&page_size=12`);
         
-        const { data, pagination } = response || {};
-        currentData.user = data?.user;
-        if (currentData.user) {
-            updateUserInfo(currentData.user);
+        if (!response || !response.data) {
+            throw new Error('Invalid API response');
         }
         
-        if (data?.incomplete_task) {
-            // Store pagination info for incomplete task view (if available)
-            if (pagination && pagination.tasks) {
-                paginationState.tasks = {
-                    current: pagination.tasks.current || page,
-                    page: pagination.tasks.current || page,
-                    size: pagination.tasks.size || 12,
-                    total: pagination.tasks.total || 0,
-                    pages: pagination.tasks.pages || 1,
-                    hasNext: pagination.tasks.has_next || false
-                };
-            } else {
-                // Default values if pagination is not available
-                paginationState.tasks = {
-                    current: page,
-                    page: page,
-                    size: 12,
-                    total: 0,
-                    pages: 1,
-                    hasNext: false
-                };
-            }
-            renderIncompleteTaskView(data.tasks);
+        const { data, pagination } = response;
+        
+        // Update user info
+        if (data.user) {
+            currentData.user = data.user;
+            updateUserInfo(data.user);
+        }
+        
+        if (data.incomplete_task) {
+            // Store pagination info for incomplete task view
+            paginationState.tasks = getPaginationData(pagination, page, 0);
+            renderIncompleteTaskView(data.tasks || data.incomplete_task);
         } else {
             // Clear incomplete task reload interval if switching to available tasks
             if (incompleteTaskReloadInterval) {
@@ -1629,28 +1650,9 @@ async function loadPartnerDashboard(page = 1, showLoader = true) {
                 incompleteTaskReloadInterval = null;
             }
             
-            currentData.tasks = sortTasks(data?.tasks || []);
-            
-            if (pagination && pagination.tasks) {
-                paginationState.tasks = {
-                    current: pagination.tasks.current || page,
-                    page: pagination.tasks.current || page,
-                    size: pagination.tasks.size || 12,
-                    total: pagination.tasks.total || 0,
-                    pages: pagination.tasks.pages || 1,
-                    hasNext: pagination.tasks.has_next || false
-                };
-            } else {
-                // Default values if pagination is not available
-                paginationState.tasks = {
-                    current: page,
-                    page: page,
-                    size: 12,
-                    total: currentData.tasks.length,
-                    pages: 1,
-                    hasNext: false
-                };
-            }
+            // Process tasks
+            currentData.tasks = sortTasks(data.tasks || []);
+            paginationState.tasks = getPaginationData(pagination, page, currentData.tasks.length);
             
             renderAvailableTasksView();
             
@@ -1662,29 +1664,21 @@ async function loadPartnerDashboard(page = 1, showLoader = true) {
             dashboardDataReloadInterval = setInterval(async () => {
                 try {
                     const refreshResponse = await api(`/partner/dashboard?page=${paginationState.tasks.current}&page_size=12`);
-                    const { data: refreshData, pagination: refreshPagination } = refreshResponse || {};
+                    
+                    if (!refreshResponse || !refreshResponse.data) {
+                        return; // Silently fail on refresh errors
+                    }
+                    
+                    const { data: refreshData, pagination: refreshPagination } = refreshResponse;
                     
                     // Only update if we're still on the available tasks view
-                    if (!refreshData?.incomplete_task) {
-                        currentData.user = refreshData?.user;
-                        if (currentData.user) {
-                            updateUserInfo(currentData.user);
+                    if (!refreshData.incomplete_task) {
+                        if (refreshData.user) {
+                            currentData.user = refreshData.user;
+                            updateUserInfo(refreshData.user);
                         }
-                        currentData.tasks = sortTasks(refreshData?.tasks || []);
-                        
-                        if (refreshPagination && refreshPagination.tasks) {
-                            paginationState.tasks = {
-                                current: refreshPagination.tasks.current || paginationState.tasks.current,
-                                page: refreshPagination.tasks.current || paginationState.tasks.current,
-                                size: refreshPagination.tasks.size || 12,
-                                total: refreshPagination.tasks.total || 0,
-                                pages: refreshPagination.tasks.pages || 1,
-                                hasNext: refreshPagination.tasks.has_next || false
-                            };
-                        } else {
-                            // Keep existing pagination state if not available
-                            paginationState.tasks.total = currentData.tasks.length;
-                        }
+                        currentData.tasks = sortTasks(refreshData.tasks || []);
+                        paginationState.tasks = getPaginationData(refreshPagination, paginationState.tasks.current, currentData.tasks.length);
                         
                         // Update the view without showing spinner
                         renderAvailableTasksView();
@@ -1696,12 +1690,13 @@ async function loadPartnerDashboard(page = 1, showLoader = true) {
                     }
                 } catch (error) {
                     console.error('Data refresh error:', error);
+                    // Don't show error to user for background refresh failures
                 }
             }, 10000); // 10 seconds
         }
     } catch (error) {
         console.error('Dashboard error:', error);
-        showErrorState('Failed to load dashboard data: ' + error.message);
+        showErrorState('Failed to load dashboard data: ' + (error.message || 'Unknown error'));
     }
 }
 
@@ -1726,12 +1721,17 @@ function renderIncompleteTaskView(task) {
         incompleteTaskReloadInterval = null;
     }
     
-    const randomKeyword = task.keywords && task.keywords.length > 0
+    if (!task) {
+        console.error('No task data provided to renderIncompleteTaskView');
+        return;
+    }
+    
+    const randomKeyword = (task.keywords && Array.isArray(task.keywords) && task.keywords.length > 0)
         ? task.keywords[Math.floor(Math.random() * task.keywords.length)]
         : '';
 
-    const searchSite = task.url.replace(/(^\w+:|^)\/\//, '').replace(/^www\./, '');
-    const totalTasks = paginationState.tasks.total || 0;
+    const searchSite = (task.url || '').replace(/(^\w+:|^)\/\//, '').replace(/^www\./, '');
+    const totalTasks = paginationState.tasks?.total || 0;
 
     document.getElementById('content').innerHTML = `
         <div class="stats-grid">
@@ -1789,56 +1789,34 @@ function renderIncompleteTaskView(task) {
     incompleteTaskReloadInterval = setInterval(async () => {
         try {
             const response = await api(`/partner/dashboard?page=1&page_size=12`);
+            
+            if (!response || !response.data) {
+                return; // Silently fail on refresh errors
+            }
+            
             const { data, pagination } = response;
             
             // If task is no longer incomplete, reload the dashboard
             if (!data.incomplete_task) {
                 clearInterval(incompleteTaskReloadInterval);
                 incompleteTaskReloadInterval = null;
-                currentData.user = data?.user;
-                if (currentData.user) {
-                    updateUserInfo(currentData.user);
-                }
-                currentData.tasks = sortTasks(data?.tasks || []);
                 
-                if (pagination && pagination.tasks) {
-                    paginationState.tasks = {
-                        current: pagination.tasks.current || 1,
-                        page: pagination.tasks.current || 1,
-                        size: pagination.tasks.size || 12,
-                        total: pagination.tasks.total || 0,
-                        pages: pagination.tasks.pages || 1,
-                        hasNext: pagination.tasks.has_next || false
-                    };
-                } else {
-                    paginationState.tasks = {
-                        current: 1,
-                        page: 1,
-                        size: 12,
-                        total: currentData.tasks.length,
-                        pages: 1,
-                        hasNext: false
-                    };
+                if (data.user) {
+                    currentData.user = data.user;
+                    updateUserInfo(data.user);
                 }
+                currentData.tasks = sortTasks(data.tasks || []);
+                paginationState.tasks = getPaginationData(pagination, 1, currentData.tasks.length);
                 renderAvailableTasksView();
             } else {
                 // Just update the credit and tasks count if task is still incomplete
-                currentData.user = data?.user;
-                if (currentData.user) {
-                    updateUserInfo(currentData.user);
+                if (data.user) {
+                    currentData.user = data.user;
+                    updateUserInfo(data.user);
                 }
                 
                 // Update pagination state
-                if (pagination && pagination.tasks) {
-                    paginationState.tasks = {
-                        current: pagination.tasks.current || 1,
-                        page: pagination.tasks.current || 1,
-                        size: pagination.tasks.size || 12,
-                        total: pagination.tasks.total || 0,
-                        pages: pagination.tasks.pages || 1,
-                        hasNext: pagination.tasks.has_next || false
-                    };
-                }
+                paginationState.tasks = getPaginationData(pagination, 1, paginationState.tasks.total);
                 
                 // Update credit display without full reload
                 const statCards = document.querySelectorAll('.stat-value');
@@ -1849,6 +1827,7 @@ function renderIncompleteTaskView(task) {
             }
         } catch (error) {
             console.error('Auto-reload error:', error);
+            // Don't show error to user for background refresh failures
         }
     }, 10000); // 10 seconds
 }
