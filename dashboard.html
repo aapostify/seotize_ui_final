@@ -1057,7 +1057,7 @@ tr:hover {
     bottom: 0;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
-    z-index: 10000;
+    z-index: 9998;
     display: none;
     animation: fadeIn 0.3s ease;
 }
@@ -1735,6 +1735,233 @@ tr:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+/* Mobile Responsive Styles for Task Creator */
+@media (max-width: 768px) {
+    .seo-task-creator {
+        padding: 0;
+    }
+    
+    .task-creator-container {
+        width: 100vw;
+        max-width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        flex-direction: column;
+    }
+    
+    .task-creator-sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 1rem;
+        order: 2;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--bg-secondary);
+        z-index: 9999;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .task-creator-main {
+        width: 100%;
+        order: 1;
+        padding-bottom: 200px; /* Space for fixed bottom sidebar */
+        overflow-y: auto;
+        height: calc(100vh - 60px);
+    }
+    
+    .task-creator-header {
+        padding: 1rem;
+        position: sticky;
+        top: 0;
+        background: var(--bg-secondary);
+        z-index: 100;
+    }
+    
+    .task-creator-title {
+        font-size: 1.25rem;
+    }
+    
+    .task-creator-subtitle {
+        font-size: 0.875rem;
+    }
+    
+    .task-creator-content {
+        padding: 1rem;
+    }
+    
+    .progress-steps {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+        overflow-x: auto;
+        padding: 0.5rem 0;
+    }
+    
+    .progress-step {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        min-width: 80px;
+        padding: 0.5rem;
+    }
+    
+    .progress-step .step-info {
+        display: none;
+    }
+    
+    .progress-step.active .step-info {
+        display: block;
+        margin-top: 0.5rem;
+    }
+    
+    .progress-step .step-title {
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+    
+    .progress-step .step-description {
+        display: none;
+    }
+    
+    .step-indicator {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.875rem;
+    }
+    
+    .task-creator-footer {
+        position: fixed;
+        bottom: 160px; /* Above the progress sidebar */
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border);
+        z-index: 100;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .task-creator-footer button {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .task-creator-footer button i {
+        margin-right: 0.25rem;
+    }
+    
+    /* Form elements mobile adjustments */
+    .form-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .priority-options {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .priority-option {
+        width: 100%;
+        padding: 1rem;
+    }
+    
+    .keyword-input-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .keyword-input-group input {
+        width: 100%;
+    }
+    
+    .keyword-input-group button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .budget-input-wrapper input {
+        font-size: 1.25rem;
+    }
+    
+    .payment-method-options {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .billing-cycle-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-section {
+        padding: 1rem;
+    }
+    
+    .summary-item {
+        font-size: 0.875rem;
+    }
+    
+    .summary-total {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .task-creator-sidebar {
+        padding: 0.75rem;
+    }
+    
+    .progress-step {
+        min-width: 60px;
+    }
+    
+    .task-creator-header {
+        padding: 0.75rem;
+    }
+    
+    .task-creator-content {
+        padding: 0.75rem;
+    }
+    
+    .task-creator-footer {
+        padding: 0.75rem;
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+    
+    .task-creator-footer button {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .task-creator-footer button span {
+        display: none;
+    }
+    
+    .task-creator-footer button i {
+        margin-right: 0;
+    }
+    
+    /* Show text labels on mobile buttons */
+    .task-creator-footer button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    /* Ensure button text is visible */
+    #prevStepBtn,
+    #nextStepBtn,
+    #createTaskBtn {
+        white-space: nowrap;
+    }
 }
 
 .footer-info {
@@ -3184,6 +3411,11 @@ div#modalBody {
 .swal2-popup-custom-task {
     margin: 0 !important;
     padding: 0 !important;
+}
+
+/* Ensure SweetAlert2 modals appear above task creator */
+.swal2-container {
+    z-index: 10000 !important;
 }
 /* ADD THIS CSS to your main <style> block */
 
@@ -6629,6 +6861,12 @@ function closeSeoTaskCreator() {
     creator.classList.remove('active');
     // Reset and clean everything when closing
     resetTaskCreatorState();
+    // Reset button state when closing
+    const createBtn = document.getElementById('createTaskBtn');
+    if (createBtn) {
+        createBtn.innerHTML = '<i class="ri-check-line"></i> Create Task';
+        createBtn.disabled = false;
+    }
 }
 
 // Reset state
@@ -7119,33 +7357,46 @@ async function createSeoTask(isRetry = false) {
         createBtn.innerHTML = '<i class="ri-check-line"></i> Create Task';
         createBtn.disabled = false;
     } catch (error) {
-        if (error.code === 409 && error.message === 'Pending task exists') {
+        // Handle 409 error - Pending task exists
+        if (error.code === 409 || (error.data && error.data.error && error.data.error.code === 409)) {
+            const errorMessage = error.message || error.data?.error?.message || 'Pending task exists';
+            
+            // Always reset button state first
+            createBtn.innerHTML = '<i class="ri-check-line"></i> Create Task';
+            createBtn.disabled = false;
+            
             // Show confirmation dialog for cancelling previous task
             const result = await Swal.fire({
                 title: 'Pending Payment Active',
-                text: 'There is a pending payment active. Do you want to cancel it and create a new task?',
+                text: 'You have a pending payment that needs to be completed. Would you like to cancel it and create a new task?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'No'
+                confirmButtonText: 'Yes, Cancel & Create New',
+                cancelButtonText: 'No, Keep Existing'
             });
             
             if (result.isConfirmed) {
                 // Set cancel_previous to true and retry
                 taskCreatorState.cancelPrevious = true;
-                // Keep loading state and retry the task creation
+                // Show loading state again and retry
+                createBtn.innerHTML = '<i class="ri-loader-line"></i> Creating...';
+                createBtn.disabled = true;
+                // Retry the task creation
                 createSeoTask(true);
-                return; // Don't reset button state yet
+                return; // Don't close modal or reset state yet
             } else {
+                // User chose not to cancel the pending task
                 taskCreatorState.cancelPrevious = false;
+                // Close the task creator
+                closeSeoTaskCreator();
+                showToast('Please complete your pending payment first.', 'info');
+                // Optionally, you could redirect to pending payments or show them
                 checkForPendingTasks();
-                // Reset button state when user cancels
-                createBtn.innerHTML = '<i class="ri-check-line"></i> Create Task';
-                createBtn.disabled = false;
             }
         } else {
+            // Any other error
             showToast(error.message || 'Failed to create task', 'error');
             // Reset button state on error
             createBtn.innerHTML = '<i class="ri-check-line"></i> Create Task';
@@ -10894,6 +11145,19 @@ window.addEventListener('resize', () => {
     } else {
         sidebarToggle.style.display = 'none';
         document.getElementById('sidebar').classList.remove('active');
+    }
+    
+    // Handle task creator layout on resize
+    const taskCreator = document.getElementById('seoTaskCreator');
+    if (taskCreator && taskCreator.classList.contains('active')) {
+        // Force re-layout for task creator on resize
+        const container = taskCreator.querySelector('.task-creator-container');
+        if (container) {
+            container.style.display = 'none';
+            setTimeout(() => {
+                container.style.display = '';
+            }, 10);
+        }
     }
 });
 
