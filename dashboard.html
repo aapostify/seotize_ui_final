@@ -1132,7 +1132,7 @@ tr:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
+    z-index: 1010;
 }
 
 .task-creator-close:hover {
@@ -1653,6 +1653,13 @@ tr:hover {
     margin-top: 1rem;
 }
 
+.budget-summary-period {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+    opacity: 0.8;
+}
+
 .budget-summary-item {
     text-align: center;
     padding: 0.75rem;
@@ -1779,12 +1786,44 @@ tr:hover {
 
 @media (max-width: 768px) {
     .billing-cycle-options {
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .billing-cycle-options .billing-option {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .billing-cycle-options .billing-option-header {
+        font-size: 0.875rem;
+    }
+    
+    .billing-cycle-options .billing-price {
+        font-size: 1.125rem;
+    }
+    
+    .billing-cycle-options .billing-period,
+    .billing-cycle-options .billing-save {
+        font-size: 0.65rem;
     }
     
     .budget-summary {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+        padding: 0.75rem;
+    }
+    
+    .budget-summary-item {
+        padding: 0.5rem;
+    }
+    
+    .budget-summary-label {
+        font-size: 0.625rem;
+    }
+    
+    .budget-summary-value {
+        font-size: 0.875rem;
     }
 }
 
@@ -1814,6 +1853,10 @@ tr:hover {
         border-radius: 0;
         flex-direction: column;
         display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
     }
     
     .task-creator-sidebar {
@@ -2099,19 +2142,19 @@ tr:hover {
     }
     
     .billing-cycle-options {
-        grid-template-columns: 1fr;
-        gap: 0.875rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
     }
     
     .billing-option {
-        padding: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        padding: 0.75rem 0.5rem;
+        display: block;
+        text-align: center;
     }
     
     .billing-option-header {
-        flex: 1;
+        margin-bottom: 0.5rem;
     }
     
     .billing-badge {
@@ -2142,6 +2185,7 @@ tr:hover {
     .budget-summary {
         padding: 0.75rem;
         gap: 0.5rem;
+        grid-template-columns: repeat(3, 1fr);
     }
     
     .budget-summary-label {
@@ -2149,7 +2193,7 @@ tr:hover {
     }
     
     .budget-summary-value {
-        font-size: 1rem;
+        font-size: 0.875rem;
     }
     
     /* Keywords Section Mobile */
@@ -2241,9 +2285,12 @@ tr:hover {
     .task-creator-close {
         top: 0.75rem;
         right: 0.75rem;
-        width: 2rem;
-        height: 2rem;
-        font-size: 1rem;
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1.25rem;
+        z-index: 1010;
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid var(--border);
     }
     
     .task-creator-title {
@@ -2298,7 +2345,8 @@ tr:hover {
     }
     
     .billing-cycle-options {
-        gap: 0.625rem;
+        gap: 0.5rem;
+        grid-template-columns: repeat(3, 1fr);
     }
     
     .billing-option {
@@ -2322,10 +2370,11 @@ tr:hover {
     
     .budget-summary {
         padding: 0.625rem;
+        grid-template-columns: repeat(3, 1fr);
     }
     
     .budget-summary-value {
-        font-size: 0.875rem;
+        font-size: 0.75rem;
     }
     
     .keyword-suggestion {
@@ -3173,6 +3222,16 @@ tr:hover {
     
     .step-content {
         animation: fadeIn 0.2s ease !important;
+    }
+    
+    /* Ensure close button is always visible and clickable on mobile */
+    .task-creator-close {
+        position: fixed !important;
+        top: 1rem !important;
+        right: 1rem !important;
+        z-index: 10001 !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
     }
     
     .progress-step.active .step-indicator {
@@ -7926,9 +7985,10 @@ function updateBudgetSummary() {
     const finalAmountElem = document.getElementById('finalAmount');
     
     if (taskCreatorState.paymentType === 'subscription' && multiplier > 1) {
-        providerFeeElem.innerHTML = `$${totalProviderFee.toFixed(2)}<div class="budget-summary-period">$${monthlyProviderFee.toFixed(2)}/mo × ${multiplier}</div>`;
-        platformFeeElem.innerHTML = `$${totalPlatformFee.toFixed(2)}<div class="budget-summary-period">$${monthlyPlatformFee.toFixed(2)}/mo × ${multiplier}</div>`;
-        finalAmountElem.innerHTML = `$${totalFinalAmount.toFixed(2)}<div class="budget-summary-period">$${monthlyFinalAmount.toFixed(2)}/mo × ${multiplier}</div>`;
+        const periodText = multiplier === 3 ? '3 month' : (multiplier === 12 ? '12 month' : `${multiplier} month`);
+        providerFeeElem.innerHTML = `$${totalProviderFee.toFixed(2)}<div class="budget-summary-period">${periodText}</div>`;
+        platformFeeElem.innerHTML = `$${totalPlatformFee.toFixed(2)}<div class="budget-summary-period">${periodText}</div>`;
+        finalAmountElem.innerHTML = `$${totalFinalAmount.toFixed(2)}<div class="budget-summary-period">${periodText}</div>`;
     } else {
         providerFeeElem.innerHTML = `$${monthlyProviderFee.toFixed(2)}`;
         platformFeeElem.innerHTML = `$${monthlyPlatformFee.toFixed(2)}`;
