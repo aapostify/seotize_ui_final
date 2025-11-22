@@ -1055,8 +1055,9 @@ tr:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 9998;
     display: none;
     animation: fadeIn 0.3s ease;
@@ -1076,8 +1077,21 @@ tr:hover {
     max-height: 90vh;
     overflow: hidden;
     display: flex;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    animation: slideUp 0.3s ease;
+    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.3);
+    animation: slideUpDesktop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+}
+
+/* Desktop animation */
+@keyframes slideUpDesktop {
+    from {
+        transform: translateY(30px) scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
 }
 
 .task-creator-sidebar {
@@ -1123,23 +1137,30 @@ tr:hover {
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(239, 68, 68, 0.1) 100%);
-    border: 2px solid var(--border);
-    color: var(--text-secondary);
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(249,250,251,0.95) 100%);
+    border: 2px solid rgba(229,231,235,1);
+    color: #6b7280;
     font-size: 1.25rem;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1010;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .task-creator-close:hover {
-    background: linear-gradient(135deg, var(--error) 0%, #ff6b6b 100%);
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     color: white;
-    transform: rotate(90deg) scale(1.05);
-    border-color: var(--error);
+    transform: rotate(90deg) scale(1.1);
+    border-color: transparent;
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+.task-creator-close:active {
+    transform: rotate(90deg) scale(1);
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
@@ -1841,8 +1862,21 @@ tr:hover {
 @media (max-width: 768px) {
     .seo-task-creator {
         padding: 0;
-        display: flex;
         align-items: stretch;
+        /* Remove display: flex here - let the active class control it */
+    }
+    
+    /* Add backdrop overlay for mobile */
+    .seo-task-creator::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: -1;
     }
     
     .task-creator-container {
@@ -1852,11 +1886,19 @@ tr:hover {
         max-height: 100vh;
         border-radius: 0;
         flex-direction: column;
-        display: flex;
+        /* Remove display: flex - inherit from parent */
         position: fixed;
         top: 0;
         left: 0;
         z-index: 1000;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+    
+    /* Only show container when parent is active */
+    .seo-task-creator.active .task-creator-container {
+        transform: translateY(0);
+        display: flex;
     }
     
     .task-creator-sidebar {
@@ -2289,8 +2331,7 @@ tr:hover {
         height: 2.5rem;
         font-size: 1.25rem;
         z-index: 1010;
-        background: rgba(255, 255, 255, 0.95);
-        border: 2px solid var(--border);
+        /* Inherit the improved styles from desktop */
     }
     
     .task-creator-title {
@@ -3217,7 +3258,18 @@ tr:hover {
 /* Mobile animation improvements for task creator */
 @media (max-width: 768px) {
     .seo-task-creator.active .task-creator-container {
-        animation: slideInMobile 0.3s ease !important;
+        animation: slideUpMobile 0.3s ease forwards !important;
+    }
+    
+    @keyframes slideUpMobile {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
     }
     
     .step-content {
@@ -3230,7 +3282,21 @@ tr:hover {
         top: 1rem !important;
         right: 1rem !important;
         z-index: 10001 !important;
-        background: rgba(255, 255, 255, 0.95) !important;
+        background: linear-gradient(135deg, #fff 0%, #f3f4f6 100%) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        width: 3rem !important;
+        height: 3rem !important;
+        border: 2px solid rgba(239, 68, 68, 0.2) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        color: #ef4444 !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    .task-creator-close:active {
+        transform: scale(0.95) !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
     }
     
@@ -7493,6 +7559,14 @@ let taskCreatorState = {
 function openSeoTaskCreator() {
     const creator = document.getElementById('seoTaskCreator');
     creator.classList.add('active');
+    
+    // Prevent body scrolling on mobile when modal is open
+    if (window.innerWidth <= 768) {
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+    }
+    
     resetTaskCreatorState();
     checkForPendingTasks();
 }
@@ -7501,6 +7575,12 @@ function openSeoTaskCreator() {
 function closeSeoTaskCreator() {
     const creator = document.getElementById('seoTaskCreator');
     creator.classList.remove('active');
+    
+    // Re-enable body scrolling
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+    
     // Reset and clean everything when closing
     resetTaskCreatorState();
     // Reset button state when closing
@@ -7510,6 +7590,29 @@ function closeSeoTaskCreator() {
         createBtn.disabled = false;
     }
 }
+
+// Add click handler for backdrop to close modal
+document.addEventListener('click', function(event) {
+    const creator = document.getElementById('seoTaskCreator');
+    if (!creator || !creator.classList.contains('active')) return;
+    
+    const container = creator.querySelector('.task-creator-container');
+    
+    // If click is on the creator element but not inside the container, it's on the backdrop
+    if (event.target === creator) {
+        closeSeoTaskCreator();
+    }
+});
+
+// Handle escape key to close modal
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const creator = document.getElementById('seoTaskCreator');
+        if (creator && creator.classList.contains('active')) {
+            closeSeoTaskCreator();
+        }
+    }
+});
 
 // Reset state
 function resetTaskCreatorState() {
