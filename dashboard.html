@@ -1813,20 +1813,47 @@ tr:hover {
     }
     
     .billing-cycle-options .billing-option {
-        padding: 0.75rem 0.5rem;
+        padding: 0.6rem 0.4rem;
+        min-height: 90px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        aspect-ratio: 1;
+        border-radius: 0.75rem;
     }
     
     .billing-cycle-options .billing-option-header {
-        font-size: 0.875rem;
+        font-size: 0.75rem;
+        margin-bottom: 0.25rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
     }
     
     .billing-cycle-options .billing-price {
-        font-size: 1.125rem;
+        font-size: 0.7rem;
+        margin-top: 0.25rem;
     }
     
-    .billing-cycle-options .billing-period,
+    .billing-cycle-options .billing-period {
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: block;
+    }
+    
     .billing-cycle-options .billing-save {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
+        padding: 0.15rem 0.4rem;
+    }
+    
+    .billing-cycle-options .billing-badge {
+        font-size: 0.6rem;
+        padding: 0.2rem 0.4rem;
+        margin-bottom: 0.25rem;
+        position: static;
+        transform: none;
     }
     
     .budget-summary {
@@ -1904,19 +1931,19 @@ tr:hover {
     .task-creator-sidebar {
         width: 100%;
         height: auto;
-        min-height: 80px;
-        max-height: 120px;
+        min-height: 75px;
+        max-height: 75px;
         border-right: none;
-        border-bottom: 2px solid var(--border);
-        padding: 0.75rem;
+        border-bottom: 1px solid var(--border);
+        padding: 0.5rem;
         order: 1;
         position: relative;
-        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        background: var(--bg-secondary);
         z-index: 10;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: none;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.25rem;
     }
     
     .task-creator-main {
@@ -1926,116 +1953,85 @@ tr:hover {
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        height: calc(100vh - 120px);
+        height: calc(100vh - 75px);
     }
     
     .task-creator-header {
-        padding: 0.75rem 1rem;
+        padding: 0.625rem;
         background: var(--bg-secondary);
         z-index: 5;
         flex-shrink: 0;
         display: flex;
-        align-items: center;
-        gap: 0.75rem;
+        flex-direction: column;
+        gap: 0.125rem;
         border-bottom: 1px solid var(--border);
         position: relative;
     }
     
     .task-creator-close {
-        position: relative !important;
-        top: auto !important;
-        right: auto !important;
-        width: 2.25rem !important;
-        height: 2.25rem !important;
-        font-size: 1.125rem !important;
+        position: absolute !important;
+        top: 0.5rem !important;
+        right: 0.5rem !important;
+        width: 1.875rem !important;
+        height: 1.875rem !important;
+        font-size: 0.95rem !important;
         flex-shrink: 0;
-        order: -1;
     }
     
     .task-creator-title {
-        font-size: 1.125rem;
+        font-size: 0.95rem;
         font-weight: 700;
-        margin-bottom: 0.125rem;
-        flex: 1;
+        margin-bottom: 0;
+        padding-right: 2rem;
     }
     
     .task-creator-subtitle {
-        font-size: 0.75rem;
+        font-size: 0.65rem;
         color: var(--text-secondary);
-        display: none;
+        display: block;
     }
     
     .task-creator-body {
         flex: 1;
         overflow-y: auto;
         overflow-x: hidden;
-        padding: 1rem;
+        padding: 0.875rem;
         -webkit-overflow-scrolling: touch;
     }
     
     .progress-steps {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
-        padding: 0.75rem 0.5rem;
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-        border-radius: 1rem;
-        position: relative;
-        margin-bottom: 1rem;
-        border: 1px solid rgba(99, 102, 241, 0.1);
-    }
-    
-    .progress-steps::before {
-        content: '';
-        position: absolute;
-        top: 1.5rem;
-        left: 15%;
-        right: 15%;
-        height: 3px;
-        background: linear-gradient(90deg, var(--border) 0%, var(--border) 100%);
-        transform: translateY(-50%);
-        z-index: 0;
-        border-radius: 2px;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.5rem 0.375rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     .progress-step {
-        flex: 1;
         display: flex;
-        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        position: relative;
-        z-index: 1;
-        cursor: pointer;
-        transition: all 0.3s;
-        max-width: 90px;
+        gap: 0.375rem;
+        flex: 1;
+        min-width: fit-content;
     }
     
-    .progress-step .step-info {
+    .step-info {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        margin-top: 0.5rem;
+        gap: 0;
+        min-width: 0;
     }
     
     .step-title {
         font-size: 0.7rem;
-        margin-top: 0.25rem;
         font-weight: 600;
         color: var(--text-secondary);
-        display: block;
-        text-align: center;
-        line-height: 1.2;
         white-space: nowrap;
-    }
-    
-    .progress-step.active .step-title {
-        color: var(--primary);
-        font-weight: 700;
-    }
-    
-    .progress-step.completed .step-title {
-        color: var(--success);
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     .step-description {
@@ -2043,23 +2039,27 @@ tr:hover {
     }
     
     .step-indicator {
-        width: 2.75rem;
-        height: 2.75rem;
-        font-size: 1rem;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: var(--bg-tertiary);
+        border: 2px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-weight: 700;
-        background: var(--bg-secondary);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        border: 3px solid var(--border);
-        position: relative;
-        z-index: 2;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        transition: all 0.3s ease;
+        flex-shrink: 0;
     }
     
     .progress-step.active .step-indicator {
-        background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
+        background: var(--primary);
         border-color: var(--primary);
         color: white;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
         transform: scale(1.1);
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     }
     
     .progress-step.completed .step-indicator {
@@ -2068,75 +2068,29 @@ tr:hover {
         color: white;
     }
     
-    .step-title {
-        font-size: 0.625rem;
-        margin-top: 0.25rem;
-        font-weight: 600;
-        color: var(--text-secondary);
-    }
-    
     .progress-step.active .step-title {
         color: var(--primary);
+        font-weight: 700;
     }
     
     .progress-step.completed .step-title {
         color: var(--success);
+        font-weight: 700;
     }
     
     .task-creator-footer {
-        padding: 1rem;
-        background: linear-gradient(to top, var(--bg-secondary) 0%, rgba(var(--bg-secondary-rgb, 255, 255, 255), 0.95) 100%);
-        border-top: 1px solid rgba(99, 102, 241, 0.1);
+        padding: 0.875rem;
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border);
         flex-shrink: 0;
         display: flex;
-        flex-direction: column;
-        gap: 0.875rem;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+        flex-direction: row;
+        gap: 0.625rem;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
     }
     
     .footer-info {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.625rem;
-        padding: 0.75rem 1rem;
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
-        border: 1px solid rgba(99, 102, 241, 0.15);
-        border-radius: 0.875rem;
-        color: var(--text-secondary);
-        font-size: 0.8125rem;
-        font-weight: 500;
-        width: 100%;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .footer-info::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s ease;
-    }
-    
-    .footer-info:active::before {
-        left: 100%;
-    }
-    
-    .footer-info i {
-        font-size: 1.125rem;
-        color: var(--primary);
-        background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.2));
+        display: none !important;
     }
     
     .footer-actions {
@@ -2314,38 +2268,59 @@ tr:hover {
     }
     
     .payment-options {
-        grid-template-columns: 1fr;
-        gap: 0.875rem;
-    }
-    
-    .payment-card {
-        padding: 1.25rem;
-    }
-    
-    .billing-cycle-options {
-        display: flex;
-        flex-direction: column;
+        grid-template-columns: 1fr 1fr;
         gap: 0.75rem;
     }
     
-    .billing-option {
+    .payment-card {
         padding: 1rem;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
-        justify-content: space-between;
-        text-align: left;
-        border-radius: 1rem;
-        min-height: auto;
+        justify-content: center;
+        text-align: center;
+        min-height: 110px;
+    }
+    
+    .payment-card .payment-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .payment-card .payment-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    
+    .payment-card .payment-description {
+        font-size: 0.7rem;
+    }
+    
+    .billing-cycle-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .billing-option {
+        padding: 0.6rem 0.4rem;
+        min-height: 90px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        aspect-ratio: 1;
+        border-radius: 0.75rem;
     }
     
     .billing-option-header {
-        margin-bottom: 0;
+        font-size: 0.75rem;
+        margin-bottom: 0.25rem;
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         gap: 0.25rem;
-        flex: 1;
     }
     
     .billing-period {
@@ -2468,21 +2443,21 @@ tr:hover {
     .task-creator-sidebar {
         padding: 0.5rem;
         min-height: 70px;
-        max-height: 100px;
+        max-height: 70px;
     }
     
     .progress-steps {
-        padding: 0.5rem 0.375rem;
+        padding: 0.375rem 0.25rem;
     }
     
     .step-indicator {
-        width: 2.25rem;
-        height: 2.25rem;
-        font-size: 0.8rem;
+        width: 1.875rem;
+        height: 1.875rem;
+        font-size: 0.7rem;
     }
     
     .progress-step.active .step-indicator {
-        transform: scale(1.1);
+        transform: scale(1.05);
     }
     
     .step-title {
@@ -2506,32 +2481,39 @@ tr:hover {
         flex-shrink: 0;
     }
     
+    .task-creator-header {
+        padding: 0.5rem;
+    }
+    
     .task-creator-title {
-        font-size: 0.95rem;
+        font-size: 0.875rem;
+    }
+    
+    .task-creator-subtitle {
+        font-size: 0.625rem;
     }
     
     .task-creator-body {
-        padding: 0.75rem;
+        padding: 0.625rem;
     }
     
     .task-creator-footer {
-        padding: 0.875rem;
-        gap: 0.75rem;
+        padding: 0.625rem;
+        gap: 0.5rem;
+    }
+    
+    .task-creator-main {
+        height: calc(100vh - 70px);
     }
     
     .footer-info {
-        font-size: 0.75rem;
-        padding: 0.625rem 0.875rem;
-    }
-    
-    .footer-info i {
-        font-size: 1rem;
+        display: none !important;
     }
     
     .task-creator-footer button {
-        padding: 0.875rem 1rem;
-        font-size: 0.8125rem;
-        border-radius: 0.75rem;
+        padding: 0.8125rem 0.9375rem;
+        font-size: 0.8rem;
+        border-radius: 0.6875rem;
     }
     
     .footer-actions {
@@ -2562,21 +2544,36 @@ tr:hover {
     }
     
     .payment-options {
-        gap: 0.625rem;
+        gap: 0.5rem;
+        grid-template-columns: 1fr 1fr;
     }
     
     .payment-card {
-        padding: 1rem;
+        padding: 0.875rem;
+        min-height: 100px;
     }
     
     .billing-cycle-options {
-        gap: 0.625rem;
-        flex-direction: column;
+        gap: 0.5rem;
+        grid-template-columns: repeat(3, 1fr);
     }
     
     .billing-option {
-        padding: 0.875rem;
-        flex-direction: row;
+        padding: 0.5rem 0.3rem;
+        min-height: 85px;
+    }
+    
+    .billing-cycle-options .billing-period {
+        font-size: 0.75rem;
+    }
+    
+    .billing-cycle-options .billing-save {
+        font-size: 0.55rem;
+    }
+    
+    .billing-cycle-options .billing-badge {
+        font-size: 0.55rem;
+        padding: 0.15rem 0.3rem;
     }
     
     .billing-period {
