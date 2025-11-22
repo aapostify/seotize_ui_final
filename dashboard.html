@@ -40,8 +40,6 @@ Previous Dashboard v18 Changes:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Content Security Policy to handle external scripts properly -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://challenges.cloudflare.com https://seotize.net https://api.seotize.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https: blob:; connect-src 'self' https://api.seotize.net https://seotize.net;">
 <title>SEOTIZE Dashboard - Mobile Optimized v18</title>
 
 <!-- Fonts & Icons -->
@@ -52,8 +50,7 @@ Previous Dashboard v18 Changes:
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<!-- Cloudflare Turnstile (using challenges.cloudflare.com for better compatibility) -->
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/turnstile@0/turnstile.min.js" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
@@ -2053,39 +2050,6 @@ div#modalBody {
     color: var(--text) !important;
 }
 
-/* Enhanced SweetAlert2 Modal Styles */
-.swal2-modal-enhanced {
-    border-radius: var(--radius-xl) !important;
-    overflow: hidden !important;
-}
-
-.swal2-modal-enhanced .swal2-html-container {
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow: visible !important;
-}
-
-.swal2-close-enhanced {
-    color: var(--text) !important;
-    background: var(--bg-tertiary) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 50% !important;
-    width: 36px !important;
-    height: 36px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 1.5rem !important;
-    transition: all 0.3s ease !important;
-    margin: 0.5rem !important;
-}
-
-.swal2-close-enhanced:hover {
-    background: var(--danger) !important;
-    color: white !important;
-    transform: rotate(90deg) !important;
-}
-
 /* Custom CSS for our new Image Details Modal */
 .image-details-modal-container {
     display: flex;
@@ -2820,144 +2784,6 @@ div#modalBody {
         font-size: 0.85rem !important;
         padding: 0.5rem 1rem !important;
         margin: 0 !important;
-    }
-}
-
-/* AI Suggest Button - Special Design */
-.btn-ai-suggest {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 0.75rem 1.25rem;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
-    white-space: nowrap;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-ai-suggest:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
-}
-
-.btn-ai-suggest i {
-    font-size: 1.1rem;
-    animation: sparkle 2s infinite;
-}
-
-.btn-ai-suggest span {
-    display: inline-block;
-}
-
-@keyframes sparkle {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
-/* Budget Input - Better Arrow Design */
-.budget-input {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: textfield;
-    position: relative;
-}
-
-.budget-input::-webkit-inner-spin-button,
-.budget-input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-/* Custom number input wrapper */
-.budget-input-wrapper {
-    position: relative;
-    display: inline-block;
-}
-
-.budget-input-wrapper .budget-input {
-    padding-right: 2.5rem !important;
-}
-
-.budget-input-arrows {
-    position: absolute;
-    right: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.budget-input-arrows button {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    padding: 0;
-    width: 24px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    font-size: 12px;
-}
-
-.budget-input-arrows button:hover {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-}
-
-/* Keyword badge delete icon */
-.remove-keyword {
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-}
-
-.remove-keyword:hover {
-    transform: scale(1.2);
-}
-
-.remove-keyword i {
-    pointer-events: none;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .btn-ai-suggest {
-        padding: 0.6rem 1rem;
-        font-size: 0.85rem;
-    }
-    
-    .btn-ai-suggest i {
-        font-size: 1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .btn-ai-suggest {
-        padding: 0.5rem 0.85rem;
-        font-size: 0.8rem;
-    }
-    
-    .btn-ai-suggest span {
-        display: none;
-    }
-    
-    .btn-ai-suggest::after {
-        content: "AI";
-        margin-left: 0.25rem;
     }
 }
 </style>
@@ -4277,7 +4103,7 @@ async function loadTasks(page = 1) {
             </button>
             ${!isVerified ? `
             <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); verifyTask('${task._id}')" style="background: var(--warning); color: white;">
-            <i class="ri-shield-check-line"></i> Verify
+            <i class="ri-shield-check-line"></i> Verify Task
             </button>
             ` : ''}
             </div>
@@ -5786,24 +5612,7 @@ function setZoom(scale) {
     }
 }
 
-// Function to increment/decrement budget input
-function incrementBudget(direction) {
-    const input = document.getElementById('taskBudget');
-    if (!input) return;
-    
-    const currentValue = parseFloat(input.value) || 150;
-    const min = parseFloat(input.min) || 10;
-    const step = 10; // Increment by $10
-    
-    let newValue = currentValue + (direction * step);
-    newValue = Math.max(min, newValue); // Ensure it doesn't go below minimum
-    
-    input.value = newValue;
-    
-    // Trigger input event to update order summary
-    const event = new Event('input', { bubbles: true });
-    input.dispatchEvent(event);
-}
+
 
 // Update order summary
 function updateOrderSummary() {
@@ -5847,524 +5656,86 @@ function toggleSubscriptionOptions() {
 
 
 
-// Improved Create SEO Task Modal Function
+// ADD THIS NEW, ALL-IN-ONE AND CORRECTED FUNCTION
 async function showTaskModal() {
     // Reset state before showing the modal
     currentData.currentStep = 1;
     currentData.selectedLocations = [];
     currentData.selectedKeywords = [];
     currentData.taskPriority = 'standard';
-    currentData.pendingTaskExists = false;
 
     const modalHtml = `
-    <style>
-        /* Modern Modal Styles inspired by blog modal */
-        .seo-task-modal {
-            text-align: left;
-            padding: 0;
-        }
-        
-        .seo-task-header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 1.5rem 2rem;
-            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-            margin: -1.5rem -1.5rem 2rem;
-        }
-        
-        .seo-task-header h3 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-        
-        .seo-task-header p {
-            margin: 0.5rem 0 0;
-            opacity: 0.9;
-            font-size: 0.95rem;
-        }
-        
-        .step-indicator {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-            gap: 1rem;
-        }
-        
-        .step-dot {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        
-        .step-dot.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: scale(1.1);
-        }
-        
-        .step-dot.completed {
-            background: var(--success);
-            color: white;
-            border-color: var(--success);
-        }
-        
-        .step-dot::after {
-            content: '';
-            position: absolute;
-            width: 50px;
-            height: 2px;
-            background: var(--border);
-            left: 100%;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-        
-        .step-dot:last-child::after {
-            display: none;
-        }
-        
-        .priority-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .priority-card {
-            background: var(--bg-secondary);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 1.25rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .priority-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary);
-        }
-        
-        .priority-card.selected {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
-        }
-        
-        .priority-card.selected::before {
-            content: '\2713';
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            width: 24px;
-            height: 24px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-        
-        .priority-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: var(--text);
-        }
-        
-        .priority-price {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.75rem;
-        }
-        
-        .priority-features {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-        
-        @media (max-width: 768px) {
-            .seo-task-header {
-                padding: 1.25rem 1rem;
-            }
-            
-            .seo-task-header h3 {
-                font-size: 1.25rem;
-            }
-            
-            .step-indicator {
-                gap: 0.5rem;
-            }
-            
-            .step-dot {
-                width: 35px;
-                height: 35px;
-                font-size: 0.9rem;
-            }
-            
-            .step-dot::after {
-                width: 30px;
-            }
-            
-            .priority-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-    
-    <div class="seo-task-modal">
-        <div class="seo-task-header">
-            <h3>Create New SEO Task</h3>
-            <p>Boost your website's visibility with targeted SEO campaigns</p>
-        </div>
-        
-        <div class="step-indicator">
-            <div class="step-dot active" id="stepDot1">1</div>
-            <div class="step-dot" id="stepDot2">2</div>
-        </div>
-        
+    <div style="text-align: left;">
         <div class="step-content active" id="step1">
             <div class="form-group">
-                <label class="form-label">
-                    <i class="ri-global-line"></i> Website URL
-                </label>
+                <label class="form-label">Website URL</label>
                 <input type="url" class="form-input" id="taskUrl" required placeholder="https://example.com">
                 <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem;">
-                    Enter the full URL of your website to optimize
+                    Enter the full URL of your website.
                 </small>
             </div>
-            
             <div class="form-group">
-                <label class="form-label">
-                    <i class="ri-vip-crown-line"></i> Select Task Priority
-                </label>
-                <div class="priority-grid">
-                    <div class="priority-card" data-priority="basic">
+                <label class="form-label">Task Priority</label>
+                <div class="priority-options">
+                    <div class="priority-option" data-priority="basic">
                         <div class="priority-title">Basic</div>
-                        <div class="priority-price">$0.10</div>
-                        <div class="priority-features">
-                            <div><i class="ri-check-line"></i> Per click</div>
-                            <div><i class="ri-map-pin-line"></i> 1 location</div>
-                            <div><i class="ri-time-line"></i> Standard speed</div>
-                        </div>
+                        <div class="priority-price">$0.10/click</div>
+                        <div class="priority-locations">1 location</div>
                     </div>
-                    <div class="priority-card selected" data-priority="standard">
+                    <div class="priority-option selected" data-priority="standard">
                         <div class="priority-title">Standard</div>
-                        <div class="priority-price">$0.12</div>
-                        <div class="priority-features">
-                            <div><i class="ri-check-line"></i> Per click</div>
-                            <div><i class="ri-map-pin-line"></i> 3 locations</div>
-                            <div><i class="ri-speed-line"></i> Faster results</div>
-                        </div>
+                        <div class="priority-price">$0.12/click</div>
+                        <div class="priority-locations">3 locations</div>
                     </div>
-                    <div class="priority-card" data-priority="premium">
+                    <div class="priority-option" data-priority="premium">
                         <div class="priority-title">Premium</div>
-                        <div class="priority-price">$0.15</div>
-                        <div class="priority-features">
-                            <div><i class="ri-check-line"></i> Per click</div>
-                            <div><i class="ri-map-pin-line"></i> 5 locations</div>
-                            <div><i class="ri-flashlight-line"></i> Priority speed</div>
-                        </div>
+                        <div class="priority-price">$0.15/click</div>
+                        <div class="priority-locations">5 locations</div>
                     </div>
                 </div>
             </div>
-            
             <div class="step-navigation">
-                <div></div>
-                <button class="btn btn-primary" id="goToStep2Btn">
-                    Next: Keywords & Payment <i class="ri-arrow-right-line"></i>
-                </button>
+                <div></div> <button class="btn btn-primary" id="goToStep3Btn">Next: Keywords & Payment</button>
             </div>
         </div>
 
-        <div class="step-content" id="step2">
-            <style>
-                .keyword-input-group {
-                    display: flex;
-                    gap: 1rem;
-                    margin-bottom: 1rem;
-                }
-                
-                .keyword-input-group .form-input {
-                    flex: 1;
-                }
-                
-                .btn-ai-suggest {
-                    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-                    color: white;
-                    border: none;
-                    padding: 0.75rem 1.25rem;
-                    border-radius: var(--radius);
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    white-space: nowrap;
-                }
-                
-                .btn-ai-suggest:hover:not(:disabled) {
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-                }
-                
-                .btn-ai-suggest:disabled {
-                    opacity: 0.6;
-                    cursor: not-allowed;
-                }
-                
-                .keyword-suggestions {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 0.5rem;
-                    margin-bottom: 1rem;
-                }
-                
-                .keyword-suggestion {
-                    background: var(--bg-tertiary);
-                    border: 1px solid var(--border);
-                    padding: 0.5rem 1rem;
-                    border-radius: 20px;
-                    font-size: 0.9rem;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                }
-                
-                .keyword-suggestion:hover {
-                    background: var(--primary);
-                    color: white;
-                    border-color: var(--primary);
-                    transform: scale(1.05);
-                }
-                
-                .keyword-suggestion.selected {
-                    background: var(--primary);
-                    color: white;
-                    border-color: var(--primary);
-                }
-                
-                .payment-grid {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 1.5rem;
-                    margin-bottom: 1.5rem;
-                }
-                
-                .pending-task-alert {
-                    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
-                    border: 2px solid var(--danger);
-                    border-radius: var(--radius-lg);
-                    padding: 1.25rem;
-                    margin-bottom: 1.5rem;
-                    display: none;
-                }
-                
-                .pending-task-alert.show {
-                    display: block;
-                    animation: slideInDown 0.3s ease;
-                }
-                
-                .pending-task-alert h4 {
-                    color: var(--danger);
-                    margin: 0 0 0.75rem;
-                    font-size: 1.1rem;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                }
-                
-                .pending-task-alert p {
-                    color: var(--text-secondary);
-                    margin-bottom: 1rem;
-                    line-height: 1.6;
-                }
-                
-                .cancel-previous-option {
-                    background: var(--bg-secondary);
-                    border: 1px solid var(--border);
-                    border-radius: var(--radius);
-                    padding: 1rem;
-                    display: flex;
-                    align-items: flex-start;
-                    gap: 0.75rem;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                }
-                
-                .cancel-previous-option:hover {
-                    border-color: var(--primary);
-                    background: var(--bg-tertiary);
-                }
-                
-                .cancel-previous-option input[type="checkbox"] {
-                    margin-top: 0.2rem;
-                    width: 18px;
-                    height: 18px;
-                    cursor: pointer;
-                }
-                
-                .cancel-previous-option label {
-                    cursor: pointer;
-                    flex: 1;
-                }
-                
-                .cancel-previous-option strong {
-                    display: block;
-                    margin-bottom: 0.25rem;
-                    color: var(--text);
-                }
-                
-                .order-summary-card {
-                    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
-                    border: 2px solid var(--border);
-                    border-radius: var(--radius-lg);
-                    padding: 1.5rem;
-                    margin-bottom: 1.5rem;
-                }
-                
-                .order-summary-header {
-                    font-size: 1.25rem;
-                    font-weight: 700;
-                    margin-bottom: 1.25rem;
-                    padding-bottom: 1rem;
-                    border-bottom: 2px solid var(--border);
-                    color: var(--text);
-                }
-                
-                .order-item {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-bottom: 0.75rem;
-                    font-size: 0.95rem;
-                }
-                
-                .order-item.total {
-                    margin-top: 1rem;
-                    padding-top: 1rem;
-                    border-top: 2px solid var(--border);
-                    font-size: 1.25rem;
-                    font-weight: 700;
-                    color: var(--primary);
-                }
-                
-                @keyframes slideInDown {
-                    from {
-                        opacity: 0;
-                        transform: translateY(-10px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-                
-                @media (max-width: 768px) {
-                    .keyword-input-group {
-                        flex-direction: column;
-                    }
-                    
-                    .payment-grid {
-                        grid-template-columns: 1fr;
-                        gap: 1rem;
-                    }
-                    
-                    .btn-ai-suggest span {
-                        display: none;
-                    }
-                }
-            </style>
-            
-            <div class="pending-task-alert" id="pendingTaskAlert">
-                <h4><i class="ri-error-warning-line"></i> Pending Task Detected</h4>
-                <p>You have a pending task from the last 24 hours that needs to be cancelled before creating a new one.</p>
-                <div class="cancel-previous-option">
-                    <input type="checkbox" id="cancelPrevious">
-                    <label for="cancelPrevious">
-                        <strong>Cancel Previous Pending Tasks</strong>
-                        <span style="color: var(--text-secondary); font-size: 0.9rem;">
-                            This will automatically cancel any pending payments and allow you to create a new task.
-                        </span>
-                    </label>
-                </div>
-            </div>
-            
+        <div class="step-content" id="step3">
             <div class="form-group">
-                <label class="form-label">
-                    <i class="ri-key-2-line"></i> Target Keywords
-                </label>
-                <div class="keyword-input-group">
-                    <input type="text" class="form-input" id="keywordsInput" 
-                           placeholder="Enter keywords separated by commas">
-                    <button class="btn-ai-suggest" id="aiKeywordsBtn">
-                        <i class="ri-magic-line"></i> <span>AI Suggest</span>
+                <label class="form-label">Keywords</label>
+                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                    <input type="text" class="form-input" id="keywordsInput" placeholder="Enter keywords separated by commas">
+                    <button class="btn btn-secondary" id="aiKeywordsBtn">
+                        <i class="ri-magic-line"></i> AI Suggest
                     </button>
                 </div>
                 <div id="keywordSuggestions" class="keyword-suggestions"></div>
-                <div id="selectedKeywordsDisplay"></div>
+                <div id="selectedKeywordsDisplay" style="margin-top: 1rem;"></div>
             </div>
 
-            <div class="payment-grid">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
                 <div class="form-group">
-                    <label class="form-label">
-                        <i class="ri-money-dollar-circle-line"></i> Total Budget ($)
-                    </label>
-                    <div class="budget-input-wrapper" style="position: relative; width: 100%;">
-                        <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); 
-                                     color: var(--text-secondary); font-weight: 500; z-index: 1;">$</span>
-                        <input type="number" class="form-input budget-input" id="taskBudget" 
-                               min="10" value="150" 
-                               style="padding-left: 2rem; font-size: 1rem; font-weight: 500; width: 100%;">
-                        <div class="budget-input-arrows">
-                            <button type="button" onclick="incrementBudget(1)" tabindex="-1">
-                                <i class="ri-arrow-up-s-line"></i>
-                            </button>
-                            <button type="button" onclick="incrementBudget(-1)" tabindex="-1">
-                                <i class="ri-arrow-down-s-line"></i>
-                            </button>
-                        </div>
+                    <label class="form-label">Total Budget ($)</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-weight: 500;">$</span>
+                        <input type="number" class="form-input" id="taskBudget" min="10" value="150" style="padding-left: 2rem; font-size: 1rem; font-weight: 500;">
                     </div>
                 </div>
-                
                 <div class="form-group">
-                    <label class="form-label">
-                        <i class="ri-cursor-line"></i> Estimated Clicks
-                    </label>
-                    <input type="text" class="form-input" id="estimatedClicks" readonly 
-                           style="background: var(--bg-tertiary); font-weight: 600;">
+                    <label class="form-label">Estimated Clicks</label>
+                    <input type="text" class="form-input" id="estimatedClicks" readonly>
                 </div>
             </div>
             
-            <div class="payment-grid">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
                 <div class="form-group">
-                    <label class="form-label">
-                        <i class="ri-bank-card-line"></i> Payment Method
-                    </label>
+                    <label class="form-label">Payment Method</label>
                     <select class="form-select" id="paymentMethod">
                         <option value="stripe">Stripe (Credit/Debit Cards)</option>
                         <option value="oxapay">OxaPay (Cryptocurrency)</option>
                     </select>
                 </div>
-                
                 <div class="form-group">
-                    <label class="form-label">
-                        <i class="ri-calendar-line"></i> Payment Type
-                    </label>
+                    <label class="form-label">Payment Type</label>
                     <select class="form-select" id="paymentType">
                         <option value="one-time">One-time Payment</option>
                         <option value="subscription">Recurring Subscription</option>
@@ -6374,74 +5745,64 @@ async function showTaskModal() {
 
             <div id="subscriptionOptions" style="display: none; margin-bottom: 1.5rem;">
                 <div class="form-group">
-                    <label class="form-label">
-                        <i class="ri-repeat-line"></i> Billing Cycle
-                    </label>
+                    <label class="form-label">Billing Cycle</label>
                     <select class="form-select" id="billingCycle">
                         <option value="monthly">Monthly</option>
-                        <option value="quarterly">Quarterly (Save 10%)</option>
-                        <option value="yearly">Yearly (Save 20%)</option>
+                        <option value="quarterly">Quarterly (3 months)</option>
+                        <option value="yearly">Yearly</option>
                     </select>
                 </div>
             </div>
+            <div id="cancelPreviousContainer" style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; display: none;">
+                <div style="display: flex; align-items: start; gap: 0.5rem; margin-bottom: 1rem;">
+                    <input type="checkbox" id="cancelPrevious" style="margin-top: 0.25rem;">
+                    <label for="cancelPrevious" style="font-size: 0.875rem; cursor: pointer;">
+                        <strong>Cancel Previous Tasks</strong><br>
+                        <span style="color: var(--text-secondary);">Automatically cancel any pending or active payments for previous tasks. This will stop any ongoing SEO campaigns and refund unused credits.</span>
+                    </label>
+                </div>
+                <div id="previousTasksWarning" style="display: none; background: var(--warning); color: white; padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.875rem;">
+                    <i class="ri-alert-line"></i> This will cancel <span id="previousTaskCount">0</span> active task(s) and any pending payments.
+                </div>
+            </div>
 
-            <div class="order-summary-card">
-                <h4 class="order-summary-header">
-                    <i class="ri-file-list-3-line"></i> Order Summary
-                </h4>
-                <div class="order-item">
-                    <span>Task Budget:</span>
-                    <span id="orderBudget">$150.00</span>
-                </div>
-                <div class="order-item">
-                    <span>Priority Level:</span>
-                    <span id="orderPriority">Standard</span>
-                </div>
-                <div class="order-item">
-                    <span>Keywords Count:</span>
-                    <span id="orderKeywords">0</span>
-                </div>
-                <div class="order-item">
-                    <span>Click Locations:</span>
-                    <span id="orderLocations">3</span>
-                </div>
-                <div class="order-item total">
-                    <span>Total Amount:</span>
-                    <span id="orderTotal">$150.00</span>
+            <div class="card" style="margin-bottom: 1rem;">
+                <div class="card-body">
+                    <h4 style="margin-bottom: 1rem; font-size: 1.1rem; font-weight: 600;">Order Summary</h4>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span>Task Budget:</span><span id="orderBudget">$150.00</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);"><span>Priority:</span><span id="orderPriority">Standard</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);"><span>Keywords:</span><span id="orderKeywords">0</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);"><span>Click Locations:</span><span id="orderLocations">0</span></div>
+                    <div style="border-top: 1px solid var(--border); padding-top: 0.75rem; margin-top: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.25rem;"><span>Total:</span><span id="orderTotal">$150.00</span></div>
+                    </div>
                 </div>
             </div>
 
             <div class="step-navigation">
-                <button class="btn btn-secondary" id="backToStep1Btn">
-                    <i class="ri-arrow-left-line"></i> Back
-                </button>
+                <button class="btn btn-secondary" id="backToStep1Btn">Back</button>
                 <button class="btn btn-primary" id="createTaskBtn">
                     <i class="ri-wallet-line"></i> Create Task & Pay
                 </button>
             </div>
         </div>
     </div>
-    </div>
     `;
 
     Swal.fire({
-        title: '',
+        title: 'Create New SEO Task',
         html: modalHtml,
         width: '95vw',
-        maxWidth: '850px',
+        maxWidth: '900px',
         showCloseButton: true,
         showConfirmButton: false,
         showCancelButton: false,
-        customClass: {
-            popup: 'swal2-modal-enhanced',
-            closeButton: 'swal2-close-enhanced'
-        },
         
         didOpen: () => {
             // --- NESTED HELPER FUNCTIONS ---
             
             const goToStep = (step) => {
-                if (currentData.currentStep === 1 && step === 2) {
+                if (currentData.currentStep === 1 && step === 3) {
                     const url = document.getElementById('taskUrl').value.trim();
                     if (!url) {
                         showToast('Please enter a valid URL', 'error');
@@ -6455,24 +5816,13 @@ async function showTaskModal() {
                 if (targetStep) {
                     targetStep.classList.add('active');
                     currentData.currentStep = step;
-                    
-                    // Update step indicators
-                    document.querySelectorAll('.step-dot').forEach((dot, index) => {
-                        dot.classList.remove('active', 'completed');
-                        if (index + 1 < step) {
-                            dot.classList.add('completed');
-                        } else if (index + 1 === step) {
-                            dot.classList.add('active');
-                        }
-                    });
-                    
                     updateOrderSummary();
                 }
             };
 
             const selectPriority = (priority) => {
-                document.querySelectorAll('.priority-card').forEach(option => option.classList.remove('selected'));
-                const selectedOption = document.querySelector(`.priority-card[data-priority="${priority}"]`);
+                document.querySelectorAll('.priority-option').forEach(option => option.classList.remove('selected'));
+                const selectedOption = document.querySelector(`.priority-option[data-priority="${priority}"]`);
                 if (selectedOption) {
                     selectedOption.classList.add('selected');
                     currentData.taskPriority = priority;
@@ -6526,18 +5876,13 @@ async function showTaskModal() {
                     container.innerHTML = '';
                 } else {
                     container.innerHTML = `
-                        <div class="selected-keywords-container">
-                            <div class="selected-keywords-header">Selected Keywords (${currentData.selectedKeywords.length})</div>
-                            <div class="selected-keywords-list">
-                                ${currentData.selectedKeywords.map(keyword => `
-                                    <span class="keyword-tag" data-keyword-badge="${keyword}">
-                                        ${keyword} 
-                                        <span class="remove-btn" style="cursor: pointer;">
-                                            <i class="ri-close-line"></i>
-                                        </span>
-                                    </span>
-                                `).join('')}
-                            </div>
+                        <strong style="font-size: 0.9rem;">Selected Keywords (${currentData.selectedKeywords.length}):</strong>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                            ${currentData.selectedKeywords.map(keyword => `
+                                <span class="badge badge-primary" data-keyword-badge="${keyword}">
+                                    ${keyword} <span class="remove-keyword" style="cursor: pointer; margin-left: 0.25rem;">?</span>
+                                </span>
+                            `).join('')}
                         </div>`;
                 }
                 updateOrderSummary();
@@ -6563,14 +5908,21 @@ async function showTaskModal() {
                 } catch (error) {
                     showToast('Failed to generate AI keywords', 'error');
                 } finally {
-                    btn.innerHTML = '<i class="ri-magic-line"></i> <span>AI Suggest</span>';
+                    btn.innerHTML = '<i class="ri-magic-line"></i> AI Suggest';
                     btn.disabled = false;
                 }
             };
             
             const checkForActiveTasks = () => {
-                // This function is no longer needed as we handle pending tasks in the response
-                // Keeping for backward compatibility
+                const activeTasks = (currentData.user?.tasks || []).filter(task => task.available_charge > 0);
+                const container = document.getElementById('cancelPreviousContainer');
+                if (activeTasks.length > 0) {
+                    container.style.display = 'block';
+                    document.getElementById('previousTaskCount').textContent = activeTasks.length;
+                    document.getElementById('cancelPrevious').addEventListener('change', (e) => {
+                        document.getElementById('previousTasksWarning').style.display = e.target.checked ? 'block' : 'none';
+                    });
+                }
             };
 
             const createTask = async () => {
@@ -6640,40 +5992,42 @@ async function showTaskModal() {
                     }
 
                 } catch (error) {
-                    Swal.close();
-                    
                     // Handle 409 error for pending tasks
-                    if (error.code === 409 || (error.error && error.error.code === 409)) {
-                        // Show the pending task alert
-                        const alertBox = document.getElementById('pendingTaskAlert');
-                        if (alertBox) {
-                            alertBox.classList.add('show');
-                            
-                            // Scroll to the alert
-                            alertBox.scrollIntoView({ 
-                                behavior: 'smooth', 
-                                block: 'center' 
-                            });
-                            
-                            // Auto-check the cancel checkbox for better UX
-                            const cancelCheckbox = document.getElementById('cancelPrevious');
-                            if (cancelCheckbox && !cancelCheckbox.checked) {
-                                showToast('Please check "Cancel Previous Pending Tasks" to proceed', 'warning');
-                            }
-                        }
+                    if (error.code === 409 && error.message === 'Pending task exists') {
+                        // Show the cancel previous tasks container
+                        document.getElementById('cancelPreviousContainer').style.display = 'block';
+                        
+                        // Scroll to the checkbox
+                        document.getElementById('cancelPreviousContainer').scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                        
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Pending Task Exists',
+                            html: 'You have a pending task from the last 24 hours.<br><br>Please check the <strong>"Cancel Previous Tasks"</strong> option below to cancel it and create a new task.',
+                            confirmButtonText: 'Got it',
+                            customClass: { popup: 'swal2-toast' }
+                        });
                     } else {
-                        showToast(error.message || 'Failed to create task. Please try again.', 'error');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Creation Failed',
+                            text: error.message || 'An unexpected error occurred.',
+                            customClass: { popup: 'swal2-toast' }
+                        });
                     }
                 }
             };
 
             // --- ATTACH EVENT LISTENERS ---
             
-            document.querySelectorAll('.priority-card').forEach(el => {
+            document.querySelectorAll('.priority-option').forEach(el => {
                 el.addEventListener('click', () => selectPriority(el.dataset.priority));
             });
 
-            document.getElementById('goToStep2Btn').addEventListener('click', () => goToStep(2));
+            document.getElementById('goToStep3Btn').addEventListener('click', () => goToStep(3));
             document.getElementById('backToStep1Btn').addEventListener('click', () => goToStep(1));
             document.getElementById('aiKeywordsBtn').addEventListener('click', generateAIKeywords);
             document.getElementById('taskBudget').addEventListener('input', updateOrderSummary);
@@ -6685,22 +6039,17 @@ async function showTaskModal() {
             // Unchanged listeners...
             document.getElementById('keywordSuggestions').addEventListener('click', (e) => {
                 if (e.target.classList.contains('keyword-suggestion')) {
-                    e.target.classList.toggle('selected');
                     toggleKeyword(e.target.textContent, e.target);
                 }
             });
             document.getElementById('selectedKeywordsDisplay').addEventListener('click', (e) => {
-                if (e.target.closest('.remove-btn')) {
-                    const tag = e.target.closest('.keyword-tag');
-                    const keyword = tag.dataset.keywordBadge;
-                    
-                    // Remove selection from suggestions if exists
-                    document.querySelectorAll('.keyword-suggestion').forEach(suggestion => {
-                        if (suggestion.textContent === keyword) {
-                            suggestion.classList.remove('selected');
-                        }
-                    });
-                    
+                if (e.target.classList.contains('remove-keyword')) {
+                    const badge = e.target.closest('.badge');
+                    const keyword = badge.dataset.keywordBadge;
+                    const suggestionEl = document.querySelector(`.keyword-suggestion.selected`);
+                    if (suggestionEl && suggestionEl.textContent === keyword) {
+                        suggestionEl.classList.remove('selected');
+                    }
                     toggleKeyword(keyword, null);
                 }
             });
@@ -6922,7 +6271,7 @@ async function viewTaskDetails(taskId) {
         // Add verify button if task is not verified
         if (!isVerified) {
             modalConfig.showConfirmButton = true;
-            modalConfig.confirmButtonText = `<i class="ri-shield-check-line"></i> Verify`;
+            modalConfig.confirmButtonText = `<i class="ri-shield-check-line"></i> Verify Task`;
             modalConfig.confirmButtonColor = '#f59e0b'; // warning color
         } else {
             modalConfig.showConfirmButton = false;
@@ -6930,7 +6279,7 @@ async function viewTaskDetails(taskId) {
         
         Swal.fire(modalConfig).then((result) => {
             if (result.isConfirmed && !isVerified) {
-                // The "Verify" button was clicked
+                // The "Verify Task" button was clicked
                 Swal.close();
                 verifyTask(taskId);
             } else if (result.isDenied) {
@@ -9161,7 +8510,7 @@ function editArticle(articleId) {
 
 function showInstallInstructions(domain) {
     const divCode = `<div id="seotize-blog-root"></div>`;
-    const scriptCode = `<script src="https://seotize.net/blog.js?site=${domain}" defer></${'script'}>`;
+    const scriptCode = `<script src="https://seotize.net/blog.js?site=${domain}" defer><\/script>`;
 
     const modalHtml = `
     <style>
