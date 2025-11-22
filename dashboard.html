@@ -1082,9 +1082,12 @@ tr:hover {
 
 .task-creator-sidebar {
     width: 280px;
-    background: var(--bg-secondary);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
     padding: 2rem;
     border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 .task-creator-main {
@@ -1098,6 +1101,7 @@ tr:hover {
     padding: 2rem;
     border-bottom: 1px solid var(--border);
     background: var(--bg-secondary);
+    position: relative;
 }
 
 .task-creator-title {
@@ -1119,18 +1123,24 @@ tr:hover {
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 50%;
-    background: var(--bg-tertiary);
-    border: none;
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(239, 68, 68, 0.1) 100%);
+    border: 2px solid var(--border);
     color: var(--text-secondary);
     font-size: 1.25rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
 }
 
 .task-creator-close:hover {
-    background: var(--error);
+    background: linear-gradient(135deg, var(--error) 0%, #ff6b6b 100%);
     color: white;
-    transform: rotate(90deg);
+    transform: rotate(90deg) scale(1.05);
+    border-color: var(--error);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .task-creator-body {
@@ -1211,6 +1221,21 @@ tr:hover {
 
 .step-content.active {
     display: block;
+}
+
+/* Mobile optimization for step content */
+@media (max-width: 768px) {
+    .step-content {
+        padding: 0.5rem 0;
+    }
+    
+    .step-content.active {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 
 .step-navigation {
@@ -1524,29 +1549,44 @@ tr:hover {
 }
 
 .payment-type-toggle {
-    background: var(--bg-tertiary);
-    border-radius: 0.75rem;
-    padding: 0.25rem;
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(99, 102, 241, 0.1) 100%);
+    border-radius: 1rem;
+    padding: 0.375rem;
     display: flex;
     margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
 }
 
 .payment-type-option {
     flex: 1;
-    padding: 0.75rem;
+    padding: 0.875rem 1rem;
     border: none;
     background: transparent;
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     font-weight: 600;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.payment-type-option:hover {
+    transform: translateY(-1px);
 }
 
 .payment-type-option.active {
-    background: var(--card);
-    color: var(--primary);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    transform: scale(1.02);
+}
+
+.payment-type-option i {
+    font-size: 1.125rem;
 }
 
 /* Budget Section */
@@ -1740,6 +1780,8 @@ tr:hover {
 @media (max-width: 768px) {
     .seo-task-creator {
         padding: 0;
+        display: flex;
+        align-items: stretch;
     }
     
     .task-creator-container {
@@ -1749,217 +1791,535 @@ tr:hover {
         max-height: 100vh;
         border-radius: 0;
         flex-direction: column;
+        display: flex;
     }
     
     .task-creator-sidebar {
         width: 100%;
         height: auto;
+        min-height: 80px;
+        max-height: 120px;
         border-right: none;
-        border-bottom: 1px solid var(--border);
-        padding: 1rem;
-        order: 2;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: var(--bg-secondary);
-        z-index: 9999;
-        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+        border-bottom: 2px solid var(--border);
+        padding: 0.75rem;
+        order: 1;
+        position: relative;
+        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        z-index: 10;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
     }
     
     .task-creator-main {
         width: 100%;
-        order: 1;
-        padding-bottom: 200px; /* Space for fixed bottom sidebar */
-        overflow-y: auto;
-        height: calc(100vh - 60px);
+        order: 2;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        height: calc(100vh - 120px);
     }
     
     .task-creator-header {
-        padding: 1rem;
-        position: sticky;
-        top: 0;
+        padding: 0.75rem 1rem;
         background: var(--bg-secondary);
-        z-index: 100;
+        z-index: 5;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border);
     }
     
     .task-creator-title {
-        font-size: 1.25rem;
+        font-size: 1.125rem;
+        font-weight: 700;
+        margin-bottom: 0.125rem;
     }
     
     .task-creator-subtitle {
-        font-size: 0.875rem;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        display: none;
     }
     
-    .task-creator-content {
+    .task-creator-body {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
         padding: 1rem;
+        -webkit-overflow-scrolling: touch;
     }
     
     .progress-steps {
         display: flex;
-        flex-direction: row;
-        gap: 0.5rem;
-        overflow-x: auto;
-        padding: 0.5rem 0;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 0.75rem;
+        position: relative;
+    }
+    
+    .progress-steps::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: var(--border);
+        transform: translateY(-50%);
+        z-index: 0;
     }
     
     .progress-step {
+        flex: 1;
+        display: flex;
         flex-direction: column;
         align-items: center;
-        text-align: center;
-        min-width: 80px;
-        padding: 0.5rem;
+        position: relative;
+        z-index: 1;
+        cursor: pointer;
+        transition: all 0.3s;
     }
     
     .progress-step .step-info {
         display: none;
     }
     
-    .progress-step.active .step-info {
-        display: block;
-        margin-top: 0.5rem;
-    }
-    
-    .progress-step .step-title {
-        font-size: 0.75rem;
-        white-space: nowrap;
-    }
-    
-    .progress-step .step-description {
-        display: none;
-    }
-    
     .step-indicator {
-        width: 2rem;
-        height: 2rem;
+        width: 2.5rem;
+        height: 2.5rem;
         font-size: 0.875rem;
+        font-weight: 700;
+        background: var(--bg-secondary);
+        border: 3px solid var(--border);
+        position: relative;
+        z-index: 2;
+    }
+    
+    .progress-step.active .step-indicator {
+        background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
+        border-color: var(--primary);
+        color: white;
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    
+    .progress-step.completed .step-indicator {
+        background: var(--success);
+        border-color: var(--success);
+        color: white;
+    }
+    
+    .step-title {
+        font-size: 0.625rem;
+        margin-top: 0.25rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+    
+    .progress-step.active .step-title {
+        color: var(--primary);
+    }
+    
+    .progress-step.completed .step-title {
+        color: var(--success);
     }
     
     .task-creator-footer {
-        position: fixed;
-        bottom: 160px; /* Above the progress sidebar */
-        left: 0;
-        right: 0;
-        padding: 1rem;
+        padding: 0.75rem;
         background: var(--bg-secondary);
-        border-top: 1px solid var(--border);
-        z-index: 100;
-        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+        border-top: 2px solid var(--border);
+        flex-shrink: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .footer-info {
+        display: none;
+    }
+    
+    .footer-actions {
+        width: 100%;
+        display: flex;
+        gap: 0.75rem;
     }
     
     .task-creator-footer button {
-        padding: 0.5rem 1rem;
+        flex: 1;
+        padding: 0.875rem 1rem;
         font-size: 0.875rem;
+        font-weight: 600;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
     }
     
-    .task-creator-footer button i {
-        margin-right: 0.25rem;
+    .btn-ghost {
+        background: var(--bg-tertiary);
+        border: 2px solid var(--border);
+    }
+    
+    .btn-primary-gradient {
+        background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     }
     
     /* Form elements mobile adjustments */
-    .form-section {
-        padding: 1rem;
-        margin-bottom: 1rem;
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-input {
+        padding: 0.875rem;
+        font-size: 0.9375rem;
+        border-radius: 0.75rem;
     }
     
     .priority-options {
+        display: flex;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: 0.875rem;
     }
     
     .priority-option {
         width: 100%;
         padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border-radius: 0.875rem;
+        position: relative;
+        overflow: visible;
     }
     
-    .keyword-input-group {
-        flex-direction: column;
-        gap: 0.5rem;
+    .priority-option::before {
+        display: none;
     }
     
-    .keyword-input-group input {
-        width: 100%;
+    .priority-badge {
+        position: absolute;
+        top: -0.5rem;
+        right: 1rem;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.625rem;
+        border-radius: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
     
-    .keyword-input-group button {
-        width: 100%;
-        justify-content: center;
+    .priority-option .priority-title {
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
     }
     
-    .budget-input-wrapper input {
-        font-size: 1.25rem;
+    .priority-option .priority-price {
+        font-size: 1.375rem;
     }
     
-    .payment-method-options {
+    .priority-option .priority-locations {
+        font-size: 0.75rem;
+    }
+    
+    .priority-option.selected {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+    }
+    
+    .payment-type-toggle {
+        margin-bottom: 1.25rem;
+        padding: 0.25rem;
+    }
+    
+    .payment-type-option {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .payment-options {
         grid-template-columns: 1fr;
-        gap: 0.75rem;
+        gap: 0.875rem;
+    }
+    
+    .payment-card {
+        padding: 1.25rem;
     }
     
     .billing-cycle-options {
         grid-template-columns: 1fr;
+        gap: 0.875rem;
     }
     
-    .summary-section {
+    .billing-option {
         padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
     
-    .summary-item {
-        font-size: 0.875rem;
+    .billing-option-header {
+        flex: 1;
     }
     
-    .summary-total {
+    .billing-badge {
+        font-size: 0.625rem;
+        padding: 0.2rem 0.5rem;
+    }
+    
+    .budget-calculator {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .budget-input-group {
+        gap: 0.875rem;
+    }
+    
+    .budget-field input {
+        padding: 0.75rem 0.75rem 0.75rem 2.25rem;
+        font-size: 1.125rem;
+    }
+    
+    .budget-field .currency-symbol {
+        font-size: 1.125rem;
+        left: 0.75rem;
+        bottom: 0.75rem;
+    }
+    
+    .budget-summary {
+        padding: 0.75rem;
+        gap: 0.5rem;
+    }
+    
+    .budget-summary-label {
+        font-size: 0.625rem;
+    }
+    
+    .budget-summary-value {
+        font-size: 1rem;
+    }
+    
+    /* Keywords Section Mobile */
+    .keyword-suggestions {
+        gap: 0.5rem;
+    }
+    
+    .keyword-suggestion {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.8125rem;
+    }
+    
+    .selected-keywords {
+        padding: 0.875rem;
+        margin-bottom: 1rem;
+    }
+    
+    .keyword-tags {
+        gap: 0.375rem;
+    }
+    
+    .keyword-tag {
+        padding: 0.375rem 0.625rem;
+        font-size: 0.75rem;
+    }
+    
+    /* Pending Task Alert Mobile */
+    .pending-task-alert {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border-radius: 0.875rem;
+    }
+    
+    .pending-task-icon {
+        width: 2.5rem;
+        height: 2.5rem;
         font-size: 1.25rem;
+    }
+    
+    .pending-task-title {
+        font-size: 1rem;
+    }
+    
+    .pending-task-details {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .pending-task-actions {
+        gap: 0.75rem;
+    }
+    
+    .pending-task-actions .btn {
+        padding: 0.75rem;
+        font-size: 0.8125rem;
     }
 }
 
 @media (max-width: 480px) {
     .task-creator-sidebar {
-        padding: 0.75rem;
+        padding: 0.5rem;
+        min-height: 70px;
+        max-height: 100px;
     }
     
-    .progress-step {
-        min-width: 60px;
+    .progress-steps {
+        padding: 0.375rem;
+    }
+    
+    .step-indicator {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.75rem;
+    }
+    
+    .progress-step.active .step-indicator {
+        transform: scale(1.05);
+    }
+    
+    .step-title {
+        font-size: 0.5625rem;
+        display: block;
     }
     
     .task-creator-header {
-        padding: 0.75rem;
+        padding: 0.625rem 0.75rem;
     }
     
-    .task-creator-content {
+    .task-creator-close {
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 2rem;
+        height: 2rem;
+        font-size: 1rem;
+    }
+    
+    .task-creator-title {
+        font-size: 1rem;
+    }
+    
+    .task-creator-body {
         padding: 0.75rem;
     }
     
     .task-creator-footer {
-        padding: 0.75rem;
-        flex-direction: row;
+        padding: 0.625rem;
+    }
+    
+    .task-creator-footer button {
+        padding: 0.75rem 0.875rem;
+        font-size: 0.8125rem;
+    }
+    
+    .footer-actions {
         gap: 0.5rem;
     }
     
-    .task-creator-footer button {
-        padding: 0.4rem 0.75rem;
-        font-size: 0.8rem;
+    /* Form adjustments for small screens */
+    .form-group {
+        margin-bottom: 1rem;
     }
     
-    .task-creator-footer button span {
-        display: none;
+    .priority-options {
+        gap: 0.625rem;
     }
     
-    .task-creator-footer button i {
-        margin-right: 0;
+    .priority-option {
+        padding: 0.875rem;
     }
     
-    /* Show text labels on mobile buttons */
-    .task-creator-footer button {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
+    .priority-badge {
+        font-size: 0.5625rem;
+        padding: 0.2rem 0.5rem;
     }
     
-    /* Ensure button text is visible */
-    #prevStepBtn,
-    #nextStepBtn,
-    #createTaskBtn {
-        white-space: nowrap;
+    .payment-type-toggle {
+        margin-bottom: 1rem;
+    }
+    
+    .payment-options {
+        gap: 0.625rem;
+    }
+    
+    .payment-card {
+        padding: 1rem;
+    }
+    
+    .billing-cycle-options {
+        gap: 0.625rem;
+    }
+    
+    .billing-option {
+        padding: 0.875rem;
+    }
+    
+    .budget-calculator {
+        padding: 0.875rem;
+    }
+    
+    .budget-field input {
+        font-size: 1rem;
+        padding: 0.625rem 0.625rem 0.625rem 2rem;
+    }
+    
+    .budget-field .currency-symbol {
+        font-size: 1rem;
+        left: 0.625rem;
+        bottom: 0.625rem;
+    }
+    
+    .budget-summary {
+        padding: 0.625rem;
+    }
+    
+    .budget-summary-value {
+        font-size: 0.875rem;
+    }
+    
+    .keyword-suggestion {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.75rem;
+    }
+    
+    .selected-keywords {
+        padding: 0.75rem;
+    }
+    
+    .keyword-tag {
+        padding: 0.3125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+    
+    .pending-task-alert {
+        padding: 0.875rem;
+    }
+    
+    .pending-task-icon {
+        width: 2rem;
+        height: 2rem;
+        font-size: 1rem;
+    }
+    
+    .pending-task-title {
+        font-size: 0.875rem;
+    }
+    
+    .pending-task-actions .btn {
+        padding: 0.625rem;
+        font-size: 0.75rem;
     }
 }
 
@@ -2750,6 +3110,37 @@ tr:hover {
     50% { transform: translate(-50%, -50%) scale(1.1); }
 }
 
+@keyframes slideInMobile {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+}
+
+/* Mobile animation improvements for task creator */
+@media (max-width: 768px) {
+    .seo-task-creator.active .task-creator-container {
+        animation: slideInMobile 0.3s ease !important;
+    }
+    
+    .step-content {
+        animation: fadeIn 0.2s ease !important;
+    }
+    
+    .progress-step.active .step-indicator {
+        animation: pulseGlow 2s infinite;
+    }
+}
+
 @media (max-width: 580px) {
     .mobilearticle1 {
         flex-direction: column !important;
@@ -2952,8 +3343,10 @@ div#modalBody {
 /* ADD THIS CSS to your main <style> block */
 
 .swal2-popup.swal2-toast {
-    box-shadow: var(--shadow-xl) !important;
-    background: var(--card) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 40px rgba(99, 102, 241, 0.08) !important;
+    background: linear-gradient(135deg, var(--card) 0%, var(--bg-secondary) 100%) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 1rem !important;
 }
 .swal2-title {
     color: var(--text) !important;
@@ -3320,6 +3713,59 @@ div#modalBody {
         width: 500px !important; /* ...lock the width to 500px */
     }
 }
+
+/* Additional SweetAlert2 Mobile Improvements */
+@media (max-width: 768px) {
+    .swal2-icon {
+        width: 4rem !important;
+        height: 4rem !important;
+    }
+    
+    .swal2-title {
+        font-size: 1.25rem !important;
+    }
+    
+    .swal2-html-container {
+        font-size: 0.875rem !important;
+    }
+    
+    .swal2-actions {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+    }
+    
+    .swal2-confirm, .swal2-cancel {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .swal2-popup {
+        width: calc(100vw - 1rem) !important;
+        margin: 0.5rem !important;
+        padding: 1rem !important;
+    }
+    
+    .swal2-icon {
+        width: 3.5rem !important;
+        height: 3.5rem !important;
+        border-width: 2px !important;
+    }
+    
+    .swal2-title {
+        font-size: 1.125rem !important;
+    }
+    
+    .swal2-html-container {
+        font-size: 0.8125rem !important;
+    }
+    
+    .swal2-confirm, .swal2-cancel {
+        padding: 0.625rem 1.25rem !important;
+        font-size: 0.875rem !important;
+    }
+}
     .recharge-modal-custom > .swal2-actions > .swal2-cancel {
     background: #df0e0e;
 }
@@ -3488,11 +3934,13 @@ div#modalBody {
     padding-top: 1.5rem !important;
 }
 
-/* Enhanced SweetAlert2 Dark/Light Mode Support */
+/* Enhanced SweetAlert2 Modern Design */
 .swal2-popup {
     background: var(--card) !important;
     color: var(--text) !important;
-    border: 1px solid var(--border) !important;
+    border: none !important;
+    border-radius: 1.25rem !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 80px rgba(99, 102, 241, 0.1) !important;
 }
 
 .swal2-title {
@@ -3542,12 +3990,106 @@ div#modalBody {
     color: var(--text-secondary) !important;
 }
 
+/* SweetAlert2 Icon Improvements */
+.swal2-icon {
+    margin: 1rem auto !important;
+    width: 5rem !important;
+    height: 5rem !important;
+    border-width: 3px !important;
+}
+
+.swal2-icon.swal2-warning {
+    border-color: var(--warning) !important;
+    color: var(--warning) !important;
+}
+
+.swal2-icon.swal2-error {
+    border-color: var(--error) !important;
+}
+
+.swal2-icon.swal2-success {
+    border-color: var(--success) !important;
+}
+
+.swal2-icon.swal2-info {
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+}
+
+/* SweetAlert2 Title and Content */
+.swal2-title {
+    color: var(--text) !important;
+    font-weight: 700 !important;
+    font-size: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.swal2-html-container {
+    color: var(--text-secondary) !important;
+    font-size: 0.9375rem !important;
+    line-height: 1.6 !important;
+}
+
+/* SweetAlert2 Buttons */
+.swal2-actions {
+    gap: 0.75rem !important;
+    margin-top: 1.5rem !important;
+}
+
+.swal2-confirm, .swal2-cancel, .swal2-deny {
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 0.625rem !important;
+    font-weight: 600 !important;
+    font-size: 0.9375rem !important;
+    transition: all 0.3s !important;
+    border: none !important;
+}
+
+.swal2-confirm {
+    background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%) !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+}
+
+.swal2-confirm:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4) !important;
+}
+
+.swal2-cancel {
+    background: var(--bg-tertiary) !important;
+    color: var(--text) !important;
+    border: 2px solid var(--border) !important;
+}
+
+.swal2-cancel:hover {
+    background: var(--bg-secondary) !important;
+    border-color: var(--text-secondary) !important;
+}
+
+/* SweetAlert2 Input Fields */
+.swal2-input {
+    background: var(--bg-secondary) !important;
+    color: var(--text) !important;
+    border: 2px solid var(--border) !important;
+    border-radius: 0.625rem !important;
+    padding: 0.75rem !important;
+    font-size: 0.9375rem !important;
+    transition: all 0.3s !important;
+}
+
+.swal2-input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
 /* Better mobile modal sizing - prevent overflow */
 @media (max-width: 768px) {
     .swal2-popup {
-        max-height: 85vh !important;
-        width: 95vw !important;
-        padding: 1rem !important;
+        max-height: 90vh !important;
+        width: calc(100vw - 2rem) !important;
+        margin: 1rem !important;
+        padding: 1.25rem !important;
+        border-radius: 1rem !important;
         padding-top: 3rem !important;
     }
     
@@ -4093,13 +4635,15 @@ div#modalBody {
 
                 <!-- Step 3: Payment -->
                 <div class="step-content" id="step3">
-                    <!-- Payment Type Toggle -->
+                    <!-- Payment Type Toggle - Now positioned at top with better design -->
                     <div class="payment-type-toggle">
                         <button class="payment-type-option active" data-type="subscription" onclick="selectPaymentType('subscription')">
-                            <i class="ri-refresh-line"></i> Subscription
+                            <i class="ri-refresh-line"></i> 
+                            <span>Subscription</span>
                         </button>
                         <button class="payment-type-option" data-type="one-time" onclick="selectPaymentType('one-time')">
-                            <i class="ri-bank-card-line"></i> One-time Payment
+                            <i class="ri-bank-card-line"></i> 
+                            <span>One-time</span>
                         </button>
                     </div>
 
