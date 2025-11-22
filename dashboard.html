@@ -1048,39 +1048,165 @@ tr:hover {
     animation: spin 1s linear infinite;
 }
 
-/* Keyword suggestions */
-.keyword-suggestions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+/* SEO Task Creator - Modern Redesign */
+.seo-task-creator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 10000;
+    display: none;
+    animation: fadeIn 0.3s ease;
 }
 
-.keyword-suggestion {
-    padding: 0.375rem 0.75rem;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+.seo-task-creator.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.task-creator-container {
+    background: var(--bg-primary);
+    border-radius: 1.5rem;
+    width: 95vw;
+    max-width: 1200px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: slideUp 0.3s ease;
+}
+
+.task-creator-sidebar {
+    width: 280px;
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-right: 1px solid var(--border);
+}
+
+.task-creator-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.task-creator-header {
+    padding: 2rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-secondary);
+}
+
+.task-creator-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.task-creator-subtitle {
+    color: var(--text-secondary);
     font-size: 0.875rem;
+}
+
+.task-creator-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.task-creator-close:hover {
+    background: var(--error);
+    color: white;
+    transform: rotate(90deg);
+}
+
+.task-creator-body {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+/* Progress Steps */
+.progress-steps {
+    margin-bottom: 2rem;
+}
+
+.progress-step {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
     cursor: pointer;
     transition: var(--transition);
 }
 
-.keyword-suggestion:hover {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
+.progress-step:last-child {
+    margin-bottom: 0;
 }
 
-.keyword-suggestion.selected {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
+.step-indicator {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-right: 1rem;
+    transition: all 0.3s;
 }
 
-/* Task creation steps */
+.progress-step.completed .step-indicator {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+}
+
+.progress-step.active .step-indicator {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.step-info {
+    flex: 1;
+}
+
+.step-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-secondary);
+}
+
+.progress-step.active .step-title,
+.progress-step.completed .step-title {
+    color: var(--text-primary);
+}
+
+.step-description {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Step Content */
 .step-content {
     display: none;
+    animation: fadeIn 0.3s ease;
 }
 
 .step-content.active {
@@ -1095,31 +1221,135 @@ tr:hover {
     border-top: 1px solid var(--border);
 }
 
-/* Priority selector */
+/* Pending Task Alert */
+.pending-task-alert {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+    display: none;
+}
+
+.pending-task-alert.show {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+.pending-task-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.pending-task-icon {
+    width: 3rem;
+    height: 3rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+.pending-task-info {
+    flex: 1;
+}
+
+.pending-task-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.pending-task-details {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.pending-task-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.pending-task-actions .btn {
+    flex: 1;
+}
+
+/* Priority Cards - Redesigned */
 .priority-options {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-top: 0.5rem;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .priority-option {
-    padding: 1rem;
     border: 2px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 1rem;
+    padding: 1.5rem;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
     text-align: center;
 }
 
+.priority-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--border);
+    transition: all 0.3s;
+}
+
 .priority-option:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     border-color: var(--primary);
-    transform: translateY(-2px);
 }
 
 .priority-option.selected {
     border-color: var(--primary);
-    background: rgba(99, 102, 241, 0.1);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0.1) 100%);
+}
+
+.priority-option.selected::before {
+    background: var(--primary);
+}
+
+.priority-badge {
+    display: inline-flex;
+    padding: 0.25rem 0.75rem;
+    background: var(--bg-tertiary);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+}
+
+.priority-option[data-priority="basic"] .priority-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.priority-option[data-priority="standard"] .priority-badge {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.priority-option[data-priority="premium"] .priority-badge {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    color: white;
 }
 
 .priority-title {
@@ -1128,15 +1358,363 @@ tr:hover {
 }
 
 .priority-price {
-    color: var(--primary);
+    font-size: 1.75rem;
     font-weight: 700;
-    font-size: 1.125rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.priority-price small {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 400;
 }
 
 .priority-locations {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--text-secondary);
     margin-top: 0.25rem;
+}
+
+/* Keywords Section - Redesigned */
+.keyword-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.keyword-suggestion {
+    padding: 0.5rem 1rem;
+    background: var(--bg-tertiary);
+    border: 2px solid transparent;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.keyword-suggestion:hover {
+    background: var(--primary);
+    color: white;
+    transform: scale(1.05);
+}
+
+.keyword-suggestion.selected {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.selected-keywords {
+    background: var(--bg-tertiary);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.keyword-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.keyword-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: var(--primary);
+    color: white;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    animation: fadeIn 0.2s;
+}
+
+.keyword-tag-text {
+    margin-right: 0.5rem;
+}
+
+.keyword-tag-remove {
+    width: 1.25rem;
+    height: 1.25rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: white;
+    font-size: 0.75rem;
+}
+
+.keyword-tag-remove:hover {
+    background: var(--error);
+    transform: scale(1.2);
+}
+
+/* Payment Options - Redesigned */
+.payment-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.payment-card {
+    border: 2px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.payment-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.payment-card.selected {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.payment-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+.payment-icon {
+    width: 3rem;
+    height: 3rem;
+    background: var(--bg-tertiary);
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+}
+
+.payment-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.payment-description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.payment-type-toggle {
+    background: var(--bg-tertiary);
+    border-radius: 0.75rem;
+    padding: 0.25rem;
+    display: flex;
+    margin-bottom: 2rem;
+}
+
+.payment-type-option {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    background: transparent;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.payment-type-option.active {
+    background: white;
+    color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Budget Section */
+.budget-calculator {
+    background: var(--bg-tertiary);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.budget-input-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.budget-field {
+    position: relative;
+}
+
+.budget-field label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.budget-field input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-left: 2.5rem;
+    border: 2px solid var(--border);
+    border-radius: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.budget-field .currency-symbol {
+    position: absolute;
+    left: 1rem;
+    bottom: 0.875rem;
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.budget-summary {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.budget-summary-item {
+    text-align: center;
+}
+
+.budget-summary-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.budget-summary-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Actions Footer */
+.task-creator-footer {
+    padding: 1.5rem 2rem;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.footer-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-ghost {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: 2px solid var(--border);
+    color: var(--text-primary);
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-ghost:hover {
+    background: var(--bg-tertiary);
+}
+
+.btn-primary-gradient {
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary-gradient:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Task Creator Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 /* Mobile Bottom Navigation */
@@ -3038,6 +3616,241 @@ div#modalBody {
 <!-- Modal content -->
 </div>
 </div>
+</div>
+
+<!-- SEO Task Creator - New Design -->
+<div class="seo-task-creator" id="seoTaskCreator">
+    <div class="task-creator-container">
+        <!-- Sidebar Progress -->
+        <div class="task-creator-sidebar">
+            <div class="progress-steps">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-indicator">1</div>
+                    <div class="step-info">
+                        <div class="step-title">Website & Priority</div>
+                        <div class="step-description">Set up your website URL and task priority</div>
+                    </div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-indicator">2</div>
+                    <div class="step-info">
+                        <div class="step-title">Keywords</div>
+                        <div class="step-description">Choose target keywords for SEO</div>
+                    </div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-indicator">3</div>
+                    <div class="step-info">
+                        <div class="step-title">Payment</div>
+                        <div class="step-description">Select payment method and complete</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="task-creator-main">
+            <!-- Header -->
+            <div class="task-creator-header">
+                <button class="task-creator-close" onclick="closeSeoTaskCreator()">
+                    <i class="ri-close-line"></i>
+                </button>
+                <div class="task-creator-title">Create New SEO Task</div>
+                <div class="task-creator-subtitle">Configure your SEO campaign in three simple steps</div>
+            </div>
+
+            <!-- Body -->
+            <div class="task-creator-body">
+                <!-- Pending Task Alert -->
+                <div class="pending-task-alert" id="pendingTaskAlert">
+                    <div class="pending-task-header">
+                        <div class="pending-task-icon">
+                            <i class="ri-error-warning-line"></i>
+                        </div>
+                        <div class="pending-task-info">
+                            <div class="pending-task-title">You have a pending payment</div>
+                            <div>Complete or cancel your previous task before creating a new one</div>
+                        </div>
+                    </div>
+                    <div class="pending-task-details" id="pendingTaskDetails">
+                        <!-- Pending task details will be populated here -->
+                    </div>
+                    <div class="pending-task-actions">
+                        <button class="btn btn-secondary" onclick="cancelPendingTask()">
+                            <i class="ri-close-circle-line"></i> Cancel Task
+                        </button>
+                        <button class="btn btn-primary" onclick="completePendingPayment()">
+                            <i class="ri-bank-card-line"></i> Complete Payment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 1: Website & Priority -->
+                <div class="step-content active" id="step1">
+                    <div class="form-group">
+                        <label class="form-label">Website URL</label>
+                        <input type="url" class="form-input" id="taskUrl" placeholder="https://example.com" required>
+                        <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem;">
+                            Enter the full URL of your website that you want to optimize
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Select Task Priority</label>
+                        <div class="priority-options">
+                            <div class="priority-option" data-priority="basic">
+                                <span class="priority-badge">Basic</span>
+                                <div class="priority-title">Basic Plan</div>
+                                <div class="priority-price">$0.10<small>/click</small></div>
+                                <div class="priority-locations">
+                                    <i class="ri-map-pin-line"></i> 1 HTML location
+                                </div>
+                            </div>
+                            <div class="priority-option selected" data-priority="standard">
+                                <span class="priority-badge">Standard</span>
+                                <div class="priority-title">Standard Plan</div>
+                                <div class="priority-price">$0.12<small>/click</small></div>
+                                <div class="priority-locations">
+                                    <i class="ri-map-pin-line"></i> 3 HTML locations
+                                </div>
+                            </div>
+                            <div class="priority-option" data-priority="premium">
+                                <span class="priority-badge">Premium</span>
+                                <div class="priority-title">Premium Plan</div>
+                                <div class="priority-price">$0.15<small>/click</small></div>
+                                <div class="priority-locations">
+                                    <i class="ri-map-pin-line"></i> 5 HTML locations
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Keywords -->
+                <div class="step-content" id="step2">
+                    <div class="form-group">
+                        <label class="form-label">Target Keywords</label>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="flex: 1; position: relative;">
+                                <i class="ri-search-line" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary);"></i>
+                                <input type="text" class="form-input" id="keywordsInput" 
+                                       placeholder="Enter keywords separated by commas" 
+                                       style="padding-left: 2.5rem;">
+                            </div>
+                            <button class="btn btn-secondary" id="aiKeywordsBtn" onclick="generateAIKeywords()">
+                                <i class="ri-magic-line"></i> AI Suggest
+                            </button>
+                        </div>
+                        
+                        <div id="keywordSuggestions" class="keyword-suggestions">
+                            <!-- AI suggested keywords will appear here -->
+                        </div>
+
+                        <div class="selected-keywords" id="selectedKeywordsSection" style="display: none;">
+                            <div class="selected-keywords-header">Selected Keywords</div>
+                            <div class="keyword-tags" id="selectedKeywordsDisplay">
+                                <!-- Selected keywords will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Payment -->
+                <div class="step-content" id="step3">
+                    <!-- Payment Type Toggle -->
+                    <div class="payment-type-toggle">
+                        <button class="payment-type-option active" data-type="one-time" onclick="selectPaymentType('one-time')">
+                            <i class="ri-bank-card-line"></i> One-time Payment
+                        </button>
+                        <button class="payment-type-option" data-type="subscription" onclick="selectPaymentType('subscription')">
+                            <i class="ri-refresh-line"></i> Subscription
+                        </button>
+                    </div>
+
+                    <!-- Payment Method Selection -->
+                    <div class="payment-options">
+                        <div class="payment-card selected" data-method="stripe" onclick="selectPaymentMethod('stripe')">
+                            <div class="payment-icon">
+                                <i class="ri-bank-card-2-line"></i>
+                            </div>
+                            <div class="payment-title">Stripe</div>
+                            <div class="payment-description">Pay with credit/debit cards</div>
+                        </div>
+                        <div class="payment-card" data-method="oxapay" onclick="selectPaymentMethod('oxapay')">
+                            <div class="payment-icon">
+                                <i class="ri-bit-coin-line"></i>
+                            </div>
+                            <div class="payment-title">OxaPay</div>
+                            <div class="payment-description">Pay with cryptocurrency</div>
+                        </div>
+                    </div>
+
+                    <!-- Subscription Options (Hidden by default) -->
+                    <div id="subscriptionOptions" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Billing Cycle</label>
+                            <select class="form-select" id="billingCycle">
+                                <option value="monthly">Monthly</option>
+                                <option value="quarterly">Quarterly (Save 10%)</option>
+                                <option value="yearly">Yearly (Save 20%)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Budget Calculator -->
+                    <div class="budget-calculator">
+                        <div class="budget-input-group">
+                            <div class="budget-field">
+                                <label>Total Budget</label>
+                                <input type="number" id="taskBudget" value="150" min="10" onchange="updateBudgetSummary()">
+                                <span class="currency-symbol">$</span>
+                            </div>
+                            <div class="budget-field">
+                                <label>Estimated Clicks</label>
+                                <input type="text" id="estimatedClicks" readonly value="1,250">
+                                <span class="currency-symbol">
+                                    <i class="ri-mouse-line"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="budget-summary">
+                            <div class="budget-summary-item">
+                                <div class="budget-summary-label">Provider Fee</div>
+                                <div class="budget-summary-value" id="providerFee">$0.00</div>
+                            </div>
+                            <div class="budget-summary-item">
+                                <div class="budget-summary-label">Platform Fee</div>
+                                <div class="budget-summary-value" id="platformFee">$0.00</div>
+                            </div>
+                            <div class="budget-summary-item">
+                                <div class="budget-summary-label">Final Amount</div>
+                                <div class="budget-summary-value" id="finalAmount" style="color: var(--success);">$0.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="task-creator-footer">
+                <div class="footer-info">
+                    <i class="ri-shield-check-line"></i>
+                    <span>Secure payment processing</span>
+                </div>
+                <div class="footer-actions">
+                    <button class="btn-ghost" id="prevStepBtn" onclick="previousStep()" style="display: none;">
+                        <i class="ri-arrow-left-line"></i> Previous
+                    </button>
+                    <button class="btn-primary-gradient" id="nextStepBtn" onclick="nextStep()">
+                        Next Step <i class="ri-arrow-right-line"></i>
+                    </button>
+                    <button class="btn-primary-gradient" id="createTaskBtn" onclick="createSeoTask()" style="display: none;">
+                        <i class="ri-check-line"></i> Create Task
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- JavaScript -->
@@ -5656,416 +6469,434 @@ function toggleSubscriptionOptions() {
 
 
 
-// ADD THIS NEW, ALL-IN-ONE AND CORRECTED FUNCTION
-async function showTaskModal() {
-    // Reset state before showing the modal
-    currentData.currentStep = 1;
-    currentData.selectedLocations = [];
-    currentData.selectedKeywords = [];
-    currentData.taskPriority = 'standard';
+// SEO Task Creator - New Implementation
+let taskCreatorState = {
+    currentStep: 1,
+    selectedKeywords: [],
+    taskPriority: 'standard',
+    paymentMethod: 'stripe',
+    paymentType: 'one-time',
+    pendingTaskUrl: null
+};
 
-    const modalHtml = `
-    <div style="text-align: left;">
-        <div class="step-content active" id="step1">
-            <div class="form-group">
-                <label class="form-label">Website URL</label>
-                <input type="url" class="form-input" id="taskUrl" required placeholder="https://example.com">
-                <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem;">
-                    Enter the full URL of your website.
-                </small>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Task Priority</label>
-                <div class="priority-options">
-                    <div class="priority-option" data-priority="basic">
-                        <div class="priority-title">Basic</div>
-                        <div class="priority-price">$0.10/click</div>
-                        <div class="priority-locations">1 location</div>
-                    </div>
-                    <div class="priority-option selected" data-priority="standard">
-                        <div class="priority-title">Standard</div>
-                        <div class="priority-price">$0.12/click</div>
-                        <div class="priority-locations">3 locations</div>
-                    </div>
-                    <div class="priority-option" data-priority="premium">
-                        <div class="priority-title">Premium</div>
-                        <div class="priority-price">$0.15/click</div>
-                        <div class="priority-locations">5 locations</div>
-                    </div>
-                </div>
-            </div>
-            <div class="step-navigation">
-                <div></div> <button class="btn btn-primary" id="goToStep3Btn">Next: Keywords & Payment</button>
-            </div>
-        </div>
-
-        <div class="step-content" id="step3">
-            <div class="form-group">
-                <label class="form-label">Keywords</label>
-                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                    <input type="text" class="form-input" id="keywordsInput" placeholder="Enter keywords separated by commas">
-                    <button class="btn btn-secondary" id="aiKeywordsBtn">
-                        <i class="ri-magic-line"></i> AI Suggest
-                    </button>
-                </div>
-                <div id="keywordSuggestions" class="keyword-suggestions"></div>
-                <div id="selectedKeywordsDisplay" style="margin-top: 1rem;"></div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                <div class="form-group">
-                    <label class="form-label">Total Budget ($)</label>
-                    <div style="position: relative;">
-                        <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-weight: 500;">$</span>
-                        <input type="number" class="form-input" id="taskBudget" min="10" value="150" style="padding-left: 2rem; font-size: 1rem; font-weight: 500;">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Estimated Clicks</label>
-                    <input type="text" class="form-input" id="estimatedClicks" readonly>
-                </div>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                <div class="form-group">
-                    <label class="form-label">Payment Method</label>
-                    <select class="form-select" id="paymentMethod">
-                        <option value="stripe">Stripe (Credit/Debit Cards)</option>
-                        <option value="oxapay">OxaPay (Cryptocurrency)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Payment Type</label>
-                    <select class="form-select" id="paymentType">
-                        <option value="one-time">One-time Payment</option>
-                        <option value="subscription">Recurring Subscription</option>
-                    </select>
-                </div>
-            </div>
-
-            <div id="subscriptionOptions" style="display: none; margin-bottom: 1.5rem;">
-                <div class="form-group">
-                    <label class="form-label">Billing Cycle</label>
-                    <select class="form-select" id="billingCycle">
-                        <option value="monthly">Monthly</option>
-                        <option value="quarterly">Quarterly (3 months)</option>
-                        <option value="yearly">Yearly</option>
-                    </select>
-                </div>
-            </div>
-            <div id="cancelPreviousContainer" style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; display: none;">
-                <div style="display: flex; align-items: start; gap: 0.5rem; margin-bottom: 1rem;">
-                    <input type="checkbox" id="cancelPrevious" style="margin-top: 0.25rem;">
-                    <label for="cancelPrevious" style="font-size: 0.875rem; cursor: pointer;">
-                        <strong>Cancel Previous Tasks</strong><br>
-                        <span style="color: var(--text-secondary);">Automatically cancel any pending or active payments for previous tasks. This will stop any ongoing SEO campaigns and refund unused credits.</span>
-                    </label>
-                </div>
-                <div id="previousTasksWarning" style="display: none; background: var(--warning); color: white; padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.875rem;">
-                    <i class="ri-alert-line"></i> This will cancel <span id="previousTaskCount">0</span> active task(s) and any pending payments.
-                </div>
-            </div>
-
-            <div class="card" style="margin-bottom: 1rem;">
-                <div class="card-body">
-                    <h4 style="margin-bottom: 1rem; font-size: 1.1rem; font-weight: 600;">Order Summary</h4>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span>Task Budget:</span><span id="orderBudget">$150.00</span></div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);"><span>Priority:</span><span id="orderPriority">Standard</span></div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);"><span>Keywords:</span><span id="orderKeywords">0</span></div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);"><span>Click Locations:</span><span id="orderLocations">0</span></div>
-                    <div style="border-top: 1px solid var(--border); padding-top: 0.75rem; margin-top: 0.75rem;">
-                        <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.25rem;"><span>Total:</span><span id="orderTotal">$150.00</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="step-navigation">
-                <button class="btn btn-secondary" id="backToStep1Btn">Back</button>
-                <button class="btn btn-primary" id="createTaskBtn">
-                    <i class="ri-wallet-line"></i> Create Task & Pay
-                </button>
-            </div>
-        </div>
-    </div>
-    `;
-
-    Swal.fire({
-        title: 'Create New SEO Task',
-        html: modalHtml,
-        width: '95vw',
-        maxWidth: '900px',
-        showCloseButton: true,
-        showConfirmButton: false,
-        showCancelButton: false,
-        
-        didOpen: () => {
-            // --- NESTED HELPER FUNCTIONS ---
-            
-            const goToStep = (step) => {
-                if (currentData.currentStep === 1 && step === 3) {
-                    const url = document.getElementById('taskUrl').value.trim();
-                    if (!url) {
-                        showToast('Please enter a valid URL', 'error');
-                        return;
-                    }
-                    const maxLocations = getPriorityMaxLocations(currentData.taskPriority);
-                    currentData.selectedLocations = Array(maxLocations).fill('-');
-                }
-                document.querySelectorAll('.step-content').forEach(content => content.classList.remove('active'));
-                const targetStep = document.getElementById(`step${step}`);
-                if (targetStep) {
-                    targetStep.classList.add('active');
-                    currentData.currentStep = step;
-                    updateOrderSummary();
-                }
-            };
-
-            const selectPriority = (priority) => {
-                document.querySelectorAll('.priority-option').forEach(option => option.classList.remove('selected'));
-                const selectedOption = document.querySelector(`.priority-option[data-priority="${priority}"]`);
-                if (selectedOption) {
-                    selectedOption.classList.add('selected');
-                    currentData.taskPriority = priority;
-                    updateOrderSummary();
-                }
-            };
-
-            // ADDED LOGIC: Show/hide subscription options
-            const toggleSubscriptionOptions = () => {
-                const paymentType = document.getElementById('paymentType').value;
-                const subscriptionOptions = document.getElementById('subscriptionOptions');
-                subscriptionOptions.style.display = (paymentType === 'subscription') ? 'block' : 'none';
-                updateOrderSummary();
-            };
-            
-            const updateOrderSummary = () => {
-                const budget = parseFloat(document.getElementById('taskBudget')?.value || 150);
-                const priority = currentData.taskPriority;
-                const keywordCount = currentData.selectedKeywords.length;
-                const locationCount = getPriorityMaxLocations(priority);
-                const paymentType = document.getElementById('paymentType')?.value || 'one-time'; // ADDED
-                const rates = { basic: 0.10, standard: 0.12, premium: 0.15 };
-                const rate = rates[priority] || 0.12;
-                const estimatedClicks = Math.floor(budget / rate);
-
-                document.getElementById('estimatedClicks').value = estimatedClicks.toLocaleString() + ' clicks';
-                document.getElementById('orderBudget').textContent = `$${budget.toFixed(2)}`;
-                document.getElementById('orderPriority').textContent = priority.charAt(0).toUpperCase() + priority.slice(1);
-                document.getElementById('orderKeywords').textContent = keywordCount;
-                document.getElementById('orderLocations').textContent = locationCount;
-                // MODIFIED: Add subscription text to total
-                document.getElementById('orderTotal').textContent = `$${budget.toFixed(2)}${paymentType === 'subscription' ? '/mo' : ''}`;
-            };
-
-            const toggleKeyword = (keyword, element) => {
-                const index = currentData.selectedKeywords.indexOf(keyword);
-                if (index === -1) {
-                    currentData.selectedKeywords.push(keyword);
-                    if (element) element.classList.add('selected');
-                } else {
-                    currentData.selectedKeywords.splice(index, 1);
-                    if (element) element.classList.remove('selected');
-                }
-                updateSelectedKeywordsDisplay();
-            };
-
-            const updateSelectedKeywordsDisplay = () => {
-                const container = document.getElementById('selectedKeywordsDisplay');
-                document.getElementById('keywordsInput').value = currentData.selectedKeywords.join(', ');
-                if (currentData.selectedKeywords.length === 0) {
-                    container.innerHTML = '';
-                } else {
-                    container.innerHTML = `
-                        <strong style="font-size: 0.9rem;">Selected Keywords (${currentData.selectedKeywords.length}):</strong>
-                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
-                            ${currentData.selectedKeywords.map(keyword => `
-                                <span class="badge badge-primary" data-keyword-badge="${keyword}">
-                                    ${keyword} <span class="remove-keyword" style="cursor: pointer; margin-left: 0.25rem;">?</span>
-                                </span>
-                            `).join('')}
-                        </div>`;
-                }
-                updateOrderSummary();
-            };
-            
-            const generateAIKeywords = async () => {
-                const url = document.getElementById('taskUrl').value;
-                const btn = document.getElementById('aiKeywordsBtn');
-                if (!url) {
-                    showToast('Please enter a URL first', 'error');
-                    return;
-                }
-                btn.innerHTML = '<i class="ri-loader-line"></i> Generating...';
-                btn.disabled = true;
-                try {
-                    const response = await fetch(`https://keywords.seotize.net?url=${encodeURIComponent(url)}`, { headers: { 'Session-Token': sessionToken } });
-                    if (!response.ok) throw new Error('Failed to generate keywords');
-                    const data = await response.json();
-                    const container = document.getElementById('keywordSuggestions');
-                    container.innerHTML = (data.keywords || []).slice(0, 15).map(keyword =>
-                        `<span class="keyword-suggestion">${keyword}</span>`
-                    ).join('');
-                } catch (error) {
-                    showToast('Failed to generate AI keywords', 'error');
-                } finally {
-                    btn.innerHTML = '<i class="ri-magic-line"></i> AI Suggest';
-                    btn.disabled = false;
-                }
-            };
-            
-            const checkForActiveTasks = () => {
-                const activeTasks = (currentData.user?.tasks || []).filter(task => task.available_charge > 0);
-                const container = document.getElementById('cancelPreviousContainer');
-                if (activeTasks.length > 0) {
-                    container.style.display = 'block';
-                    document.getElementById('previousTaskCount').textContent = activeTasks.length;
-                    document.getElementById('cancelPrevious').addEventListener('change', (e) => {
-                        document.getElementById('previousTasksWarning').style.display = e.target.checked ? 'block' : 'none';
-                    });
-                }
-            };
-
-            const createTask = async () => {
-                // MODIFIED: Gather new values
-                const url = document.getElementById('taskUrl').value.trim();
-                const budget = parseFloat(document.getElementById('taskBudget').value);
-                const keywords = currentData.selectedKeywords;
-                const paymentMethod = document.getElementById('paymentMethod').value;
-                const paymentType = document.getElementById('paymentType').value;
-                const billingCycle = document.getElementById('billingCycle')?.value;
-                const cancelPrevious = document.getElementById('cancelPrevious').checked;
-                
-                if (!url || !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(url)) {
-                    return showToast('Please enter a valid URL', 'error');
-                }
-                if (!keywords.length) {
-                    return showToast('Please add at least one keyword', 'error');
-                }
-                if (!budget || budget < 10) {
-                    return showToast('Minimum budget is $10', 'error');
-                }
-
-                // MODIFIED: Build the complete task data object
-                const taskData = {
-                    task_details: {
-                        url: url.startsWith('http') ? url : `https://${url}`,
-                        keywords: keywords,
-                        html_locations: currentData.selectedLocations
-                    },
-                    task_priority: currentData.taskPriority,
-                    total_charge: budget,
-                    payment_method: paymentMethod,
-                    is_subscription: paymentType === 'subscription',
-                    cancel_previous: cancelPrevious
-                };
-
-                if (taskData.is_subscription && billingCycle) {
-                    taskData.billing_cycle = billingCycle;
-                }
-
-                Swal.fire({
-                    title: 'Creating Task...',
-                    didOpen: () => Swal.showLoading(),
-                    allowOutsideClick: false,
-                    customClass: { popup: 'swal2-toast' }
-                });
-
-                try {
-                    const response = await api('/add-task', {
-                        method: 'POST',
-                        body: JSON.stringify(taskData)
-                    });
-                    
-                    if (response.data?.payment_url) {
-                        window.open(response.data.payment_url, '_blank');
-                        Swal.close();
-                        showToast('Task created! Complete payment to activate.', 'success');
-                    } else {
-                        Swal.close();
-                        showToast('Task created successfully!', 'success');
-                    }
-                    
-                    if (document.querySelector('.nav-item[data-page="tasks"]').classList.contains('active')) {
-                        loadTasks();
-                    } else {
-                        loadDashboard();
-                    }
-
-                } catch (error) {
-                    // Handle 409 error for pending tasks
-                    if (error.code === 409 && error.message === 'Pending task exists') {
-                        // Show the cancel previous tasks container
-                        document.getElementById('cancelPreviousContainer').style.display = 'block';
-                        
-                        // Scroll to the checkbox
-                        document.getElementById('cancelPreviousContainer').scrollIntoView({ 
-                            behavior: 'smooth', 
-                            block: 'center' 
-                        });
-                        
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Pending Task Exists',
-                            html: 'You have a pending task from the last 24 hours.<br><br>Please check the <strong>"Cancel Previous Tasks"</strong> option below to cancel it and create a new task.',
-                            confirmButtonText: 'Got it',
-                            customClass: { popup: 'swal2-toast' }
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Creation Failed',
-                            text: error.message || 'An unexpected error occurred.',
-                            customClass: { popup: 'swal2-toast' }
-                        });
-                    }
-                }
-            };
-
-            // --- ATTACH EVENT LISTENERS ---
-            
-            document.querySelectorAll('.priority-option').forEach(el => {
-                el.addEventListener('click', () => selectPriority(el.dataset.priority));
-            });
-
-            document.getElementById('goToStep3Btn').addEventListener('click', () => goToStep(3));
-            document.getElementById('backToStep1Btn').addEventListener('click', () => goToStep(1));
-            document.getElementById('aiKeywordsBtn').addEventListener('click', generateAIKeywords);
-            document.getElementById('taskBudget').addEventListener('input', updateOrderSummary);
-            document.getElementById('createTaskBtn').addEventListener('click', createTask);
-
-            // ADDED: Listener for payment type change
-            document.getElementById('paymentType').addEventListener('change', toggleSubscriptionOptions);
-
-            // Unchanged listeners...
-            document.getElementById('keywordSuggestions').addEventListener('click', (e) => {
-                if (e.target.classList.contains('keyword-suggestion')) {
-                    toggleKeyword(e.target.textContent, e.target);
-                }
-            });
-            document.getElementById('selectedKeywordsDisplay').addEventListener('click', (e) => {
-                if (e.target.classList.contains('remove-keyword')) {
-                    const badge = e.target.closest('.badge');
-                    const keyword = badge.dataset.keywordBadge;
-                    const suggestionEl = document.querySelector(`.keyword-suggestion.selected`);
-                    if (suggestionEl && suggestionEl.textContent === keyword) {
-                        suggestionEl.classList.remove('selected');
-                    }
-                    toggleKeyword(keyword, null);
-                }
-            });
-            document.getElementById('keywordsInput').addEventListener('change', (e) => {
-                currentData.selectedKeywords = e.target.value.split(',').map(k => k.trim()).filter(Boolean);
-                updateSelectedKeywordsDisplay();
-            });
-
-            // --- INITIALIZE ---
-            checkForActiveTasks();
-            updateOrderSummary();
-        }
-    });
+// Open the new task creator interface
+function openSeoTaskCreator() {
+    const creator = document.getElementById('seoTaskCreator');
+    creator.classList.add('active');
+    resetTaskCreatorState();
+    checkForPendingTasks();
 }
 
+// Close the task creator
+function closeSeoTaskCreator() {
+    const creator = document.getElementById('seoTaskCreator');
+    creator.classList.remove('active');
+}
 
+// Reset state
+function resetTaskCreatorState() {
+    taskCreatorState = {
+        currentStep: 1,
+        selectedKeywords: [],
+        taskPriority: 'standard',
+        paymentMethod: 'stripe',
+        paymentType: 'one-time',
+        pendingTaskUrl: null
+    };
+    
+    // Reset UI
+    document.querySelectorAll('.progress-step').forEach(step => {
+        step.classList.remove('active', 'completed');
+    });
+    document.querySelector('.progress-step[data-step="1"]').classList.add('active');
+    
+    document.querySelectorAll('.step-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById('step1').classList.add('active');
+    
+    document.getElementById('prevStepBtn').style.display = 'none';
+    document.getElementById('nextStepBtn').style.display = 'inline-flex';
+    document.getElementById('createTaskBtn').style.display = 'none';
+    
+    // Clear form inputs
+    document.getElementById('taskUrl').value = '';
+    document.getElementById('keywordsInput').value = '';
+    document.getElementById('taskBudget').value = '150';
+    
+    updateBudgetSummary();
+}
+
+// Check for pending tasks
+async function checkForPendingTasks() {
+    try {
+        const response = await api('/get-user');
+        if (response && response.billing) {
+            const pendingTask = response.billing.tasks?.find(task => 
+                task.status === 'pending' && 
+                new Date(task.dates.created) > new Date(Date.now() - 24 * 60 * 60 * 1000)
+            );
+            
+            if (pendingTask) {
+                showPendingTaskAlert(pendingTask);
+            }
+        }
+    } catch (error) {
+        console.error('Error checking pending tasks:', error);
+    }
+}
+
+// Show pending task alert
+function showPendingTaskAlert(task) {
+    const alert = document.getElementById('pendingTaskAlert');
+    const details = document.getElementById('pendingTaskDetails');
+    
+    taskCreatorState.pendingTaskUrl = task.payment_url;
+    
+    details.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div>
+                <strong>Invoice:</strong> ${task.billing_id}
+            </div>
+            <div>
+                <strong>Amount:</strong> $${task.total_payment}
+            </div>
+            <div>
+                <strong>Priority:</strong> ${task.details.priority.name}
+            </div>
+            <div>
+                <strong>Created:</strong> ${new Date(task.dates.created).toLocaleString()}
+            </div>
+        </div>
+    `;
+    
+    alert.classList.add('show');
+}
+
+// Cancel pending task
+async function cancelPendingTask() {
+    try {
+        // Set cancel_previous to true and retry task creation
+        taskCreatorState.cancelPrevious = true;
+        document.getElementById('pendingTaskAlert').classList.remove('show');
+        showToast('Previous task cancelled. You can now create a new task.', 'success');
+    } catch (error) {
+        showToast('Failed to cancel task', 'error');
+    }
+}
+
+// Complete pending payment
+function completePendingPayment() {
+    if (taskCreatorState.pendingTaskUrl) {
+        window.open(taskCreatorState.pendingTaskUrl, '_blank');
+        closeSeoTaskCreator();
+    }
+}
+
+// Navigate to next step
+function nextStep() {
+    const currentStep = taskCreatorState.currentStep;
+    
+    if (currentStep === 1) {
+        const url = document.getElementById('taskUrl').value.trim();
+        if (!url) {
+            showToast('Please enter a valid URL', 'error');
+            return;
+        }
+    } else if (currentStep === 2) {
+        if (taskCreatorState.selectedKeywords.length === 0) {
+            showToast('Please select at least one keyword', 'error');
+            return;
+        }
+    }
+    
+    if (currentStep < 3) {
+        goToStep(currentStep + 1);
+    }
+}
+
+// Navigate to previous step
+function previousStep() {
+    const currentStep = taskCreatorState.currentStep;
+    if (currentStep > 1) {
+        goToStep(currentStep - 1);
+    }
+}
+
+// Go to specific step
+function goToStep(step) {
+    // Update progress indicators
+    document.querySelectorAll('.progress-step').forEach(stepEl => {
+        const stepNum = parseInt(stepEl.dataset.step);
+        stepEl.classList.remove('active');
+        if (stepNum < step) {
+            stepEl.classList.add('completed');
+        } else if (stepNum === step) {
+            stepEl.classList.add('active');
+        } else {
+            stepEl.classList.remove('completed');
+        }
+    });
+    
+    // Update content
+    document.querySelectorAll('.step-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(`step${step}`).classList.add('active');
+    
+    // Update navigation buttons
+    document.getElementById('prevStepBtn').style.display = step === 1 ? 'none' : 'inline-flex';
+    document.getElementById('nextStepBtn').style.display = step === 3 ? 'none' : 'inline-flex';
+    document.getElementById('createTaskBtn').style.display = step === 3 ? 'inline-flex' : 'none';
+    
+    taskCreatorState.currentStep = step;
+    
+    if (step === 3) {
+        updateBudgetSummary();
+    }
+}
+
+// Select priority
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.priority-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.priority-option').forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            taskCreatorState.taskPriority = this.dataset.priority;
+            updateBudgetSummary();
+        });
+    });
+});
+
+// Add/Remove keywords
+function toggleKeyword(keyword) {
+    const index = taskCreatorState.selectedKeywords.indexOf(keyword);
+    if (index === -1) {
+        taskCreatorState.selectedKeywords.push(keyword);
+    } else {
+        taskCreatorState.selectedKeywords.splice(index, 1);
+    }
+    updateSelectedKeywords();
+}
+
+// Update selected keywords display
+function updateSelectedKeywords() {
+    const display = document.getElementById('selectedKeywordsDisplay');
+    const section = document.getElementById('selectedKeywordsSection');
+    
+    if (taskCreatorState.selectedKeywords.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+    
+    section.style.display = 'block';
+    display.innerHTML = taskCreatorState.selectedKeywords.map(keyword => `
+        <div class="keyword-tag">
+            <span class="keyword-tag-text">${keyword}</span>
+            <span class="keyword-tag-remove" onclick="removeKeyword('${keyword}')">
+                <i class="ri-delete-bin-line"></i>
+            </span>
+        </div>
+    `).join('');
+}
+
+// Remove keyword
+function removeKeyword(keyword) {
+    const index = taskCreatorState.selectedKeywords.indexOf(keyword);
+    if (index > -1) {
+        taskCreatorState.selectedKeywords.splice(index, 1);
+        updateSelectedKeywords();
+        
+        // Update suggestion state
+        const suggestions = document.querySelectorAll('.keyword-suggestion');
+        suggestions.forEach(sugg => {
+            if (sugg.textContent === keyword) {
+                sugg.classList.remove('selected');
+            }
+        });
+    }
+}
+
+// Generate AI keywords
+async function generateAIKeywords() {
+    const url = document.getElementById('taskUrl').value;
+    const btn = document.getElementById('aiKeywordsBtn');
+    
+    if (!url) {
+        showToast('Please enter a URL first', 'error');
+        return;
+    }
+    
+    btn.innerHTML = '<i class="ri-loader-line"></i> Generating...';
+    btn.disabled = true;
+    
+    try {
+        const response = await fetch(`https://keywords.seotize.net?url=${encodeURIComponent(url)}`, {
+            headers: { 'Session-Token': sessionToken }
+        });
+        
+        if (!response.ok) throw new Error('Failed to generate keywords');
+        
+        const data = await response.json();
+        const container = document.getElementById('keywordSuggestions');
+        
+        container.innerHTML = (data.keywords || []).slice(0, 15).map(keyword => {
+            const isSelected = taskCreatorState.selectedKeywords.includes(keyword);
+            return `<div class="keyword-suggestion ${isSelected ? 'selected' : ''}" onclick="toggleSuggestion('${keyword}', this)">
+                ${keyword}
+            </div>`;
+        }).join('');
+    } catch (error) {
+        showToast('Failed to generate AI keywords', 'error');
+    } finally {
+        btn.innerHTML = '<i class="ri-magic-line"></i> AI Suggest';
+        btn.disabled = false;
+    }
+}
+
+// Toggle keyword suggestion
+function toggleSuggestion(keyword, element) {
+    element.classList.toggle('selected');
+    toggleKeyword(keyword);
+}
+
+// Handle keywords input
+document.addEventListener('DOMContentLoaded', () => {
+    const keywordsInput = document.getElementById('keywordsInput');
+    if (keywordsInput) {
+        keywordsInput.addEventListener('change', (e) => {
+            const keywords = e.target.value.split(',').map(k => k.trim()).filter(k => k);
+            taskCreatorState.selectedKeywords = keywords;
+            updateSelectedKeywords();
+        });
+    }
+});
+
+// Select payment type
+function selectPaymentType(type) {
+    document.querySelectorAll('.payment-type-option').forEach(opt => opt.classList.remove('active'));
+    document.querySelector(`.payment-type-option[data-type="${type}"]`).classList.add('active');
+    
+    taskCreatorState.paymentType = type;
+    
+    const subscriptionOptions = document.getElementById('subscriptionOptions');
+    subscriptionOptions.style.display = type === 'subscription' ? 'block' : 'none';
+    
+    updateBudgetSummary();
+}
+
+// Select payment method
+function selectPaymentMethod(method) {
+    document.querySelectorAll('.payment-card').forEach(card => card.classList.remove('selected'));
+    document.querySelector(`.payment-card[data-method="${method}"]`).classList.add('selected');
+    
+    taskCreatorState.paymentMethod = method;
+    updateBudgetSummary();
+}
+
+// Update budget summary
+function updateBudgetSummary() {
+    const budget = parseFloat(document.getElementById('taskBudget').value || 150);
+    const priority = taskCreatorState.taskPriority;
+    const rates = { basic: 0.10, standard: 0.12, premium: 0.15 };
+    const rate = rates[priority] || 0.12;
+    const estimatedClicks = Math.floor(budget / rate);
+    
+    // Calculate fees (example rates - adjust based on your actual fee structure)
+    const providerFeeRate = taskCreatorState.paymentMethod === 'stripe' ? 0.029 : 0.015;
+    const providerFixedFee = taskCreatorState.paymentMethod === 'stripe' ? 0.30 : 0;
+    const platformFeeRate = 0.05;
+    
+    const providerFee = (budget * providerFeeRate) + providerFixedFee;
+    const platformFee = budget * platformFeeRate;
+    const finalAmount = budget - providerFee - platformFee;
+    
+    document.getElementById('estimatedClicks').value = estimatedClicks.toLocaleString();
+    document.getElementById('providerFee').textContent = `$${providerFee.toFixed(2)}`;
+    document.getElementById('platformFee').textContent = `$${platformFee.toFixed(2)}`;
+    document.getElementById('finalAmount').textContent = `$${finalAmount.toFixed(2)}`;
+}
+
+// Create SEO Task
+async function createSeoTask() {
+    const url = document.getElementById('taskUrl').value.trim();
+    const budget = parseFloat(document.getElementById('taskBudget').value);
+    const keywords = taskCreatorState.selectedKeywords;
+    const paymentMethod = taskCreatorState.paymentMethod;
+    const paymentType = taskCreatorState.paymentType;
+    const billingCycle = document.getElementById('billingCycle')?.value;
+    
+    // Validation
+    if (!url || !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(url)) {
+        return showToast('Please enter a valid URL', 'error');
+    }
+    if (!keywords.length) {
+        return showToast('Please add at least one keyword', 'error');
+    }
+    if (!budget || budget < 10) {
+        return showToast('Minimum budget is $10', 'error');
+    }
+    
+    // Determine HTML locations based on priority
+    const locationCounts = { basic: 1, standard: 3, premium: 5 };
+    const htmlLocations = Array(locationCounts[taskCreatorState.taskPriority]).fill('-');
+    
+    const taskData = {
+        task_details: {
+            url: url.startsWith('http') ? url : `https://${url}`,
+            keywords: keywords,
+            html_locations: htmlLocations
+        },
+        task_priority: taskCreatorState.taskPriority,
+        total_charge: budget,
+        payment_method: paymentMethod,
+        is_subscription: paymentType === 'subscription',
+        cancel_previous: taskCreatorState.cancelPrevious || false
+    };
+    
+    if (taskData.is_subscription && billingCycle) {
+        taskData.billing_cycle = billingCycle;
+    }
+    
+    // Show loading state
+    const createBtn = document.getElementById('createTaskBtn');
+    createBtn.innerHTML = '<i class="ri-loader-line"></i> Creating...';
+    createBtn.disabled = true;
+    
+    try {
+        const response = await api('/add-task', {
+            method: 'POST',
+            body: JSON.stringify(taskData)
+        });
+        
+        if (response.data?.payment_url) {
+            window.open(response.data.payment_url, '_blank');
+            closeSeoTaskCreator();
+            showToast('Task created! Complete payment to activate.', 'success');
+            loadTasks();
+        } else {
+            closeSeoTaskCreator();
+            showToast('Task created successfully!', 'success');
+            loadTasks();
+        }
+    } catch (error) {
+        if (error.code === 409 && error.message === 'Pending task exists') {
+            taskCreatorState.cancelPrevious = false;
+            checkForPendingTasks();
+            showToast('You have a pending task. Please complete or cancel it first.', 'warning');
+        } else {
+            showToast(error.message || 'Failed to create task', 'error');
+        }
+    } finally {
+        createBtn.innerHTML = '<i class="ri-check-line"></i> Create Task';
+        createBtn.disabled = false;
+    }
+}
+
+// Keep the old function for compatibility but redirect to new interface
+async function showTaskModal() {
+    openSeoTaskCreator();
+}
 
 // [NEW] Rebuilt Task Details Modal using SweetAlert2
 async function viewTaskDetails(taskId) {
