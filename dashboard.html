@@ -1069,7 +1069,7 @@ tr:hover {
 }
 
 .task-creator-container {
-    background: var(--bg-primary);
+    background: var(--bg-secondary);
     border-radius: 1.5rem;
     width: 95vw;
     max-width: 1200px;
@@ -1104,7 +1104,7 @@ tr:hover {
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    color: var(--text-primary);
+    color: var(--text);
 }
 
 .task-creator-subtitle {
@@ -1195,7 +1195,7 @@ tr:hover {
 
 .progress-step.active .step-title,
 .progress-step.completed .step-title {
-    color: var(--text-primary);
+    color: var(--text);
 }
 
 .step-description {
@@ -1515,7 +1515,7 @@ tr:hover {
 .payment-title {
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: var(--text-primary);
+    color: var(--text);
 }
 
 .payment-description {
@@ -1544,7 +1544,7 @@ tr:hover {
 }
 
 .payment-type-option.active {
-    background: white;
+    background: var(--card);
     color: var(--primary);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -1619,7 +1619,7 @@ tr:hover {
 .budget-summary-value {
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--text);
 }
 
 /* Actions Footer */
@@ -1649,7 +1649,7 @@ tr:hover {
     padding: 0.75rem 1.5rem;
     background: transparent;
     border: 2px solid var(--border);
-    color: var(--text-primary);
+    color: var(--text);
     border-radius: 0.5rem;
     font-weight: 600;
     cursor: pointer;
@@ -3759,10 +3759,10 @@ div#modalBody {
                 <div class="step-content" id="step3">
                     <!-- Payment Type Toggle -->
                     <div class="payment-type-toggle">
-                        <button class="payment-type-option active" data-type="one-time" onclick="selectPaymentType('one-time')">
+                        <button class="payment-type-option" data-type="one-time" onclick="selectPaymentType('one-time')">
                             <i class="ri-bank-card-line"></i> One-time Payment
                         </button>
-                        <button class="payment-type-option" data-type="subscription" onclick="selectPaymentType('subscription')">
+                        <button class="payment-type-option active" data-type="subscription" onclick="selectPaymentType('subscription')">
                             <i class="ri-refresh-line"></i> Subscription
                         </button>
                     </div>
@@ -3785,8 +3785,8 @@ div#modalBody {
                         </div>
                     </div>
 
-                    <!-- Subscription Options (Hidden by default) -->
-                    <div id="subscriptionOptions" style="display: none;">
+                    <!-- Subscription Options (Shown by default since subscription is default) -->
+                    <div id="subscriptionOptions" style="display: block;">
                         <div class="form-group">
                             <label class="form-label">Billing Cycle</label>
                             <select class="form-select" id="billingCycle">
@@ -6475,7 +6475,7 @@ let taskCreatorState = {
     selectedKeywords: [],
     taskPriority: 'standard',
     paymentMethod: 'stripe',
-    paymentType: 'one-time',
+    paymentType: 'subscription',
     pendingTaskUrl: null
 };
 
@@ -6500,7 +6500,7 @@ function resetTaskCreatorState() {
         selectedKeywords: [],
         taskPriority: 'standard',
         paymentMethod: 'stripe',
-        paymentType: 'one-time',
+        paymentType: 'subscription',
         pendingTaskUrl: null
     };
     
@@ -6523,6 +6523,46 @@ function resetTaskCreatorState() {
     document.getElementById('taskUrl').value = '';
     document.getElementById('keywordsInput').value = '';
     document.getElementById('taskBudget').value = '150';
+    
+    // Reset priority selection
+    document.querySelectorAll('.priority-option').forEach(opt => opt.classList.remove('selected'));
+    document.querySelector('.priority-option[data-priority="standard"]')?.classList.add('selected');
+    
+    // Reset payment type toggle
+    document.querySelectorAll('.payment-type-option').forEach(opt => opt.classList.remove('active'));
+    document.querySelector('.payment-type-option[data-type="subscription"]')?.classList.add('active');
+    
+    // Reset payment method cards
+    document.querySelectorAll('.payment-card').forEach(card => card.classList.remove('selected'));
+    document.querySelector('.payment-card[data-method="stripe"]')?.classList.add('selected');
+    
+    // Show subscription options by default
+    const subscriptionOptions = document.getElementById('subscriptionOptions');
+    if (subscriptionOptions) {
+        subscriptionOptions.style.display = 'block';
+    }
+    
+    // Reset billing cycle
+    const billingCycle = document.getElementById('billingCycle');
+    if (billingCycle) {
+        billingCycle.value = 'monthly';
+    }
+    
+    // Show both payment methods for subscription
+    const stripeCard = document.querySelector('.payment-card[data-method="stripe"]');
+    const oxapayCard = document.querySelector('.payment-card[data-method="oxapay"]');
+    if (stripeCard) stripeCard.style.display = 'block';
+    if (oxapayCard) oxapayCard.style.display = 'block';
+    
+    // Clear selected keywords
+    const selectedKeywordsSection = document.getElementById('selectedKeywordsSection');
+    if (selectedKeywordsSection) {
+        selectedKeywordsSection.style.display = 'none';
+    }
+    const selectedKeywordsDisplay = document.getElementById('selectedKeywordsDisplay');
+    if (selectedKeywordsDisplay) {
+        selectedKeywordsDisplay.innerHTML = '';
+    }
     
     updateBudgetSummary();
 }
@@ -6781,6 +6821,26 @@ function selectPaymentType(type) {
     
     const subscriptionOptions = document.getElementById('subscriptionOptions');
     subscriptionOptions.style.display = type === 'subscription' ? 'block' : 'none';
+    
+    // Show/hide payment methods based on payment type
+    const stripeCard = document.querySelector('.payment-card[data-method="stripe"]');
+    const oxapayCard = document.querySelector('.payment-card[data-method="oxapay"]');
+    
+    if (type === 'subscription') {
+        // Subscription: show both Stripe and Oxapay
+        stripeCard.style.display = 'block';
+        oxapayCard.style.display = 'block';
+        // Set Stripe as default for subscription
+        if (taskCreatorState.paymentMethod !== 'stripe' && taskCreatorState.paymentMethod !== 'oxapay') {
+            selectPaymentMethod('stripe');
+        }
+    } else {
+        // One-time: only show Oxapay
+        stripeCard.style.display = 'none';
+        oxapayCard.style.display = 'block';
+        // Set Oxapay as the payment method for one-time
+        selectPaymentMethod('oxapay');
+    }
     
     updateBudgetSummary();
 }
