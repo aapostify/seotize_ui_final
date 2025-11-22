@@ -4542,13 +4542,19 @@ async function api(endpoint, options = {}) {
         const data = await response.json();
         
         if (!response.ok) {
-            throw new Error(data.error?.message || data.message || 'API Error');
+            const apiError = new Error(data.error?.message || data.message || 'API Error');
+            apiError.code = data.error?.code || response.status;
+            apiError.data = data;
+            throw apiError;
         }
         
         return data;
     } catch (error) {
         console.error('API Error:', error);
-        showToast(error.message, 'error');
+        // Only show toast if it's not a 409 error (pending task)
+        if (error.code !== 409) {
+            showToast(error.message, 'error');
+        }
         throw error;
     }
 }
@@ -7085,6 +7091,9 @@ async function createSeoTask() {
             body: JSON.stringify(taskData)
         });
         
+        // Reset cancel_previous flag after successful creation
+        taskCreatorState.cancelPrevious = false;
+        
         if (response.data?.payment_url) {
             window.open(response.data.payment_url, '_blank');
             closeSeoTaskCreator();
@@ -7099,14 +7108,14 @@ async function createSeoTask() {
         if (error.code === 409 && error.message === 'Pending task exists') {
             // Show confirmation dialog for cancelling previous task
             const result = await Swal.fire({
-                title: 'Pending Task Exists',
-                text: 'You have a pending task. Do you want to cancel it and create a new one?',
+                title: 'Pending Payment Active',
+                text: 'There is a pending payment active. Do you want to cancel it and create a new task?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, cancel previous task',
-                cancelButtonText: 'No, keep it'
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
             });
             
             if (result.isConfirmed) {
