@@ -2786,6 +2786,144 @@ div#modalBody {
         margin: 0 !important;
     }
 }
+
+/* AI Suggest Button - Special Design */
+.btn-ai-suggest {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-ai-suggest:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+}
+
+.btn-ai-suggest i {
+    font-size: 1.1rem;
+    animation: sparkle 2s infinite;
+}
+
+.btn-ai-suggest span {
+    display: inline-block;
+}
+
+@keyframes sparkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Budget Input - Better Arrow Design */
+.budget-input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    position: relative;
+}
+
+.budget-input::-webkit-inner-spin-button,
+.budget-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Custom number input wrapper */
+.budget-input-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.budget-input-wrapper .budget-input {
+    padding-right: 2.5rem !important;
+}
+
+.budget-input-arrows {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.budget-input-arrows button {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 0;
+    width: 24px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 12px;
+}
+
+.budget-input-arrows button:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Keyword badge delete icon */
+.remove-keyword {
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.remove-keyword:hover {
+    transform: scale(1.2);
+}
+
+.remove-keyword i {
+    pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .btn-ai-suggest {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .btn-ai-suggest i {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-ai-suggest {
+        padding: 0.5rem 0.85rem;
+        font-size: 0.8rem;
+    }
+    
+    .btn-ai-suggest span {
+        display: none;
+    }
+    
+    .btn-ai-suggest::after {
+        content: "AI";
+        margin-left: 0.25rem;
+    }
+}
 </style>
 </head>
 <body data-theme="light">
@@ -4103,7 +4241,7 @@ async function loadTasks(page = 1) {
             </button>
             ${!isVerified ? `
             <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); verifyTask('${task._id}')" style="background: var(--warning); color: white;">
-            <i class="ri-shield-check-line"></i> Verify Task
+            <i class="ri-shield-check-line"></i> Verify
             </button>
             ` : ''}
             </div>
@@ -5612,7 +5750,24 @@ function setZoom(scale) {
     }
 }
 
-
+// Function to increment/decrement budget input
+function incrementBudget(direction) {
+    const input = document.getElementById('taskBudget');
+    if (!input) return;
+    
+    const currentValue = parseFloat(input.value) || 150;
+    const min = parseFloat(input.min) || 10;
+    const step = 10; // Increment by $10
+    
+    let newValue = currentValue + (direction * step);
+    newValue = Math.max(min, newValue); // Ensure it doesn't go below minimum
+    
+    input.value = newValue;
+    
+    // Trigger input event to update order summary
+    const event = new Event('input', { bubbles: true });
+    input.dispatchEvent(event);
+}
 
 // Update order summary
 function updateOrderSummary() {
@@ -5704,8 +5859,8 @@ async function showTaskModal() {
                 <label class="form-label">Keywords</label>
                 <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
                     <input type="text" class="form-input" id="keywordsInput" placeholder="Enter keywords separated by commas">
-                    <button class="btn btn-secondary" id="aiKeywordsBtn">
-                        <i class="ri-magic-line"></i> AI Suggest
+                    <button class="btn btn-ai-suggest" id="aiKeywordsBtn">
+                        <i class="ri-magic-line"></i> <span>AI Suggest</span>
                     </button>
                 </div>
                 <div id="keywordSuggestions" class="keyword-suggestions"></div>
@@ -5715,9 +5870,17 @@ async function showTaskModal() {
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
                 <div class="form-group">
                     <label class="form-label">Total Budget ($)</label>
-                    <div style="position: relative;">
-                        <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-weight: 500;">$</span>
-                        <input type="number" class="form-input" id="taskBudget" min="10" value="150" style="padding-left: 2rem; font-size: 1rem; font-weight: 500;">
+                    <div class="budget-input-wrapper" style="position: relative; width: 100%;">
+                        <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-weight: 500; z-index: 1;">$</span>
+                        <input type="number" class="form-input budget-input" id="taskBudget" min="10" value="150" style="padding-left: 2rem; font-size: 1rem; font-weight: 500; width: 100%;">
+                        <div class="budget-input-arrows">
+                            <button type="button" onclick="incrementBudget(1)" tabindex="-1">
+                                <i class="ri-arrow-up-s-line"></i>
+                            </button>
+                            <button type="button" onclick="incrementBudget(-1)" tabindex="-1">
+                                <i class="ri-arrow-down-s-line"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -5880,7 +6043,7 @@ async function showTaskModal() {
                         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
                             ${currentData.selectedKeywords.map(keyword => `
                                 <span class="badge badge-primary" data-keyword-badge="${keyword}">
-                                    ${keyword} <span class="remove-keyword" style="cursor: pointer; margin-left: 0.25rem;">?</span>
+                                    ${keyword} <span class="remove-keyword" style="cursor: pointer; margin-left: 0.25rem; color: #ef4444;"><i class="ri-delete-bin-6-line" style="font-size: 0.85rem;"></i></span>
                                 </span>
                             `).join('')}
                         </div>`;
@@ -5908,7 +6071,7 @@ async function showTaskModal() {
                 } catch (error) {
                     showToast('Failed to generate AI keywords', 'error');
                 } finally {
-                    btn.innerHTML = '<i class="ri-magic-line"></i> AI Suggest';
+                    btn.innerHTML = '<i class="ri-magic-line"></i> <span>AI Suggest</span>';
                     btn.disabled = false;
                 }
             };
@@ -6271,7 +6434,7 @@ async function viewTaskDetails(taskId) {
         // Add verify button if task is not verified
         if (!isVerified) {
             modalConfig.showConfirmButton = true;
-            modalConfig.confirmButtonText = `<i class="ri-shield-check-line"></i> Verify Task`;
+            modalConfig.confirmButtonText = `<i class="ri-shield-check-line"></i> Verify`;
             modalConfig.confirmButtonColor = '#f59e0b'; // warning color
         } else {
             modalConfig.showConfirmButton = false;
@@ -6279,7 +6442,7 @@ async function viewTaskDetails(taskId) {
         
         Swal.fire(modalConfig).then((result) => {
             if (result.isConfirmed && !isVerified) {
-                // The "Verify Task" button was clicked
+                // The "Verify" button was clicked
                 Swal.close();
                 verifyTask(taskId);
             } else if (result.isDenied) {
