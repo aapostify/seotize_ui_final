@@ -1309,19 +1309,23 @@ tr:hover {
 .priority-options {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
+    gap: 1rem;
     margin-bottom: 2rem;
 }
 
 .priority-option {
     border: 2px solid var(--border);
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 1.25rem 1rem;
     cursor: pointer;
     transition: all 0.3s;
     position: relative;
     overflow: hidden;
     text-align: center;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .priority-option::before {
@@ -1355,11 +1359,12 @@ tr:hover {
     padding: 0.25rem 0.75rem;
     background: var(--bg-tertiary);
     border-radius: 999px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
+    align-self: center;
 }
 
 .priority-option[data-priority="basic"] .priority-badge {
@@ -1380,10 +1385,11 @@ tr:hover {
 .priority-title {
     font-weight: 600;
     margin-bottom: 0.5rem;
+    font-size: 0.95rem;
 }
 
 .priority-price {
-    font-size: 1.75rem;
+    font-size: 1.35rem;
     font-weight: 700;
     color: var(--primary);
     margin-bottom: 0.5rem;
@@ -1639,15 +1645,20 @@ tr:hover {
 
 .budget-summary {
     background: var(--card);
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-top: 1rem;
 }
 
 .budget-summary-item {
     text-align: center;
+    padding: 0.75rem;
+    background: var(--bg-primary);
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
 }
 
 .budget-summary-label {
@@ -1666,10 +1677,10 @@ tr:hover {
 
 /* Billing Cycle Options */
 .billing-cycle-options {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    justify-content: space-between;
 }
 
 .billing-option {
@@ -1681,6 +1692,12 @@ tr:hover {
     transition: all 0.3s;
     background: var(--card);
     text-align: center;
+    flex: 1;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .billing-option:hover {
@@ -1762,7 +1779,12 @@ tr:hover {
 
 @media (max-width: 768px) {
     .billing-cycle-options {
+        flex-direction: column;
+    }
+    
+    .budget-summary {
         grid-template-columns: 1fr;
+        gap: 0.75rem;
     }
 }
 
@@ -1887,6 +1909,20 @@ tr:hover {
     }
     
     .progress-step .step-info {
+        display: block;
+        margin-left: 0.5rem;
+    }
+    
+    .step-title {
+        font-size: 0.625rem;
+        margin-top: 0.25rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        display: block;
+        text-align: center;
+    }
+    
+    .step-description {
         display: none;
     }
     
@@ -1991,15 +2027,17 @@ tr:hover {
     }
     
     .priority-options {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr;
         gap: 0.875rem;
     }
     
     .priority-option {
         width: 100%;
         padding: 1rem;
-        display: flex;
+        min-height: auto;
+        display: grid;
+        grid-template-columns: 1fr auto;
         align-items: center;
         gap: 1rem;
         border-radius: 0.875rem;
@@ -2019,6 +2057,7 @@ tr:hover {
         font-size: 0.625rem;
         border-radius: 1rem;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        align-self: auto;
     }
     
     .priority-option .priority-title {
@@ -4504,10 +4543,10 @@ div#modalBody {
             <div class="progress-steps">
                 <div class="progress-step active" data-step="1">
                     <div class="step-indicator">1</div>
-                    <div class="step-info">
-                        <div class="step-title">Website & Priority</div>
-                        <div class="step-description">Set up your website URL and task priority</div>
-                    </div>
+                        <div class="step-info">
+                            <div class="step-title">Website</div>
+                            <div class="step-description">Set up your website URL and task priority</div>
+                        </div>
                 </div>
                 <div class="progress-step" data-step="2">
                     <div class="step-indicator">2</div>
@@ -4613,7 +4652,8 @@ div#modalBody {
                                 <i class="ri-search-line" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary);"></i>
                                 <input type="text" class="form-input" id="keywordsInput" 
                                        placeholder="Enter keywords separated by commas" 
-                                       style="padding-left: 2.5rem;">
+                                       style="padding-left: 2.5rem;"
+                                       oninput="handleKeywordInput(this.value)">
                             </div>
                             <button class="btn btn-secondary" id="aiKeywordsBtn" onclick="generateAIKeywords()">
                                 <i class="ri-magic-line"></i> AI Suggest
@@ -4727,8 +4767,8 @@ div#modalBody {
                                 <div class="budget-summary-value" id="platformFee">$0.00</div>
                             </div>
                             <div class="budget-summary-item">
-                                <div class="budget-summary-label">Final Amount</div>
-                                <div class="budget-summary-value" id="finalAmount" style="color: var(--success);">$0.00</div>
+                                <div class="budget-summary-label">Total Amount</div>
+                                <div class="budget-summary-value" id="finalAmount" style="color: var(--success); font-size: 1.25rem;">$0.00</div>
                             </div>
                         </div>
                     </div>
@@ -7444,6 +7484,9 @@ function resetTaskCreatorState() {
     document.getElementById('keywordsInput').value = '';
     document.getElementById('taskBudget').value = '150';
     
+    // Clear selected keywords state
+    taskCreatorState.selectedKeywords = [];
+    
     // Reset priority selection
     document.querySelectorAll('.priority-option').forEach(opt => opt.classList.remove('selected'));
     document.querySelector('.priority-option[data-priority="standard"]')?.classList.add('selected');
@@ -7672,6 +7715,17 @@ function updateSelectedKeywords() {
             </span>
         </div>
     `).join('');
+    
+    // Update keyword suggestions to match selected state
+    const suggestions = document.querySelectorAll('.keyword-suggestion');
+    suggestions.forEach(sugg => {
+        const suggText = sugg.textContent.trim();
+        if (taskCreatorState.selectedKeywords.includes(suggText)) {
+            sugg.classList.add('selected');
+        } else {
+            sugg.classList.remove('selected');
+        }
+    });
 }
 
 // Remove keyword
@@ -7680,15 +7734,31 @@ function removeKeyword(keyword) {
     if (index > -1) {
         taskCreatorState.selectedKeywords.splice(index, 1);
         updateSelectedKeywords();
+        syncKeywordsInput();
         
         // Update suggestion state
         const suggestions = document.querySelectorAll('.keyword-suggestion');
         suggestions.forEach(sugg => {
-            if (sugg.textContent === keyword) {
+            if (sugg.textContent.trim() === keyword) {
                 sugg.classList.remove('selected');
             }
         });
     }
+}
+
+// Sync keywords input field with selected keywords
+function syncKeywordsInput() {
+    const keywordsInput = document.getElementById('keywordsInput');
+    if (keywordsInput) {
+        keywordsInput.value = taskCreatorState.selectedKeywords.join(', ');
+    }
+}
+
+// Handle manual keyword input
+function handleKeywordInput(value) {
+    const keywords = value.split(',').map(k => k.trim()).filter(k => k);
+    taskCreatorState.selectedKeywords = keywords;
+    updateSelectedKeywords();
 }
 
 // Generate AI keywords
@@ -7737,15 +7807,29 @@ async function generateAIKeywords() {
 
 // Toggle keyword suggestion
 function toggleSuggestion(keyword, element) {
-    element.classList.toggle('selected');
-    toggleKeyword(keyword);
+    const isSelected = element.classList.contains('selected');
+    
+    if (isSelected) {
+        element.classList.remove('selected');
+        removeKeyword(keyword);
+    } else {
+        element.classList.add('selected');
+        const index = taskCreatorState.selectedKeywords.indexOf(keyword);
+        if (index === -1) {
+            taskCreatorState.selectedKeywords.push(keyword);
+        }
+    }
+    
+    updateSelectedKeywords();
+    syncKeywordsInput();
 }
 
 // Handle keywords input
 document.addEventListener('DOMContentLoaded', () => {
     const keywordsInput = document.getElementById('keywordsInput');
     if (keywordsInput) {
-        keywordsInput.addEventListener('change', (e) => {
+        // Handle both change and blur events for better sync
+        keywordsInput.addEventListener('blur', (e) => {
             const keywords = e.target.value.split(',').map(k => k.trim()).filter(k => k);
             taskCreatorState.selectedKeywords = keywords;
             updateSelectedKeywords();
@@ -7803,6 +7887,8 @@ function selectBillingCycle(cycle, element) {
     element.classList.add('selected');
     // Update the hidden select element
     document.getElementById('billingCycle').value = cycle;
+    // Update budget summary to reflect new billing cycle
+    updateBudgetSummary();
 }
 
 // Update budget summary
@@ -7813,19 +7899,41 @@ function updateBudgetSummary() {
     const rate = rates[priority] || 0.12;
     const estimatedClicks = Math.floor(budget / rate);
     
-    // Calculate fees (example rates - adjust based on your actual fee structure)
+    // Get billing cycle for subscription
+    const billingCycle = document.getElementById('billingCycle')?.value || 'monthly';
+    const billingMultipliers = { monthly: 1, quarterly: 3, yearly: 12 };
+    const multiplier = taskCreatorState.paymentType === 'subscription' ? billingMultipliers[billingCycle] : 1;
+    
+    // Calculate fees
     const providerFeeRate = taskCreatorState.paymentMethod === 'stripe' ? 0.029 : 0.015;
     const providerFixedFee = taskCreatorState.paymentMethod === 'stripe' ? 0.30 : 0;
     const platformFeeRate = 0.05;
     
-    const providerFee = (budget * providerFeeRate) + providerFixedFee;
-    const platformFee = budget * platformFeeRate;
-    const finalAmount = budget - providerFee - platformFee;
+    const monthlyProviderFee = (budget * providerFeeRate) + providerFixedFee;
+    const monthlyPlatformFee = budget * platformFeeRate;
+    const monthlyFinalAmount = budget - monthlyProviderFee - monthlyPlatformFee;
+    
+    // Calculate totals based on billing period
+    const totalProviderFee = monthlyProviderFee * multiplier;
+    const totalPlatformFee = monthlyPlatformFee * multiplier;
+    const totalFinalAmount = monthlyFinalAmount * multiplier;
     
     document.getElementById('estimatedClicks').value = estimatedClicks.toLocaleString();
-    document.getElementById('providerFee').textContent = `$${providerFee.toFixed(2)}`;
-    document.getElementById('platformFee').textContent = `$${platformFee.toFixed(2)}`;
-    document.getElementById('finalAmount').textContent = `$${finalAmount.toFixed(2)}`;
+    
+    // Update fee displays with period info
+    const providerFeeElem = document.getElementById('providerFee');
+    const platformFeeElem = document.getElementById('platformFee');
+    const finalAmountElem = document.getElementById('finalAmount');
+    
+    if (taskCreatorState.paymentType === 'subscription' && multiplier > 1) {
+        providerFeeElem.innerHTML = `$${totalProviderFee.toFixed(2)}<div class="budget-summary-period">$${monthlyProviderFee.toFixed(2)}/mo × ${multiplier}</div>`;
+        platformFeeElem.innerHTML = `$${totalPlatformFee.toFixed(2)}<div class="budget-summary-period">$${monthlyPlatformFee.toFixed(2)}/mo × ${multiplier}</div>`;
+        finalAmountElem.innerHTML = `$${totalFinalAmount.toFixed(2)}<div class="budget-summary-period">$${monthlyFinalAmount.toFixed(2)}/mo × ${multiplier}</div>`;
+    } else {
+        providerFeeElem.innerHTML = `$${monthlyProviderFee.toFixed(2)}`;
+        platformFeeElem.innerHTML = `$${monthlyPlatformFee.toFixed(2)}`;
+        finalAmountElem.innerHTML = `$${monthlyFinalAmount.toFixed(2)}`;
+    }
 }
 
 // Create SEO Task
