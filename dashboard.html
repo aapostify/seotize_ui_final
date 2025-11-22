@@ -1717,7 +1717,8 @@ tr:hover {
 }
 
 .billing-popular {
-    border-color: var(--primary);
+    border: 2px solid var(--primary) !important;
+    position: relative;
 }
 
 @media (max-width: 768px) {
@@ -3900,7 +3901,7 @@ div#modalBody {
                                     </div>
                                     <div class="billing-price">Pay monthly</div>
                                 </div>
-                                <div class="billing-option billing-popular" onclick="selectBillingCycle('quarterly', this)">
+                                <div class="billing-option billing-popular selected" onclick="selectBillingCycle('quarterly', this)">
                                     <div class="billing-badge">Popular</div>
                                     <div class="billing-option-header">
                                         <span class="billing-period">Quarterly</span>
@@ -3919,7 +3920,7 @@ div#modalBody {
                             </div>
                             <select class="form-select" id="billingCycle" style="display: none;">
                                 <option value="monthly">Monthly</option>
-                                <option value="quarterly">Quarterly (Save 10%)</option>
+                                <option value="quarterly" selected>Quarterly (Save 10%)</option>
                                 <option value="yearly">Yearly (Save 20%)</option>
                             </select>
                         </div>
@@ -6610,7 +6611,8 @@ let taskCreatorState = {
     taskPriority: 'standard',
     paymentMethod: 'stripe',
     paymentType: 'subscription',
-    pendingTaskUrl: null
+    pendingTaskUrl: null,
+    cancelPrevious: false
 };
 
 // Open the new task creator interface
@@ -6637,7 +6639,8 @@ function resetTaskCreatorState() {
         taskPriority: 'standard',
         paymentMethod: 'stripe',
         paymentType: 'subscription',
-        pendingTaskUrl: null
+        pendingTaskUrl: null,
+        cancelPrevious: false
     };
     
     // Reset UI
@@ -6681,11 +6684,16 @@ function resetTaskCreatorState() {
     // Reset billing cycle
     const billingCycle = document.getElementById('billingCycle');
     if (billingCycle) {
-        billingCycle.value = 'monthly';
+        billingCycle.value = 'quarterly'; // Set default to quarterly (popular option)
     }
     
     // Reset billing cycle visual options
     document.querySelectorAll('.billing-option').forEach(opt => opt.classList.remove('selected'));
+    // Set quarterly as selected by default
+    const quarterlyOption = document.querySelector('.billing-option.billing-popular');
+    if (quarterlyOption) {
+        quarterlyOption.classList.add('selected');
+    }
     
     // Reset payment method visibility for subscription (only Stripe visible)
     const stripeCard = document.querySelector('.payment-card[data-method="stripe"]');
@@ -7040,7 +7048,7 @@ function updateBudgetSummary() {
 }
 
 // Create SEO Task
-async function createSeoTask() {
+async function createSeoTask(isRetry = false) {
     const url = document.getElementById('taskUrl').value.trim();
     const budget = parseFloat(document.getElementById('taskBudget').value);
     const keywords = taskCreatorState.selectedKeywords;
@@ -7080,10 +7088,12 @@ async function createSeoTask() {
         taskData.billing_cycle = billingCycle;
     }
     
-    // Show loading state
+    // Show loading state only on first attempt
     const createBtn = document.getElementById('createTaskBtn');
-    createBtn.innerHTML = '<i class="ri-loader-line"></i> Creating...';
-    createBtn.disabled = true;
+    if (!isRetry) {
+        createBtn.innerHTML = '<i class="ri-loader-line"></i> Creating...';
+        createBtn.disabled = true;
+    }
     
     try {
         const response = await api('/add-task', {
@@ -7104,6 +7114,10 @@ async function createSeoTask() {
             showToast('Task created successfully!', 'success');
             loadTasks();
         }
+        
+        // Reset button state after success
+        createBtn.innerHTML = '<i class="ri-check-line"></i> Create Task';
+        createBtn.disabled = false;
     } catch (error) {
         if (error.code === 409 && error.message === 'Pending task exists') {
             // Show confirmation dialog for cancelling previous task
@@ -7121,19 +7135,22 @@ async function createSeoTask() {
             if (result.isConfirmed) {
                 // Set cancel_previous to true and retry
                 taskCreatorState.cancelPrevious = true;
-                // Retry the task creation
-                createSeoTask();
-                return;
+                // Keep loading state and retry the task creation
+                createSeoTask(true);
+                return; // Don't reset button state yet
             } else {
                 taskCreatorState.cancelPrevious = false;
                 checkForPendingTasks();
+                // Reset button state when user cancels
+                createBtn.innerHTML = '<i class="ri-check-line"></i> Create Task';
+                createBtn.disabled = false;
             }
         } else {
             showToast(error.message || 'Failed to create task', 'error');
+            // Reset button state on error
+            createBtn.innerHTML = '<i class="ri-check-line"></i> Create Task';
+            createBtn.disabled = false;
         }
-    } finally {
-        createBtn.innerHTML = '<i class="ri-check-line"></i> Create Task';
-        createBtn.disabled = false;
     }
 }
 
