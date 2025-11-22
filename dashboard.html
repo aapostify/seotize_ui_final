@@ -1584,6 +1584,8 @@ tr:hover {
     border-radius: 0.5rem;
     font-size: 1.25rem;
     font-weight: 600;
+    background: var(--card);
+    color: var(--text);
 }
 
 .budget-field .currency-symbol {
@@ -1596,7 +1598,7 @@ tr:hover {
 }
 
 .budget-summary {
-    background: white;
+    background: var(--card);
     border-radius: 0.5rem;
     padding: 1rem;
     display: flex;
@@ -3769,14 +3771,14 @@ div#modalBody {
 
                     <!-- Payment Method Selection -->
                     <div class="payment-options">
-                        <div class="payment-card selected" data-method="stripe" onclick="selectPaymentMethod('stripe')">
+                        <div class="payment-card selected" data-method="stripe" onclick="selectPaymentMethod('stripe')" style="display: block;">
                             <div class="payment-icon">
                                 <i class="ri-bank-card-2-line"></i>
                             </div>
                             <div class="payment-title">Stripe</div>
                             <div class="payment-description">Pay with credit/debit cards</div>
                         </div>
-                        <div class="payment-card" data-method="oxapay" onclick="selectPaymentMethod('oxapay')">
+                        <div class="payment-card" data-method="oxapay" onclick="selectPaymentMethod('oxapay')" style="display: none;">
                             <div class="payment-icon">
                                 <i class="ri-bit-coin-line"></i>
                             </div>
@@ -6548,11 +6550,11 @@ function resetTaskCreatorState() {
         billingCycle.value = 'monthly';
     }
     
-    // Show both payment methods for subscription
+    // Reset payment method visibility for subscription (only Stripe visible)
     const stripeCard = document.querySelector('.payment-card[data-method="stripe"]');
     const oxapayCard = document.querySelector('.payment-card[data-method="oxapay"]');
     if (stripeCard) stripeCard.style.display = 'block';
-    if (oxapayCard) oxapayCard.style.display = 'block';
+    if (oxapayCard) oxapayCard.style.display = 'none';
     
     // Clear selected keywords
     const selectedKeywordsSection = document.getElementById('selectedKeywordsSection');
@@ -6827,19 +6829,19 @@ function selectPaymentType(type) {
     const oxapayCard = document.querySelector('.payment-card[data-method="oxapay"]');
     
     if (type === 'subscription') {
-        // Subscription: show both Stripe and Oxapay
+        // Subscription: show only Stripe
+        stripeCard.style.display = 'block';
+        oxapayCard.style.display = 'none';
+        // Set Stripe as default for subscription
+        selectPaymentMethod('stripe');
+    } else {
+        // One-time: show both Stripe and Oxapay
         stripeCard.style.display = 'block';
         oxapayCard.style.display = 'block';
-        // Set Stripe as default for subscription
+        // Set Stripe as default for one-time (or keep current if already selected)
         if (taskCreatorState.paymentMethod !== 'stripe' && taskCreatorState.paymentMethod !== 'oxapay') {
             selectPaymentMethod('stripe');
         }
-    } else {
-        // One-time: only show Oxapay
-        stripeCard.style.display = 'none';
-        oxapayCard.style.display = 'block';
-        // Set Oxapay as the payment method for one-time
-        selectPaymentMethod('oxapay');
     }
     
     updateBudgetSummary();
