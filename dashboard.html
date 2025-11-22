@@ -1970,19 +1970,27 @@ tr:hover {
     
     .task-creator-close {
         position: absolute !important;
-        top: 0.5rem !important;
-        right: 0.5rem !important;
-        width: 1.875rem !important;
-        height: 1.875rem !important;
-        font-size: 0.95rem !important;
+        top: 0.75rem !important;
+        right: 0.75rem !important;
+        width: 2.25rem !important;
+        height: 2.25rem !important;
+        font-size: 1.125rem !important;
         flex-shrink: 0;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 1010 !important;
+        background: white !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 50% !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
     }
     
     .task-creator-title {
         font-size: 0.95rem;
         font-weight: 700;
-        margin-bottom: 0;
-        padding-right: 2rem;
+        margin-bottom: 0.125rem;
+        padding-right: 2.75rem;
     }
     
     .task-creator-subtitle {
@@ -2002,40 +2010,68 @@ tr:hover {
     .progress-steps {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        gap: 0.5rem;
+        align-items: stretch;
+        gap: 0.625rem;
         width: 100%;
-        padding: 0.5rem 0.375rem;
+        padding: 0.75rem;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .progress-steps::-webkit-scrollbar {
+        display: none;
     }
     
     .progress-step {
         display: flex;
         align-items: center;
-        gap: 0.375rem;
+        gap: 0.5rem;
         flex: 1;
         min-width: fit-content;
+        padding: 0.5rem;
+        border-radius: 0.625rem;
+        transition: all 0.2s;
+        background: var(--bg-tertiary);
+        border: 1px solid transparent;
+    }
+    
+    .progress-step.completed {
+        background: rgba(34, 197, 94, 0.08);
+        border-color: rgba(34, 197, 94, 0.2);
+    }
+    
+    .progress-step.active {
+        background: rgba(99, 102, 241, 0.1);
+        border-color: var(--primary);
     }
     
     .step-info {
         display: flex;
         flex-direction: column;
-        gap: 0;
+        gap: 0.125rem;
         min-width: 0;
+        flex: 1;
     }
     
     .step-title {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         font-weight: 600;
-        color: var(--text-secondary);
+        color: var(--text);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
     
     .step-description {
-        display: none;
+        font-size: 0.625rem;
+        color: var(--text-secondary);
+        line-height: 1.2;
+        display: block !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     .step-indicator {
@@ -2303,24 +2339,28 @@ tr:hover {
         gap: 0.5rem;
     }
     
-    .billing-option {
-        padding: 0.6rem 0.4rem;
-        min-height: 90px;
+    .billing-cycle-options .billing-option {
+        padding: 0.75rem 0.5rem;
+        min-height: 115px;
+        max-height: 115px;
+        height: 115px;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: space-between;
+        align-items: center;
         text-align: center;
-        aspect-ratio: 1;
         border-radius: 0.75rem;
+        position: relative;
     }
     
-    .billing-option-header {
+    .billing-cycle-options .billing-option-header {
         font-size: 0.75rem;
         margin-bottom: 0.25rem;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 0.25rem;
+        width: 100%;
     }
     
     .billing-period {
@@ -2447,7 +2487,13 @@ tr:hover {
     }
     
     .progress-steps {
-        padding: 0.375rem 0.25rem;
+        padding: 0.5rem;
+        gap: 0.375rem;
+    }
+    
+    .progress-step {
+        min-width: 110px;
+        padding: 0.375rem;
     }
     
     .step-indicator {
@@ -2461,8 +2507,12 @@ tr:hover {
     }
     
     .step-title {
-        font-size: 0.625rem;
+        font-size: 0.65rem;
         display: block;
+    }
+    
+    .step-description {
+        font-size: 0.55rem;
     }
     
     .task-creator-header {
@@ -2471,14 +2521,20 @@ tr:hover {
     }
     
     .task-creator-close {
-        position: relative !important;
-        top: auto !important;
-        right: auto !important;
+        position: absolute !important;
+        top: 0.625rem !important;
+        right: 0.625rem !important;
         width: 2rem !important;
         height: 2rem !important;
         font-size: 1rem !important;
         z-index: 1010;
         flex-shrink: 0;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: white !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 50% !important;
     }
     
     .task-creator-header {
@@ -2558,9 +2614,16 @@ tr:hover {
         grid-template-columns: repeat(3, 1fr);
     }
     
-    .billing-option {
-        padding: 0.5rem 0.3rem;
-        min-height: 85px;
+    .billing-cycle-options .billing-option {
+        padding: 0.625rem 0.375rem;
+        min-height: 105px;
+        max-height: 105px;
+        height: 105px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 0.625rem;
     }
     
     .billing-cycle-options .billing-period {
@@ -2572,8 +2635,29 @@ tr:hover {
     }
     
     .billing-cycle-options .billing-badge {
+        position: absolute;
+        top: -0.375rem;
+        left: 50%;
+        transform: translateX(-50%);
         font-size: 0.55rem;
-        padding: 0.15rem 0.3rem;
+        padding: 0.125rem 0.375rem;
+        border-radius: 0.625rem;
+        z-index: 2;
+        white-space: nowrap;
+    }
+    
+    .billing-cycle-options .billing-price {
+        font-size: 0.65rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+    }
+    
+    .billing-cycle-options .billing-option.selected::after {
+        width: 1.25rem;
+        height: 1.25rem;
+        font-size: 0.625rem;
+        top: 0.5rem;
+        right: 0.5rem;
     }
     
     .billing-period {
@@ -3467,23 +3551,7 @@ tr:hover {
     }
     
     /* Ensure close button is always visible and clickable on mobile */
-    .task-creator-close {
-        position: fixed !important;
-        top: 1rem !important;
-        right: 1rem !important;
-        z-index: 10001 !important;
-        background: linear-gradient(135deg, #fff 0%, #f3f4f6 100%) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-        width: 3rem !important;
-        height: 3rem !important;
-        border: 2px solid rgba(239, 68, 68, 0.2) !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-size: 1.5rem !important;
-        color: #ef4444 !important;
-        transition: all 0.2s ease !important;
-    }
+    /* This is handled in the media queries above, removing duplicate styles */
     
     .task-creator-close:active {
         transform: scale(0.95) !important;
