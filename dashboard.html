@@ -40,6 +40,8 @@ Previous Dashboard v18 Changes:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Content Security Policy to handle external scripts properly -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://challenges.cloudflare.com https://seotize.net https://api.seotize.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https: blob:; connect-src 'self' https://api.seotize.net https://seotize.net;">
 <title>SEOTIZE Dashboard - Mobile Optimized v18</title>
 
 <!-- Fonts & Icons -->
@@ -50,7 +52,8 @@ Previous Dashboard v18 Changes:
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/turnstile@0/turnstile.min.js" async defer></script>
+<!-- Cloudflare Turnstile (using challenges.cloudflare.com for better compatibility) -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
@@ -9158,7 +9161,7 @@ function editArticle(articleId) {
 
 function showInstallInstructions(domain) {
     const divCode = `<div id="seotize-blog-root"></div>`;
-    const scriptCode = `<script src="https://seotize.net/blog.js?site=${domain}" defer><\/script>`;
+    const scriptCode = `<script src="https://seotize.net/blog.js?site=${domain}" defer></${'script'}>`;
 
     const modalHtml = `
     <style>
