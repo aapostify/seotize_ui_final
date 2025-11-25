@@ -64,6 +64,14 @@
             overflow: hidden;
         }
         
+        .pricing.section { 
+            padding-top: calc(var(--top-nav-height) + 0.5rem);
+            padding-bottom: 1rem;
+        }
+        
+        .pricing .section-title { font-size: 2.25rem; margin-bottom: 0.5rem; }
+        .pricing .section-subtitle { font-size: 1rem; margin-bottom: 0; display: inline; }
+        
         /* Hero */
         .hero { background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%); position: relative; }
         .hero::before { content: ''; position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%); top: -150px; right: -150px; animation: float 10s ease-in-out infinite; z-index: 1; }
@@ -99,33 +107,37 @@
         
         /* Pricing */
         .pricing { background: var(--bg-secondary); }
-        .pricing-type-toggle { display: flex; justify-content: center; gap: 0.75rem; margin-bottom: 3rem; background: var(--bg); padding: 0.625rem; border-radius: 20px; width: fit-content; margin-left: auto; margin-right: auto; border: 2px solid var(--border); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06); }
-        .pricing-type-toggle button { padding: 1rem 2.5rem; border: none; background: transparent; color: var(--text-light); font-weight: 700; border-radius: 16px; cursor: pointer; transition: all 0.3s; font-size: 1.05rem; position: relative; }
-        .pricing-type-toggle button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 6px 16px var(--primary-glow); transform: translateY(-2px); }
-        .pricing-toggle { display: flex; justify-content: center; align-items: center; gap: 1.25rem; margin-bottom: 3rem; max-width: 900px; margin-left: auto; margin-right: auto; }
-        .pricing-toggle button { flex: 1; padding: 1.125rem 2rem; border: 2px solid var(--border); background: var(--bg); color: var(--text-light); font-weight: 700; border-radius: 18px; cursor: pointer; transition: all 0.4s; font-size: 1rem; position: relative; }
-        .pricing-toggle button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-color: var(--primary); box-shadow: 0 10px 28px var(--primary-glow); transform: translateY(-5px); }
-        .pricing-toggle .save-badge { position: absolute; top: -8px; right: -8px; background: var(--success); color: white; padding: 0.25rem 0.5rem; border-radius: 8px; font-size: 0.7rem; font-weight: 700; }
-        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; max-width: 1400px; margin: 0 auto; }
+        .pricing-header-row { text-align: center; margin-bottom: 1.25rem; }
+        .pricing-type-toggle { display: inline-flex; gap: 0.5rem; background: var(--bg); padding: 0.4rem; border-radius: 14px; border: 2px solid var(--border); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04); margin-left: 0.5rem; vertical-align: middle; }
+        .pricing-type-toggle button { padding: 0.6rem 1.5rem; border: none; background: transparent; color: var(--text-light); font-weight: 700; border-radius: 11px; cursor: pointer; transition: all 0.3s; font-size: 0.85rem; position: relative; }
+        .pricing-type-toggle button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 3px 10px var(--primary-glow); }
+        .pricing-toggle { display: flex; justify-content: center; align-items: center; gap: 0.875rem; margin-bottom: 1.5rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .pricing-toggle button { flex: 1; padding: 0.75rem 1.25rem; border: 2px solid var(--border); background: var(--bg); color: var(--text-light); font-weight: 700; border-radius: 14px; cursor: pointer; transition: all 0.4s; font-size: 0.85rem; position: relative; }
+        .pricing-toggle button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-color: var(--primary); box-shadow: 0 6px 16px var(--primary-glow); transform: translateY(-2px); }
+        .pricing-toggle .save-badge { position: absolute; top: -6px; right: -6px; background: var(--success); color: white; padding: 0.2rem 0.4rem; border-radius: 6px; font-size: 0.6rem; font-weight: 700; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; max-width: 1400px; margin: 0 auto; }
         .pricing-grid.task-pricing-grid { grid-template-columns: repeat(3, 1fr); }
-        .pricing-card { background: var(--bg); border: 2px solid var(--border); border-radius: 24px; padding: 2.5rem; transition: all 0.4s; position: relative; display: flex; flex-direction: column; }
-        .pricing-card.free-plan { grid-column: 1 / -1; max-width: 100%; padding: 1rem 1.5rem; }
-        .pricing-card.free-plan h3 { font-size: 1.2rem; margin-bottom: 0.35rem; }
-        .pricing-card.free-plan .price { font-size: 1.75rem; margin: 0.5rem 0; }
-        .pricing-card.free-plan .cta { padding: 0.75rem 1.5rem; font-size: 0.9rem; margin-top: 0.5rem; }
-        .pricing-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.18); border-color: var(--primary); }
-        .pricing-card.popular { border-color: var(--primary); border-width: 3px; box-shadow: 0 25px 50px var(--primary-glow); }
-        .pricing-card.popular:hover { transform: translateY(-10px); }
-        .popular-badge { position: absolute; top: -14px; right: 24px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 0.6rem 1.5rem; border-radius: 24px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; box-shadow: 0 4px 12px var(--primary-glow); }
-        .pricing-card h3 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.75rem; color: var(--text); }
-        .pricing-card .price { font-size: 3rem; font-weight: 900; color: var(--primary); margin: 1.25rem 0; line-height: 1; }
-        .pricing-card .price span { font-size: 1.125rem; color: var(--text-muted); font-weight: 600; }
-        .pricing-features { list-style: none; margin: 1.75rem 0; flex: 1; }
-        .pricing-features li { padding: 0.75rem 0; color: var(--text-light); display: flex; align-items: flex-start; gap: 0.875rem; font-size: 0.95rem; line-height: 1.6; }
-        .pricing-features li i { color: var(--success); font-size: 1.25rem; margin-top: 0.15rem; flex-shrink: 0; }
-        .pricing-card.free-plan .pricing-features { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.15rem 0.75rem; margin: 0.75rem 0; }
-        .pricing-card.free-plan .pricing-features li { padding: 0.25rem 0; font-size: 0.8rem; line-height: 1.4; }
-        .pricing-card.free-plan .pricing-features li i { font-size: 0.95rem; margin-top: 0.1rem; }
+        .pricing-card { background: var(--bg); border: 2px solid var(--border); border-radius: 18px; padding: 1.5rem; transition: all 0.4s; position: relative; display: flex; flex-direction: column; }
+        .pricing-card.free-plan { grid-column: 1 / -1; max-width: 100%; padding: 0.75rem 1rem; }
+        .pricing-card-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
+        .pricing-card.free-plan .pricing-card-header-row { margin-bottom: 0.35rem; }
+        .pricing-card.free-plan h3 { font-size: 1rem; margin: 0; }
+        .pricing-card.free-plan .price { font-size: 1.35rem; margin: 0; }
+        .pricing-card.free-plan .cta { padding: 0.5rem 1rem; font-size: 0.8rem; margin-top: 0.35rem; align-self: flex-start; }
+        .pricing-card-toggle-icon { display: none; }
+        .pricing-card:hover { border-color: var(--primary); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); }
+        .pricing-card.popular { border-color: var(--primary); border-width: 2px; box-shadow: 0 8px 20px var(--primary-glow); }
+        .pricing-card.popular:hover { box-shadow: 0 12px 28px var(--primary-glow); }
+        .popular-badge { position: absolute; top: -10px; right: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 0.4rem 1rem; border-radius: 16px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; box-shadow: 0 3px 8px var(--primary-glow); }
+        .pricing-card h3 { font-size: 1.35rem; font-weight: 800; margin: 0; color: var(--text); }
+        .pricing-card .price { font-size: 2rem; font-weight: 900; color: var(--primary); margin: 0; line-height: 1; }
+        .pricing-card .price span { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
+        .pricing-features { list-style: none; margin: 0.75rem 0; flex: 1; transition: max-height 0.4s ease; }
+        .pricing-features li { padding: 0.4rem 0; color: var(--text-light); display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.8rem; line-height: 1.4; }
+        .pricing-features li i { color: var(--success); font-size: 1rem; margin-top: 0.05rem; flex-shrink: 0; }
+        .pricing-card.free-plan .pricing-features { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.1rem 0.5rem; margin: 0.35rem 0; }
+        .pricing-card.free-plan .pricing-features li { padding: 0.2rem 0; font-size: 0.7rem; line-height: 1.3; }
+        .pricing-card.free-plan .pricing-features li i { font-size: 0.8rem; margin-top: 0.05rem; }
         .free-plan-note { max-width: 1400px; margin: 3rem auto 0; padding: 2rem; background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%); border-radius: 20px; border: 2px solid var(--border); text-align: center; }
         .free-plan-note h4 { font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 1rem; }
         .free-plan-note p { color: var(--text-light); font-size: 1.05rem; line-height: 1.7; max-width: 800px; margin: 0 auto; }
@@ -253,10 +265,15 @@
             .feature-modal-content-grid { grid-template-columns: 1fr; }
             .pricing-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
             .pricing-grid.task-pricing-grid { grid-template-columns: repeat(2, 1fr); }
-            .pricing-card { padding: 2rem; }
-            .pricing-card.free-plan .pricing-features { grid-template-columns: repeat(3, 1fr); }
-            .pricing-card.free-plan h3 { font-size: 1.1rem; }
-            .pricing-card.free-plan .price { font-size: 1.5rem; }
+            .pricing-header-row { text-align: center; }
+            .pricing-type-toggle { display: inline-flex; margin-left: 0.5rem; }
+            .pricing-card { padding: 1.25rem; }
+            .pricing-card h3 { font-size: 1.2rem; }
+            .pricing-card .price { font-size: 1.75rem; }
+            .pricing-card.free-plan .pricing-features { grid-template-columns: repeat(3, 1fr); gap: 0.15rem 0.5rem; }
+            .pricing-card.free-plan h3 { font-size: 0.95rem; }
+            .pricing-card.free-plan .price { font-size: 1.2rem; }
+            .pricing-grid { gap: 1rem; }
             .partner-grid .partner-left-column { display: contents; }
             .partner-grid .partner-image-wrapper { order: -1; }
             .partner-stats:not(.partner-stats-bottom) { grid-template-columns: repeat(4, 1fr); }
@@ -284,8 +301,9 @@
             .feature-card-description { font-size: 0.8rem; }
             .feature-modal-content { max-width: 600px; }
             .feature-modal-content-grid { grid-template-columns: 1fr; }
-            .pricing-type-toggle { margin-bottom: 1.5rem; }
-            .pricing-toggle { margin-bottom: 1.5rem; }
+            .pricing-header-row { display: block; text-align: center; margin-bottom: 1.25rem; }
+            .pricing-type-toggle { display: inline-flex; margin-left: 0.5rem; margin-top: 0.5rem; }
+            .pricing-toggle { margin-bottom: 1.25rem; }
             .pricing-type-toggle { gap: 0.5rem; padding: 0.5rem; }
             .pricing-type-toggle button { padding: 0.7rem 1.4rem; font-size: 0.9rem; }
             .pricing-toggle { gap: 0.75rem; }
@@ -399,11 +417,11 @@
     <section id="pricing" class="section pricing">
         <div style="max-width: 1400px; width: 100%; margin: 0 auto;">
             <h2 class="section-title">Simple, Transparent Pricing</h2>
-            <p class="section-subtitle">Choose the perfect plan for your needs</p>
-            
-            <div class="pricing-type-toggle">
-                <button class="active" onclick="showPricingType('hosting')">Hosting Plans</button>
-                <button onclick="showPricingType('task')">Task Pricing</button>
+            <div class="pricing-header-row">
+                <div class="pricing-type-toggle">
+                    <button class="active" onclick="showPricingType('hosting')">Hosting Plans</button>
+                    <button onclick="showPricingType('task')">Task Pricing</button>
+                </div>
             </div>
             
             <div id="hostingPricing">
@@ -613,10 +631,10 @@
                 { icon: '🎯', title: 'Advanced Keyword Tracking & Reporting', subtitle: 'Data-Driven Decisions', description: 'Monitor your SEO performance with precision. Track keyword rankings, analyze competitor strategies, and receive actionable insights to stay ahead of the competition.', features: ['Real-Time Rank Tracking – Monitor position changes daily', 'Competitor Analysis – See what works for others', 'Custom Reports – Beautiful, shareable dashboards', 'Historical Data – Track long-term progress'], image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop', cta: 'Track Rankings' }
             ],
             hostingPlans: {
-                free: { name: 'Free', price: { '3month': 0, '6month': 0, '12month': 0 }, features: ['30 articles hosted', '100 images stored', 'Basic CDN access', 'Community support', 'Basic analytics'] },
-                basic: { name: 'Basic', price: { '3month': 10, '6month': 18, '12month': 32 }, features: ['200 articles hosted', '1,000 images stored', 'Fast CDN delivery', 'Email support', 'Standard analytics', 'Custom domain'] },
-                professional: { name: 'Professional', price: { '3month': 25, '6month': 45, '12month': 80 }, features: ['600 articles hosted', '4,000 images stored', 'Premium CDN delivery', 'Priority support', 'Advanced analytics', 'Custom domain', 'API access'], popular: true },
-                enterprise: { name: 'Enterprise', price: { '3month': 50, '6month': 90, '12month': 160 }, features: ['2,000 articles hosted', '20,000 images stored', 'Ultra-fast CDN worldwide', '24/7 dedicated support', 'Full analytics suite', 'Multiple custom domains', 'Full API access'] }
+                free: { name: 'Free', price: { '3month': 0, '6month': 0, '12month': 0 }, features: ['30 articles hosted', '100 images stored', '3 AI credits', 'Basic CDN access', 'Community support', 'Basic analytics'] },
+                basic: { name: 'Basic', price: { '3month': 10, '6month': 18, '12month': 32 }, features: ['200 articles hosted', '1,000 images stored', '20 AI credits', 'Fast CDN delivery', 'Email support', 'Standard analytics', 'Custom domain'] },
+                professional: { name: 'Professional', price: { '3month': 25, '6month': 45, '12month': 80 }, features: ['600 articles hosted', '4,000 images stored', '60 AI credits', 'Premium CDN delivery', 'Priority support', 'Advanced analytics', 'Custom domain', 'API access'], popular: true },
+                enterprise: { name: 'Enterprise', price: { '3month': 50, '6month': 90, '12month': 160 }, features: ['2,000 articles hosted', '20,000 images stored', '200 AI credits', 'Ultra-fast CDN worldwide', '24/7 dedicated support', 'Full analytics suite', 'Multiple custom domains', 'Full API access'] }
             },
             taskPricing: {
                 basic: { name: 'Basic', price: 0.10, locations: 1, features: ['$0.10 per click', '1 concurrent location', 'Standard processing speed', 'Email support', 'Basic task analytics'] },
@@ -716,8 +734,10 @@
             
             grid.innerHTML = `
                 <div class="pricing-card free-plan">
-                    <h3>${freePlan.name}</h3>
-                    <div class="price">$${freePlan.price[currentPeriod]}<span>/${currentPeriod === '3month' ? '3mo' : currentPeriod === '6month' ? '6mo' : 'year'}</span></div>
+                    <div class="pricing-card-header-row">
+                        <h3>${freePlan.name}</h3>
+                        <div class="price">$${freePlan.price[currentPeriod]}<span>/${currentPeriod === '3month' ? '3mo' : currentPeriod === '6month' ? '6mo' : 'year'}</span></div>
+                    </div>
                     <ul class="pricing-features">${freePlan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
                     <a href="connect.html" class="cta">Get Started Free</a>
                 </div>
@@ -726,8 +746,10 @@
                 return `
                 <div class="pricing-card ${plan.popular ? 'popular' : ''}">
                     ${plan.popular ? '<div class="popular-badge">Most Popular</div>' : ''}
-                    <h3>${plan.name}</h3>
-                    <div class="price">$${plan.price[currentPeriod]}<span>/${currentPeriod === '3month' ? '3mo' : currentPeriod === '6month' ? '6mo' : 'year'}</span></div>
+                    <div class="pricing-card-header-row">
+                        <h3>${plan.name}</h3>
+                        <div class="price">$${plan.price[currentPeriod]}<span>/${currentPeriod === '3month' ? '3mo' : currentPeriod === '6month' ? '6mo' : 'year'}</span></div>
+                    </div>
                     <ul class="pricing-features">${plan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
                     <a href="connect.html" class="cta">Upgrade Now</a>
                 </div>
@@ -768,9 +790,11 @@
             grid.innerHTML = Object.entries(appData.taskPricing).map(([key, plan]) => `
                 <div class="pricing-card ${plan.popular ? 'popular' : ''}">
                     ${plan.popular ? '<div class="popular-badge">Most Popular</div>' : ''}
-                    <h3>${plan.name}</h3>
-                    <div class="price">$${plan.price.toFixed(2)}<span>/click</span></div>
-                    <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">Up to ${plan.locations} concurrent location${plan.locations > 1 ? 's' : ''}</p>
+                    <div class="pricing-card-header-row">
+                        <h3>${plan.name}</h3>
+                        <div class="price">$${plan.price.toFixed(2)}<span>/click</span></div>
+                    </div>
+                    <p style="color: var(--text-muted); margin: 0.5rem 0; font-size: 0.8rem;">Up to ${plan.locations} concurrent location${plan.locations > 1 ? 's' : ''}</p>
                     <ul class="pricing-features">${plan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
                     <a href="connect.html" class="cta">Get Started</a>
                 </div>
