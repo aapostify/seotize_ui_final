@@ -70,7 +70,7 @@
         }
         
         .pricing .section-title { font-size: 2.25rem; margin-bottom: 0.75rem; }
-        .pricing .section-subtitle { font-size: 1rem; margin-bottom: 2rem; }
+        .pricing .section-subtitle { font-size: 1rem; margin-bottom: 0; }
         
         /* Hero */
         .hero { background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%); position: relative; }
@@ -107,33 +107,40 @@
         
         /* Pricing */
         .pricing { background: var(--bg-secondary); }
-        .pricing-type-toggle { display: flex; justify-content: center; gap: 0.625rem; margin-bottom: 2rem; background: var(--bg); padding: 0.5rem; border-radius: 18px; width: fit-content; margin-left: auto; margin-right: auto; border: 2px solid var(--border); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05); }
-        .pricing-type-toggle button { padding: 0.75rem 2rem; border: none; background: transparent; color: var(--text-light); font-weight: 700; border-radius: 14px; cursor: pointer; transition: all 0.3s; font-size: 0.95rem; position: relative; }
-        .pricing-type-toggle button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 4px 12px var(--primary-glow); transform: translateY(-2px); }
-        .pricing-toggle { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.75rem; max-width: 900px; margin-left: auto; margin-right: auto; }
-        .pricing-toggle button { flex: 1; padding: 0.875rem 1.5rem; border: 2px solid var(--border); background: var(--bg); color: var(--text-light); font-weight: 700; border-radius: 16px; cursor: pointer; transition: all 0.4s; font-size: 0.9rem; position: relative; }
-        .pricing-toggle button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-color: var(--primary); box-shadow: 0 8px 20px var(--primary-glow); transform: translateY(-3px); }
-        .pricing-toggle .save-badge { position: absolute; top: -7px; right: -7px; background: var(--success); color: white; padding: 0.2rem 0.45rem; border-radius: 7px; font-size: 0.65rem; font-weight: 700; }
-        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 1400px; margin: 0 auto; }
+        .pricing-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        .pricing-type-toggle { display: flex; gap: 0.5rem; background: var(--bg); padding: 0.4rem; border-radius: 14px; width: fit-content; border: 2px solid var(--border); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04); }
+        .pricing-type-toggle button { padding: 0.6rem 1.5rem; border: none; background: transparent; color: var(--text-light); font-weight: 700; border-radius: 11px; cursor: pointer; transition: all 0.3s; font-size: 0.85rem; position: relative; }
+        .pricing-type-toggle button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 3px 10px var(--primary-glow); }
+        .pricing-toggle { display: flex; justify-content: center; align-items: center; gap: 0.875rem; margin-bottom: 1.5rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .pricing-toggle button { flex: 1; padding: 0.75rem 1.25rem; border: 2px solid var(--border); background: var(--bg); color: var(--text-light); font-weight: 700; border-radius: 14px; cursor: pointer; transition: all 0.4s; font-size: 0.85rem; position: relative; }
+        .pricing-toggle button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-color: var(--primary); box-shadow: 0 6px 16px var(--primary-glow); transform: translateY(-2px); }
+        .pricing-toggle .save-badge { position: absolute; top: -6px; right: -6px; background: var(--success); color: white; padding: 0.2rem 0.4rem; border-radius: 6px; font-size: 0.6rem; font-weight: 700; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; max-width: 1400px; margin: 0 auto; }
         .pricing-grid.task-pricing-grid { grid-template-columns: repeat(3, 1fr); }
-        .pricing-card { background: var(--bg); border: 2px solid var(--border); border-radius: 20px; padding: 1.75rem; transition: all 0.4s; position: relative; display: flex; flex-direction: column; }
-        .pricing-card.free-plan { grid-column: 1 / -1; max-width: 100%; padding: 0.875rem 1.25rem; }
-        .pricing-card.free-plan h3 { font-size: 1.1rem; margin-bottom: 0.25rem; }
-        .pricing-card.free-plan .price { font-size: 1.5rem; margin: 0.35rem 0; }
-        .pricing-card.free-plan .cta { padding: 0.625rem 1.25rem; font-size: 0.85rem; margin-top: 0.35rem; }
-        .pricing-card:hover { transform: translateY(-8px); box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); border-color: var(--primary); }
-        .pricing-card.popular { border-color: var(--primary); border-width: 3px; box-shadow: 0 20px 40px var(--primary-glow); }
-        .pricing-card.popular:hover { transform: translateY(-8px); }
-        .popular-badge { position: absolute; top: -12px; right: 20px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 0.5rem 1.25rem; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; box-shadow: 0 4px 10px var(--primary-glow); }
-        .pricing-card h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text); }
-        .pricing-card .price { font-size: 2.25rem; font-weight: 900; color: var(--primary); margin: 0.75rem 0; line-height: 1; }
-        .pricing-card .price span { font-size: 1rem; color: var(--text-muted); font-weight: 600; }
-        .pricing-features { list-style: none; margin: 1rem 0; flex: 1; }
-        .pricing-features li { padding: 0.5rem 0; color: var(--text-light); display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.875rem; line-height: 1.5; }
-        .pricing-features li i { color: var(--success); font-size: 1.1rem; margin-top: 0.1rem; flex-shrink: 0; }
-        .pricing-card.free-plan .pricing-features { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.1rem 0.625rem; margin: 0.5rem 0; }
-        .pricing-card.free-plan .pricing-features li { padding: 0.2rem 0; font-size: 0.75rem; line-height: 1.3; }
-        .pricing-card.free-plan .pricing-features li i { font-size: 0.875rem; margin-top: 0.05rem; }
+        .pricing-card { background: var(--bg); border: 2px solid var(--border); border-radius: 18px; padding: 1.5rem; transition: all 0.4s; position: relative; display: flex; flex-direction: column; cursor: pointer; }
+        .pricing-card.free-plan { grid-column: 1 / -1; max-width: 100%; padding: 0.75rem 1rem; cursor: pointer; }
+        .pricing-card-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
+        .pricing-card.free-plan .pricing-card-header-row { margin-bottom: 0.35rem; }
+        .pricing-card.free-plan h3 { font-size: 1rem; margin: 0; }
+        .pricing-card.free-plan .price { font-size: 1.35rem; margin: 0; }
+        .pricing-card.free-plan .cta { padding: 0.5rem 1rem; font-size: 0.8rem; margin-top: 0.35rem; align-self: flex-start; }
+        .pricing-card-collapsed .pricing-features { max-height: 4.5rem; overflow: hidden; position: relative; }
+        .pricing-card-collapsed .pricing-features::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2rem; background: linear-gradient(to bottom, transparent, var(--bg)); }
+        .pricing-card-toggle-icon { font-size: 1.25rem; color: var(--text-light); transition: transform 0.3s; margin-left: auto; }
+        .pricing-card:not(.pricing-card-collapsed) .pricing-card-toggle-icon { transform: rotate(180deg); }
+        .pricing-card:hover { border-color: var(--primary); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); }
+        .pricing-card.popular { border-color: var(--primary); border-width: 2px; box-shadow: 0 8px 20px var(--primary-glow); }
+        .pricing-card.popular:hover { box-shadow: 0 12px 28px var(--primary-glow); }
+        .popular-badge { position: absolute; top: -10px; right: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 0.4rem 1rem; border-radius: 16px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; box-shadow: 0 3px 8px var(--primary-glow); }
+        .pricing-card h3 { font-size: 1.35rem; font-weight: 800; margin: 0; color: var(--text); }
+        .pricing-card .price { font-size: 2rem; font-weight: 900; color: var(--primary); margin: 0; line-height: 1; }
+        .pricing-card .price span { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
+        .pricing-features { list-style: none; margin: 0.75rem 0; flex: 1; transition: max-height 0.4s ease; }
+        .pricing-features li { padding: 0.4rem 0; color: var(--text-light); display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.8rem; line-height: 1.4; }
+        .pricing-features li i { color: var(--success); font-size: 1rem; margin-top: 0.05rem; flex-shrink: 0; }
+        .pricing-card.free-plan .pricing-features { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.1rem 0.5rem; margin: 0.35rem 0; }
+        .pricing-card.free-plan .pricing-features li { padding: 0.2rem 0; font-size: 0.7rem; line-height: 1.3; }
+        .pricing-card.free-plan .pricing-features li i { font-size: 0.8rem; margin-top: 0.05rem; }
         .free-plan-note { max-width: 1400px; margin: 3rem auto 0; padding: 2rem; background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%); border-radius: 20px; border: 2px solid var(--border); text-align: center; }
         .free-plan-note h4 { font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 1rem; }
         .free-plan-note p { color: var(--text-light); font-size: 1.05rem; line-height: 1.7; max-width: 800px; margin: 0 auto; }
@@ -261,13 +268,15 @@
             .feature-modal-content-grid { grid-template-columns: 1fr; }
             .pricing-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
             .pricing-grid.task-pricing-grid { grid-template-columns: repeat(2, 1fr); }
-            .pricing-card { padding: 1.5rem; }
-            .pricing-card h3 { font-size: 1.35rem; }
-            .pricing-card .price { font-size: 2rem; }
+            .pricing-header-row { justify-content: center; }
+            .pricing-type-toggle { order: 2; }
+            .pricing-card { padding: 1.25rem; }
+            .pricing-card h3 { font-size: 1.2rem; }
+            .pricing-card .price { font-size: 1.75rem; }
             .pricing-card.free-plan .pricing-features { grid-template-columns: repeat(3, 1fr); }
-            .pricing-card.free-plan h3 { font-size: 1rem; }
-            .pricing-card.free-plan .price { font-size: 1.35rem; }
-            .pricing-grid { gap: 1.25rem; }
+            .pricing-card.free-plan h3 { font-size: 0.95rem; }
+            .pricing-card.free-plan .price { font-size: 1.2rem; }
+            .pricing-grid { gap: 1rem; }
             .partner-grid .partner-left-column { display: contents; }
             .partner-grid .partner-image-wrapper { order: -1; }
             .partner-stats:not(.partner-stats-bottom) { grid-template-columns: repeat(4, 1fr); }
@@ -295,8 +304,8 @@
             .feature-card-description { font-size: 0.8rem; }
             .feature-modal-content { max-width: 600px; }
             .feature-modal-content-grid { grid-template-columns: 1fr; }
-            .pricing-type-toggle { margin-bottom: 1.5rem; }
-            .pricing-toggle { margin-bottom: 1.5rem; }
+            .pricing-header-row { flex-direction: column; align-items: center; margin-bottom: 1.25rem; }
+            .pricing-toggle { margin-bottom: 1.25rem; }
             .pricing-type-toggle { gap: 0.5rem; padding: 0.5rem; }
             .pricing-type-toggle button { padding: 0.7rem 1.4rem; font-size: 0.9rem; }
             .pricing-toggle { gap: 0.75rem; }
@@ -410,11 +419,12 @@
     <section id="pricing" class="section pricing">
         <div style="max-width: 1400px; width: 100%; margin: 0 auto;">
             <h2 class="section-title">Simple, Transparent Pricing</h2>
-            <p class="section-subtitle">Choose the perfect plan for your needs</p>
-            
-            <div class="pricing-type-toggle">
-                <button class="active" onclick="showPricingType('hosting')">Hosting Plans</button>
-                <button onclick="showPricingType('task')">Task Pricing</button>
+            <div class="pricing-header-row">
+                <p class="section-subtitle">Choose the perfect plan for your needs</p>
+                <div class="pricing-type-toggle">
+                    <button class="active" onclick="showPricingType('hosting')">Hosting Plans</button>
+                    <button onclick="showPricingType('task')">Task Pricing</button>
+                </div>
             </div>
             
             <div id="hostingPricing">
@@ -726,21 +736,27 @@
             const otherPlans = ['basic', 'professional', 'enterprise'];
             
             grid.innerHTML = `
-                <div class="pricing-card free-plan">
-                    <h3>${freePlan.name}</h3>
-                    <div class="price">$${freePlan.price[currentPeriod]}<span>/${currentPeriod === '3month' ? '3mo' : currentPeriod === '6month' ? '6mo' : 'year'}</span></div>
+                <div class="pricing-card free-plan pricing-card-collapsed" onclick="togglePricingCard(this, event)">
+                    <div class="pricing-card-header-row">
+                        <h3>${freePlan.name}</h3>
+                        <div class="price">$${freePlan.price[currentPeriod]}<span>/${currentPeriod === '3month' ? '3mo' : currentPeriod === '6month' ? '6mo' : 'year'}</span></div>
+                        <i class="ri-arrow-down-s-line pricing-card-toggle-icon"></i>
+                    </div>
                     <ul class="pricing-features">${freePlan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
-                    <a href="connect.html" class="cta">Get Started Free</a>
+                    <a href="connect.html" class="cta" onclick="event.stopPropagation()">Get Started Free</a>
                 </div>
             ` + otherPlans.map(key => {
                 const plan = appData.hostingPlans[key];
                 return `
-                <div class="pricing-card ${plan.popular ? 'popular' : ''}">
+                <div class="pricing-card pricing-card-collapsed ${plan.popular ? 'popular' : ''}" onclick="togglePricingCard(this, event)">
                     ${plan.popular ? '<div class="popular-badge">Most Popular</div>' : ''}
-                    <h3>${plan.name}</h3>
-                    <div class="price">$${plan.price[currentPeriod]}<span>/${currentPeriod === '3month' ? '3mo' : currentPeriod === '6month' ? '6mo' : 'year'}</span></div>
+                    <div class="pricing-card-header-row">
+                        <h3>${plan.name}</h3>
+                        <div class="price">$${plan.price[currentPeriod]}<span>/${currentPeriod === '3month' ? '3mo' : currentPeriod === '6month' ? '6mo' : 'year'}</span></div>
+                        <i class="ri-arrow-down-s-line pricing-card-toggle-icon"></i>
+                    </div>
                     <ul class="pricing-features">${plan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
-                    <a href="connect.html" class="cta">Upgrade Now</a>
+                    <a href="connect.html" class="cta" onclick="event.stopPropagation()">Upgrade Now</a>
                 </div>
                 `;
             }).join('');
@@ -777,13 +793,16 @@
             // Desktop version
             grid.className = 'pricing-grid task-pricing-grid';
             grid.innerHTML = Object.entries(appData.taskPricing).map(([key, plan]) => `
-                <div class="pricing-card ${plan.popular ? 'popular' : ''}">
+                <div class="pricing-card pricing-card-collapsed ${plan.popular ? 'popular' : ''}" onclick="togglePricingCard(this, event)">
                     ${plan.popular ? '<div class="popular-badge">Most Popular</div>' : ''}
-                    <h3>${plan.name}</h3>
-                    <div class="price">$${plan.price.toFixed(2)}<span>/click</span></div>
-                    <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">Up to ${plan.locations} concurrent location${plan.locations > 1 ? 's' : ''}</p>
+                    <div class="pricing-card-header-row">
+                        <h3>${plan.name}</h3>
+                        <div class="price">$${plan.price.toFixed(2)}<span>/click</span></div>
+                        <i class="ri-arrow-down-s-line pricing-card-toggle-icon"></i>
+                    </div>
+                    <p style="color: var(--text-muted); margin: 0.5rem 0; font-size: 0.8rem;">Up to ${plan.locations} concurrent location${plan.locations > 1 ? 's' : ''}</p>
                     <ul class="pricing-features">${plan.features.map(f => `<li><i class="ri-check-line"></i><span>${f}</span></li>`).join('')}</ul>
-                    <a href="connect.html" class="cta">Get Started</a>
+                    <a href="connect.html" class="cta" onclick="event.stopPropagation()">Get Started</a>
                 </div>
             `).join('');
             
@@ -904,6 +923,13 @@
             }
         }
 
+        function togglePricingCard(card, event) {
+            // Don't toggle if clicking on CTA button
+            if (event.target.closest('.cta')) return;
+            
+            card.classList.toggle('pricing-card-collapsed');
+        }
+        
         function togglePricingMobile(index, type) {
             const container = type === 'hosting' ? 'hosting' : 'task';
             const headers = document.querySelectorAll(`#${container}GridMobile .pricing-card-header-mobile`);
