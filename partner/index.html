@@ -312,9 +312,11 @@ nav {
 .hero-emoji {
     font-size: 4rem;
     display: inline-block;
-    margin-bottom: 1rem;
+    margin-right: 0.5rem;
     filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.3));
     animation: bounce 2s ease-in-out infinite;
+    vertical-align: middle;
+    line-height: 1;
 }
 
 @keyframes bounce {
@@ -326,7 +328,12 @@ nav {
     font-size: 2.25rem;
     font-weight: 900;
     margin-bottom: 1rem;
-    line-height: 1.2;
+    line-height: 1.3;
+    display: inline-block;
+    width: 100%;
+}
+
+.hero h1 .hero-text-gradient {
     background: var(--gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1230,8 +1237,7 @@ body.dark .footer {
                 <div class="hero-slide active" id="slide-1">
                     <div class="hero-content">
                         <div class="hero-text">
-                            <div class="hero-emoji">💰</div>
-                            <h1>Earn Money with SEOTIZE Partners</h1>
+                            <h1><span class="hero-emoji">💰</span><span class="hero-text-gradient">Earn Money with SEOTIZE Partners</span></h1>
                             <p>Work from anywhere, complete simple SEO tasks, and earn money on your own schedule. Join our global partner network today.</p>
                             <div class="hero-buttons">
                                 <a href="login.html" class="cta">
@@ -1254,8 +1260,7 @@ body.dark .footer {
                 <div class="hero-slide" id="slide-2">
                     <div class="hero-content">
                         <div class="hero-text">
-                            <div class="hero-emoji">🔍</div>
-                            <h1>What You'll Be Doing</h1>
+                            <h1><span class="hero-emoji">🔍</span><span class="hero-text-gradient">What You'll Be Doing</span></h1>
                             <p>Search for specific keywords on Google, visit target websites naturally, and help improve their search rankings. Simple tasks, real earnings.</p>
                             <div class="hero-buttons">
                                 <a href="login.html" class="cta">
@@ -1278,8 +1283,7 @@ body.dark .footer {
                 <div class="hero-slide" id="slide-3">
                     <div class="hero-content">
                         <div class="hero-text">
-                            <div class="hero-emoji">⚡</div>
-                            <h1>Fast & Secure Payouts</h1>
+                            <h1><span class="hero-emoji">⚡</span><span class="hero-text-gradient">Fast & Secure Payouts</span></h1>
                             <p>Get paid quickly via USDT (BEP20) with no minimum withdrawal. Your earnings are processed within 24-48 hours directly to your wallet.</p>
                             <div class="hero-buttons">
                                 <a href="login.html" class="cta">
@@ -1772,99 +1776,121 @@ body.dark .footer {
             updateActiveStates();
         });
 
-        // GSAP Animations
-        gsap.registerPlugin(ScrollTrigger);
+        // GSAP Animations - Wait for DOM and GSAP to be fully loaded
+        if (typeof gsap !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadTheme();
-            
-            // Logo icon animation
-            gsap.to('#logoIcon', {
-                rotation: 360,
-                duration: 1.5,
-                ease: "elastic.out(1, 0.3)",
-                repeat: -1,
-                repeatDelay: 5
-            });
-            
-            gsap.to('#logoIcon', {
-                scale: 1.1,
-                duration: 0.8,
-                ease: "power2.inOut",
-                repeat: -1,
-                yoyo: true
-            });
-            
-            // Hero animations
-            gsap.from('.hero-text', {
-                opacity: 0,
-                y: 30,
-                duration: 1,
-                ease: "power3.out"
-            });
-
-            gsap.from('.hero-image', {
-                opacity: 0,
-                scale: 0.9,
-                duration: 1,
-                delay: 0.3,
-                ease: "power3.out"
-            });
-            
-            // Animate cards on scroll
-            gsap.utils.toArray('.step-card, .method-card, .payout-card').forEach((card, i) => {
-                gsap.from(card, {
-                    opacity: 0,
-                    y: 60,
+            document.addEventListener('DOMContentLoaded', () => {
+                loadTheme();
+                
+                // Logo icon animation
+                gsap.to('#logoIcon', {
+                    rotation: 360,
+                    duration: 1.5,
+                    ease: "elastic.out(1, 0.3)",
+                    repeat: -1,
+                    repeatDelay: 5
+                });
+                
+                gsap.to('#logoIcon', {
+                    scale: 1.1,
                     duration: 0.8,
-                    delay: i * 0.1,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: card,
-                        start: 'top 85%',
-                        toggleActions: 'play none none reverse'
-                    }
+                    ease: "power2.inOut",
+                    repeat: -1,
+                    yoyo: true
                 });
-            });
-            
-            // FAQ Items
-            gsap.utils.toArray('.faq-item').forEach((item, i) => {
-                gsap.from(item, {
+                
+                // Hero text animations
+                gsap.from('.hero-text h1', {
                     opacity: 0,
-                    x: -40,
-                    duration: 0.6,
-                    delay: i * 0.1,
-                    scrollTrigger: {
-                        trigger: item,
-                        start: 'top 90%'
-                    }
+                    y: 30,
+                    duration: 1,
+                    ease: "power3.out"
                 });
-            });
 
-            // Grow Website Section
-            gsap.from('.grow-content', {
-                opacity: 0,
-                y: 50,
-                duration: 1,
-                scrollTrigger: {
-                    trigger: '.grow-website',
-                    start: 'top 80%'
-                }
-            });
-
-            gsap.utils.toArray('.grow-feature').forEach((feature, i) => {
-                gsap.from(feature, {
+                gsap.from('.hero-text p', {
                     opacity: 0,
-                    x: -30,
-                    duration: 0.6,
-                    delay: i * 0.1,
+                    y: 20,
+                    duration: 1,
+                    delay: 0.2,
+                    ease: "power3.out"
+                });
+
+                gsap.from('.hero-buttons', {
+                    opacity: 0,
+                    y: 20,
+                    duration: 1,
+                    delay: 0.4,
+                    ease: "power3.out"
+                });
+
+                gsap.from('.hero-image', {
+                    opacity: 0,
+                    scale: 0.9,
+                    duration: 1,
+                    delay: 0.3,
+                    ease: "power3.out"
+                });
+                
+                // Animate cards on scroll
+                gsap.utils.toArray('.step-card, .method-card, .payout-card').forEach((card, i) => {
+                    gsap.from(card, {
+                        opacity: 0,
+                        y: 60,
+                        duration: 0.8,
+                        delay: i * 0.1,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: card,
+                            start: 'top 85%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    });
+                });
+                
+                // FAQ Items
+                gsap.utils.toArray('.faq-item').forEach((item, i) => {
+                    gsap.from(item, {
+                        opacity: 0,
+                        x: -40,
+                        duration: 0.6,
+                        delay: i * 0.1,
+                        scrollTrigger: {
+                            trigger: item,
+                            start: 'top 90%'
+                        }
+                    });
+                });
+
+                // Grow Website Section
+                gsap.from('.grow-content > *:not(.grow-features)', {
+                    opacity: 0,
+                    y: 50,
+                    duration: 1,
+                    stagger: 0.2,
                     scrollTrigger: {
-                        trigger: feature,
-                        start: 'top 90%'
+                        trigger: '.grow-website',
+                        start: 'top 80%'
                     }
                 });
+
+                gsap.utils.toArray('.grow-feature').forEach((feature, i) => {
+                    gsap.from(feature, {
+                        opacity: 0,
+                        x: -30,
+                        duration: 0.6,
+                        delay: i * 0.1,
+                        scrollTrigger: {
+                            trigger: feature,
+                            start: 'top 90%'
+                        }
+                    });
+                });
             });
-        });
+        } else {
+            console.warn('GSAP library not loaded');
+            document.addEventListener('DOMContentLoaded', loadTheme);
+        }
 
         // Navbar scroll effect
         let lastScroll = 0;
