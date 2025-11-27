@@ -305,6 +305,10 @@ nav {
     z-index: 2;
 }
 
+.hero-text {
+    text-align: center;
+}
+
 .hero-emoji {
     font-size: 4rem;
     display: inline-block;
@@ -325,7 +329,7 @@ nav {
     font-weight: 900;
     margin-bottom: 1rem;
     line-height: 1.3;
-    display: flex;
+    display: block;
     width: 100%;
 }
 
@@ -1858,12 +1862,44 @@ body.dark .footer {
                     });
                 });
 
-                // Grow Website Section
-                gsap.from('.grow-content > *:not(.grow-features)', {
+                // Grow Website Section - Fixed Animation
+                gsap.from('.grow-icon', {
                     opacity: 0,
                     y: 50,
                     duration: 1,
-                    stagger: 0.2,
+                    scrollTrigger: {
+                        trigger: '.grow-website',
+                        start: 'top 80%'
+                    }
+                });
+
+                gsap.from('.grow-content h2', {
+                    opacity: 0,
+                    y: 50,
+                    duration: 1,
+                    delay: 0.2,
+                    scrollTrigger: {
+                        trigger: '.grow-website',
+                        start: 'top 80%'
+                    }
+                });
+
+                gsap.from('.grow-content > p', {
+                    opacity: 0,
+                    y: 50,
+                    duration: 1,
+                    delay: 0.4,
+                    scrollTrigger: {
+                        trigger: '.grow-website',
+                        start: 'top 80%'
+                    }
+                });
+
+                gsap.from('.grow-content > .cta', {
+                    opacity: 0,
+                    y: 30,
+                    duration: 1,
+                    delay: 0.6,
                     scrollTrigger: {
                         trigger: '.grow-website',
                         start: 'top 80%'
