@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - SEOTIZE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg: #fafbfc;
+            --bg-secondary: #ffffff;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-glow: rgba(37, 99, 235, 0.2);
+            --success: #10b981;
+            --error: #ef4444;
+            --nav-bg: rgba(255, 255, 255, 0.85);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        body.dark {
+            --bg: #0a0e1a;
+            --bg-secondary: #1a1f2e;
+            --text: #f1f5f9;
+            --text-light: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: #2d3748;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-glow: rgba(59, 130, 246, 0.25);
+            --nav-bg: rgba(26, 31, 46, 0.85);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.3s ease, color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 65px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- LOGO STYLES (Analytics Concept) --- */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text); /* Uses theme text color */
+            letter-spacing: -0.5px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .logo-icon {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 24px;
+        }
+
+        .logo-bar {
+            width: 6px;
+            background: var(--primary);
+            border-radius: 2px;
+            transform-origin: bottom;
+        }
+
+        .logo-b1 { height: 40%; opacity: 0.6; }
+        .logo-b2 { height: 70%; opacity: 0.8; }
+        .logo-b3 { height: 100%; opacity: 1; }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary);
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
+
+        .theme-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+
+        .theme-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+            border-color: var(--primary);
+        }
+
+        .page-wrapper {
+            display: flex;
+            height: calc(100vh - 65px);
+            margin-top: 65px;
+            overflow: hidden;
+        }
+
+        .hero-section {
+            flex: 1;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+            top: -150px;
+            right: -150px;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-25px, 25px); }
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 480px;
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+        }
+
+        .hero-image {
+            width: 280px;
+            height: 280px;
+            border-radius: 24px;
+            margin-bottom: 2rem;
+            box-shadow: 0 25px 50px rgba(37, 99, 235, 0.25);
+            object-fit: cover;
+            border: 3px solid var(--border);
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .hero-text {
+            font-size: 1rem;
+            color: var(--primary);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: var(--primary);
+            margin-left: 3px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .form-section {
+            flex: 1;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .form-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: var(--card-shadow);
+            margin: 1rem;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 1.75rem;
+        }
+
+        .form-header h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-header p {
+            color: var(--text-light);
+            font-size: 0.9375rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text);
+        }
+
+        input {
+            width: 100%;
+            padding: 0.875rem 2.75rem 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            background: var(--bg);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        input.success {
+            border-color: var(--success);
+        }
+
+        input.error {
+            border-color: var(--error);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 1rem;
+            top: 2.625rem;
+            font-size: 1rem;
+        }
+
+        .input-icon.success {
+            color: var(--success);
+        }
+
+        .input-icon.error {
+            color: var(--error);
+        }
+
+        /* FIXED Captcha Styling - Desktop */
+        .captcha-wrap {
+            margin: 1.25rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-height: 65px;
+        }
+
+        .cf-turnstile {
+            width: 300px !important;
+            height: 65px !important;
+            margin: 0 auto !important;
+        }
+
+        .cf-turnstile > div,
+        .cf-turnstile iframe {
+            width: 300px !important;
+            height: 65px !important;
+            margin: 0 auto !important;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .check {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border);
+            border-radius: 5px;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .check.checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .check.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .forgot {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .forgot:hover {
+            text-decoration: underline;
+            color: var(--primary-dark);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px var(--primary-glow);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--primary-glow);
+        }
+
+        .submit-btn.loading {
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0 1.25rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider span {
+            padding: 0 0.875rem;
+        }
+
+        .social-btn {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 1.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--primary-glow), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .social-btn:hover::before {
+            left: 100%;
+        }
+
+        .social-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--primary-glow);
+            background: var(--bg-secondary);
+        }
+
+        .social-btn .social-icon {
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-btn .social-text {
+            font-weight: 600;
+        }
+
+        .signup {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .signup a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signup a:hover {
+            text-decoration: underline;
+        }
+
+        .toast {
+            position: fixed;
+            top: 85px;
+            right: 1.5rem;
+            padding: 0.875rem 1.25rem;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transform: translateX(120%);
+            transition: transform 0.4s ease;
+            z-index: 1000;
+            box-shadow: var(--card-shadow);
+        }
+
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--error); }
+        .toast.show { transform: translateX(0); }
+
+        .mobile-nav {
+            display: none;
+        }
+
+        @media (max-width: 968px) {
+            .hero-section {
+                flex: 0.8;
+            }
+
+            .hero-content {
+                max-width: 400px;
+            }
+
+            .hero-image {
+                width: 220px;
+                height: 220px;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav { height: 58px; }
+
+            .page-wrapper {
+                margin-top: 58px;
+                height: calc(100vh - 58px - 68px);
+            }
+
+            .nav-menu { display: none; }
+
+            .hero-section { display: none; }
+
+            .form-section {
+                padding: 0;
+                height: calc(100vh - 58px - 68px);
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                display: flex;
+                align-items: stretch;
+            }
+
+            .form-card {
+                padding: 2rem 1.5rem;
+                border: none;
+                box-shadow: none;
+                border-radius: 0;
+                margin: 0;
+                max-width: 100%;
+                width: 100%;
+                min-height: 100%;
+                display: flex;
+                flex-direction: column;
+/* justify-content: center; */
+            }
+
+            /* Mobile Captcha - Match Input Width Exactly */
+            .captcha-wrap {
+                margin: 1.5rem 0;
+                min-height: 65px;
+                width: 100%;
+                padding: 0;
+            }
+
+            .cf-turnstile {
+                width: 100% !important;
+                max-width: 100% !important;
+                height: 65px !important;
+            }
+
+            .cf-turnstile > div,
+            .cf-turnstile iframe {
+                width: 100% !important;
+                max-width: 100% !important;
+                height: 65px !important;
+            }
+
+            .form-header {
+                margin-bottom: 1.5rem;
+            }
+
+            .form-header h1 {
+                font-size: 1.75rem;
+            }
+
+            .form-header p {
+                font-size: 0.9rem;
+            }
+
+            .input-group {
+                margin-bottom: 1.25rem;
+            }
+
+            .submit-btn {
+                padding: 1.125rem 1rem;
+                font-size: 1rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .divider {
+                margin: 1.75rem 0 1.5rem;
+            }
+
+            .social-btn {
+                padding: 1.125rem 1.25rem;
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .signup {
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
+            }
+
+            .nav-container { padding: 0 1rem; }
+            .logo { font-size: 1.25rem; }
+            .theme-btn { width: 38px; height: 38px; font-size: 1.1rem; }
+
+            .mobile-nav {
+                display: block;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 68px;
+                background: var(--nav-bg);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-top: 1px solid var(--border);
+                z-index: 100;
+                padding: 0.625rem 0.875rem;
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+            }
+
+            .mobile-items {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 0.5rem;
+                max-width: 600px;
+                height: 100%;
+                margin: 0 auto;
+            }
+
+            .mobile-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 0.25rem;
+                padding: 0.375rem;
+                color: var(--text-light);
+                text-decoration: none;
+                font-size: 0.75rem;
+                font-weight: 500;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+                border: none;
+                background: transparent;
+                cursor: pointer;
+            }
+
+            .mobile-item:active { transform: scale(0.95); }
+            .mobile-item.active { color: var(--primary); background: var(--primary-glow); }
+            .mobile-item i { font-size: 1.375rem; }
+
+            .mobile-item.mobile-signin {
+                pointer-events: none;
+            }
+
+            .toast {
+                top: 68px;
+                right: 1rem;
+                left: 1rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-card {
+                padding: 1.75rem 1.25rem;
+            }
+
+            .form-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-header p {
+                font-size: 0.875rem;
+            }
+
+            .input-group {
+                margin-bottom: 1.125rem;
+            }
+
+            input {
+                padding: 0.8rem 2.5rem 0.8rem 0.9rem;
+                font-size: 0.9rem;
+            }
+
+            .captcha-wrap {
+                margin: 1rem 0;
+            }
+
+            .submit-btn {
+                padding: 1rem;
+                font-size: 0.95rem;
+            }
+
+            .divider {
+                margin: 1.5rem 0 1.25rem;
+                font-size: 0.8rem;
+            }
+
+            .social-btn {
+                padding: 1rem 1.125rem;
+                font-size: 0.95rem;
+            }
+
+            .signup {
+                font-size: 0.85rem;
+            }
+
+            .mobile-items {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 0.25rem;
+            }
+
+            .mobile-item {
+                font-size: 0.65rem;
+                gap: 0.15rem;
+                padding: 0.25rem;
+            }
+            .mobile-item i { font-size: 1.2rem; }
+        }
+
+        /* Landscape Mobile Optimization */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .form-card {
+                padding: 1.5rem 1.25rem;
+                justify-content: flex-start;
+                padding-top: 1rem;
+            }
+
+            .form-header {
+                margin-bottom: 1rem;
+            }
+
+            .form-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .input-group {
+                margin-bottom: 1rem;
+            }
+
+            .captcha-wrap {
+                margin: 1rem 0;
+                min-height: 60px;
+            }
+
+            .submit-btn {
+                padding: 0.9rem 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .divider {
+                margin: 1.25rem 0 1rem;
+            }
+
+            .social-btn {
+                padding: 0.9rem 1.125rem;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo" onmouseenter="animLogo()" onclick="animLogo()">
+                <div class="logo-icon">
+                    <div class="logo-bar logo-b1"></div>
+                    <div class="logo-bar logo-b2"></div>
+                    <div class="logo-bar logo-b3"></div>
+                </div>
+                SEOTIZE
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#features">Features</a></li>
+                <li><a href="index.html#pricing">Pricing</a></li>
+                <li><a href="blogs.html">Blog</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-btn" onclick="toggleTheme()">
+                    <span id="themeIcon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <section class="hero-section">
+            <div class="hero-content">
+                <img class="hero-image" src="https://image-worker.cranko.cloud/placeholder/280/280?text=SEOTIZE&color=2563eb" alt="SEOTIZE Platform">
+                <h1 class="hero-title">Welcome Back to SEOTIZE</h1>
+                <p class="hero-subtitle">Access your powerful SEO dashboard and take control of your rankings</p>
+                <div class="hero-text" id="typeText">Your success starts here<span class="cursor"></span></div>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <div class="form-card">
+                <div class="form-header">
+                    <h1>Sign In to Your Account</h1>
+                    <p>Continue your SEO journey</p>
+                </div>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="Enter your email" autocomplete="email" required>
+                        <div class="input-icon" id="emailIcon"></div>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required>
+                        <div class="input-icon" id="passwordIcon"></div>
+                    </div>
+                    <div class="captcha-wrap">
+                        <div class="cf-turnstile" data-sitekey="0x4AAAAAABi0oSEk-fxks-xg" data-callback="onCaptcha" data-theme="auto" data-size="flexible"></div>
+                    </div>
+                    <div class="form-row">
+                        <label class="remember" onclick="toggleCheck()">
+                            <div class="check" id="check"></div>
+                            <span>Remember me</span>
+                        </label>
+                        <a href="forgot-password.html" class="forgot">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="submit-btn" id="submitBtn">Sign In</button>
+                </form>
+                <div class="divider"><span>or continue with</span></div>
+                <a href="https://api.seotize.net/login/google" class="social-btn">
+                    <span class="social-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        </svg>
+                    </span>
+                    <span class="social-text">Continue with Google</span>
+                </a>
+                <div class="signup">Don't have an account? <a href="register.html">Sign up</a></div>
+            </div>
+        </section>
+    </div>
+
+    <div class="mobile-nav">
+        <div class="mobile-items">
+            <a href="index.html" class="mobile-item">
+                <i class="ri-home-5-line"></i>
+                <span>Home</span>
+            </a>
+            <a href="index.html#features" class="mobile-item">
+                <i class="ri-flashlight-line"></i>
+                <span>Features</span>
+            </a>
+            <a href="index.html#pricing" class="mobile-item">
+                <i class="ri-price-tag-3-line"></i>
+                <span>Pricing</span>
+            </a>
+            <a href="blogs.html" class="mobile-item">
+                <i class="ri-article-line"></i>
+                <span>Blog</span>
+            </a>
+            <div class="mobile-item active mobile-signin">
+                <i class="ri-login-box-line"></i>
+                <span>Sign In</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        gsap.registerPlugin(TextPlugin);
+
+        // --- NEW LOGO ANIMATION FUNCTION ---
+        function animLogo() {
+             gsap.fromTo(".logo-bar",
+                { scaleY: 0.3 },
+                { scaleY: 1, duration: 0.4, stagger: 0.1, ease: "back.out(1.7)", overwrite: true }
+            );
+        }
+
+        const API = 'https://api.seotize.net';
+        const texts = [
+            'Your success starts here',
+            'Track rankings & boost traffic',
+            'AI-powered SEO automation',
+            'Real user engagement tools',
+            'Lightning-fast CDN hosting'
+        ];
+        let idx = 0, remember = false, token = null;
+
+        function onCaptcha(t) { token = t; }
+        function toggleCheck() { remember = !remember; document.getElementById('check').classList.toggle('checked', remember); }
+        function toggleTheme() { document.body.classList.toggle('dark'); const d = document.body.classList.contains('dark'); document.getElementById('themeIcon').textContent = d ? '☀' : '🌙'; localStorage.setItem('theme', d ? 'dark' : 'light'); }
+        function loadTheme() { if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark'); document.getElementById('themeIcon').textContent = '☀'; } }
+
+        function type() {
+            const e = document.getElementById('typeText');
+            if (!e) return;
+            e.innerHTML = '<span class="cursor"></span>';
+            gsap.to(e, { duration: texts[idx].length * 0.04, text: { value: texts[idx] }, onUpdate: () => { if (!e.innerHTML.includes('cursor')) e.innerHTML += '<span class="cursor"></span>'; } });
+        }
+
+        function validate(inp, iconId) {
+            const v = inp.value.trim(), icon = document.getElementById(iconId);
+            if (inp.type === 'email') { const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); inp.className = v ? ok ? 'success' : 'error' : ''; icon.innerHTML = v ? ok ? '✓' : '✗' : ''; icon.className = `input-icon ${v ? ok ? 'success' : 'error' : ''}`; }
+            else { const ok = v.length >= 8; inp.className = v ? ok ? 'success' : 'error' : ''; icon.innerHTML = v ? ok ? '✓' : '✗' : ''; icon.className = `input-icon ${v ? ok ? 'success' : 'error' : ''}`; }
+        }
+
+        async function login(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim(), pass = document.getElementById('password').value.trim(), btn = document.getElementById('submitBtn');
+            if (!email || !pass) { toast('Fill all fields', 'error'); return; }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('Invalid email', 'error'); return; }
+            if (pass.length < 8) { toast('Password too short', 'error'); return; }
+            if (!token) { toast('Complete captcha', 'error'); return; }
+            btn.classList.add('loading'); btn.innerHTML = '<div class="spinner"></div>Signing in...';
+            try {
+                const r = await fetch(`${API}/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass, 'cf-turnstile-response': token }) });
+                const d = await r.json(); btn.classList.remove('loading'); btn.innerHTML = 'Sign In';
+                if (d.status === 'success') { setCookie('session_token', d.data.session_token, remember ? 7 : null); toast('Login successful!', 'success'); setTimeout(() => window.location.href = '/dashboard', 1000); }
+                else { toast(d.error?.message || 'Login failed', 'error'); token = null; if (window.turnstile) window.turnstile.reset(); }
+            } catch (err) { btn.classList.remove('loading'); btn.innerHTML = 'Sign In'; toast('Network error', 'error'); token = null; if (window.turnstile) window.turnstile.reset(); }
+        }
+
+        function toast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = `toast ${type} show`; setTimeout(() => t.classList.remove('show'), 3000); }
+        function setCookie(n, v, d) { let e = ""; if (d) { const dt = new Date(); dt.setTime(dt.getTime() + (d * 24 * 60 * 60 * 1000)); e = "; expires=" + dt.toUTCString(); } document.cookie = n + "=" + (v || "") + e + "; path=/; Domain=.seotize.net; SameSite=Lax; Secure"; }
+        function getCookie(n) { const nEQ = n + "=", ca = document.cookie.split(';'); for (let i = 0; i < ca.length; i++) { let c = ca[i]; while (c.charAt(0) == ' ') c = c.substring(1, c.length); if (c.indexOf(nEQ) == 0) return c.substring(nEQ.length, c.length); } return null; }
+
+        document.getElementById('email').addEventListener('input', e => validate(e.target, 'emailIcon'));
+        document.getElementById('password').addEventListener('input', e => validate(e.target, 'passwordIcon'));
+        document.getElementById('loginForm').addEventListener('submit', login);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (getCookie('session_token')) { window.location.href = '/dashboard'; return; }
+            loadTheme();
+            if (window.innerWidth > 768) { type(); setInterval(() => { idx = (idx + 1) % texts.length; type(); }, 4000); }
+            setTimeout(animLogo, 500); // Animate logo on load
+        });
+    </script>
+</body>
+</html>
