@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEOTIZE Partners - Earn Money by Completing SEO Tasks</title>
+    <meta name="description" content="Join SEOTIZE Partners and earn money by completing SEO tasks. Work from anywhere, flexible schedule, instant payouts via USDT.">
+    <meta name="keywords" content="earn money online, SEO tasks, work from home, flexible income, USDT payouts">
+    <link rel="canonical" href="https://seotize.com/partner/">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+/* ===========================
+   RESET & BASE STYLES
+   =========================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --bg: #fafbfc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --text: #0f172a;
+    --text-light: #64748b;
+    --text-muted: #94a3b8;
+    --border: #e2e8f0;
+    --primary: #10b981;
+    --primary-dark: #059669;
+    --primary-light: #34d399;
+    --secondary: #2563eb;
+    --accent: #8b5cf6;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --nav-bg: rgba(255, 255, 255, 0.95);
+}
+
+body.dark {
+    --bg: #0a0e1a;
+    --bg-secondary: #1a1f2e;
+    --bg-tertiary: #2a2f3e;
+    --text: #f1f5f9;
+    --text-light: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border: #2d3748;
+    --nav-bg: rgba(26, 31, 46, 0.95);
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    transition: background 0.3s ease, color 0.3s ease;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    padding-bottom: 68px;
+}
+
+@media (min-width: 1024px) {
+    body { padding-bottom: 0; }
+}
+
+/* ===========================
+   NAVIGATION
+   =========================== */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.nav-container {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* --- NEW LOGO STYLES (Clean Compact Integration) --- */
+.logo-v1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none; /* Removes underline from anchor */
+}
+
+.logo-v1-icon-wrapper {
+    position: relative;
+}
+
+.logo-v1-icon {
+    /* Adjusted size for Navbar (Original was 60px) */
+    width: 42px; 
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #26a17b 0%, #1e8767 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem; /* Adjusted font size */
+    font-weight: 900;
+    color: white;
+    box-shadow: 0 4px 12px rgba(38, 161, 123, 0.35);
+    border: 2px solid #34d399;
+}
+
+.logo-v1-ring {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.logo-v1-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-v1-main {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.25rem; /* Adjusted for Navbar */
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+.logo-v1-tagline {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-light); /* Adapts to dark mode via variable */
+    opacity: 0.9;
+    margin-top: 0.1rem;
+    line-height: 1;
+    letter-spacing: 0.5px;
+}
+/* ------------------------------------------------ */
+
+/* Desktop Menu */
+.nav-menu {
+    display: none;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-menu a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.nav-menu a.active {
+    color: var(--primary);
+}
+
+.nav-menu a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: width 0.3s ease;
+}
+
+.nav-menu a:hover {
+    color: var(--primary);
+}
+
+.nav-menu a:hover::after {
+    width: 100%;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.nav-btn {
+    padding: 0.625rem 0.625rem;
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.theme-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.25rem;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+}
+
+/* ===========================
+   SECTIONS & CONTAINERS
+   =========================== */
+.section {
+    padding: 4rem 1.5rem;
+    position: relative;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.125rem;
+    color: var(--text-light);
+    margin-bottom: 3rem;
+    line-height: 1.6;
+}
+
+/* ===========================
+   HERO SECTION (SLIDER)
+   =========================== */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 6rem 2rem 2rem 2rem;
+    background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+    top: -100px;
+    right: -100px;
+    animation: float 15s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-30px, 30px) rotate(180deg); }
+}
+
+.hero-slider {
+    width: 100%;
+    position: relative;
+}
+
+.hero-slide {
+    display: none;
+    animation: fadeIn 0.6s ease;
+}
+
+.hero-slide.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 2.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-text {
+    text-align: center;
+}
+
+.hero-emoji {
+    font-size: 4rem;
+    display: inline-block;
+    margin-right: 0.5rem;
+    filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.3));
+    animation: bounce 2s ease-in-out infinite;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.hero h1 {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+    display: block;
+    width: 100%;
+}
+
+.hero h1 .hero-text-gradient {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero p {
+    font-size: 1.125rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    line-height: 1.7;
+}
+
+.hero-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
+}
+
+.cta.secondary {
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    box-shadow: none;
+}
+
+.cta.secondary:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.hero-image {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    border: 3px solid var(--border);
+}
+
+.slider-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.slider-dots {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.slider-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.slider-dot.active {
+    background: var(--primary);
+    transform: scale(1.3);
+}
+
+.slider-arrow {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text);
+    font-size: 1.25rem;
+}
+
+.slider-arrow:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* ===========================
+   HOW IT WORKS
+   =========================== */
+.how-it-works {
+    background: var(--bg-secondary);
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.step-card {
+    background: var(--bg);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    transition: all 0.4s ease;
+    position: relative;
+    text-align: center;
+}
+
+.step-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
+    border-color: var(--primary);
+}
+
+.step-number {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+    background: var(--gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: white;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+.step-icon {
+    font-size: 3.5rem;
+    display: inline-block;
+    margin: 1rem auto 1.5rem;
+    filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.2));
+}
+
+.step-card h3 {
+    font-size: 1.375rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.step-card p {
+    color: var(--text-light);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+}
+
+.step-benefits {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    text-align: left;
+}
+
+.step-benefits li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--success);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.step-benefits li::before {
+    content: '✓';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border-radius: 50%;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* ===========================
+   EARNING METHODS
+   =========================== */
+.earning-methods {
+    background: var(--bg);
+}
+
+.methods-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.method-card {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.method-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient);
+}
+
+.method-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
+    border-color: var(--primary);
+}
+
+.method-icon {
+    font-size: 3rem;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.2));
+}
+
+.method-card h3 {
+    font-size: 1.375rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.method-card p {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+.method-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.method-features li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-light);
+    font-size: 0.9375rem;
+}
+
+.method-features li::before {
+    content: '✓';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border-radius: 50%;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* ===========================
+   PAYOUT METHODS
+   =========================== */
+.payout-methods {
+    background: var(--bg-secondary);
+}
+
+.payout-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.payout-card {
+    background: var(--bg);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    text-align: center;
+    transition: all 0.4s ease;
+}
+
+.payout-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
+    border-color: var(--primary);
+}
+
+.payout-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.2));
+}
+
+.payout-card h3 {
+    font-size: 1.375rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+}
+
+.payout-card p {
+    color: var(--text-light);
+    line-height: 1.7;
+}
+
+/* ===========================
+   FAQ SECTION
+   =========================== */
+.faq {
+    background: var(--bg);
+}
+
+.faq-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.faq-item {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.faq-item.active {
+    border-color: var(--primary);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
+}
+
+.faq-question {
+    width: 100%;
+    padding: 1.5rem;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+    background: var(--bg);
+}
+
+.faq-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(45deg);
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0 1.5rem;
+}
+
+.faq-item.active .faq-answer {
+    max-height: 500px;
+    padding: 0 1.5rem 1.5rem;
+}
+
+.faq-answer p {
+    color: var(--text-light);
+    line-height: 1.8;
+    font-size: 1rem;
+}
+
+/* ===========================
+   GROW YOUR WEBSITE SECTION
+   =========================== */
+.grow-website {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.grow-website::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+}
+
+.grow-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.grow-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 8px 16px rgba(16, 185, 129, 0.3));
+}
+
+.grow-content h2 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.grow-content p {
+    font-size: 1.25rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    line-height: 1.7;
+}
+
+.grow-features {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.grow-feature {
+    background: var(--bg);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.grow-feature:hover {
+    transform: translateX(8px);
+    border-color: var(--primary);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.1);
+}
+
+.grow-feature-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.grow-feature-text h4 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+}
+
+.grow-feature-text p {
+    font-size: 0.9375rem;
+    color: var(--text-light);
+    margin: 0;
+}
+
+/* ===========================
+   FINAL CTA
+   =========================== */
+.final-cta {
+    background: var(--gradient);
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.final-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+}
+
+.final-cta-content {
+    position: relative;
+    z-index: 2;
+}
+
+.final-cta h2 {
+    font-size: 2.25rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.final-cta p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+.cta-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.cta-white {
+    background: white;
+    color: var(--primary);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.cta-white:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ===========================
+   FOOTER
+   =========================== */
+.footer {
+    padding: 3rem 1.5rem 2rem;
+    background: #1a1f2e;
+    color: #f1f5f9;
+}
+
+body.dark .footer {
+    background: #000000;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    margin-bottom: 2.5rem;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.footer-column h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.footer-column ul {
+    list-style: none;
+}
+
+.footer-column li {
+    margin: 0.5rem 0;
+}
+
+.footer-column a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    transition: color 0.3s ease;
+    display: inline-block;
+}
+
+.footer-column a:hover {
+    color: white;
+    transform: translateX(4px);
+}
+
+.footer-bottom {
+    padding-top: 2rem;
+    border-top: 1px solid #334155;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.footer-bottom p {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-links a {
+    width: 44px;
+    height: 44px;
+    background: #334155;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+    background: var(--primary);
+    transform: translateY(-4px);
+}
+
+/* ===========================
+   MOBILE BOTTOM NAV
+   =========================== */
+.mobile-nav {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 68px;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    z-index: 999;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-items {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    max-width: 600px;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.mobile-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.375rem;
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.mobile-item:active {
+    transform: scale(0.95);
+}
+
+.mobile-item.active {
+    color: var(--primary);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.mobile-item i {
+    font-size: 1.375rem;
+}
+
+/* ===========================
+   RESPONSIVE - TABLET
+   =========================== */
+@media (min-width: 640px) {
+    .section { padding: 5rem 2rem; }
+    .section-title { font-size: 2.5rem; }
+    
+    .hero h1 { font-size: 2.75rem; }
+    
+    .steps-grid,
+    .methods-grid,
+    .payout-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .hero-buttons {
+        flex-direction: row;
+        justify-content: center;
+    }
+    
+    .cta-buttons {
+        flex-direction: row;
+        max-width: 600px;
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .grow-features {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ===========================
+   RESPONSIVE - DESKTOP
+   =========================== */
+@media (min-width: 1024px) {
+    .section { padding: 6rem 2rem; }
+    .section-title { font-size: 3rem; }
+    
+    .nav-menu { display: flex; }
+    .mobile-nav { display: none; }
+    
+    .hero {
+        padding-top: 8rem;
+    }
+    
+    .hero-content {
+        flex-direction: row;
+        align-items: center;
+        gap: 4rem;
+    }
+    
+    .hero-text {
+        flex: 1;
+        text-align: left;
+    }
+    
+    .hero-image-wrapper {
+        flex: 1;
+    }
+    
+    .hero h1 { font-size: 3.5rem; }
+    .hero p { font-size: 1.25rem; }
+    
+    .hero-buttons {
+        justify-content: flex-start;
+    }
+    
+    .steps-grid,
+    .payout-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    
+    .methods-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .footer-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .grow-features {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .grow-content h2 {
+        font-size: 3rem;
+    }
+}
+
+/* ===========================
+   RESPONSIVE - SMALL MOBILE
+   =========================== */
+    @media (max-width: 768px) {
+        .footer-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .section { padding: 3rem 1rem; }
+        .section-title { font-size: 1.75rem; }
+        .section-subtitle { font-size: 1rem; }
+        
+        .hero h1 { font-size: 2rem; }
+        .hero p { font-size: 1rem; }
+        .hero-emoji { font-size: 3rem; }
+        
+        .mobile-items { 
+            gap: 0.25rem;
+            grid-template-columns: repeat(5, 1fr);
+        }
+    .mobile-item {
+        font-size: 0.625rem;
+        gap: 0.15rem;
+        padding: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .mobile-item span {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .mobile-item i { font-size: 1.2rem; }
+    
+    .grow-content h2 { font-size: 2rem; }
+    .grow-content p { font-size: 1rem; }
+    .grow-icon { font-size: 3.5rem; }
+    
+        .footer-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+}
+</style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo-v1" id="navLogo">
+                <div class="logo-v1-icon-wrapper">
+                    <div class="logo-v1-icon">₮</div>
+                    <div class="logo-v1-ring"></div>
+                </div>
+                <div class="logo-v1-text">
+                    <div class="logo-v1-main">SEOTIZE</div>
+                    <div class="logo-v1-tagline">Partners</div>
+                </div>
+            </a>
+            
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link" data-section="home">Home</a></li>
+                <li><a href="#how-it-works" class="nav-link" data-section="how-it-works">How It Works</a></li>
+                <li><a href="#earning" class="nav-link" data-section="earning">Earning</a></li>
+                <li><a href="#payouts" class="nav-link" data-section="payouts">Payouts</a></li>
+                <li><a href="#faq" class="nav-link" data-section="faq">FAQ</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <a href="login.html" class="nav-btn">
+                    <span>Partner Login</span>
+                    <i class="ri-arrow-right-line"></i>
+                </a>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="themeIcon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-slider">
+                <div class="hero-slide active" id="slide-1">
+                    <div class="hero-content">
+                        <div class="hero-text">
+                            <h1><span class="hero-emoji">💰</span><span class="hero-text-gradient">Earn Money with SEOTIZE Partners</span></h1>
+                            <p>Work from anywhere, complete simple SEO tasks, and earn money on your own schedule. Join our global partner network today.</p>
+                            <div class="hero-buttons">
+                                <a href="login.html" class="cta">
+                                    <span>Start Earning Now</span>
+                                    <i class="ri-arrow-right-line"></i>
+                                </a>
+                                <a href="#how-it-works" class="cta secondary">
+                                    <span>Learn How</span>
+                                    <i class="ri-play-circle-line"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hero-image-wrapper">
+                            <img src="https://image-api.seotize.net/image-cdn/e7cf9262-9c4b-4b3a-a700-8d8d7f834588" alt="Partner Dashboard" class="hero-image">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-slide" id="slide-2">
+                    <div class="hero-content">
+                        <div class="hero-text">
+                            <h1><span class="hero-emoji">🔍</span><span class="hero-text-gradient">What You'll Be Doing</span></h1>
+                            <p>Search for specific keywords on Google, visit target websites naturally, and help improve their search rankings. Simple tasks, real earnings.</p>
+                            <div class="hero-buttons">
+                                <a href="login.html" class="cta">
+                                    <span>Join Now</span>
+                                    <i class="ri-arrow-right-line"></i>
+                                </a>
+                                <a href="#earning" class="cta secondary">
+                                    <span>View Tasks</span>
+                                    <i class="ri-search-line"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hero-image-wrapper">
+                            <img src="https://image-api.seotize.net/image-cdn/a14131ce-2694-4408-ad66-48426c471a4d" alt="Task Completion" class="hero-image">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-slide" id="slide-3">
+                    <div class="hero-content">
+                        <div class="hero-text">
+                            <h1><span class="hero-emoji">⚡</span><span class="hero-text-gradient">Fast & Secure Payouts</span></h1>
+                            <p>Get paid quickly via USDT (BEP20) with no minimum withdrawal. Your earnings are processed within 24-48 hours directly to your wallet.</p>
+                            <div class="hero-buttons">
+                                <a href="login.html" class="cta">
+                                    <span>Get Started</span>
+                                    <i class="ri-arrow-right-line"></i>
+                                </a>
+                                <a href="#payouts" class="cta secondary">
+                                    <span>Learn More</span>
+                                    <i class="ri-wallet-3-line"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hero-image-wrapper">
+                            <img src="https://image-api.seotize.net/image-cdn/2362ef13-9201-4a8f-be87-d9b7076a61d8" alt="Secure Payments" class="hero-image">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slider-controls">
+                    <button class="slider-arrow" onclick="prevSlide()" aria-label="Previous slide">
+                        <i class="ri-arrow-left-s-line"></i>
+                    </button>
+                    <div class="slider-dots">
+                        <span class="slider-dot active" onclick="goToSlide(0)"></span>
+                        <span class="slider-dot" onclick="goToSlide(1)"></span>
+                        <span class="slider-dot" onclick="goToSlide(2)"></span>
+                    </div>
+                    <button class="slider-arrow" onclick="nextSlide()" aria-label="Next slide">
+                        <i class="ri-arrow-right-s-line"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="section how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Start earning in 3 simple steps</p>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">📝</div>
+                    <h3>Sign Up Free</h3>
+                    <p>Create your free account in minutes. No fees, no hidden costs, no KYC verification needed.</p>
+                    <ul class="step-benefits">
+                        <li>No KYC required</li>
+                        <li>No credit card needed</li>
+                        <li>Instant access to tasks</li>
+                    </ul>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">🔍</div>
+                    <h3>Complete Tasks</h3>
+                    <p>Browse available SEO tasks, choose what works for you, and complete them following simple instructions.</p>
+                    <ul class="step-benefits">
+                        <li>Simple Google searches</li>
+                        <li>Natural website visits</li>
+                        <li>No technical skills needed</li>
+                    </ul>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">💳</div>
+                    <h3>Get Paid</h3>
+                    <p>Withdraw your earnings via USDT (BEP20) with fast processing times and no minimum withdrawal limit.</p>
+                    <ul class="step-benefits">
+                        <li>No minimum withdrawal</li>
+                        <li>24-48 hour processing</li>
+                        <li>100% secure payouts</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="earning" class="section earning-methods">
+        <div class="container">
+            <h2 class="section-title">What You'll Be Doing</h2>
+            <p class="section-subtitle">Flexible tasks that fit your schedule</p>
+            
+            <div class="methods-grid">
+                <div class="method-card">
+                    <div class="method-icon">🔍</div>
+                    <h3>Keyword Search Tasks</h3>
+                    <p>Search for specific keywords on Google and visit target websites naturally to help improve their search rankings.</p>
+                    <ul class="method-features">
+                        <li>Simple Google searches</li>
+                        <li>Natural website visits</li>
+                        <li>No technical skills needed</li>
+                        <li>Tasks available 24/7</li>
+                    </ul>
+                </div>
+                
+                <div class="method-card">
+                    <div class="method-icon">👥</div>
+                    <h3>User Engagement</h3>
+                    <p>Spend time on websites, interact with content, and create authentic engagement signals that benefit businesses.</p>
+                    <ul class="method-features">
+                        <li>Read articles and content</li>
+                        <li>Browse product pages</li>
+                        <li>Natural interaction required</li>
+                        <li>Flexible time commitment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="payouts" class="section payout-methods">
+        <div class="container">
+            <h2 class="section-title">Fast & Secure Payouts</h2>
+            <p class="section-subtitle">Get paid quickly via cryptocurrency</p>
+            
+            <div class="payout-grid">
+                <div class="payout-card">
+                    <div class="payout-icon">₮</div>
+                    <h3>USDT (BEP20)</h3>
+                    <p>Fast and secure cryptocurrency payments on Binance Smart Chain. Low transaction fees and quick processing.</p>
+                </div>
+                
+                <div class="payout-card">
+                    <div class="payout-icon">⚡</div>
+                    <h3>Fast Processing</h3>
+                    <p>Withdrawals processed within 24-48 hours. Track your payment status in real-time from your dashboard.</p>
+                </div>
+                
+                <div class="payout-card">
+                    <div class="payout-icon">🔒</div>
+                    <h3>No Minimum Withdrawal</h3>
+                    <p>Withdraw anytime with no minimum balance required. Your payments are protected with enterprise-grade security.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="section faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="section-subtitle">Everything you need to know</p>
+            
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>How much can I earn?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Earnings vary based on task availability and time invested. Tasks pay between $0.10 to $0.20 per completion. The more tasks you complete, the more you earn.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>What do I need to get started?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>All you need is a device with internet access and the ability to use Google. No special skills, KYC verification, or credit card required. We provide detailed instructions for every task.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>How do I withdraw my earnings?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Withdraw via USDT (BEP20) with no minimum withdrawal amount. Payouts are processed within 24-48 hours. You'll need a valid BEP20 wallet address to receive payments.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Is there any cost to join?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Absolutely not! Joining SEOTIZE Partners is completely free. There are no registration fees, membership costs, KYC requirements, or hidden charges. You only earn money.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Can I work from anywhere?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! SEOTIZE Partners is available globally. You can work from anywhere with an internet connection, on your own schedule, whenever tasks are available.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section grow-website">
+        <div class="container">
+            <div class="grow-content">
+                <div class="grow-icon">🚀</div>
+                <h2>Have a Website? Let's Make It Grow!</h2>
+                <p>If you own a website and want to boost your SEO rankings, increase visibility, and dominate search results, SEOTIZE's main platform is here for you.</p>
+                
+                <div class="grow-features">
+                    <div class="grow-feature">
+                        <div class="grow-feature-icon">📈</div>
+                        <div class="grow-feature-text">
+                            <h4>Real User Engagement</h4>
+                            <p>Get authentic traffic from real users worldwide</p>
+                        </div>
+                    </div>
+                    <div class="grow-feature">
+                        <div class="grow-feature-icon">⚡</div>
+                        <div class="grow-feature-text">
+                            <h4>Lightning-Fast CDN</h4>
+                            <p>Host images with blazing-fast global delivery</p>
+                        </div>
+                    </div>
+                    <div class="grow-feature">
+                        <div class="grow-feature-icon">🤖</div>
+                        <div class="grow-feature-text">
+                            <h4>AI-Powered Content</h4>
+                            <p>Generate SEO-optimized articles automatically</p>
+                        </div>
+                    </div>
+                    <div class="grow-feature">
+                        <div class="grow-feature-icon">📊</div>
+                        <div class="grow-feature-text">
+                            <h4>Higher Rankings</h4>
+                            <p>Climb to the top of search results faster</p>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="../index.html" class="cta" style="margin-top: 2rem;">
+                    <span>Explore SEOTIZE Platform</span>
+                    <i class="ri-arrow-right-line"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>Partners</h3>
+                    <ul>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#earning">Earning Methods</a></li>
+                        <li><a href="#payouts">Payout Options</a></li>
+                        <li><a href="login.html">Join Now</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="login.html">Help Center</a></li>
+                        <li><a href="login.html">Partner Guidelines</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="login.html">Contact Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Platform</h3>
+                    <ul>
+                        <li><a href="../index.html">SEOTIZE Main</a></li>
+                        <li><a href="../index.html#features">Features</a></li>
+                        <li><a href="../index.html#pricing">Pricing</a></li>
+                        <li><a href="../blogs.html">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="../index.html">Terms of Service</a></li>
+                        <li><a href="../index.html">Privacy Policy</a></li>
+                        <li><a href="login.html">Payment Terms</a></li>
+                        <li><a href="login.html">Partner Agreement</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Seotize Partners. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Email">📧</a>
+                    <a href="#" aria-label="Twitter">🐦</a>
+                    <a href="#" aria-label="LinkedIn">💼</a>
+                    <a href="#" aria-label="Discord">📱</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="mobile-nav">
+        <div class="mobile-items">
+            <a href="#" class="mobile-item" data-section="home">
+                <i class="ri-home-5-line"></i>
+                <span>Home</span>
+            </a>
+            <a href="#how-it-works" class="mobile-item" data-section="how-it-works">
+                <i class="ri-information-line"></i>
+                <span>How It Works</span>
+            </a>
+            <a href="#earning" class="mobile-item" data-section="earning">
+                <i class="ri-money-dollar-circle-line"></i>
+                <span>Earning</span>
+            </a>
+            <a href="#faq" class="mobile-item" data-section="faq">
+                <i class="ri-question-line"></i>
+                <span>FAQ</span>
+            </a>
+            <a href="login.html" class="mobile-item">
+                <i class="ri-login-box-line"></i>
+                <span>Login</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Hero Slider
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.hero-slide');
+        const dots = document.querySelectorAll('.slider-dot');
+        let slideInterval;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        function goToSlide(n) {
+            showSlide(n);
+            resetAutoSlide();
+        }
+
+        function startAutoSlide() {
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function resetAutoSlide() {
+            clearInterval(slideInterval);
+            startAutoSlide();
+        }
+
+        // Start auto-slide on load
+        startAutoSlide();
+
+        // Theme Toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        // Load Theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                document.getElementById('themeIcon').textContent = '☀️';
+            }
+        }
+
+        // FAQ Toggle
+        function toggleFaq(button) {
+            const faqItem = button.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        }
+
+        // Smooth Scrolling and Active State
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                
+                if (href === '#' || href === '') {
+                    // Scroll to top for home
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        const offset = 80;
+                        const targetPosition = target.offsetTop - offset;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+        
+        // Update Active States for Desktop Nav
+        function updateActiveStates() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = ['how-it-works', 'earning', 'payouts', 'faq'];
+            let current = 'home';
+            
+            if (window.pageYOffset > 100) {
+                sections.forEach(sectionId => {
+                    const section = document.getElementById(sectionId);
+                    if (section) {
+                        const sectionTop = section.offsetTop;
+                        if (window.pageYOffset >= sectionTop - 200) {
+                            current = sectionId;
+                        }
+                    }
+                });
+            }
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                const section = link.getAttribute('data-section');
+                if (section === current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Update Mobile Nav Active State
+        const mobileItems = document.querySelectorAll('.mobile-item');
+
+        window.addEventListener('scroll', () => {
+            updateActiveStates();
+            
+            const sections = ['how-it-works', 'earning', 'faq'];
+            let current = 'home';
+            
+            if (window.pageYOffset > 100) {
+                sections.forEach(sectionId => {
+                    const section = document.getElementById(sectionId);
+                    if (section) {
+                        const sectionTop = section.offsetTop;
+                        if (window.pageYOffset >= sectionTop - 200) {
+                            current = sectionId;
+                        }
+                    }
+                });
+            }
+            
+            mobileItems.forEach(item => {
+                item.classList.remove('active');
+                const section = item.getAttribute('data-section');
+                if (section === current) {
+                    item.classList.add('active');
+                }
+            });
+        });
+        
+        // Set home as active on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateActiveStates();
+        });
+
+        // GSAP Animations - Wait for DOM and GSAP to be fully loaded
+        if (typeof gsap !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+
+            document.addEventListener('DOMContentLoaded', () => {
+                loadTheme();
+                
+                // === NEW LOGO ANIMATION LOGIC ===
+                function animateLogo() {
+                    const tl = gsap.timeline();
+                    // Initial Intro Animation
+                    tl.from('#navLogo .logo-v1-icon', {
+                        scale: 0,
+                        duration: 0.6,
+                        ease: 'elastic.out(1, 0.6)'
+                    })
+                    .to('#navLogo .logo-v1-ring', {
+                        opacity: 0.6,
+                        scale: 1.2,
+                        duration: 0.6,
+                        ease: 'power2.out'
+                    }, '-=0.3')
+                    .to('#navLogo .logo-v1-ring', {
+                        opacity: 0,
+                        scale: 1.4,
+                        duration: 0.5
+                    })
+                    .from('#navLogo .logo-v1-main', {
+                        opacity: 0,
+                        x: -20,
+                        duration: 0.5,
+                        ease: 'power3.out'
+                    }, '-=0.8')
+                    .from('#navLogo .logo-v1-tagline', {
+                        opacity: 0,
+                        y: 8,
+                        duration: 0.4,
+                        ease: 'power2.out'
+                    }, '-=0.3');
+                }
+
+                // Run logo animation on load
+                animateLogo();
+
+                // Hover Effects for the Logo
+                const logoElement = document.getElementById('navLogo');
+                if(logoElement) {
+                    logoElement.addEventListener('mouseenter', () => {
+                        gsap.to('#navLogo .logo-v1-ring', {
+                            opacity: 0.6,
+                            scale: 1.2,
+                            duration: 0.4
+                        });
+                        gsap.to('#navLogo .logo-v1-ring', {
+                            opacity: 0,
+                            scale: 1.4,
+                            duration: 0.5,
+                            delay: 0.3
+                        });
+                    });
+                }
+                // ================================
+                
+                // Hero text animations
+                gsap.from('.hero-text h1', {
+                    opacity: 0,
+                    y: 30,
+                    duration: 1,
+                    ease: "power3.out"
+                });
+
+                gsap.from('.hero-text p', {
+                    opacity: 0,
+                    y: 20,
+                    duration: 1,
+                    delay: 0.2,
+                    ease: "power3.out"
+                });
+
+                gsap.from('.hero-buttons', {
+                    opacity: 0,
+                    y: 20,
+                    duration: 1,
+                    delay: 0.4,
+                    ease: "power3.out"
+                });
+
+                gsap.from('.hero-image', {
+                    opacity: 0,
+                    scale: 0.9,
+                    duration: 1,
+                    delay: 0.3,
+                    ease: "power3.out"
+                });
+                
+                // Animate cards on scroll
+                gsap.utils.toArray('.step-card, .method-card, .payout-card').forEach((card, i) => {
+                    gsap.from(card, {
+                        opacity: 0,
+                        y: 60,
+                        duration: 0.8,
+                        delay: i * 0.1,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: card,
+                            start: 'top 85%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    });
+                });
+                
+                // FAQ Items
+                gsap.utils.toArray('.faq-item').forEach((item, i) => {
+                    gsap.from(item, {
+                        opacity: 0,
+                        x: -40,
+                        duration: 0.6,
+                        delay: i * 0.1,
+                        scrollTrigger: {
+                            trigger: item,
+                            start: 'top 90%'
+                        }
+                    });
+                });
+
+                // Grow Website Section - Fixed Animation
+                gsap.from('.grow-icon', {
+                    opacity: 0,
+                    y: 50,
+                    duration: 1,
+                    scrollTrigger: {
+                        trigger: '.grow-website',
+                        start: 'top 80%'
+                    }
+                });
+
+                gsap.from('.grow-content h2', {
+                    opacity: 0,
+                    y: 50,
+                    duration: 1,
+                    delay: 0.2,
+                    scrollTrigger: {
+                        trigger: '.grow-website',
+                        start: 'top 80%'
+                    }
+                });
+
+                gsap.from('.grow-content > p', {
+                    opacity: 0,
+                    y: 50,
+                    duration: 1,
+                    delay: 0.4,
+                    scrollTrigger: {
+                        trigger: '.grow-website',
+                        start: 'top 80%'
+                    }
+                });
+
+                gsap.from('.grow-content > .cta', {
+                    opacity: 0,
+                    y: 30,
+                    duration: 1,
+                    delay: 0.6,
+                    scrollTrigger: {
+                        trigger: '.grow-website',
+                        start: 'top 80%'
+                    }
+                });
+
+                gsap.utils.toArray('.grow-feature').forEach((feature, i) => {
+                    gsap.from(feature, {
+                        opacity: 0,
+                        x: -30,
+                        duration: 0.6,
+                        delay: i * 0.1,
+                        scrollTrigger: {
+                            trigger: feature,
+                            start: 'top 90%'
+                        }
+                    });
+                });
+            });
+        } else {
+            console.warn('GSAP library not loaded');
+            document.addEventListener('DOMContentLoaded', loadTheme);
+        }
+
+        // Navbar scroll effect
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 100) {
+                nav.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+            
+            lastScroll = currentScroll;
+        });
+    </script>
+</body>
+</html>
