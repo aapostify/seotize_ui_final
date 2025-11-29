@@ -48,35 +48,43 @@
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* --- NEW LOGO STYLES (Analytics Concept) --- */
+/* --- FIXED LOGO STYLES --- */
 .logo, .logox {
     font-family: 'Outfit', sans-serif !important;
     font-weight: 800 !important;
-    letter-spacing: -0.5px !important;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    text-decoration: none !important;
+    color: var(--primary) !important; /* Ensures text is blue */
+    cursor: pointer;
+    user-select: none;
 }
 
+/* Icon Container */
 .logo-icon {
     display: flex;
     align-items: flex-end;
-    gap: 4px;
+    gap: 3px;
     height: 24px;
+    min-width: 24px; /* Prevents squishing */
 }
 
+/* The Bars */
 .logo-bar {
     width: 6px;
     background: var(--primary);
     border-radius: 2px;
     transform-origin: bottom;
+    display: block; /* Critical for visibility */
 }
 
+/* Initial Bar Heights */
 .logo-b1 { height: 40%; opacity: 0.6; }
 .logo-b2 { height: 70%; opacity: 0.8; }
 .logo-b3 { height: 100%; opacity: 1; }
 
-/* Override existing icon styles if necessary */
+/* Hide old icons if they exist */
 .logo i, .logox i { display: none !important; }
 
 /* Light Theme */
@@ -4936,13 +4944,13 @@ div#modalBody {
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
 <div class="sidebar-header">
-<a href="#" class="logo" onmouseenter="animLogo()" onclick="animLogo()">
+<a href="#" class="logo" id="sidebarLogo">
     <div class="logo-icon">
         <div class="logo-bar logo-b1"></div>
         <div class="logo-bar logo-b2"></div>
         <div class="logo-bar logo-b3"></div>
     </div>
-    SEOTIZE
+    <span>SEOTIZE</span>
 </a>
 </div>
 
@@ -4987,13 +4995,13 @@ div#modalBody {
 <div class="mobile-menu" id="mobileMenu">
 <div class="mobile-menu-header">
 <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 1rem;">
-    <div class="logo" onmouseenter="animLogo()" onclick="animLogo()">
+<div class="logo" id="mobileMenuLogo">
     <div class="logo-icon">
         <div class="logo-bar logo-b1"></div>
         <div class="logo-bar logo-b2"></div>
         <div class="logo-bar logo-b3"></div>
     </div>
-    SEOTIZE
+    <span>SEOTIZE</span>
 </div>
     <button onclick="closeMobileMenu()" style="background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; padding: 0.5rem;">
         <i class="ri-close-line"></i>
@@ -5085,13 +5093,13 @@ div#modalBody {
 <!-- Header -->
 <header class="header">
 <div class="header-left">
-<a class="logox hidedesktop" onmouseenter="animLogo()" onclick="animLogo()">
+<a class="logox hidedesktop" id="mobileHeaderLogo">
     <div class="logo-icon">
         <div class="logo-bar logo-b1"></div>
         <div class="logo-bar logo-b2"></div>
         <div class="logo-bar logo-b3"></div>
     </div>
-    SEOTIZE
+    <span>SEOTIZE</span>
 </a>
 </div>
 
@@ -5481,12 +5489,21 @@ div#modalBody {
 <!-- JavaScript -->
 <script>
 // --- NEW LOGO ANIMATION FUNCTION ---
-function animLogo() {
-     gsap.fromTo(".logo-bar",
+// --- LOGO ANIMATION FUNCTION ---
+window.animLogo = function() {
+    if (typeof gsap === 'undefined') return;
+
+    gsap.fromTo(".logo-bar",
         { scaleY: 0.3 },
-        { scaleY: 1, duration: 0.4, stagger: 0.1, ease: "back.out(1.7)", overwrite: true }
+        {
+            scaleY: 1,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: "elastic.out(1, 0.5)",
+            overwrite: true
+        }
     );
-}
+};
 // API Configuration
 const API_BASE = 'https://api.seotize.net';
 let sessionToken = getCookie('session_token') || localStorage.getItem('authToken');
@@ -5577,7 +5594,15 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         updateUserInfo();
     }, 100);
-    setTimeout(animLogo, 500);
+    const logoElements = document.querySelectorAll('#sidebarLogo, #mobileMenuLogo, #mobileHeaderLogo');
+
+    logoElements.forEach(el => {
+        el.addEventListener('mouseenter', window.animLogo);
+        el.addEventListener('click', window.animLogo);
+    });
+
+    // Trigger animation once on load
+    setTimeout(window.animLogo, 800);
 });
 
 // Event Listeners
