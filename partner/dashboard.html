@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEOTIZE Partner Dashboard</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
@@ -104,6 +105,71 @@ body {
     padding: 1.25rem;
     border-bottom: 1px solid var(--border);
 }
+
+/* --- NEW CLEAN COMPACT LOGO STYLES --- */
+.logo-v1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none;
+}
+
+.logo-v1-icon-wrapper {
+    position: relative;
+}
+
+.logo-v1-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #26a17b 0%, #1e8767 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: white;
+    box-shadow: 0 4px 12px rgba(38, 161, 123, 0.35);
+    border: 2px solid #34d399;
+}
+
+.logo-v1-ring {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid #10b981;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.logo-v1-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-v1-main {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+.logo-v1-tagline {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    opacity: 0.9;
+    margin-top: 0.1rem;
+    line-height: 1;
+    letter-spacing: 0.5px;
+}
+/* ------------------------------------ */
 
 .logo {
     display: flex;
@@ -1111,10 +1177,42 @@ tr:hover { background: var(--card-hover); }
     font-size: 1.25rem; 
 }
 
+/* Mobile Header Logo Visibility */
+.mobile-header-logo {
+    display: none !important;
+}
+
+.desktop-header-title {
+    display: block;
+}
+
+/* Mobile Logo Size Adjustments */
+.mobile-logo-icon {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 1.25rem !important;
+}
+
+.mobile-logo-main {
+    font-size: 1.125rem !important;
+}
+
+.mobile-logo-tagline {
+    font-size: 0.625rem !important;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .sidebar { 
         display: none; 
+    }
+    
+    .mobile-header-logo {
+        display: flex !important;
+    }
+    
+    .desktop-header-title {
+        display: none !important;
     }
     
     .mobile-nav { 
@@ -1357,9 +1455,15 @@ tr:hover { background: var(--card-hover); }
 <div class="dashboard-layout">
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <a href="#" class="logo">
-            <i class="ri-user-star-line"></i>
-            <span>SEOTIZE Partner</span>
+        <a href="#" class="logo-v1" id="sidebarLogo">
+            <div class="logo-v1-icon-wrapper">
+                <div class="logo-v1-icon">₮</div>
+                <div class="logo-v1-ring"></div>
+            </div>
+            <div class="logo-v1-text">
+                <div class="logo-v1-main">SEOTIZE</div>
+                <div class="logo-v1-tagline">Partners</div>
+            </div>
         </a>
     </div>
     <nav class="sidebar-nav">
@@ -1393,7 +1497,17 @@ tr:hover { background: var(--card-hover); }
 <main class="main-content">
     <header class="header">
         <div class="header-left">
-            <h2>Partner Dashboard</h2>
+            <a href="#" class="logo-v1 mobile-header-logo" id="mobileHeaderLogo">
+                <div class="logo-v1-icon-wrapper">
+                    <div class="logo-v1-icon mobile-logo-icon">₮</div>
+                    <div class="logo-v1-ring"></div>
+                </div>
+                <div class="logo-v1-text">
+                    <div class="logo-v1-main mobile-logo-main">SEOTIZE</div>
+                    <div class="logo-v1-tagline mobile-logo-tagline">Partners</div>
+                </div>
+            </a>
+            <h2 class="desktop-header-title">Partner Dashboard</h2>
         </div>
         <div class="header-right">
             <button class="theme-toggle" onclick="toggleTheme()">
@@ -1511,6 +1625,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
     loadPartnerDashboard();
     initializeTheme();
+    initializeLogoAnimations();
 });
 
 // Cleanup intervals on page unload
@@ -1604,6 +1719,111 @@ function toggleTheme() {
 
 function updateThemeIcon(theme) {
     document.getElementById('themeIcon').className = theme === 'light' ? 'ri-moon-line' : 'ri-sun-line';
+}
+
+function initializeLogoAnimations() {
+    if (typeof gsap === 'undefined') {
+        console.warn('GSAP not loaded, skipping logo animations');
+        return;
+    }
+
+    // Sidebar Logo Animation (Desktop)
+    const sidebarLogo = document.getElementById('sidebarLogo');
+    if (sidebarLogo) {
+        const logoTl = gsap.timeline();
+        logoTl.from('#sidebarLogo .logo-v1-icon', {
+            scale: 0,
+            duration: 0.6,
+            ease: 'elastic.out(1, 0.6)'
+        })
+        .to('#sidebarLogo .logo-v1-ring', {
+            opacity: 0.6,
+            scale: 1.2,
+            duration: 0.6,
+            ease: 'power2.out'
+        }, '-=0.3')
+        .to('#sidebarLogo .logo-v1-ring', {
+            opacity: 0,
+            scale: 1.4,
+            duration: 0.5
+        })
+        .from('#sidebarLogo .logo-v1-main', {
+            opacity: 0,
+            x: -20,
+            duration: 0.5,
+            ease: 'power3.out'
+        }, '-=0.8')
+        .from('#sidebarLogo .logo-v1-tagline', {
+            opacity: 0,
+            y: 8,
+            duration: 0.4,
+            ease: 'power2.out'
+        }, '-=0.3');
+
+        // Logo Hover Animation
+        sidebarLogo.addEventListener('mouseenter', () => {
+            gsap.to('#sidebarLogo .logo-v1-ring', {
+                opacity: 0.6,
+                scale: 1.2,
+                duration: 0.4
+            });
+            gsap.to('#sidebarLogo .logo-v1-ring', {
+                opacity: 0,
+                scale: 1.4,
+                duration: 0.5,
+                delay: 0.3
+            });
+        });
+    }
+
+    // Mobile Header Logo Animation
+    const mobileHeaderLogo = document.getElementById('mobileHeaderLogo');
+    if (mobileHeaderLogo && window.innerWidth <= 768) {
+        const mobileLogoTl = gsap.timeline();
+        mobileLogoTl.from('#mobileHeaderLogo .logo-v1-icon', {
+            scale: 0,
+            duration: 0.6,
+            ease: 'elastic.out(1, 0.6)'
+        })
+        .to('#mobileHeaderLogo .logo-v1-ring', {
+            opacity: 0.6,
+            scale: 1.2,
+            duration: 0.6,
+            ease: 'power2.out'
+        }, '-=0.3')
+        .to('#mobileHeaderLogo .logo-v1-ring', {
+            opacity: 0,
+            scale: 1.4,
+            duration: 0.5
+        })
+        .from('#mobileHeaderLogo .logo-v1-main', {
+            opacity: 0,
+            x: -20,
+            duration: 0.5,
+            ease: 'power3.out'
+        }, '-=0.8')
+        .from('#mobileHeaderLogo .logo-v1-tagline', {
+            opacity: 0,
+            y: 8,
+            duration: 0.4,
+            ease: 'power2.out'
+        }, '-=0.3');
+
+        // Mobile Logo Hover Animation (for tablets with hover)
+        mobileHeaderLogo.addEventListener('mouseenter', () => {
+            gsap.to('#mobileHeaderLogo .logo-v1-ring', {
+                opacity: 0.6,
+                scale: 1.2,
+                duration: 0.4
+            });
+            gsap.to('#mobileHeaderLogo .logo-v1-ring', {
+                opacity: 0,
+                scale: 1.4,
+                duration: 0.5,
+                delay: 0.3
+            });
+        });
+    }
 }
 
 function navigateTo(page) {
