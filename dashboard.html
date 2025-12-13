@@ -4496,25 +4496,56 @@ div#modalBody {
 }
 .task-modal-stat-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(5, 1fr);
     gap: 1rem;
     margin-bottom: 2rem;
+}
+@media (max-width: 992px) {
+    .task-modal-stat-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 .task-modal-stat-card {
     background: var(--card);
     padding: 1rem;
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     text-align: center;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+.task-modal-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--info));
+    opacity: 0;
+    transition: var(--transition);
+}
+.task-modal-stat-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+.task-modal-stat-card:hover::before {
+    opacity: 1;
 }
 .task-modal-stat-card .stat-value {
     font-size: 1.75rem;
     font-weight: 700;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.35rem;
+    line-height: 1.1;
 }
 .task-modal-stat-card .stat-label {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 .task-modal-grid {
     display: grid;
@@ -4537,6 +4568,9 @@ div#modalBody {
     align-items: center;
     gap: 0.5rem;
 }
+.task-modal-section-title i {
+    font-size: 1.3rem;
+}
 .analytics-charts-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -4548,17 +4582,7 @@ div#modalBody {
         grid-template-columns: 1fr;
     }
 }
-.analytics-layout {
-    display: grid;
-    grid-template-columns: 3fr 2fr;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-@media (max-width: 768px) {
-    .analytics-layout {
-        grid-template-columns: 1fr;
-    }
-}
+/* Analytics layout is now handled by slider on mobile */
 .details-table {
     width: 100%;
     border-collapse: collapse;
@@ -4646,6 +4670,40 @@ div#modalBody {
     padding: 1rem;
     margin: 0 0 1.25rem 0;
 }
+.task-budget-header-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
+}
+.task-budget-header-item {
+    text-align: center;
+    padding: 0.5rem;
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+}
+.task-budget-header-item:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.task-budget-header-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.task-budget-header-value {
+    font-size: 1.5rem;
+    font-weight: 900;
+    line-height: 1.2;
+}
 .task-budget-top {
     display: flex;
     align-items: baseline;
@@ -4705,33 +4763,163 @@ div#modalBody {
     box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.22), 0 20px 48px rgba(16, 185, 129, 0.24);
 }
 
-.task-modal-breakdown-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 0.75rem;
-    margin-top: 0.75rem;
-}
-.task-modal-breakdown-item {
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
+/* Task Country Map Container */
+#taskCountryMapContainer {
+    background: var(--card);
     border-radius: var(--radius);
-    padding: 0.85rem 0.9rem;
+    overflow: hidden;
+    width: 100%;
 }
-.task-modal-breakdown-item .label {
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: var(--text-secondary);
-    margin-bottom: 0.25rem;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
+#taskCountryMapContainer canvas {
+    max-width: 100% !important;
+    height: auto !important;
 }
-.task-modal-breakdown-item .value {
-    font-size: 1.05rem;
-    font-weight: 900;
-    color: var(--text);
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Analytics Slider Styles */
+.analytics-slider-container {
+    position: relative;
+    width: 100%;
+}
+.analytics-slider-wrapper {
+    overflow: hidden;
+    width: 100%;
+}
+.analytics-slider-track {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    will-change: transform;
+}
+.analytics-slider-slide {
+    min-width: 100%;
+    flex-shrink: 0;
+}
+.analytics-slider-nav {
+    display: none; /* Hidden on desktop, shown on mobile */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, var(--primary), var(--info));
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    color: #ffffff;
+    font-size: 1.5rem;
+    transition: var(--transition);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+}
+.analytics-slider-nav:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+.analytics-slider-nav:active {
+    transform: translateY(-50%) scale(0.95);
+}
+.analytics-slider-nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+    background: var(--bg-tertiary);
+    color: var(--text-tertiary);
+    box-shadow: none;
+}
+.analytics-slider-prev {
+    left: -20px;
+}
+.analytics-slider-next {
+    right: -20px;
+}
+.analytics-slider-dots {
+    display: none; /* Hidden on desktop, shown on mobile */
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    padding: 0.5rem;
+}
+.analytics-slider-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border);
+    cursor: pointer;
+    transition: var(--transition);
+    padding: 0;
+}
+.analytics-slider-dot:hover {
+    border-color: var(--primary);
+    transform: scale(1.2);
+}
+.analytics-slider-dot.active {
+    background: linear-gradient(135deg, var(--primary), var(--info));
+    border-color: var(--primary);
+    width: 28px;
+    border-radius: 5px;
 }
 @media (max-width: 768px) {
     .task-modal-tabs { width: 100%; }
+    .analytics-slider-nav {
+        display: flex;
+    }
+    .analytics-slider-dots {
+        display: flex;
+    }
+    .task-budget-header-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+    .task-budget-header-item {
+        padding: 0.4rem;
+    }
+    .task-budget-header-label {
+        font-size: 0.7rem;
+    }
+    .task-budget-header-value {
+        font-size: 1.25rem;
+    }
+    .task-modal-stat-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+    }
+    
+    .analytics-slider-prev {
+        left: -12px;
+        width: 38px;
+        height: 38px;
+        font-size: 1.3rem;
+    }
+    
+    .analytics-slider-next {
+        right: -12px;
+        width: 38px;
+        height: 38px;
+        font-size: 1.3rem;
+    }
+    
+    .analytics-slider-container {
+        padding: 0 8px;
+    }
+    
+    .analytics-charts-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    
+    #taskCountryMapContainer {
+        height: 250px !important;
+    }
 }
 
 /* Mobile responsive styles for task details modal */
@@ -4770,6 +4958,14 @@ div#modalBody {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.5rem !important;
         margin-bottom: 1rem !important;
+    }
+    
+    .analytics-slider-prev {
+        left: -15px;
+    }
+    
+    .analytics-slider-next {
+        right: -15px;
     }
     
     .task-modal-stat-card {
@@ -9526,26 +9722,18 @@ async function viewTaskDetails(taskId) {
                 </div>
             </div>
 
-            <div class="task-modal-stat-grid">
-                <div class="task-modal-stat-card">
-                    <div class="stat-value" style="color: var(--success);">$${totalCharge.toFixed(2)}</div>
-                    <div class="stat-label">Total Budget</div>
-                </div>
-                <div class="task-modal-stat-card">
-                    <div class="stat-value" style="color: var(--primary);">$${availableCharge.toFixed(2)}</div>
-                    <div class="stat-label">Available</div>
-                </div>
-                <div class="task-modal-stat-card">
-                    <div class="stat-value" style="color: var(--warning);">$${usedCharge.toFixed(2)}</div>
-                    <div class="stat-label">Used</div>
-                </div>
-                <div class="task-modal-stat-card">
-                    <div class="stat-value" style="color: var(--info);">${formatNumber(totalViews)}</div>
-                    <div class="stat-label">Total Views</div>
-                </div>
-            </div>
-
             <div class="task-budget-actions">
+                <div class="task-budget-header-row">
+                    <div class="task-budget-header-item">
+                        <div class="task-budget-header-label">Total Budget</div>
+                        <div class="task-budget-header-value" style="color: var(--success);">$${totalCharge.toFixed(2)}</div>
+                    </div>
+                    <div class="task-budget-header-item">
+                        <div class="task-budget-header-label">Total Views</div>
+                        <div class="task-budget-header-value" style="color: var(--info);">${formatNumber(totalViews)}</div>
+                    </div>
+                </div>
+                
                 <div class="task-budget-top">
                     <div class="task-budget-label">Budget Remaining</div>
                     <div class="task-budget-meta">
@@ -9561,6 +9749,29 @@ async function viewTaskDetails(taskId) {
                 </button>
             </div>
 
+            <div class="task-modal-stat-grid">
+                <div class="task-modal-stat-card">
+                    <div class="stat-value" style="color: var(--primary);">$${availableCharge.toFixed(2)}</div>
+                    <div class="stat-label">Available Budget</div>
+                </div>
+                <div class="task-modal-stat-card">
+                    <div class="stat-value" style="color: var(--warning);">$${usedCharge.toFixed(2)}</div>
+                    <div class="stat-label">Used Budget</div>
+                </div>
+                <div class="task-modal-stat-card">
+                    <div class="stat-value" style="color: var(--info);">${formatNumber(last7Views)}</div>
+                    <div class="stat-label">Last 7 Days</div>
+                </div>
+                <div class="task-modal-stat-card">
+                    <div class="stat-value" style="color: var(--text);">${avgViewsPerDay.toFixed(1)}</div>
+                    <div class="stat-label">Avg / Day</div>
+                </div>
+                <div class="task-modal-stat-card">
+                    <div class="stat-value" style="color: var(--success);">${formatNumber(bestDayViews)}</div>
+                    <div class="stat-label">Best Day</div>
+                </div>
+            </div>
+
             <div class="task-modal-tabs" role="tablist" aria-label="Task details sections">
                 <button class="task-modal-tab" type="button" data-tab="analytics" role="tab" aria-controls="task-panel-analytics">
                     <i class="ri-line-chart-line"></i> Analytics
@@ -9573,77 +9784,84 @@ async function viewTaskDetails(taskId) {
             <div class="task-modal-panels">
                 <div class="task-modal-panel" id="task-panel-analytics" data-panel="analytics" role="tabpanel">
                     ${hasAnalytics ? `
-                        <div class="analytics-layout">
-                            <div>
-                                <h3 class="task-modal-section-title" style="color: var(--primary); border-bottom: none; padding-bottom: 0; margin-bottom: 1.5rem;"><i class="ri-line-chart-line"></i>View Analytics</h3>
-                                
-                                <div class="analytics-charts-grid">
-                                    <div class="task-modal-section">
-                                        <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary);">Views Over Time</h4>
-                                        <div style="height: 250px;"><canvas id="taskViewsTimelineChart"></canvas></div>
+                        <div class="analytics-slider-container">
+                            <button class="analytics-slider-nav analytics-slider-prev" aria-label="Previous section">
+                                <i class="ri-arrow-left-s-line"></i>
+                            </button>
+                            
+                            <div class="analytics-slider-wrapper">
+                                <div class="analytics-slider-track">
+                                    <!-- Slide 1: View Analytics -->
+                                    <div class="analytics-slider-slide">
+                                        <h3 class="task-modal-section-title" style="color: var(--primary); border-bottom: none; padding-bottom: 0; margin-bottom: 1.5rem;">
+                                            <i class="ri-line-chart-line"></i>View Analytics
+                                        </h3>
+                                        
+                                        <div class="analytics-charts-grid">
+                                            <div class="task-modal-section">
+                                                <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary);">Views Over Time</h4>
+                                                <div style="height: 250px;"><canvas id="taskViewsTimelineChart"></canvas></div>
+                                            </div>
+                                            
+                                            <div class="task-modal-section">
+                                                <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary);">Views by Country (Interactive Map)</h4>
+                                                <div style="height: 300px; position: relative;" id="taskCountryMapContainer">
+                                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: var(--text-secondary);">
+                                                        <i class="ri-loader-4-line" style="font-size: 2rem; animation: spin 1s linear infinite;"></i>
+                                                        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Loading map...</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     
-                                    <div class="task-modal-section">
-                                        <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary);">Views by Country</h4>
-                                        <div style="height: 250px;"><canvas id="taskViewsCountryChart"></canvas></div>
+                                    <!-- Slide 2: More Details -->
+                                    ${hasDetailsData ? `
+                                    <div class="analytics-slider-slide">
+                                        <h3 class="task-modal-section-title" style="color: var(--info); border-bottom: none; padding-bottom: 0; margin-bottom: 1.5rem;">
+                                            <i class="ri-file-list-3-line"></i>More Details
+                                        </h3>
+                                        <div class="task-modal-section more-details-section">
+                                            <table class="details-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Country</th>
+                                                        <th>Partner Email</th>
+                                                        <th>Time</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    ${sortedDoneParts.map(part => `
+                                                        <tr>
+                                                            <td>
+                                                                <div style="display: flex; align-items: center;">
+                                                                    <span style="font-size: 1.2em; margin-right: 0.5rem;">${getCountryFlag(part.country_code)}</span>
+                                                                    <span>${part.country_code || 'N/A'}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td style="word-break: break-all;">${part.partner_email || 'N/A'}</td>
+                                                            <td style="white-space: nowrap;">${new Date(part.time).toLocaleString('en-US', { 
+                                                                month: 'short', 
+                                                                day: 'numeric', 
+                                                                year: 'numeric',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            })}</td>
+                                                        </tr>
+                                                    `).join('')}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                </div>
-                                
-                                <div class="task-modal-section">
-                                    <div class="task-modal-subtitle">Breakdown</div>
-                                    <div class="task-modal-breakdown-grid">
-                                        <div class="task-modal-breakdown-item">
-                                            <div class="label">Last 7 days</div>
-                                            <div class="value">${formatNumber(last7Views)}</div>
-                                        </div>
-                                        <div class="task-modal-breakdown-item">
-                                            <div class="label">Avg / day</div>
-                                            <div class="value">${avgViewsPerDay.toFixed(1)}</div>
-                                        </div>
-                                        <div class="task-modal-breakdown-item">
-                                            <div class="label">Best day</div>
-                                            <div class="value">${formatNumber(bestDayViews)} <span style="font-size: 0.8rem; font-weight: 800; color: var(--text-secondary);">(${bestDayLabel})</span></div>
-                                        </div>
-                                    </div>
+                                    ` : ''}
                                 </div>
                             </div>
                             
-                            ${hasDetailsData ? `
-                                <div>
-                                    <h3 class="task-modal-section-title" style="color: var(--info); border-bottom: none; padding-bottom: 0; margin-bottom: 1.5rem;"><i class="ri-file-list-3-line"></i>More Details</h3>
-                                    <div class="task-modal-section more-details-section">
-                                        <table class="details-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Country</th>
-                                                    <th>Partner Email</th>
-                                                    <th>Time</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                ${sortedDoneParts.map(part => `
-                                                    <tr>
-                                                        <td>
-                                                            <div style="display: flex; align-items: center;">
-                                                                <span style="font-size: 1.2em; margin-right: 0.5rem;">${getCountryFlag(part.country_code)}</span>
-                                                                <span>${part.country_code || 'N/A'}</span>
-                                                            </div>
-                                                        </td>
-                                                        <td style="word-break: break-all;">${part.partner_email || 'N/A'}</td>
-                                                        <td style="white-space: nowrap;">${new Date(part.time).toLocaleString('en-US', { 
-                                                            month: 'short', 
-                                                            day: 'numeric', 
-                                                            year: 'numeric',
-                                                            hour: '2-digit',
-                                                            minute: '2-digit'
-                                                        })}</td>
-                                                    </tr>
-                                                `).join('')}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            ` : ''}
+                            <button class="analytics-slider-nav analytics-slider-next" aria-label="Next section">
+                                <i class="ri-arrow-right-s-line"></i>
+                            </button>
+                            
+                            <div class="analytics-slider-dots"></div>
                         </div>
                     ` : `
                         <div class="task-modal-section">
@@ -9913,81 +10131,261 @@ function initializeTaskAnalyticsChart(sortedDates, sortedCountries) {
         });
     }
     
-    // Initialize country chart
-    const countryCtx = document.getElementById('taskViewsCountryChart');
-    if (countryCtx && sortedCountries && sortedCountries.length > 0) {
-        // Destroy previous charts if modal reopened
-        if (window.charts?.taskModalCountry) {
-            try { window.charts.taskModalCountry.destroy(); } catch (e) {}
-        }
+    // Initialize country map
+    const mapContainer = document.getElementById('taskCountryMapContainer');
+    if (mapContainer && sortedCountries && sortedCountries.length > 0) {
+        initializeTaskCountryMap(mapContainer, sortedCountries);
+    }
+    
+    // Initialize analytics slider for mobile
+    initializeAnalyticsSlider();
+}
 
-        // Take top 10 countries
-        const topCountries = sortedCountries.slice(0, 10);
-        const countryLabels = topCountries.map(([code]) => `${getCountryFlag(code)} ${code}`);
-        const countryValues = topCountries.map(([, views]) => views);
-        
-        // Generate colors for each country
-        const colors = [
-            'rgba(99, 102, 241, 0.8)',
-            'rgba(16, 185, 129, 0.8)',
-            'rgba(245, 158, 11, 0.8)',
-            'rgba(239, 68, 68, 0.8)',
-            'rgba(59, 130, 246, 0.8)',
-            'rgba(139, 92, 246, 0.8)',
-            'rgba(236, 72, 153, 0.8)',
-            'rgba(14, 165, 233, 0.8)',
-            'rgba(251, 146, 60, 0.8)',
-            'rgba(34, 197, 94, 0.8)'
-        ];
-
-        window.charts = window.charts || {};
-        window.charts.taskModalCountry = new Chart(countryCtx, {
-            type: 'bar',
-            data: {
-                labels: countryLabels,
-                datasets: [{
-                    label: 'Views',
-                    data: countryValues,
-                    backgroundColor: colors,
-                    borderColor: colors.map(c => c.replace('0.8', '1')),
-                    borderWidth: 1,
-                    borderRadius: 6,
-                    borderSkipped: false
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: (ctx) => ` Views: ${formatNumber(ctx.parsed.y || 0)}`
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: { 
-                            color: textColor, 
-                            font: { size: 10 }
-                        },
-                        grid: { display: false }
-                    },
-                    y: {
-                        ticks: {
-                            color: textColor,
-                            font: { size: 10 },
-                            precision: 0,
-                            callback: (v) => formatNumber(v)
-                        },
-                        grid: { color: gridColor, drawBorder: false },
-                        beginAtZero: true
-                    }
-                }
-            }
+// Initialize Task Country Map with amCharts5
+function initializeTaskCountryMap(container, sortedCountries) {
+    // Clean up existing root if any
+    if (container.__am5root) {
+        container.__am5root.dispose();
+        container.__am5root = null;
+    }
+    
+    // Check if amCharts5 is ready
+    function ready() {
+        return typeof am5 !== 'undefined' && 
+               typeof am5map !== 'undefined' && 
+               typeof am5geodata_worldLow !== 'undefined';
+    }
+    
+    // Load scripts dynamically if not present
+    function add(key, url) {
+        if (document.getElementById(key)) return Promise.resolve();
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.id = key;
+            script.src = url;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
         });
     }
+    
+    // Convert country data to map format
+    const mapData = sortedCountries.map(([code, views]) => ({
+        id: code,
+        value: views
+    }));
+    
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    const RAMP_MIN = isDark ? '#1e3a5f' : '#dbeafe';
+    const RAMP_MAX = isDark ? '#3b82f6' : '#1d4ed8';
+    const HOVER_FILL = '#10b981';
+    const HOVER_EDGE = '#059669';
+    const BASE_EDGE = isDark ? '#374151' : '#d1d5db';
+    
+    function hexToNum(s) {
+        let h = s.replace('#', '');
+        if (h.length === 3) h = h.split('').map(x=>x+x).join('');
+        if (!/^[0-9a-f]{6}$/i.test(h)) return 0x000000;
+        return parseInt(h, 16);
+    }
+    
+    function numToRgb(n) { 
+        return { r:(n>>16)&255, g:(n>>8)&255, b:n&255 }; 
+    }
+    
+    function rgbToNum(r,g,b) { 
+        return ((r&255)<<16)|((g&255)<<8)|(b&255); 
+    }
+    
+    function lerp(a,b,t) { 
+        return Math.round(a + (b - a) * t); 
+    }
+    
+    function gradient(minHex, maxHex, t) {
+        t = Math.max(0, Math.min(1, t || 0));
+        const a = numToRgb(hexToNum(minHex));
+        const b = numToRgb(hexToNum(maxHex));
+        return rgbToNum(lerp(a.r,b.r,t), lerp(a.g,b.g,t), lerp(a.b,b.b,t));
+    }
+    
+    function boot() {
+        // Clear loading indicator
+        container.innerHTML = '';
+        
+        const root = am5.Root.new(container);
+        container.__am5root = root;
+        
+        if (typeof am5themes_Animated !== 'undefined') {
+            root.setThemes([am5themes_Animated.new(root)]);
+        }
+        
+        const chart = root.container.children.push(am5map.MapChart.new(root, {
+            panX: "translateX",
+            panY: "translateY",
+            projection: am5map.geoMercator()
+        }));
+        
+        const polygonSeries = chart.series.push(
+            am5map.MapPolygonSeries.new(root, {
+                geoJSON: am5geodata_worldLow,
+                exclude: ["AQ"],
+                valueField: "value",
+                calculateAggregates: true
+            })
+        );
+        
+        const maxVal = Math.max(...mapData.map(d => d.value), 1);
+        const minVal = Math.min(...mapData.map(d => d.value), 0);
+        const range = Math.max(1, maxVal - minVal);
+        
+        const polyTpl = polygonSeries.mapPolygons.template;
+        polyTpl.setAll({
+            tooltipText: "{name}: [bold]{value}[/] views",
+            strokeOpacity: 0.7,
+            stroke: am5.color(hexToNum(BASE_EDGE)),
+            fillOpacity: 1,
+            interactive: true,
+            cursorOverStyle: "pointer"
+        });
+        
+        polyTpl.states.create("hover", {
+            fill: am5.color(hexToNum(HOVER_FILL)),
+            stroke: am5.color(hexToNum(HOVER_EDGE)),
+            strokeWidth: 1.5
+        });
+        
+        polyTpl.adapters.add("fill", (current, target) => {
+            const v = target?.dataItem?.get("value");
+            if (v == null || isNaN(v)) return am5.color(hexToNum(RAMP_MIN));
+            const t = (v - minVal) / range;
+            return am5.color(gradient(RAMP_MIN, RAMP_MAX, t));
+        });
+        
+        if (mapData.length > 0) polygonSeries.data.setAll(mapData);
+        
+        polyTpl.events.on("pointerover", ev => ev.target.toFront());
+        chart.set("wheelY", "zoom");
+        chart.set("wheelX", "zoom");
+        
+        const ro = new ResizeObserver(() => root.resize());
+        ro.observe(container);
+        root.__ro = ro;
+    }
+    
+    if (ready()) {
+        boot();
+    } else {
+        Promise.resolve()
+            .then(() => add('am5-core', 'https://cdn.amcharts.com/lib/5/index.js'))
+            .then(() => add('am5-map', 'https://cdn.amcharts.com/lib/5/map.js'))
+            .then(() => add('am5-worldlow', 'https://cdn.amcharts.com/lib/5/geodata/worldLow.js'))
+            .then(() => add('am5-animated', 'https://cdn.amcharts.com/lib/5/themes/Animated.js'))
+            .then(() => {
+                let tries = 0;
+                const t = setInterval(() => {
+                    if (ready() || tries++ > 40) {
+                        clearInterval(t);
+                        if (ready()) {
+                            boot();
+                        } else {
+                            console.error('amCharts libs not ready.');
+                            container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); text-align: center;"><p><i class="ri-error-warning-line" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>Map failed to load</p></div>';
+                        }
+                    }
+                }, 100);
+            })
+            .catch(err => {
+                console.error('Map libs failed to load:', err);
+                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); text-align: center;"><p><i class="ri-error-warning-line" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>Map failed to load</p></div>';
+            });
+    }
+}
+
+// Initialize Analytics Slider
+function initializeAnalyticsSlider() {
+    const container = document.querySelector('.analytics-slider-container');
+    if (!container) return;
+    
+    const track = container.querySelector('.analytics-slider-track');
+    const slides = container.querySelectorAll('.analytics-slider-slide');
+    const prevBtn = container.querySelector('.analytics-slider-prev');
+    const nextBtn = container.querySelector('.analytics-slider-next');
+    const dotsContainer = container.querySelector('.analytics-slider-dots');
+    
+    if (!track || slides.length === 0) return;
+    
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+    
+    // Create dots
+    slides.forEach((_, index) => {
+        const dot = document.createElement('button');
+        dot.className = 'analytics-slider-dot';
+        dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
+        if (index === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => goToSlide(index));
+        dotsContainer.appendChild(dot);
+    });
+    
+    const dots = dotsContainer.querySelectorAll('.analytics-slider-dot');
+    
+    function updateSlider() {
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+        
+        // Update dots
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentIndex);
+        });
+        
+        // Update buttons
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex === totalSlides - 1;
+        
+        // Hide controls if only one slide
+        if (totalSlides <= 1) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+            dotsContainer.style.display = 'none';
+        }
+    }
+    
+    function goToSlide(index) {
+        currentIndex = Math.max(0, Math.min(totalSlides - 1, index));
+        updateSlider();
+    }
+    
+    prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+    nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+    
+    // Touch swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    track.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    track.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                // Swipe left - next slide
+                goToSlide(currentIndex + 1);
+            } else {
+                // Swipe right - previous slide
+                goToSlide(currentIndex - 1);
+            }
+        }
+    }
+    
+    updateSlider();
 }
 // Recharge Task
 // [NEW] Rebuilt Recharge Task Modal using SweetAlert2
