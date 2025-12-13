@@ -4369,16 +4369,16 @@ div#modalBody {
 .task-modal-url-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.55rem;
     max-width: 100%;
-    padding: 0.45rem 0.65rem;
+    padding: 0.5rem 0.75rem;
     border-radius: 999px;
-    background: rgba(99, 102, 241, 0.08);
-    border: 1px solid rgba(99, 102, 241, 0.25);
-    color: var(--primary);
+    background: rgba(148, 163, 184, 0.10);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    color: var(--text);
     text-decoration: none;
-    font-weight: 800;
-    font-size: 0.92rem;
+    font-weight: 900;
+    font-size: 0.93rem;
     line-height: 1.2;
     overflow: hidden;
 }
@@ -4387,15 +4387,18 @@ div#modalBody {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    flex: 1 1 auto;
 }
 .task-modal-url-pill:hover {
-    background: rgba(99, 102, 241, 0.12);
-    border-color: rgba(99, 102, 241, 0.45);
-    box-shadow: 0 10px 28px rgba(99, 102, 241, 0.10);
+    background: rgba(99, 102, 241, 0.10);
+    border-color: rgba(99, 102, 241, 0.55);
+    color: var(--primary);
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.12);
 }
 .task-modal-url-pill i {
     font-size: 1.05em;
     flex: 0 0 auto;
+    opacity: 0.9;
 }
 
 .task-modal-tabs {
@@ -4614,45 +4617,63 @@ div#modalBody {
     padding: 1rem;
     margin: 0 0 1.25rem 0;
 }
-.task-budget-head {
+.task-budget-top {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
     gap: 0.75rem;
     margin-bottom: 0.65rem;
-    flex-wrap: wrap;
 }
-.task-budget-sub {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    font-weight: 700;
-    margin-top: 0.15rem;
+.task-budget-label {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: 0.01em;
 }
-.task-budget-recharge {
-    appearance: none;
-    border: 1px solid rgba(16, 185, 129, 0.95);
-    background: rgba(16, 185, 129, 0.95);
-    color: #ffffff;
-    border-radius: 999px;
-    padding: 0.55rem 0.85rem;
+.task-budget-meta {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex: 0 0 auto;
+}
+.task-budget-amount {
+    font-size: 1.15rem;
     font-weight: 900;
+    color: var(--success);
+}
+.task-budget-percent {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+}
+.task-modal-recharge-btn {
+    margin-top: 0.85rem;
+    width: 100%;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
+    padding: 0.75rem 0.95rem;
+    border-radius: 12px;
+    border: 1px solid rgba(16, 185, 129, 0.55);
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
+    color: #ffffff;
+    font-weight: 900;
+    letter-spacing: 0.01em;
     cursor: pointer;
     transition: var(--transition);
-    box-shadow: 0 14px 32px rgba(16, 185, 129, 0.18);
+    box-shadow: 0 18px 40px rgba(16, 185, 129, 0.18);
 }
-.task-budget-recharge:hover {
+.task-modal-recharge-btn:hover {
     transform: translateY(-1px);
-    background: rgba(5, 150, 105, 0.98);
-    border-color: rgba(5, 150, 105, 0.98);
-    box-shadow: 0 18px 46px rgba(16, 185, 129, 0.22);
+    box-shadow: 0 20px 48px rgba(16, 185, 129, 0.24);
 }
-.task-budget-recharge:active { transform: translateY(0); }
-.task-budget-recharge:focus-visible {
+.task-modal-recharge-btn:active {
+    transform: translateY(0);
+}
+.task-modal-recharge-btn:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.22), 0 18px 46px rgba(16, 185, 129, 0.22);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.22), 0 20px 48px rgba(16, 185, 129, 0.24);
 }
 
 /* More details (done_parts) */
@@ -4695,14 +4716,31 @@ div#modalBody {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.22rem 0.55rem;
+    padding: 0.22rem 0.6rem;
     border-radius: 999px;
-    border: 1px solid var(--border);
-    background: rgba(99, 102, 241, 0.10);
-    color: var(--primary);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(148, 163, 184, 0.10);
+    color: var(--text);
     font-weight: 900;
     font-size: 0.8rem;
     white-space: nowrap;
+}
+.task-done-table .country-badge .country-flag {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    line-height: 1;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.10);
+}
+.task-done-table .country-badge .country-text {
+    letter-spacing: 0.02em;
+    color: var(--text);
 }
 .task-done-table a.task-email {
     color: var(--info);
@@ -4723,7 +4761,16 @@ div#modalBody {
     flex-wrap: wrap;
 }
 .task-done-pager .btns {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+}
+.task-done-pager .pages {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
     gap: 0.35rem;
     flex-wrap: wrap;
 }
@@ -4757,6 +4804,8 @@ div#modalBody {
     color: var(--text-secondary);
     font-weight: 800;
     font-size: 0.82rem;
+    width: 100%;
+    text-align: right;
 }
 .task-done-list {
     list-style: none;
@@ -5120,10 +5169,67 @@ div#modalBody {
         padding: 0.35rem 0.6rem !important;
         font-size: 0.75rem !important;
     }
-    .task-modal-tab .label-desktop { display: none; }
-    .task-modal-tab .label-mobile { display: inline; }
+    /* Keep tab labels consistent (no "label-mobile" override) */
     .task-modal-chart-wrap { height: 190px; }
     .task-modal-map { height: 260px; }
+}
+
+/* Task details modal: Mobile "More details" table layout (2-line rows) */
+@media (max-width: 768px) {
+    .task-done-table { display: block; }
+    .task-done-table thead { display: none; }
+    .task-done-table tbody { display: block; }
+    .task-done-table tbody tr {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.35rem 0.6rem;
+        padding: 0.8rem 0.85rem;
+        border-bottom: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.01);
+    }
+    .task-done-table tbody tr:last-child { border-bottom: none; }
+    .task-done-table tbody td {
+        padding: 0 !important;
+        border: none !important;
+    }
+    /* Hide the "#" column on mobile */
+    .task-done-table tbody td:nth-child(1) { display: none; }
+    /* Email on first line (full width) */
+    .task-done-table tbody td:nth-child(3) {
+        grid-column: 1 / -1;
+    }
+    /* Date on second line (left) */
+    .task-done-table tbody td:nth-child(4) {
+        grid-column: 1 / 2;
+        color: var(--text-secondary);
+        font-weight: 800;
+        font-size: 0.82rem;
+    }
+    /* Hide the raw date line on mobile (keep it clean) */
+    .task-done-table tbody td:nth-child(4) .muted { display: none; }
+    /* Country on second line (right) */
+    .task-done-table tbody td:nth-child(2) {
+        grid-column: 2 / 3;
+        justify-self: end;
+    }
+}
+
+/* Task details modal: Mobile pagination fixes */
+@media (max-width: 480px) {
+    .task-done-pager {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .task-done-pager .pages {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding-bottom: 0.15rem;
+        -webkit-overflow-scrolling: touch;
+    }
+    .task-done-pager .meta {
+        text-align: center;
+    }
 }
 /* Header background intentionally removed (see above) */
 
@@ -9887,8 +9993,8 @@ async function viewTaskDetails(taskId) {
                     <div class="task-modal-title">
                         <h3>
                             <a class="task-modal-url-pill" href="${task.url}" target="_blank" rel="noopener noreferrer">
-                                <i class="ri-external-link-line"></i>
                                 <span>${task.url}</span>
+                                <i class="ri-external-link-line"></i>
                             </a>
                         </h3>
                     </div>
@@ -9927,24 +10033,19 @@ async function viewTaskDetails(taskId) {
             </div>
 
             <div class="task-budget-actions">
-                <div class="task-budget-head">
-                    <div>
-                        <div class="task-budget-label">Budget</div>
-                        <div class="task-budget-sub">
-                            <strong style="color: var(--success);">$${availableCharge.toFixed(2)}</strong> available
-                            · <span>$${usedCharge.toFixed(2)} used</span>
-                            · <span>$${totalCharge.toFixed(2)} total</span>
-                            · <span>${remainingPercentageLabel.toFixed(1)}% remaining</span>
-                        </div>
+                <div class="task-budget-top">
+                    <div class="task-budget-label">Budget Remaining</div>
+                    <div class="task-budget-meta">
+                        <span class="task-budget-amount">$${availableCharge.toFixed(2)}</span>
+                        <span class="task-budget-percent">${remainingPercentageLabel.toFixed(1)}%</span>
                     </div>
-                    <button class="task-budget-recharge" type="button" onclick="Swal.close(); rechargeTask('${task._id}')">
-                        <i class="ri-wallet-3-line"></i> Recharge
-                    </button>
                 </div>
-                <div class="task-budget-bar" aria-label="Budget used vs available">
-                    <div class="seg used" style="width: ${usedPercentage}%;"></div>
-                    <div class="seg avail" style="width: ${remainingPercentage}%;"></div>
+                <div class="progress-bar" style="height: 10px;">
+                    <div class="progress-fill" style="width: ${remainingPercentage}%; background: ${remainingFillColor};"></div>
                 </div>
+                <button class="task-modal-recharge-btn" type="button" onclick="Swal.close(); rechargeTask('${task._id}')">
+                    <i class="ri-wallet-3-line"></i> Recharge
+                </button>
             </div>
 
             <div class="task-modal-tabs" role="tablist" aria-label="Task details sections">
@@ -10206,6 +10307,17 @@ function initializeTaskDoneParts(donePartsNormalized) {
         const start = (currentPage - 1) * perPage;
         const slice = rows.slice(start, start + perPage);
 
+        const flagEmojiFromCC = (cc) => {
+            const raw = String(cc ?? '').trim().toUpperCase();
+            const normalized = (raw === 'UK') ? 'GB' : raw;
+            if (!/^[A-Z]{2}$/.test(normalized)) return '🌐';
+            const A = 0x1F1E6;
+            const base = 'A'.charCodeAt(0);
+            const c1 = normalized.charCodeAt(0) - base;
+            const c2 = normalized.charCodeAt(1) - base;
+            return String.fromCodePoint(A + c1, A + c2);
+        };
+
         tbody.innerHTML = slice.map((r, i) => {
             const idx = start + i + 1;
             const ccRaw = String(r.country_code ?? 'Unknown');
@@ -10215,11 +10327,17 @@ function initializeTaskDoneParts(donePartsNormalized) {
             const dt = parseApiDate(timeRaw);
             const timePretty = dt ? dt.toLocaleString() : timeRaw;
             const mailto = (email && email !== '—') ? `mailto:${encodeURIComponent(email)}` : '';
+            const flag = flagEmojiFromCC(cc);
 
             return `
                 <tr>
                     <td class="muted">${idx}</td>
-                    <td><span class="country-badge"><i class="ri-map-pin-2-line"></i>${escapeHtml(cc)}</span></td>
+                    <td>
+                        <span class="country-badge" title="${escapeHtml(cc)}">
+                            <span class="country-flag" aria-hidden="true">${escapeHtml(flag)}</span>
+                            <span class="country-text">${escapeHtml(cc)}</span>
+                        </span>
+                    </td>
                     <td>${mailto ? `<a class="task-email" href="${mailto}" target="_blank" rel="noopener noreferrer">${escapeHtml(email)}</a>` : `<span class="muted">—</span>`}</td>
                     <td>
                         <div>${escapeHtml(timePretty)}</div>
@@ -10264,7 +10382,9 @@ function initializeTaskDoneParts(donePartsNormalized) {
         pager.innerHTML = `
             <div class="btns">
                 ${makeBtn('Prev', currentPage - 1, { disabled: currentPage <= 1 })}
-                ${pageBtns.join('')}
+                <div class="pages" aria-label="Pagination">
+                    ${pageBtns.join('')}
+                </div>
                 ${makeBtn('Next', currentPage + 1, { disabled: currentPage >= totalPages })}
             </div>
             <div class="meta">Page ${currentPage} of ${totalPages} · ${total} total</div>
