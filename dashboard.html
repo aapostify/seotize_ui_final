@@ -4320,9 +4320,10 @@ div#modalBody {
     text-align: left;
 }
 .task-modal-header {
-    background: var(--bg-tertiary);
-    padding: 1.5rem;
-    margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+    /* User request: remove header background color */
+    background: transparent;
+    padding: 0 0 1rem 0;
+    margin: 0 0 1rem 0;
     border-bottom: 1px solid var(--border);
 }
 .task-modal-header-row {
@@ -4562,6 +4563,136 @@ div#modalBody {
     padding: 1rem;
     margin: 0 0 1.25rem 0;
 }
+.task-modal-top-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.9rem 0 1rem 0;
+}
+.task-modal-metric-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(99, 102, 241, 0.08);
+    color: var(--text);
+    font-weight: 800;
+    font-size: 0.85rem;
+    line-height: 1.1;
+}
+.task-modal-metric-pill .k {
+    color: var(--text-secondary);
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+}
+.task-modal-metric-pill .v {
+    color: var(--text);
+    font-weight: 900;
+}
+.task-modal-metric-pill.budget { background: rgba(16, 185, 129, 0.10); border-color: rgba(16, 185, 129, 0.25); }
+.task-modal-metric-pill.views  { background: rgba(99, 102, 241, 0.10); border-color: rgba(99, 102, 241, 0.30); }
+.task-budget-split {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.65rem;
+    margin-top: 0.75rem;
+}
+.task-budget-split .split-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.02);
+}
+.task-budget-split .split-item .left {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-weight: 800;
+    font-size: 0.8rem;
+}
+.task-budget-split .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    flex: 0 0 auto;
+}
+.task-budget-split .split-item strong {
+    color: var(--text);
+    font-weight: 900;
+}
+.task-budget-split .split-item.used .dot { background: var(--warning); box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.18); }
+.task-budget-split .split-item.avail .dot { background: var(--success); box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.16); }
+.task-budget-split .split-item.total .dot { background: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.14); }
+.task-budget-bar {
+    width: 100%;
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(148, 163, 184, 0.18);
+    display: flex;
+}
+.task-budget-bar .seg {
+    height: 100%;
+}
+.task-budget-bar .seg.used {
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.95), rgba(239, 68, 68, 0.90));
+}
+.task-budget-bar .seg.avail {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.95), rgba(34, 211, 238, 0.90));
+}
+.task-modal-chart-stack {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+.task-modal-chart-wrap {
+    height: 230px;
+}
+.task-modal-chart-wrap.small {
+    height: 200px;
+}
+.task-modal-map {
+    height: 360px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-tertiary);
+}
+.task-modal-map-note {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.task-modal-map-note .chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(14, 165, 233, 0.08);
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--text);
+}
+.task-modal-map-note .chip span {
+    color: var(--text-secondary);
+    font-weight: 900;
+}
+.task-modal-tab .label-mobile { display: none; }
+.task-modal-tab .label-desktop { display: inline; }
 .task-budget-top {
     display: flex;
     align-items: baseline;
@@ -4735,11 +4866,12 @@ div#modalBody {
         padding: 0.35rem 0.6rem !important;
         font-size: 0.75rem !important;
     }
+    .task-modal-tab .label-desktop { display: none; }
+    .task-modal-tab .label-mobile { display: inline; }
+    .task-modal-chart-wrap { height: 190px; }
+    .task-modal-map { height: 260px; }
 }
-/* Keep modal header background visible (do not force transparent) */
-.task-modal-header {
-    background: var(--bg-tertiary) !important;
-}
+/* Header background intentionally removed (see above) */
 
 /* ADD THIS CSS to your main <style> block */
 
@@ -9363,6 +9495,8 @@ async function viewTaskDetails(taskId) {
         const totalCharge = task.total_charge || 0;
         const availableCharge = task.available_charge || 0;
         const usedCharge = Math.max(0, totalCharge - availableCharge);
+        const usedPercentageRaw = totalCharge > 0 ? (usedCharge / totalCharge) * 100 : 0;
+        const usedPercentage = Math.max(0, Math.min(100, usedPercentageRaw));
         const remainingPercentageRaw = totalCharge > 0 ? (availableCharge / totalCharge) * 100 : 0;
         const remainingPercentageLabel = Math.max(0, remainingPercentageRaw);
         const remainingPercentage = Math.max(0, Math.min(100, remainingPercentageRaw));
@@ -9377,7 +9511,7 @@ async function viewTaskDetails(taskId) {
         const viewsByDate = task.views_by_date || {};
         const sortedDates = Object.entries(viewsByDate).sort(([a], [b]) => new Date(a) - new Date(b));
         const totalViews = Object.values(viewsByDate).reduce((sum, views) => sum + views, 0);
-        const hasAnalytics = sortedDates.length > 0;
+        const hasViewsAnalytics = sortedDates.length > 0;
 
         // Lightweight breakdown stats (no "daily" list)
         const daysTracked = sortedDates.length;
@@ -9389,6 +9523,18 @@ async function viewTaskDetails(taskId) {
             ? new Date(bestEntry[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
             : '—';
         const bestDayViews = bestEntry?.[1] ?? 0;
+        
+        const countryVisits = task.country_visits || {};
+        const hasAnyAnalytics = hasViewsAnalytics || Object.keys(countryVisits).length > 0;
+        const topCountryChips = Object.entries(countryVisits)
+            .sort((a, b) => (Number(b[1]) || 0) - (Number(a[1]) || 0))
+            .slice(0, 6)
+            .map(([cc, v]) => {
+                const label = String(cc || 'Unknown');
+                const nice = (label.toLowerCase() === 'unknown') ? 'Unknown' : label.toUpperCase();
+                return `<div class="chip"><span>${nice}</span>${formatNumber(Number(v) || 0)}</div>`;
+            })
+            .join('');
 
         // --- 2. Construct Modal HTML (New Responsive Layout) ---
         const isVerified = task.verified !== false;
@@ -9423,22 +9569,37 @@ async function viewTaskDetails(taskId) {
                 </div>
             </div>
 
-            <div class="task-modal-stat-grid">
-                <div class="task-modal-stat-card">
-                    <div class="stat-value" style="color: var(--success);">$${totalCharge.toFixed(2)}</div>
-                    <div class="stat-label">Total Budget</div>
+            <div class="task-modal-top-metrics">
+                <div class="task-modal-metric-pill budget">
+                    <span class="k">Total Budget</span>
+                    <span class="v">$${totalCharge.toFixed(2)}</span>
                 </div>
+                <div class="task-modal-metric-pill views">
+                    <span class="k">Total Views</span>
+                    <span class="v">${formatNumber(totalViews)}</span>
+                </div>
+            </div>
+
+            <div class="task-modal-stat-grid" aria-label="Quick stats">
                 <div class="task-modal-stat-card">
-                    <div class="stat-value" style="color: var(--primary);">$${availableCharge.toFixed(2)}</div>
-                    <div class="stat-label">Available</div>
+                    <div class="stat-value" style="color: var(--success);">$${availableCharge.toFixed(2)}</div>
+                    <div class="stat-label">Available Budget</div>
                 </div>
                 <div class="task-modal-stat-card">
                     <div class="stat-value" style="color: var(--warning);">$${usedCharge.toFixed(2)}</div>
-                    <div class="stat-label">Used</div>
+                    <div class="stat-label">Used Budget</div>
                 </div>
                 <div class="task-modal-stat-card">
-                    <div class="stat-value" style="color: var(--info);">${formatNumber(totalViews)}</div>
-                    <div class="stat-label">Total Views</div>
+                    <div class="stat-value" style="color: var(--primary);">${formatNumber(last7Views)}</div>
+                    <div class="stat-label">Views (Last 7d)</div>
+                </div>
+                <div class="task-modal-stat-card">
+                    <div class="stat-value" style="color: var(--info);">${avgViewsPerDay.toFixed(1)}</div>
+                    <div class="stat-label">Avg Views / Day</div>
+                </div>
+                <div class="task-modal-stat-card">
+                    <div class="stat-value" style="color: var(--text);">${formatNumber(bestDayViews)}</div>
+                    <div class="stat-label">Best Day (${bestDayLabel})</div>
                 </div>
             </div>
 
@@ -9447,11 +9608,26 @@ async function viewTaskDetails(taskId) {
                     <div class="task-budget-label">Budget Remaining</div>
                     <div class="task-budget-meta">
                         <span class="task-budget-amount">$${availableCharge.toFixed(2)}</span>
-                        <span class="task-budget-percent">${remainingPercentageLabel.toFixed(1)}%</span>
+                        <span class="task-budget-percent">of $${totalCharge.toFixed(2)} (${remainingPercentageLabel.toFixed(1)}%)</span>
                     </div>
                 </div>
-                <div class="progress-bar" style="height: 10px;">
-                    <div class="progress-fill" style="width: ${remainingPercentage}%; background: ${remainingFillColor};"></div>
+                <div class="task-budget-bar" aria-label="Budget used vs available">
+                    <div class="seg used" style="width: ${usedPercentage}%;"></div>
+                    <div class="seg avail" style="width: ${remainingPercentage}%;"></div>
+                </div>
+                <div class="task-budget-split" aria-label="Budget split">
+                    <div class="split-item used">
+                        <div class="left"><span class="dot"></span>Used</div>
+                        <strong>$${usedCharge.toFixed(2)}</strong>
+                    </div>
+                    <div class="split-item avail">
+                        <div class="left"><span class="dot"></span>Available</div>
+                        <strong>$${availableCharge.toFixed(2)}</strong>
+                    </div>
+                    <div class="split-item total">
+                        <div class="left"><span class="dot"></span>Total</div>
+                        <strong>$${totalCharge.toFixed(2)}</strong>
+                    </div>
                 </div>
                 <button class="task-modal-recharge-btn" type="button" onclick="Swal.close(); rechargeTask('${task._id}')">
                     <i class="ri-wallet-3-line"></i> Recharge
@@ -9460,44 +9636,45 @@ async function viewTaskDetails(taskId) {
 
             <div class="task-modal-tabs" role="tablist" aria-label="Task details sections">
                 <button class="task-modal-tab" type="button" data-tab="analytics" role="tab" aria-controls="task-panel-analytics">
-                    <i class="ri-line-chart-line"></i> Analytics
+                    <i class="ri-line-chart-line"></i>
+                    <span class="label-desktop">Analytics</span>
+                    <span class="label-mobile">View Analytics</span>
                 </button>
                 <button class="task-modal-tab" type="button" data-tab="config" role="tab" aria-controls="task-panel-config">
-                    <i class="ri-settings-3-line"></i> Configuration
+                    <i class="ri-information-line"></i>
+                    <span class="label-desktop">Configuration</span>
+                    <span class="label-mobile">More Details</span>
                 </button>
             </div>
 
             <div class="task-modal-panels">
                 <div class="task-modal-panel" id="task-panel-analytics" data-panel="analytics" role="tabpanel">
-                    ${hasAnalytics ? `
+                    <div class="task-modal-grid">
                         <div class="task-modal-section">
-                            <h3 class="task-modal-section-title" style="color: var(--primary);"><i class="ri-line-chart-line"></i>Views Analytics</h3>
-                            <div style="height: 250px; margin-bottom: 1.5rem;"><canvas id="taskViewsTimelineChart"></canvas></div>
-                            <div class="task-modal-subtitle">Breakdown</div>
-                            <div class="task-modal-breakdown-grid">
-                                <div class="task-modal-breakdown-item">
-                                    <div class="label">Last 7 days</div>
-                                    <div class="value">${formatNumber(last7Views)}</div>
+                            <h3 class="task-modal-section-title" style="color: var(--primary);"><i class="ri-line-chart-line"></i>View Analytics</h3>
+                            ${hasViewsAnalytics ? `
+                                <div class="task-modal-chart-stack">
+                                    <div class="task-modal-chart-wrap"><canvas id="taskViewsTimelineChart"></canvas></div>
+                                    <div class="task-modal-chart-wrap small"><canvas id="taskViewsTrendChart"></canvas></div>
                                 </div>
-                                <div class="task-modal-breakdown-item">
-                                    <div class="label">Avg / day</div>
-                                    <div class="value">${avgViewsPerDay.toFixed(1)}</div>
+                            ` : `
+                                <div class="empty-state" style="padding: 1rem 0;">
+                                    <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
+                                    <div class="empty-state-title" style="font-size: 1.2rem;">No Analytics Yet</div>
+                                    <p class="empty-state-description">View data will appear here once the campaign receives traffic.</p>
                                 </div>
-                                <div class="task-modal-breakdown-item">
-                                    <div class="label">Best day</div>
-                                    <div class="value">${formatNumber(bestDayViews)} <span style="font-size: 0.8rem; font-weight: 800; color: var(--text-secondary);">(${bestDayLabel})</span></div>
-                                </div>
+                            `}
+                        </div>
+
+                        <div class="task-modal-section">
+                            <h3 class="task-modal-section-title" style="color: var(--info);"><i class="ri-map-2-line"></i>Traffic Map</h3>
+                            <div class="task-modal-map" id="taskCountryMap"></div>
+                            <div class="task-modal-subtitle">Top Countries</div>
+                            <div class="task-modal-map-note">
+                                ${topCountryChips || '<div class="chip"><span>—</span>No country data</div>'}
                             </div>
                         </div>
-                    ` : `
-                        <div class="task-modal-section">
-                            <div class="empty-state" style="padding: 1rem 0;">
-                                <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
-                                <div class="empty-state-title" style="font-size: 1.2rem;">No Analytics Yet</div>
-                                <p class="empty-state-description">View data will appear here once the campaign receives traffic.</p>
-                            </div>
-                        </div>
-                    `}
+                    </div>
                 </div>
 
                 <div class="task-modal-panel" id="task-panel-config" data-panel="config" role="tabpanel">
@@ -9600,10 +9777,25 @@ async function viewTaskDetails(taskId) {
                 } catch (e) {
                     // no-op
                 }
-                setupTaskDetailsTabs({ hasAnalytics });
-                if (hasAnalytics) {
-                    initializeTaskAnalyticsChart(sortedDates);
-                }
+                setupTaskDetailsTabs({ hasAnalytics: hasAnyAnalytics });
+                // Charts + Map (Analytics + Country visits)
+                if (hasViewsAnalytics) initializeTaskAnalyticsCharts(sortedDates);
+                initializeTaskCountryMap(countryVisits);
+            },
+            willClose: () => {
+                // Best-effort cleanup (charts + map root) to avoid leaks on repeated opens
+                try {
+                    if (window.charts?.taskModalTimeline) { window.charts.taskModalTimeline.destroy(); window.charts.taskModalTimeline = null; }
+                    if (window.charts?.taskModalTrend) { window.charts.taskModalTrend.destroy(); window.charts.taskModalTrend = null; }
+                } catch (_) {}
+                try {
+                    const popup = Swal.getPopup();
+                    const mapEl = popup?.querySelector('#taskCountryMap');
+                    if (mapEl?.__am5root && !mapEl.__am5root.isDisposed()) {
+                        mapEl.__am5root.dispose();
+                        mapEl.__am5root = null;
+                    }
+                } catch (_) {}
             },
             showDenyButton: false,
             showCancelButton: false,
@@ -9678,8 +9870,8 @@ function setupTaskDetailsTabs({ hasAnalytics }) {
     activate(hasAnalytics ? 'analytics' : 'config');
 }
 
-// [NEW] Helper function to initialize the chart inside the task modal
-function initializeTaskAnalyticsChart(sortedDates) {
+// [NEW] Helper function to initialize charts inside the task modal
+function initializeTaskAnalyticsCharts(sortedDates) {
     const isDark = document.body.getAttribute('data-theme') === 'dark';
     const textColor = isDark ? '#a0a0a0' : '#6c757d';
     const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
@@ -9689,6 +9881,9 @@ function initializeTaskAnalyticsChart(sortedDates) {
         // Destroy previous charts if modal reopened
         if (window.charts?.taskModalTimeline) {
             try { window.charts.taskModalTimeline.destroy(); } catch (e) {}
+        }
+        if (window.charts?.taskModalTrend) {
+            try { window.charts.taskModalTrend.destroy(); } catch (e) {}
         }
 
         const ctx2d = timelineCtx.getContext('2d');
@@ -9754,6 +9949,232 @@ function initializeTaskAnalyticsChart(sortedDates) {
                 }
             }
         });
+
+        // ---- Second chart: "Home-style" trend (Views + 7d avg) ----
+        const trendCanvas = document.getElementById('taskViewsTrendChart');
+        if (trendCanvas) {
+            const recent = sortedDates.slice(-10);
+            const tLabels = recent.map(([date]) =>
+                new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+            );
+            const tValues = recent.map(([, v]) => Number(v) || 0);
+
+            const windowSize = Math.min(7, tValues.length || 1);
+            const avg = tValues.map((_, i) => {
+                const start = Math.max(0, i - windowSize + 1);
+                const seg = tValues.slice(start, i + 1);
+                const s = seg.reduce((a, b) => a + (Number(b) || 0), 0);
+                return +(s / Math.max(1, seg.length)).toFixed(2);
+            });
+
+            const t2d = trendCanvas.getContext('2d');
+            const indigoFill = t2d ? (() => {
+                const g = t2d.createLinearGradient(0, 0, 0, 220);
+                g.addColorStop(0, isDark ? 'rgba(99, 102, 241, 0.30)' : 'rgba(99, 102, 241, 0.22)');
+                g.addColorStop(1, 'rgba(99, 102, 241, 0.02)');
+                return g;
+            })() : 'rgba(99, 102, 241, 0.12)';
+
+            window.charts.taskModalTrend = new Chart(trendCanvas, {
+                type: 'line',
+                data: {
+                    labels: tLabels,
+                    datasets: [{
+                        label: 'Views (recent)',
+                        data: tValues,
+                        borderColor: '#6366f1',
+                        backgroundColor: indigoFill,
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#6366f1',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: tValues.length > 1 ? 3 : 0,
+                        pointHoverRadius: 6
+                    }, {
+                        label: 'Avg (rolling)',
+                        data: avg,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                        tension: 0.35,
+                        fill: false,
+                        borderWidth: 2,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: textColor,
+                                usePointStyle: true,
+                                padding: 14
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: (ctx) => ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y || 0)}`
+                            }
+                        }
+                    },
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        x: {
+                            grid: { color: gridColor, drawBorder: false },
+                            ticks: { color: textColor, font: { size: 11 }, maxRotation: 0, autoSkip: true }
+                        },
+                        y: {
+                            grid: { color: gridColor, drawBorder: false },
+                            ticks: { color: textColor, font: { size: 11 }, callback: (v) => formatNumber(v) },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    }
+}
+
+// Task details modal map (amCharts v5) based on task.country_visits
+function initializeTaskCountryMap(countryVisits) {
+    const container = document.getElementById('taskCountryMap');
+    if (!container) return;
+
+    if (container.__am5root && !container.__am5root.isDisposed()) {
+        try { container.__am5root.dispose(); } catch (_) {}
+        container.__am5root = null;
+    }
+
+    const raw = countryVisits || {};
+    const rows = Object.entries(raw).map(([id, value]) => ({ id: String(id || '').toUpperCase(), value: Number(value) || 0 }));
+    const data = rows.filter(r => /^[A-Z]{2}$/.test(r.id) && r.value > 0);
+
+    // More colorful ramp than the dashboard home map
+    const STOPS = ['#34d399', '#22d3ee', '#818cf8', '#f472b6', '#fb923c', '#ef4444']; // green->cyan->indigo->pink->orange->red
+    const HOVER_FILL = '#facc15';
+    const BASE_EDGE = '#334155';
+
+    container.innerHTML = `<div id="taskCountryMapCanvas" style="width:100%;height:100%;"></div>`;
+
+    const ready = () =>
+        typeof window.am5 !== 'undefined' &&
+        typeof window.am5map !== 'undefined' &&
+        typeof window.am5geodata_worldLow !== 'undefined';
+
+    const add = (id, src) => new Promise((res, rej) => {
+        if (document.getElementById(id)) return res();
+        const s = document.createElement('script');
+        s.id = id; s.src = src; s.async = true; s.setAttribute('data-cfasync','false');
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+    });
+
+    function hexToNum(hex) {
+        const s = String(hex || '').trim();
+        let h = s.replace('#', '');
+        if (h.length === 3) h = h.split('').map(x=>x+x).join('');
+        if (!/^[0-9a-f]{6}$/i.test(h)) return 0x000000;
+        return parseInt(h, 16);
+    }
+    function numToRgb(n){ return { r:(n>>16)&255, g:(n>>8)&255, b:n&255 }; }
+    function rgbToNum(r,g,b){ return ((r&255)<<16)|((g&255)<<8)|(b&255); }
+    function lerp(a,b,t){ return Math.round(a + (b - a) * t); }
+    function blend(aHex, bHex, t) {
+        t = Math.max(0, Math.min(1, t || 0));
+        const a = numToRgb(hexToNum(aHex));
+        const b = numToRgb(hexToNum(bHex));
+        return rgbToNum(lerp(a.r,b.r,t), lerp(a.g,b.g,t), lerp(a.b,b.b,t));
+    }
+    function multiGradient(stops, t) {
+        const s = Array.isArray(stops) ? stops : [];
+        if (s.length === 0) return hexToNum('#94a3b8');
+        if (s.length === 1) return hexToNum(s[0]);
+        t = Math.max(0, Math.min(1, t || 0));
+        const seg = 1 / (s.length - 1);
+        const idx = Math.min(s.length - 2, Math.floor(t / seg));
+        const localT = (t - (idx * seg)) / seg;
+        return blend(s[idx], s[idx + 1], localT);
+    }
+
+    function boot() {
+        const root = am5.Root.new("taskCountryMapCanvas");
+        container.__am5root = root;
+        if (typeof am5themes_Animated !== 'undefined') {
+            root.setThemes([ am5themes_Animated.new(root) ]);
+        }
+
+        const chart = root.container.children.push(am5map.MapChart.new(root, {}));
+        const polygonSeries = chart.series.push(
+            am5map.MapPolygonSeries.new(root, {
+                geoJSON: am5geodata_worldLow,
+                exclude: ["AQ"],
+                valueField: "value",
+                calculateAggregates: true
+            })
+        );
+
+        const maxVal = Math.max(...data.map(d => d.value), 1);
+        const minVal = Math.min(...data.map(d => d.value), 0);
+        const range  = Math.max(1, maxVal - minVal);
+
+        const polyTpl = polygonSeries.mapPolygons.template;
+        polyTpl.setAll({
+            tooltipText: "{name}: [bold]{value}[/]",
+            strokeOpacity: 0.75,
+            stroke: am5.color(hexToNum(BASE_EDGE)),
+            fillOpacity: 1,
+            interactive: true,
+            cursorOverStyle: "pointer"
+        });
+
+        polyTpl.states.create("hover", {
+            fill: am5.color(hexToNum(HOVER_FILL)),
+            strokeWidth: 1.2
+        });
+
+        polyTpl.adapters.add("fill", (current, target) => {
+            const v = target?.dataItem?.get("value");
+            if (v == null || isNaN(v)) return am5.color(hexToNum('#cbd5e1'));
+            const t = (v - minVal) / range;
+            return am5.color(multiGradient(STOPS, t));
+        });
+
+        if (data.length > 0) polygonSeries.data.setAll(data);
+
+        chart.set("wheelY", "zoom");
+        chart.set("wheelX", "zoom");
+
+        const ro = new ResizeObserver(() => root.resize());
+        ro.observe(container);
+        root.__ro = ro;
+    }
+
+    if (ready()) {
+        boot();
+    } else {
+        Promise.resolve()
+            .then(() => add('am5-core',     'https://cdn.amcharts.com/lib/5/index.js'))
+            .then(() => add('am5-map',      'https://cdn.amcharts.com/lib/5/map.js'))
+            .then(() => add('am5-worldlow', 'https://cdn.amcharts.com/lib/5/geodata/worldLow.js'))
+            .then(() => add('am5-animated', 'https://cdn.amcharts.com/lib/5/themes/Animated.js'))
+            .then(() => {
+                let tries = 0;
+                const t = setInterval(() => {
+                    if (ready() || tries++ > 40) {
+                        clearInterval(t);
+                        if (ready()) boot();
+                        else console.error('amCharts libs not ready (task map).');
+                    }
+                }, 100);
+            })
+            .catch(err => console.error('Task map libs failed to load:', err));
     }
 }
 // Recharge Task
