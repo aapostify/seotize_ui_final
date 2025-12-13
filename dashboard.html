@@ -857,6 +857,23 @@ tr:hover {
     margin-top: 1rem;
 }
 
+/* SEO Tasks: action button tweaks */
+.btn-recharge-task {
+    background: var(--success);
+    color: #fff;
+}
+
+.btn-recharge-task:hover {
+    filter: brightness(0.95);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+/* Mobile-only trash button (hidden by default) */
+.btn-delete-task-mobile {
+    display: none;
+}
+
 /* Enhanced Website Preview */
 .website-preview {
     width: 100%;
@@ -3397,6 +3414,7 @@ tr:hover {
     }
     
     .task-card {
+        position: relative;
         width: 100%;
         max-width: 100%;
         padding: 1rem;
@@ -3411,6 +3429,7 @@ tr:hover {
         align-items: flex-start;
         gap: 0.5rem;
         margin-bottom: 0.75rem;
+        padding-right: 3rem; /* leave room for the trash icon */
     }
     
     .task-url {
@@ -3469,6 +3488,44 @@ tr:hover {
     /* If there's only one action button, let it span full width */
     .task-actions button:only-child {
         flex-basis: 100%;
+    }
+
+    /* SEO Tasks: make delete a small trash icon in the top-right */
+    .btn-delete-task-desktop {
+        display: none !important;
+    }
+
+    .btn-delete-task-mobile {
+        display: inline-flex;
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        z-index: 2;
+        width: 2.25rem;
+        height: 2.25rem;
+        padding: 0 !important;
+        border-radius: 999px;
+        background: rgba(230, 57, 70, 0.12) !important;
+        color: var(--danger) !important;
+        border: 1px solid rgba(230, 57, 70, 0.25);
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+    }
+
+    .btn-delete-task-mobile:hover {
+        background: rgba(230, 57, 70, 0.18) !important;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .btn-delete-task-mobile i {
+        font-size: 1.05rem;
+    }
+
+    /* If the secondary row only had the desktop delete button, hide it on mobile */
+    .task-actions.task-actions-delete-only {
+        display: none;
     }
 
     .media-grid {
@@ -6651,7 +6708,7 @@ async function loadDashboard(page = 1) {
                     <button class="btn btn-sm" onclick="event.stopPropagation(); viewTaskDetails('${task._id}')" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem;">
                         <i class="ri-eye-line"></i> Details
                     </button>
-                    <button class="btn btn-sm" onclick="event.stopPropagation(); rechargeTask('${task._id}')" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem;">
+                    <button class="btn btn-sm btn-recharge-task" onclick="event.stopPropagation(); rechargeTask('${task._id}')" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem;">
                         <i class="ri-wallet-line"></i> Recharge
                     </button>
                 </div>
@@ -6769,6 +6826,9 @@ async function loadTasks(page = 1) {
             
             return `
             <div class="task-card${cardClass}" onclick="viewTaskDetails('${task._id}')">
+            <button class="btn btn-sm btn-danger btn-delete-task-mobile" onclick="event.stopPropagation(); deleteTask('${task._id}')" title="Delete task" aria-label="Delete task">
+            <i class="ri-delete-bin-line"></i>
+            </button>
             <div class="task-header">
             <a href="${task.url}" target="_blank" class="task-url" onclick="event.stopPropagation()">${task.url}</a>
             <span class="task-status ${statusClass}">${statusText}</span>
@@ -6803,12 +6863,12 @@ async function loadTasks(page = 1) {
             <button class="btn btn-sm" onclick="event.stopPropagation(); viewTaskDetails('${task._id}')">
             <i class="ri-eye-line"></i> Details
             </button>
-            <button class="btn btn-sm" onclick="event.stopPropagation(); rechargeTask('${task._id}')">
+            <button class="btn btn-sm btn-recharge-task" onclick="event.stopPropagation(); rechargeTask('${task._id}')">
             <i class="ri-wallet-line"></i> Recharge
             </button>
             </div>
-            <div class="task-actions" style="margin-top: 8px;">
-            <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteTask('${task._id}')" style="background: var(--danger); color: white;">
+            <div class="task-actions task-actions-secondary ${isVerified ? 'task-actions-delete-only' : ''}" style="margin-top: 8px;">
+            <button class="btn btn-sm btn-danger btn-delete-task-desktop" onclick="event.stopPropagation(); deleteTask('${task._id}')" style="background: var(--danger); color: white;">
             <i class="ri-delete-bin-line"></i> Delete
             </button>
             ${!isVerified ? `
