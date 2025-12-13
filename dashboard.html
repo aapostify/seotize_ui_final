@@ -4320,10 +4320,9 @@ div#modalBody {
     text-align: left;
 }
 .task-modal-header {
-    /* Minimal, flat header (no background band) */
-    background: transparent;
-    padding: 0 0 1rem 0;
-    margin: 0 0 1.25rem 0;
+    background: var(--bg-tertiary);
+    padding: 1.5rem;
+    margin: -1.5rem -1.5rem 1.5rem -1.5rem;
     border-bottom: 1px solid var(--border);
 }
 .task-modal-header-row {
@@ -4445,11 +4444,11 @@ div#modalBody {
     color: var(--primary);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20), 0 14px 40px rgba(99, 102, 241, 0.15);
 }
-.task-modal-tab[data-tab="clicks"].active {
-    background: rgba(245, 158, 11, 0.14);
-    border-color: rgba(245, 158, 11, 0.70);
-    color: var(--warning);
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.20), 0 14px 40px rgba(245, 158, 11, 0.14);
+.task-modal-tab[data-tab="config"].active {
+    background: rgba(14, 165, 233, 0.14);
+    border-color: rgba(14, 165, 233, 0.65);
+    color: var(--info);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18), 0 14px 40px rgba(14, 165, 233, 0.12);
 }
 
 .task-modal-panels {
@@ -4622,6 +4621,31 @@ div#modalBody {
     box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.22), 0 20px 48px rgba(16, 185, 129, 0.24);
 }
 
+.task-modal-breakdown-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+.task-modal-breakdown-item {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem 0.9rem;
+}
+.task-modal-breakdown-item .label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+.task-modal-breakdown-item .value {
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: var(--text);
+}
 @media (max-width: 768px) {
     .task-modal-tabs { width: 100%; }
 }
@@ -9336,68 +9360,6 @@ async function viewTaskDetails(taskId) {
         const task = response.data;
 
         // --- 1. Process Data (All original logic preserved) ---
-        const formatDisplayUrl = (rawUrl) => {
-            try {
-                if (!rawUrl) return '—';
-                const u = new URL(rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`);
-                const host = u.host || u.hostname || rawUrl;
-                const path = (u.pathname && u.pathname !== '/') ? u.pathname.replace(/\/{2,}/g, '/') : '';
-                const base = `${host}${path}`;
-                const cleaned = base.replace(/\/$/, '');
-                const maxLen = 48;
-                return cleaned.length > maxLen ? `${cleaned.slice(0, maxLen - 1)}…` : cleaned;
-            } catch {
-                // Fallback: strip protocol-ish and truncate
-                const cleaned = String(rawUrl).replace(/^https?:\/\//i, '').replace(/\/$/, '');
-                const maxLen = 48;
-                return cleaned.length > maxLen ? `${cleaned.slice(0, maxLen - 1)}…` : cleaned;
-            }
-        };
-
-        const normalizeCountryVisits = (raw) => {
-            const out = [];
-            if (!raw) return out;
-            if (Array.isArray(raw)) {
-                raw.forEach((item) => {
-                    if (!item) return;
-                    const country = (item.country || item.name || item.code || item.country_name || item.countryCode || item.country_code || '').toString().trim();
-                    const v = Number(item.visits ?? item.views ?? item.count ?? item.value ?? item.total ?? 0);
-                    if (country && Number.isFinite(v) && v > 0) out.push({ country, views: v });
-                });
-            } else if (typeof raw === 'object') {
-                Object.entries(raw).forEach(([k, v]) => {
-                    const country = (k || '').toString().trim();
-                    const n = Number(v ?? 0);
-                    if (country && Number.isFinite(n) && n > 0) out.push({ country, views: n });
-                });
-            }
-            // Merge duplicate country keys
-            const merged = new Map();
-            out.forEach(({ country, views }) => merged.set(country, (merged.get(country) || 0) + views));
-            return Array.from(merged.entries()).map(([country, views]) => ({ country, views })).sort((a, b) => b.views - a.views);
-        };
-
-        const normalizeDoneParts = (raw) => {
-            if (!raw) return [];
-            if (Array.isArray(raw)) return raw.filter(Boolean);
-            if (typeof raw === 'object') {
-                // Sometimes APIs send objects keyed by id
-                const vals = Object.values(raw);
-                return Array.isArray(vals) ? vals.filter(Boolean) : [];
-            }
-            return [];
-        };
-
-        const getPartWeight = (p) => {
-            if (!p || typeof p !== 'object') return 1;
-            const candidates = ['clicks', 'count', 'value', 'done', 'visits', 'times', 'total'];
-            for (const key of candidates) {
-                const n = Number(p[key]);
-                if (Number.isFinite(n) && n > 0) return n;
-            }
-            return 1;
-        };
-
         const totalCharge = task.total_charge || 0;
         const availableCharge = task.available_charge || 0;
         const usedCharge = Math.max(0, totalCharge - availableCharge);
@@ -9415,41 +9377,7 @@ async function viewTaskDetails(taskId) {
         const viewsByDate = task.views_by_date || {};
         const sortedDates = Object.entries(viewsByDate).sort(([a], [b]) => new Date(a) - new Date(b));
         const totalViews = Object.values(viewsByDate).reduce((sum, views) => sum + views, 0);
-        const hasViewsTrend = sortedDates.length > 0;
-
-        // Country views (primary: country_visits; fallback: derive from done_parts when possible)
-        const countryVisits = normalizeCountryVisits(task.country_visits);
-        const doneParts = normalizeDoneParts(task.done_parts);
-        const clicksByCountry = (() => {
-            const m = new Map();
-            doneParts.forEach((p) => {
-                if (!p || typeof p !== 'object') return;
-                const c = (p.country || p.country_name || p.countryCode || p.country_code || '').toString().trim();
-                if (!c) return;
-                m.set(c, (m.get(c) || 0) + getPartWeight(p));
-            });
-            return m;
-        })();
-        const hasCountryData = countryVisits.length > 0;
-
-        // Click totals + time series from done_parts when available
-        const clicksByDate = (() => {
-            const m = new Map();
-            doneParts.forEach((p) => {
-                if (!p || typeof p !== 'object') return;
-                const d = p.date || p.day || p.created_at || p.timestamp || p.time;
-                if (!d) return;
-                const dt = new Date(d);
-                if (Number.isNaN(dt.getTime())) return;
-                const key = dt.toISOString().slice(0, 10);
-                m.set(key, (m.get(key) || 0) + getPartWeight(p));
-            });
-            return m;
-        })();
-
-        const totalClicksFromParts = doneParts.reduce((sum, p) => sum + getPartWeight(p), 0);
-        const totalClicks = Number(task.total_clicks ?? task.totalClicks ?? task.clicks ?? task.total_click ?? 0) || totalClicksFromParts;
-        const ctr = totalViews > 0 ? (totalClicks / totalViews) * 100 : 0;
+        const hasAnalytics = sortedDates.length > 0;
 
         // Lightweight breakdown stats (no "daily" list)
         const daysTracked = sortedDates.length;
@@ -9470,8 +9398,6 @@ async function viewTaskDetails(taskId) {
         
         const lastVerifiedText = task.last_verified ? 
             `<span><i class="ri-time-line"></i> Last Verified: ${new Date(task.last_verified).toLocaleString()}</span>` : '';
-
-        const displayUrl = formatDisplayUrl(task.url);
         
         const modalHtml = `
         <div class="task-details-modal-container">
@@ -9479,9 +9405,9 @@ async function viewTaskDetails(taskId) {
                 <div class="task-modal-header-row">
                     <div class="task-modal-title">
                         <h3>
-                            <a class="task-modal-url-pill" href="${task.url}" target="_blank" rel="noopener noreferrer" title="${task.url}">
+                            <a class="task-modal-url-pill" href="${task.url}" target="_blank" rel="noopener noreferrer">
                                 <i class="ri-external-link-line"></i>
-                                <span>${displayUrl}</span>
+                                <span>${task.url}</span>
                             </a>
                         </h3>
                     </div>
@@ -9534,73 +9460,47 @@ async function viewTaskDetails(taskId) {
 
             <div class="task-modal-tabs" role="tablist" aria-label="Task details sections">
                 <button class="task-modal-tab" type="button" data-tab="analytics" role="tab" aria-controls="task-panel-analytics">
-                    <i class="ri-bar-chart-line"></i> View Analytics
+                    <i class="ri-line-chart-line"></i> Analytics
                 </button>
-                <button class="task-modal-tab" type="button" data-tab="clicks" role="tab" aria-controls="task-panel-clicks">
-                    <i class="ri-cursor-line"></i> Detailed Clicks
+                <button class="task-modal-tab" type="button" data-tab="config" role="tab" aria-controls="task-panel-config">
+                    <i class="ri-settings-3-line"></i> Configuration
                 </button>
             </div>
 
             <div class="task-modal-panels">
                 <div class="task-modal-panel" id="task-panel-analytics" data-panel="analytics" role="tabpanel">
-                    ${hasCountryData ? `
+                    ${hasAnalytics ? `
                         <div class="task-modal-section">
-                            <h3 class="task-modal-section-title" style="color: var(--primary);">
-                                <i class="ri-global-line"></i> Views by Country
-                            </h3>
-                            <div style="height: 340px;"><canvas id="taskViewsByCountryChart"></canvas></div>
-                            <div class="task-modal-subtitle" style="margin-top: 0.9rem;">
-                                Total Views: <strong style="color: var(--text);">${formatNumber(totalViews)}</strong>
-                                ${totalClicks ? `&nbsp;&nbsp;•&nbsp;&nbsp;Total Clicks: <strong style="color: var(--text);">${formatNumber(totalClicks)}</strong>` : ''}
+                            <h3 class="task-modal-section-title" style="color: var(--primary);"><i class="ri-line-chart-line"></i>Views Analytics</h3>
+                            <div style="height: 250px; margin-bottom: 1.5rem;"><canvas id="taskViewsTimelineChart"></canvas></div>
+                            <div class="task-modal-subtitle">Breakdown</div>
+                            <div class="task-modal-breakdown-grid">
+                                <div class="task-modal-breakdown-item">
+                                    <div class="label">Last 7 days</div>
+                                    <div class="value">${formatNumber(last7Views)}</div>
+                                </div>
+                                <div class="task-modal-breakdown-item">
+                                    <div class="label">Avg / day</div>
+                                    <div class="value">${avgViewsPerDay.toFixed(1)}</div>
+                                </div>
+                                <div class="task-modal-breakdown-item">
+                                    <div class="label">Best day</div>
+                                    <div class="value">${formatNumber(bestDayViews)} <span style="font-size: 0.8rem; font-weight: 800; color: var(--text-secondary);">(${bestDayLabel})</span></div>
+                                </div>
                             </div>
                         </div>
                     ` : `
                         <div class="task-modal-section">
                             <div class="empty-state" style="padding: 1rem 0;">
-                                <div class="empty-state-icon"><i class="ri-global-line"></i></div>
-                                <div class="empty-state-title" style="font-size: 1.2rem;">No Country Data Yet</div>
-                                <p class="empty-state-description">Country analytics will appear here once the campaign receives traffic.</p>
+                                <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
+                                <div class="empty-state-title" style="font-size: 1.2rem;">No Analytics Yet</div>
+                                <p class="empty-state-description">View data will appear here once the campaign receives traffic.</p>
                             </div>
                         </div>
                     `}
                 </div>
 
-                <div class="task-modal-panel" id="task-panel-clicks" data-panel="clicks" role="tabpanel">
-                  <div class="task-modal-grid" style="margin-bottom: 1rem;">
-                    <div class="task-modal-section">
-                        <h3 class="task-modal-section-title" style="color: var(--warning);">
-                            <i class="ri-cursor-line"></i> Clicks & Trends
-                        </h3>
-                        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; margin-bottom: 0.9rem;">
-                            <div class="task-modal-stat-card" style="margin: 0; padding: 0.85rem;">
-                                <div class="stat-value" style="font-size: 1.2rem; color: var(--warning);">${formatNumber(totalClicks)}</div>
-                                <div class="stat-label">Total Clicks</div>
-                            </div>
-                            <div class="task-modal-stat-card" style="margin: 0; padding: 0.85rem;">
-                                <div class="stat-value" style="font-size: 1.2rem; color: var(--primary);">${formatNumber(totalViews)}</div>
-                                <div class="stat-label">Total Views</div>
-                            </div>
-                            <div class="task-modal-stat-card" style="margin: 0; padding: 0.85rem;">
-                                <div class="stat-value" style="font-size: 1.2rem; color: var(--info);">${ctr.toFixed(1)}%</div>
-                                <div class="stat-label">Click rate</div>
-                            </div>
-                        </div>
-                        <div style="height: 280px;"><canvas id="taskViewsClicksTrendChart"></canvas></div>
-                        <div class="task-modal-subtitle" style="margin-top: 0.9rem;">
-                            Last 7 days views: <strong style="color: var(--text);">${formatNumber(last7Views)}</strong>
-                            &nbsp;&nbsp;•&nbsp;&nbsp;Best day: <strong style="color: var(--text);">${formatNumber(bestDayViews)}</strong>
-                            <span style="font-size: 0.8rem; font-weight: 800; color: var(--text-secondary);">(${bestDayLabel})</span>
-                        </div>
-                    </div>
-                    <div class="task-modal-section">
-                        <h3 class="task-modal-section-title" style="color: var(--info);">
-                            <i class="ri-pie-chart-2-line"></i> Click Breakdown
-                        </h3>
-                        <div style="height: 280px;"><canvas id="taskDonePartsBreakdownChart"></canvas></div>
-                        <div class="task-modal-subtitle">Top categories from clicks data</div>
-                    </div>
-                  </div>
-
+                <div class="task-modal-panel" id="task-panel-config" data-panel="config" role="tabpanel">
                   <div class="task-modal-section">
                   <style>
                     .install-instructions {
@@ -9645,8 +9545,8 @@ async function viewTaskDetails(taskId) {
                     }
                   </style>
                 
-                  <h3 class="task-modal-section-title" style="color: var(--text-secondary);">
-                    <i class="ri-settings-3-line"></i> Configuration
+                  <h3 class="task-modal-section-title" style="color: var(--info);">
+                    <i class="ri-settings-3-line"></i>Configuration
                   </h3>
                 
                   <div style="font-size: 0.9rem; line-height: 2;">
@@ -9700,24 +9600,10 @@ async function viewTaskDetails(taskId) {
                 } catch (e) {
                     // no-op
                 }
-                const popup = Swal.getPopup();
-                setupTaskDetailsTabs({
-                    defaultTab: 'analytics',
-                    onActivate: (tabName) => {
-                        if (!popup) return;
-                        if (tabName === 'analytics' && !popup.dataset.countryChartInit) {
-                            popup.dataset.countryChartInit = '1';
-                            if (hasCountryData) {
-                                initializeTaskViewsByCountryChart(countryVisits, clicksByCountry);
-                            }
-                        }
-                        if (tabName === 'clicks' && !popup.dataset.clickChartsInit) {
-                            popup.dataset.clickChartsInit = '1';
-                            initializeTaskViewsClicksTrendChart(sortedDates, clicksByDate);
-                            initializeTaskDonePartsBreakdownChart(doneParts);
-                        }
-                    }
-                });
+                setupTaskDetailsTabs({ hasAnalytics });
+                if (hasAnalytics) {
+                    initializeTaskAnalyticsChart(sortedDates);
+                }
             },
             showDenyButton: false,
             showCancelButton: false,
@@ -9746,13 +9632,19 @@ async function viewTaskDetails(taskId) {
     }
 }
 
-function setupTaskDetailsTabs({ defaultTab = 'analytics', onActivate } = {}) {
+function setupTaskDetailsTabs({ hasAnalytics }) {
     const popup = Swal.getPopup();
     if (!popup) return;
 
     const tabs = Array.from(popup.querySelectorAll('.task-modal-tab'));
     const panels = Array.from(popup.querySelectorAll('.task-modal-panel'));
     if (tabs.length === 0 || panels.length === 0) return;
+
+    const analyticsTab = tabs.find(t => t.dataset.tab === 'analytics');
+    if (analyticsTab && !hasAnalytics) {
+        analyticsTab.disabled = true;
+        analyticsTab.title = 'Analytics will appear once the campaign receives traffic.';
+    }
 
     const activate = (name) => {
         tabs.forEach(btn => {
@@ -9774,8 +9666,6 @@ function setupTaskDetailsTabs({ defaultTab = 'analytics', onActivate } = {}) {
                 panel.setAttribute('hidden', '');
             }
         });
-
-        try { onActivate && onActivate(name); } catch (e) { /* no-op */ }
     };
 
     tabs.forEach(btn => {
@@ -9785,290 +9675,86 @@ function setupTaskDetailsTabs({ defaultTab = 'analytics', onActivate } = {}) {
         });
     });
 
-    activate(defaultTab);
+    activate(hasAnalytics ? 'analytics' : 'config');
 }
 
-// Views by Country (driven from country_visits, optionally enriched by done_parts for tooltip clicks)
-function initializeTaskViewsByCountryChart(countryVisits, clicksByCountry) {
-    const isDark = document.body.getAttribute('data-theme') === 'dark';
-    const textColor = isDark ? '#a0a0a0' : '#6c757d';
-    const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
-
-    const el = document.getElementById('taskViewsByCountryChart');
-    if (!el) return;
-
-    window.charts = window.charts || {};
-    if (window.charts.taskModalCountry) {
-        try { window.charts.taskModalCountry.destroy(); } catch (e) {}
-    }
-
-    const topN = 10;
-    const sorted = Array.isArray(countryVisits) ? [...countryVisits].sort((a, b) => (b.views || 0) - (a.views || 0)) : [];
-    const top = sorted.slice(0, topN);
-    const rest = sorted.slice(topN);
-    const restSum = rest.reduce((s, x) => s + (Number(x.views) || 0), 0);
-    const final = restSum > 0 ? [...top, { country: 'Other', views: restSum }] : top;
-
-    const labels = final.map(x => x.country);
-    const values = final.map(x => Number(x.views) || 0);
-    const clicksOtherSum = rest.reduce((s, x) => {
-        const c = x?.country;
-        if (!c || !clicksByCountry || typeof clicksByCountry.get !== 'function') return s;
-        return s + (clicksByCountry.get(c) || 0);
-    }, 0);
-    const clicks = labels.map((c) => {
-        if (c === 'Other') return clicksOtherSum || 0;
-        return (clicksByCountry && typeof clicksByCountry.get === 'function') ? (clicksByCountry.get(c) || 0) : 0;
-    });
-
-    const ctx2d = el.getContext('2d');
-    const base = isDark ? 'rgba(99, 102, 241, 0.85)' : 'rgba(99, 102, 241, 0.80)';
-    const hover = isDark ? 'rgba(99, 102, 241, 1)' : 'rgba(99, 102, 241, 0.95)';
-    const fill = ctx2d ? (() => {
-        const g = ctx2d.createLinearGradient(0, 0, 520, 0);
-        g.addColorStop(0, isDark ? 'rgba(99, 102, 241, 0.95)' : 'rgba(99, 102, 241, 0.90)');
-        g.addColorStop(1, isDark ? 'rgba(16, 185, 129, 0.70)' : 'rgba(16, 185, 129, 0.55)');
-        return g;
-    })() : base;
-
-    window.charts.taskModalCountry = new Chart(el, {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [{
-                label: 'Views',
-                data: values,
-                backgroundColor: fill,
-                hoverBackgroundColor: hover,
-                borderWidth: 0,
-                borderRadius: 10,
-                barThickness: 14
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'y',
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        title: (items) => items?.[0]?.label || '',
-                        label: (ctx) => ` Views: ${formatNumber(ctx.parsed.x || 0)}`,
-                        afterLabel: (ctx) => {
-                            const i = ctx.dataIndex;
-                            const c = clicks?.[i] || 0;
-                            return c > 0 ? ` Clicks: ${formatNumber(c)}` : '';
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    ticks: { color: textColor, font: { size: 10 }, callback: (v) => formatNumber(v) },
-                    grid: { color: gridColor, drawBorder: false },
-                    beginAtZero: true
-                },
-                y: {
-                    ticks: { color: textColor, font: { size: 11 } },
-                    grid: { display: false, drawBorder: false }
-                }
-            }
-        }
-    });
-}
-
-// Detailed Clicks: views/clicks trend (views_by_date + done_parts-derived click series)
-function initializeTaskViewsClicksTrendChart(sortedDates, clicksByDate) {
+// [NEW] Helper function to initialize the chart inside the task modal
+function initializeTaskAnalyticsChart(sortedDates) {
     const isDark = document.body.getAttribute('data-theme') === 'dark';
     const textColor = isDark ? '#a0a0a0' : '#6c757d';
     const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
     
-    const timelineCtx = document.getElementById('taskViewsClicksTrendChart');
-    if (!timelineCtx) return;
-
-    window.charts = window.charts || {};
-    if (window.charts.taskModalTrend) {
-        try { window.charts.taskModalTrend.destroy(); } catch (e) {}
-    }
-
-    const ctx2d = timelineCtx.getContext('2d');
-    const viewsGradient = ctx2d ? (() => {
-        const g = ctx2d.createLinearGradient(0, 0, 0, 260);
-        g.addColorStop(0, isDark ? 'rgba(99, 102, 241, 0.26)' : 'rgba(99, 102, 241, 0.20)');
-        g.addColorStop(1, 'rgba(99, 102, 241, 0.02)');
-        return g;
-    })() : 'rgba(99, 102, 241, 0.12)';
-
-    const clicksGradient = ctx2d ? (() => {
-        const g = ctx2d.createLinearGradient(0, 0, 0, 260);
-        g.addColorStop(0, isDark ? 'rgba(245, 158, 11, 0.26)' : 'rgba(245, 158, 11, 0.20)');
-        g.addColorStop(1, 'rgba(245, 158, 11, 0.02)');
-        return g;
-    })() : 'rgba(245, 158, 11, 0.12)';
-
-    const labelsIso = sortedDates.map(([date]) => date);
-    const labels = labelsIso.map((date) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-    const viewsValues = sortedDates.map(([, views]) => Number(views) || 0);
-    const clicksValues = labelsIso.map((d) => (clicksByDate && typeof clicksByDate.get === 'function') ? (clicksByDate.get(d) || 0) : 0);
-    const hasClicksSeries = clicksValues.some(v => (Number(v) || 0) > 0);
-
-    const datasets = [
-        {
-            label: 'Views',
-            data: viewsValues,
-            borderColor: '#6366f1',
-            backgroundColor: viewsGradient,
-            tension: 0.35,
-            fill: true,
-            borderWidth: 2,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            pointHitRadius: 16
+    const timelineCtx = document.getElementById('taskViewsTimelineChart');
+    if (timelineCtx) {
+        // Destroy previous charts if modal reopened
+        if (window.charts?.taskModalTimeline) {
+            try { window.charts.taskModalTimeline.destroy(); } catch (e) {}
         }
-    ];
 
-    if (hasClicksSeries) {
-        datasets.push({
-            label: 'Clicks',
-            data: clicksValues,
-            borderColor: '#f59e0b',
-            backgroundColor: clicksGradient,
-            tension: 0.35,
-            fill: true,
-            borderWidth: 2,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            pointHitRadius: 16
+        const ctx2d = timelineCtx.getContext('2d');
+        const gradient = ctx2d ? (() => {
+            const g = ctx2d.createLinearGradient(0, 0, 0, 240);
+            g.addColorStop(0, isDark ? 'rgba(16, 185, 129, 0.30)' : 'rgba(16, 185, 129, 0.22)');
+            g.addColorStop(1, 'rgba(16, 185, 129, 0.02)');
+            return g;
+        })() : 'rgba(16, 185, 129, 0.1)';
+
+        const labels = sortedDates.map(([date]) =>
+            new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        );
+        const values = sortedDates.map(([, views]) => views);
+
+        window.charts = window.charts || {};
+        window.charts.taskModalTimeline = new Chart(timelineCtx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Views',
+                    data: values,
+                    borderColor: '#10b981',
+                    backgroundColor: gradient,
+                    tension: 0.35,
+                    fill: true,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                    pointHitRadius: 16
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: (ctx) => ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y || 0)}`
+                        }
+                    }
+                },
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    x: {
+                        ticks: { color: textColor, font: { size: 10 }, maxRotation: 0, autoSkip: true },
+                        grid: { color: gridColor, drawBorder: false }
+                    },
+                    y: {
+                        ticks: {
+                            color: textColor,
+                            font: { size: 10 },
+                            precision: 0,
+                            callback: (v) => formatNumber(v)
+                        },
+                        grid: { color: gridColor, drawBorder: false },
+                        beginAtZero: true
+                    }
+                }
+            }
         });
     }
-
-    window.charts.taskModalTrend = new Chart(timelineCtx, {
-        type: 'line',
-        data: { labels, datasets },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: true,
-                    labels: { color: textColor, boxWidth: 10, usePointStyle: true, pointStyle: 'circle' }
-                },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                    callbacks: {
-                        label: (ctx) => ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y || 0)}`
-                    }
-                }
-            },
-            interaction: { mode: 'index', intersect: false },
-            scales: {
-                x: {
-                    ticks: { color: textColor, font: { size: 10 }, maxRotation: 0, autoSkip: true },
-                    grid: { color: gridColor, drawBorder: false }
-                },
-                y: {
-                    ticks: { color: textColor, font: { size: 10 }, precision: 0, callback: (v) => formatNumber(v) },
-                    grid: { color: gridColor, drawBorder: false },
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-}
-
-// Detailed Clicks: derive top categories from done_parts and render a clean bar chart
-function initializeTaskDonePartsBreakdownChart(doneParts) {
-    const isDark = document.body.getAttribute('data-theme') === 'dark';
-    const textColor = isDark ? '#a0a0a0' : '#6c757d';
-    const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
-
-    const el = document.getElementById('taskDonePartsBreakdownChart');
-    if (!el) return;
-
-    window.charts = window.charts || {};
-    if (window.charts.taskModalParts) {
-        try { window.charts.taskModalParts.destroy(); } catch (e) {}
-    }
-
-    const parts = Array.isArray(doneParts) ? doneParts : [];
-    const getWeight = (p) => {
-        if (!p || typeof p !== 'object') return 1;
-        const keys = ['clicks', 'count', 'value', 'done', 'visits', 'times', 'total'];
-        for (const k of keys) {
-            const n = Number(p[k]);
-            if (Number.isFinite(n) && n > 0) return n;
-        }
-        return 1;
-    };
-    const candidates = [
-        { key: 'keyword', title: 'Top Keywords' },
-        { key: 'query', title: 'Top Queries' },
-        { key: 'location', title: 'Top Locations' },
-        { key: 'html_location', title: 'Top HTML Locations' },
-        { key: 'xpath', title: 'Top XPaths' },
-        { key: 'part', title: 'Top Parts' },
-        { key: 'type', title: 'Top Types' }
-    ];
-    const pick = candidates.find(({ key }) => parts.some(p => p && typeof p === 'object' && p[key]));
-    const groupKey = pick?.key || null;
-
-    const m = new Map();
-    parts.forEach((p) => {
-        if (!p) return;
-        const label = groupKey ? String(p[groupKey] ?? '').trim() : 'Clicks';
-        if (!label) return;
-        m.set(label, (m.get(label) || 0) + getWeight(p));
-    });
-
-    let rows = Array.from(m.entries()).map(([label, value]) => ({ label, value }));
-    rows.sort((a, b) => b.value - a.value);
-    const top = rows.slice(0, 8);
-    const rest = rows.slice(8);
-    const restSum = rest.reduce((s, r) => s + r.value, 0);
-    if (restSum > 0) top.push({ label: 'Other', value: restSum });
-
-    const labels = top.length ? top.map(r => r.label) : ['No click data yet'];
-    const values = top.length ? top.map(r => r.value) : [0];
-
-    window.charts.taskModalParts = new Chart(el, {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [{
-                label: pick?.title || 'Clicks',
-                data: values,
-                backgroundColor: isDark ? 'rgba(14, 165, 233, 0.75)' : 'rgba(14, 165, 233, 0.65)',
-                hoverBackgroundColor: isDark ? 'rgba(14, 165, 233, 0.95)' : 'rgba(14, 165, 233, 0.85)',
-                borderWidth: 0,
-                borderRadius: 10
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: (ctx) => ` ${formatNumber(ctx.parsed.y || 0)}`
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    ticks: { color: textColor, font: { size: 10 }, maxRotation: 0, autoSkip: true },
-                    grid: { display: false, drawBorder: false }
-                },
-                y: {
-                    ticks: { color: textColor, font: { size: 10 }, callback: (v) => formatNumber(v) },
-                    grid: { color: gridColor, drawBorder: false },
-                    beginAtZero: true
-                }
-            }
-        }
-    });
 }
 // Recharge Task
 // [NEW] Rebuilt Recharge Task Modal using SweetAlert2
