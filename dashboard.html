@@ -4543,18 +4543,18 @@ div#modalBody {
     gap: 1.5rem;
     margin-bottom: 1.5rem;
 }
-@media (max-width: 1024px) {
+@media (max-width: 992px) {
     .analytics-charts-grid {
         grid-template-columns: 1fr;
     }
 }
 .analytics-layout {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 3fr 2fr;
     gap: 1.5rem;
     margin-bottom: 1.5rem;
 }
-@media (max-width: 1200px) {
+@media (max-width: 768px) {
     .analytics-layout {
         grid-template-columns: 1fr;
     }
@@ -4581,6 +4581,9 @@ div#modalBody {
     padding: 0.75rem 0.5rem;
     border-bottom: 1px solid var(--border);
     color: var(--text);
+}
+.details-table tbody tr:nth-child(even) {
+    background: var(--bg-tertiary);
 }
 .details-table tbody tr:hover {
     background: var(--card-hover);
@@ -4825,12 +4828,6 @@ div#modalBody {
         font-size: 0.75rem !important;
     }
 }
-/* Clean modal header without background */
-.task-modal-header {
-    background: transparent !important;
-}
-
-/* ADD THIS CSS to your main <style> block */
 
 /* Custom CSS for the new Recharge Modal */
 .recharge-modal-container {
