@@ -4354,6 +4354,98 @@ div#modalBody {
     font-size: 0.85rem !important;
     line-height: 1.1 !important;
 }
+.task-modal-actions-slot .swal2-actions button .task-action-sub {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.task-modal-url-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    max-width: 100%;
+    padding: 0.55rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.10);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.2;
+    overflow: hidden;
+}
+.task-modal-url-pill span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.task-modal-url-pill:hover {
+    background: rgba(99, 102, 241, 0.14);
+    border-color: rgba(99, 102, 241, 0.55);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.12);
+}
+.task-modal-url-pill .ri-eye-line {
+    font-size: 1.05em;
+}
+
+.task-modal-tabs {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 1rem 0 1.25rem;
+}
+.task-modal-tab {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.55rem 0.85rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    transition: var(--transition);
+}
+.task-modal-tab:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+.task-modal-tab:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none;
+    box-shadow: none;
+}
+.task-modal-tab[data-tab="analytics"].active {
+    background: rgba(99, 102, 241, 0.14);
+    border-color: rgba(99, 102, 241, 0.65);
+    color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20), 0 14px 40px rgba(99, 102, 241, 0.15);
+}
+.task-modal-tab[data-tab="config"].active {
+    background: rgba(14, 165, 233, 0.14);
+    border-color: rgba(14, 165, 233, 0.65);
+    color: var(--info);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18), 0 14px 40px rgba(14, 165, 233, 0.12);
+}
+
+.task-modal-panels {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+.task-modal-panel[hidden] {
+    display: none !important;
+}
 .task-modal-subtitle {
     font-size: 0.9rem;
     margin: 0.75rem 0 0.5rem;
@@ -4367,7 +4459,7 @@ div#modalBody {
 }
 .task-modal-header h3 {
     font-size: 1.25rem;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.75rem 0;
     word-break: break-all;
     color: var(--primary);
 }
@@ -9205,7 +9297,12 @@ async function viewTaskDetails(taskId) {
             <div class="task-modal-header">
                 <div class="task-modal-header-row">
                     <div class="task-modal-title">
-                        <h3>${task.url}</h3>
+                        <h3>
+                            <a class="task-modal-url-pill" href="${task.url}" target="_blank" rel="noopener noreferrer">
+                                <i class="ri-eye-line"></i>
+                                <span>${task.url}</span>
+                            </a>
+                        </h3>
                     </div>
                     <div class="task-modal-actions-slot" aria-label="Task actions"></div>
                 </div>
@@ -9248,33 +9345,45 @@ async function viewTaskDetails(taskId) {
                 </div>
             </div>
 
-            <div class="task-modal-grid">
-                ${hasAnalytics ? `
-                    <div class="task-modal-section">
-                        <h3 class="task-modal-section-title" style="color: var(--primary);"><i class="ri-line-chart-line"></i>Views Analytics</h3>
-                        <div style="height: 250px; margin-bottom: 1.5rem;"><canvas id="taskViewsTimelineChart"></canvas></div>
-                        <div class="task-modal-subtitle">Daily Breakdown</div>
-                        <div class="task-modal-mini-chart"><canvas id="taskDailyBreakdownChart"></canvas></div>
-                        <div class="views-by-date-list">
-                            ${sortedDates.map(([date, views]) => `
-                                <div class="list-item">
-                                    <span>${new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                                    <span class="badge badge-primary">${formatNumber(views)}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                ` : `
-                    <div class="task-modal-section">
-                        <div class="empty-state" style="padding: 1rem 0;">
-                            <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
-                            <div class="empty-state-title" style="font-size: 1.2rem;">No Analytics Yet</div>
-                            <p class="empty-state-description">View data will appear here once the campaign receives traffic.</p>
-                        </div>
-                    </div>
-                `}
+            <div class="task-modal-tabs" role="tablist" aria-label="Task details sections">
+                <button class="task-modal-tab" type="button" data-tab="analytics" role="tab" aria-controls="task-panel-analytics">
+                    <i class="ri-line-chart-line"></i> Analytics
+                </button>
+                <button class="task-modal-tab" type="button" data-tab="config" role="tab" aria-controls="task-panel-config">
+                    <i class="ri-settings-3-line"></i> Configuration
+                </button>
+            </div>
 
-                <div class="task-modal-section">
+            <div class="task-modal-panels">
+                <div class="task-modal-panel" id="task-panel-analytics" data-panel="analytics" role="tabpanel">
+                    ${hasAnalytics ? `
+                        <div class="task-modal-section">
+                            <h3 class="task-modal-section-title" style="color: var(--primary);"><i class="ri-line-chart-line"></i>Views Analytics</h3>
+                            <div style="height: 250px; margin-bottom: 1.5rem;"><canvas id="taskViewsTimelineChart"></canvas></div>
+                            <div class="task-modal-subtitle">Breakdown</div>
+                            <div class="task-modal-mini-chart"><canvas id="taskDailyBreakdownChart"></canvas></div>
+                            <div class="views-by-date-list">
+                                ${sortedDates.map(([date, views]) => `
+                                    <div class="list-item">
+                                        <span>${new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                        <span class="badge badge-primary">${formatNumber(views)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="task-modal-section">
+                            <div class="empty-state" style="padding: 1rem 0;">
+                                <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
+                                <div class="empty-state-title" style="font-size: 1.2rem;">No Analytics Yet</div>
+                                <p class="empty-state-description">View data will appear here once the campaign receives traffic.</p>
+                            </div>
+                        </div>
+                    `}
+                </div>
+
+                <div class="task-modal-panel" id="task-panel-config" data-panel="config" role="tabpanel">
+                  <div class="task-modal-section">
                   <style>
                     .install-instructions {
                       background-color: var(--bg-tertiary);
@@ -9344,9 +9453,8 @@ async function viewTaskDetails(taskId) {
                     ` : ''}
                   </div>
                 </div>
+                </div>
 
-
-                
             </div>
         </div>
         `;
@@ -9374,14 +9482,17 @@ async function viewTaskDetails(taskId) {
                 } catch (e) {
                     // no-op
                 }
+                setupTaskDetailsTabs({ hasAnalytics });
                 if (hasAnalytics) {
                     initializeTaskAnalyticsChart(sortedDates);
                 }
             },
             showDenyButton: true,
             showCancelButton: true,
-            denyButtonText: `<i class="ri-wallet-line"></i> Recharge`,
-            cancelButtonText: `<i class="ri-external-link-line"></i> View Website`,
+            denyButtonText: `<i class="ri-wallet-line"></i> Recharge <span class="task-action-sub">$${availableCharge.toFixed(2)} left</span>`,
+            denyButtonColor: '#10b981',
+            cancelButtonText: `<i class="ri-close-line"></i> Close`,
+            cancelButtonColor: '#6b7280',
         };
         
         // Add verify button if task is not verified
@@ -9401,9 +9512,6 @@ async function viewTaskDetails(taskId) {
             } else if (result.isDenied) {
                 // The "Recharge" button was clicked
                 rechargeTask(taskId);
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-                // The "View Website" button was clicked
-                window.open(task.url, '_blank');
             }
         });
 
@@ -9411,6 +9519,45 @@ async function viewTaskDetails(taskId) {
         console.error('Task details error:', error);
         showToast('Failed to load task details', 'error');
     }
+}
+
+function setupTaskDetailsTabs({ hasAnalytics }) {
+    const popup = Swal.getPopup();
+    if (!popup) return;
+
+    const tabs = Array.from(popup.querySelectorAll('.task-modal-tab'));
+    const panels = Array.from(popup.querySelectorAll('.task-modal-panel'));
+    if (tabs.length === 0 || panels.length === 0) return;
+
+    const analyticsTab = tabs.find(t => t.dataset.tab === 'analytics');
+    if (analyticsTab && !hasAnalytics) {
+        analyticsTab.disabled = true;
+        analyticsTab.title = 'Analytics will appear once the campaign receives traffic.';
+    }
+
+    const activate = (name) => {
+        tabs.forEach(btn => {
+            const isActive = btn.dataset.tab === name;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            btn.setAttribute('tabindex', isActive ? '0' : '-1');
+        });
+
+        panels.forEach(panel => {
+            const isPanelActive = panel.dataset.panel === name;
+            if (isPanelActive) panel.removeAttribute('hidden');
+            else panel.setAttribute('hidden', '');
+        });
+    };
+
+    tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.disabled) return;
+            activate(btn.dataset.tab);
+        });
+    });
+
+    activate(hasAnalytics ? 'analytics' : 'config');
 }
 
 // [NEW] Helper function to initialize the chart inside the task modal
@@ -9505,7 +9652,7 @@ function initializeTaskAnalyticsChart(sortedDates) {
                     new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                 ),
                 datasets: [{
-                    label: 'Daily Views',
+                    label: 'Views',
                     data: sortedDates.map(([, views]) => views),
                     backgroundColor: isDark ? 'rgba(99, 102, 241, 0.55)' : 'rgba(99, 102, 241, 0.35)',
                     borderColor: 'rgba(99, 102, 241, 0.9)',
