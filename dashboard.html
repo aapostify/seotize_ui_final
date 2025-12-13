@@ -4527,6 +4527,26 @@ div#modalBody {
     justify-content: flex-end;
     align-items: center;
 }
+.task-verify-inline-btn {
+    background: #f59e0b !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.25rem 0.6rem !important;
+    border-radius: 6px !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.3rem !important;
+    transition: all 0.2s ease !important;
+    flex-shrink: 0 !important;
+}
+.task-verify-inline-btn:hover {
+    background: #d97706 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(249, 158, 11, 0.3) !important;
+}
 .task-config-btn {
     appearance: none;
     border: 1px solid rgba(14, 165, 233, 0.55) !important;
@@ -4835,10 +4855,14 @@ div#modalBody {
     font-size: 0.78rem;
     text-align: right;
     white-space: nowrap;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     padding: 0.15rem 0.45rem;
     background: rgba(148, 163, 184, 0.08);
     border-radius: 6px;
+    max-width: 50%;
 }
 .task-done-kv {
     display: flex;
@@ -4964,8 +4988,7 @@ div#modalBody {
         font-size: 0.72rem;
     }
     .task-done-time { 
-        font-size: 0.72rem;
-        padding: 0.12rem 0.35rem;
+        display: none;
     }
     .task-done-kv {
         gap: 0.35rem;
@@ -5017,8 +5040,7 @@ div#modalBody {
         font-size: 0.65rem;
     }
     .task-done-time { 
-        font-size: 0.68rem;
-        padding: 0.1rem 0.28rem;
+        display: none;
     }
     .task-done-kv {
         gap: 0.3rem;
@@ -5387,6 +5409,17 @@ div#modalBody {
 }
 @media (max-width: 768px) {
     .task-modal-tabs { width: 100%; }
+    .task-modal-tab .label-mobile,
+    .task-modal-tab .label-desktop {
+        display: none !important;
+    }
+    .task-modal-tab {
+        padding-left: 0.55rem !important;
+        padding-right: 0.55rem !important;
+    }
+    .task-modal-tab i {
+        margin: 0 !important;
+    }
 }
 
 /* Mobile responsive styles for task details modal */
@@ -5423,6 +5456,12 @@ div#modalBody {
     .task-modal-header .header-meta .header-meta-left {
         flex-direction: column;
         gap: 0.25rem !important;
+    }
+    .task-modal-header .header-meta .header-meta-left .task-verify-inline-btn {
+        width: auto !important;
+        max-width: none !important;
+        padding: 0.2rem 0.5rem !important;
+        font-size: 0.7rem !important;
     }
     .task-modal-header .header-meta .header-meta-right {
         width: 100%;
@@ -6229,6 +6268,18 @@ div#modalBody {
         display: inline-flex !important;
         white-space: nowrap !important;
         flex: 0 0 auto !important;
+        padding: 0.3rem 0.5rem !important;
+        font-size: 0.72rem !important;
+        min-width: 28px !important;
+        height: 28px !important;
+        gap: 0.2rem !important;
+    }
+    .swal2-html-container .task-done-pager .task-done-page-btn.nav {
+        min-width: auto !important;
+        padding: 0.3rem 0.45rem !important;
+    }
+    .swal2-html-container .task-done-pager .task-done-page-btn.nav span {
+        display: none !important;
     }
     .swal2-html-container .task-done-pager .pages {
         flex: 1 1 auto !important;
@@ -10389,8 +10440,9 @@ async function viewTaskDetails(taskId) {
                         <span><i class="ri-calendar-line"></i> Created: ${new Date(task.date_created).toLocaleString()}</span>
                         ${task.email ? `<span><i class="ri-mail-line"></i> Email: ${task.email}</span>` : ''}
                         <span><i class="ri-key-line"></i> ID: ${task._id}</span>
-                        <span style="display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="ri-shield-check-line"></i> Status: ${verificationStatus}
+                        <span style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                            ${!isVerified ? `<button class="btn btn-sm task-verify-inline-btn" onclick="Swal.close(); verifyTask('${task._id}')" style="background: #f59e0b; color: white; border: none; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem;"><i class="ri-shield-check-line"></i> Verify</button>` : ''}
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem;"><i class="ri-shield-check-line"></i> Status: ${verificationStatus}</span>
                         </span>
                         ${lastVerifiedText}
                     </div>
@@ -10579,24 +10631,10 @@ async function viewTaskDetails(taskId) {
             },
             showDenyButton: false,
             showCancelButton: false,
+            showConfirmButton: false,
         };
         
-        // Add verify button if task is not verified
-        if (!isVerified) {
-            modalConfig.showConfirmButton = true;
-            modalConfig.confirmButtonText = `<i class="ri-shield-check-line"></i> Verify Task`;
-            modalConfig.confirmButtonColor = '#f59e0b'; // warning color
-        } else {
-            modalConfig.showConfirmButton = false;
-        }
-        
-        Swal.fire(modalConfig).then((result) => {
-            if (result.isConfirmed && !isVerified) {
-                // The "Verify Task" button was clicked
-                Swal.close();
-                verifyTask(taskId);
-            }
-        });
+        Swal.fire(modalConfig);
 
     } catch (error) {
         console.error('Task details error:', error);
@@ -10741,7 +10779,7 @@ function initializeTaskDoneParts(donePartsNormalized) {
             return a.__idx - b.__idx;
         });
 
-    const perPage = 10;
+    const perPage = 9;
     const total = rows.length;
     const totalPages = Math.max(1, Math.ceil(total / perPage));
     let currentPage = 1;
@@ -10793,7 +10831,6 @@ function initializeTaskDoneParts(donePartsNormalized) {
                                 : `<span class="muted">—</span>`}
                         </div>
                     </div>
-                    ${dt ? `<div class="task-done-rawtime">${escapeHtml(timeRaw)}</div>` : ``}
                 </div>
             `;
         }).join('');
