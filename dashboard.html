@@ -4381,6 +4381,10 @@ div#modalBody {
     font-size: 0.93rem;
     line-height: 1.2;
     overflow: hidden;
+    /* Ensure the pill stays left-aligned (never centered) */
+    justify-content: flex-start;
+    align-self: flex-start;
+    margin-right: auto;
 }
 .task-modal-url-pill span {
     min-width: 0;
@@ -4492,6 +4496,10 @@ div#modalBody {
     margin: 0 0 0.75rem 0;
     word-break: break-all;
     color: var(--primary);
+    /* Force left alignment even inside SweetAlert2 containers */
+    display: flex;
+    justify-content: flex-start;
+    text-align: left;
 }
 .task-modal-header .header-meta {
     font-size: 0.8rem;
@@ -4769,10 +4777,11 @@ div#modalBody {
 }
 .task-done-pager .btns {
     width: 100%;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
+    display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.5rem;
+    min-width: 0;
 }
 .task-done-pager .pages {
     display: inline-flex;
@@ -4780,6 +4789,8 @@ div#modalBody {
     justify-content: center;
     gap: 0.35rem;
     flex-wrap: wrap;
+    min-width: 0;
+    flex: 1 1 auto;
 }
 .task-done-pager .task-done-page-btn {
     appearance: none;
@@ -5219,9 +5230,9 @@ div#modalBody {
     .task-done-table thead { display: none; }
     .task-done-table tbody { display: block; }
     .task-done-table tbody tr {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 9.5rem);
-        gap: 0.35rem 0.6rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
         padding: 0.8rem 0.85rem;
         border-bottom: 1px solid var(--border);
         background: rgba(255, 255, 255, 0.01);
@@ -5230,30 +5241,74 @@ div#modalBody {
     .task-done-table tbody td {
         padding: 0 !important;
         border: none !important;
+        min-width: 0;
     }
     /* Hide the "#" column on mobile */
     .task-done-table tbody td:nth-child(1) { display: none; }
-    /* Email on first line (full width) */
+    /* Re-order columns for mobile readability: Email -> Country -> Done at */
+    .task-done-table tbody td:nth-child(3) { order: 1; }
+    .task-done-table tbody td:nth-child(2) { order: 2; }
+    .task-done-table tbody td:nth-child(4) { order: 3; }
+
+    /* Email (primary line) */
     .task-done-table tbody td:nth-child(3) {
-        grid-column: 1 / -1;
+        font-weight: 900;
+        font-size: 0.95rem;
+        line-height: 1.25;
+        word-break: break-word;
     }
-    /* Date on second line (left) */
+
+    /* Country (always visible; never off-screen) */
+    .task-done-table tbody td:nth-child(2) {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        min-width: 0;
+    }
+    .task-done-table tbody td:nth-child(2)::before {
+        content: "Country";
+        color: var(--text-secondary);
+        font-weight: 900;
+        font-size: 0.78rem;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        flex: 0 0 auto;
+    }
+    .task-done-table tbody td:nth-child(2) .country-badge {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 100%;
+        justify-content: flex-start;
+    }
+
+    /* Done at (clean single-line on mobile) */
     .task-done-table tbody td:nth-child(4) {
-        grid-column: 1 / 2;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.75rem;
         color: var(--text-secondary);
         font-weight: 800;
         font-size: 0.82rem;
+        min-width: 0;
+    }
+    .task-done-table tbody td:nth-child(4)::before {
+        content: "Done";
+        color: var(--text-secondary);
+        font-weight: 900;
+        font-size: 0.78rem;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        flex: 0 0 auto;
+    }
+    .task-done-table tbody td:nth-child(4) > div:first-child {
+        min-width: 0;
+        text-align: right;
+        word-break: break-word;
     }
     /* Hide the raw date line on mobile (keep it clean) */
     .task-done-table tbody td:nth-child(4) .muted { display: none; }
-    /* Country on second line (right) */
-    .task-done-table tbody td:nth-child(2) {
-        grid-column: 2 / 3;
-        justify-self: end;
-        max-width: 100%;
-        min-width: 0;
-        overflow: hidden;
-    }
 }
 
 /* Task details modal: Mobile pagination fixes */
@@ -5881,6 +5936,22 @@ div#modalBody {
         box-sizing: border-box !important;
         white-space: normal !important;
         word-wrap: break-word !important;
+    }
+
+    /* Exception: pagination + compact controls must stay inline on mobile */
+    .swal2-html-container .task-done-pager .task-done-page-btn,
+    .swal2-html-container .task-modal-tabs .task-modal-tab {
+        width: auto !important;
+        max-width: none !important;
+    }
+    .swal2-html-container .task-done-pager .task-done-page-btn {
+        display: inline-flex !important;
+        white-space: nowrap !important;
+        flex: 0 0 auto !important;
+    }
+    .swal2-html-container .task-done-pager .pages {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
     }
     
     .swal2-html-container [class*="grid"],
