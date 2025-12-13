@@ -4369,16 +4369,16 @@ div#modalBody {
 .task-modal-url-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.55rem;
+    gap: 0.5rem;
     max-width: 100%;
-    padding: 0.55rem 0.75rem;
+    padding: 0.45rem 0.65rem;
     border-radius: 999px;
-    background: rgba(99, 102, 241, 0.10);
-    border: 1px solid rgba(99, 102, 241, 0.35);
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.25);
     color: var(--primary);
     text-decoration: none;
-    font-weight: 700;
-    font-size: 0.95rem;
+    font-weight: 800;
+    font-size: 0.92rem;
     line-height: 1.2;
     overflow: hidden;
 }
@@ -4389,9 +4389,9 @@ div#modalBody {
     white-space: nowrap;
 }
 .task-modal-url-pill:hover {
-    background: rgba(99, 102, 241, 0.14);
-    border-color: rgba(99, 102, 241, 0.55);
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.12);
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.45);
+    box-shadow: 0 10px 28px rgba(99, 102, 241, 0.10);
 }
 .task-modal-url-pill i {
     font-size: 1.05em;
@@ -4488,14 +4488,59 @@ div#modalBody {
     font-size: 0.8rem;
     color: var(--text-secondary);
     display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
     flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
+}
+.task-modal-header .header-meta .header-meta-left {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+.task-modal-header .header-meta .header-meta-right {
+    flex: 0 0 auto;
+    margin-left: auto;
+    display: inline-flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.task-config-btn {
+    appearance: none;
+    border: 1px solid rgba(14, 165, 233, 0.55) !important;
+    background: rgba(14, 165, 233, 0.10) !important;
+    color: var(--info) !important;
+    border-radius: 999px !important;
+    padding: 0.5rem 0.75rem !important;
+    font-weight: 900 !important;
+    font-size: 0.85rem !important;
+    line-height: 1.1 !important;
+    box-shadow: none !important;
+    flex: 0 0 auto !important;
+    gap: 0.45rem !important;
+}
+.task-config-btn:hover {
+    transform: translateY(-1px);
+    background: rgba(14, 165, 233, 0.14) !important;
+    border-color: rgba(14, 165, 233, 0.75) !important;
+    box-shadow: 0 14px 40px rgba(14, 165, 233, 0.12) !important;
+}
+.task-config-btn.active {
+    background: rgba(14, 165, 233, 0.16) !important;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18), 0 14px 40px rgba(14, 165, 233, 0.10) !important;
 }
 .task-modal-stat-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1rem;
     margin-bottom: 2rem;
+}
+@media (max-width: 980px) {
+    .task-modal-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 .task-modal-stat-card {
     background: var(--card);
@@ -4563,39 +4608,126 @@ div#modalBody {
     padding: 1rem;
     margin: 0 0 1.25rem 0;
 }
-.task-modal-top-metrics {
+.task-budget-head {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
-    margin: 0.9rem 0 1rem 0;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.65rem;
+    flex-wrap: wrap;
 }
-.task-modal-metric-pill {
+.task-budget-sub {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 700;
+    margin-top: 0.15rem;
+}
+.task-budget-recharge {
+    appearance: none;
+    border: 1px solid rgba(16, 185, 129, 0.55);
+    background: rgba(16, 185, 129, 0.10);
+    color: var(--success);
+    border-radius: 999px;
+    padding: 0.55rem 0.85rem;
+    font-weight: 900;
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    padding: 0.45rem 0.7rem;
-    border-radius: 999px;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: none;
+}
+.task-budget-recharge:hover {
+    transform: translateY(-1px);
+    background: rgba(16, 185, 129, 0.14);
+    box-shadow: 0 16px 40px rgba(16, 185, 129, 0.14);
+}
+.task-budget-recharge:active { transform: translateY(0); }
+.task-budget-recharge:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18), 0 16px 40px rgba(16, 185, 129, 0.14);
+}
+
+/* More details (done_parts) */
+.task-done-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+}
+.task-done-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.75rem 0.8rem;
+    border-radius: 12px;
     border: 1px solid var(--border);
-    background: rgba(99, 102, 241, 0.08);
+    background: rgba(255, 255, 255, 0.02);
     color: var(--text);
-    font-weight: 800;
+    font-weight: 700;
+}
+.task-done-list li i {
+    color: var(--success);
+    font-size: 1.05rem;
+    margin-top: 0.05rem;
+    flex: 0 0 auto;
+}
+.task-done-list li strong {
+    color: var(--text);
+    font-weight: 900;
+}
+
+/* Configuration install instructions */
+.task-install-instructions {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 0.75rem;
     font-size: 0.85rem;
-    line-height: 1.1;
-}
-.task-modal-metric-pill .k {
-    color: var(--text-secondary);
-    font-weight: 900;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    font-size: 0.72rem;
-}
-.task-modal-metric-pill .v {
+    line-height: 1.6;
     color: var(--text);
-    font-weight: 900;
 }
-.task-modal-metric-pill.budget { background: rgba(16, 185, 129, 0.10); border-color: rgba(16, 185, 129, 0.25); }
-.task-modal-metric-pill.views  { background: rgba(99, 102, 241, 0.10); border-color: rgba(99, 102, 241, 0.30); }
+.task-install-instructions p {
+    color: var(--text);
+    margin: 0.25rem 0;
+}
+.task-install-instructions code {
+    display: block;
+    background: #282c34;
+    color: #f8f8f2;
+    padding: 0.75rem;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+}
+.task-copy-btn {
+    margin-top: 0.65rem;
+    appearance: none;
+    border: 1px solid rgba(14, 165, 233, 0.55);
+    background: rgba(14, 165, 233, 0.12);
+    color: var(--info);
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 900;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+}
+.task-copy-btn:hover {
+    transform: translateY(-1px);
+    border-color: rgba(14, 165, 233, 0.75);
+    background: rgba(14, 165, 233, 0.16);
+    box-shadow: 0 14px 40px rgba(14, 165, 233, 0.12);
+}
+.task-copy-btn:active { transform: translateY(0); }
 .task-budget-split {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -4810,7 +4942,20 @@ div#modalBody {
     .task-modal-header .header-meta {
         font-size: 0.7rem !important;
         flex-direction: column;
+        gap: 0.5rem !important;
+    }
+    .task-modal-header .header-meta .header-meta-left {
+        flex-direction: column;
         gap: 0.25rem !important;
+    }
+    .task-modal-header .header-meta .header-meta-right {
+        width: 100%;
+        justify-content: stretch;
+    }
+    .task-config-btn {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 0.65rem 0.9rem !important;
     }
     
     .task-modal-stat-grid {
@@ -9544,6 +9689,51 @@ async function viewTaskDetails(taskId) {
         
         const lastVerifiedText = task.last_verified ? 
             `<span><i class="ri-time-line"></i> Last Verified: ${new Date(task.last_verified).toLocaleString()}</span>` : '';
+
+        // Done parts (More details)
+        const donePartsRaw = task.done_parts ?? task.doneParts ?? task.done_parts_list ?? task.donePartsList ?? null;
+        const doneParts = Array.isArray(donePartsRaw)
+            ? donePartsRaw
+            : (donePartsRaw && typeof donePartsRaw === 'object')
+                ? Object.entries(donePartsRaw).map(([k, v]) => ({ key: k, value: v }))
+                : [];
+        const donePartsHtml = (() => {
+            if (!doneParts || doneParts.length === 0) {
+                return `
+                    <div class="empty-state" style="padding: 1rem 0;">
+                        <div class="empty-state-icon"><i class="ri-list-check-2"></i></div>
+                        <div class="empty-state-title" style="font-size: 1.2rem;">No details yet</div>
+                        <p class="empty-state-description">Completed steps will appear here once the task starts processing.</p>
+                    </div>
+                `;
+            }
+
+            const escapeHtml = (s) => String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+
+            const rows = doneParts.map((p) => {
+                if (typeof p === 'string' || typeof p === 'number') {
+                    return `<li><i class="ri-checkbox-circle-line"></i><span>${escapeHtml(p)}</span></li>`;
+                }
+                if (p && typeof p === 'object' && 'key' in p && 'value' in p) {
+                    const v = (typeof p.value === 'object') ? JSON.stringify(p.value) : String(p.value);
+                    return `<li><i class="ri-checkbox-circle-line"></i><span><strong>${escapeHtml(p.key)}:</strong> ${escapeHtml(v)}</span></li>`;
+                }
+                if (p && typeof p === 'object') {
+                    const label = p.title ?? p.name ?? p.label ?? p.part ?? 'Done';
+                    const meta = p.date ?? p.time ?? p.at ?? p.value ?? '';
+                    const metaText = meta ? ` <span style="color: var(--text-secondary); font-weight: 700;">(${escapeHtml(meta)})</span>` : '';
+                    return `<li><i class="ri-checkbox-circle-line"></i><span>${escapeHtml(label)}${metaText}</span></li>`;
+                }
+                return '';
+            }).filter(Boolean).join('');
+
+            return `<ul class="task-done-list">${rows}</ul>`;
+        })();
         
         const modalHtml = `
         <div class="task-details-modal-container">
@@ -9560,23 +9750,21 @@ async function viewTaskDetails(taskId) {
                     <div class="task-modal-actions-slot" aria-label="Task actions"></div>
                 </div>
                 <div class="header-meta">
-                    <span><i class="ri-calendar-line"></i> Created: ${new Date(task.date_created).toLocaleString()}</span>
-                    <span><i class="ri-key-line"></i> ID: ${task._id}</span>
-                    <span style="display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="ri-shield-check-line"></i> Status: ${verificationStatus}
-                    </span>
-                    ${lastVerifiedText}
-                </div>
-            </div>
-
-            <div class="task-modal-top-metrics">
-                <div class="task-modal-metric-pill budget">
-                    <span class="k">Total Budget</span>
-                    <span class="v">$${totalCharge.toFixed(2)}</span>
-                </div>
-                <div class="task-modal-metric-pill views">
-                    <span class="k">Total Views</span>
-                    <span class="v">${formatNumber(totalViews)}</span>
+                    <div class="header-meta-left">
+                        <span><i class="ri-calendar-line"></i> Created: ${new Date(task.date_created).toLocaleString()}</span>
+                        <span><i class="ri-key-line"></i> ID: ${task._id}</span>
+                        <span style="display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="ri-shield-check-line"></i> Status: ${verificationStatus}
+                        </span>
+                        ${lastVerifiedText}
+                    </div>
+                    <div class="header-meta-right">
+                        <button class="task-modal-tab task-config-btn" type="button" data-tab="config" role="tab" aria-controls="task-panel-config">
+                            <i class="ri-settings-3-line"></i>
+                            <span class="label-desktop">Configuration</span>
+                            <span class="label-mobile">Configuration</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -9586,52 +9774,38 @@ async function viewTaskDetails(taskId) {
                     <div class="stat-label">Available Budget</div>
                 </div>
                 <div class="task-modal-stat-card">
-                    <div class="stat-value" style="color: var(--warning);">$${usedCharge.toFixed(2)}</div>
-                    <div class="stat-label">Used Budget</div>
-                </div>
-                <div class="task-modal-stat-card">
-                    <div class="stat-value" style="color: var(--primary);">${formatNumber(last7Views)}</div>
-                    <div class="stat-label">Views (Last 7d)</div>
+                    <div class="stat-value" style="color: var(--primary);">${formatNumber(totalViews)}</div>
+                    <div class="stat-label">Total Views</div>
                 </div>
                 <div class="task-modal-stat-card">
                     <div class="stat-value" style="color: var(--info);">${avgViewsPerDay.toFixed(1)}</div>
                     <div class="stat-label">Avg Views / Day</div>
                 </div>
                 <div class="task-modal-stat-card">
-                    <div class="stat-value" style="color: var(--text);">${formatNumber(bestDayViews)}</div>
-                    <div class="stat-label">Best Day (${bestDayLabel})</div>
+                    <div class="stat-value" style="color: var(--text);">${formatNumber(last7Views)}</div>
+                    <div class="stat-label">Views (Last 7d)</div>
                 </div>
             </div>
 
             <div class="task-budget-actions">
-                <div class="task-budget-top">
-                    <div class="task-budget-label">Budget Remaining</div>
-                    <div class="task-budget-meta">
-                        <span class="task-budget-amount">$${availableCharge.toFixed(2)}</span>
-                        <span class="task-budget-percent">of $${totalCharge.toFixed(2)} (${remainingPercentageLabel.toFixed(1)}%)</span>
+                <div class="task-budget-head">
+                    <div>
+                        <div class="task-budget-label">Budget</div>
+                        <div class="task-budget-sub">
+                            <strong style="color: var(--success);">$${availableCharge.toFixed(2)}</strong> available
+                            · <span>$${usedCharge.toFixed(2)} used</span>
+                            · <span>$${totalCharge.toFixed(2)} total</span>
+                            · <span>${remainingPercentageLabel.toFixed(1)}% remaining</span>
+                        </div>
                     </div>
+                    <button class="task-budget-recharge" type="button" onclick="Swal.close(); rechargeTask('${task._id}')">
+                        <i class="ri-wallet-3-line"></i> Recharge
+                    </button>
                 </div>
                 <div class="task-budget-bar" aria-label="Budget used vs available">
                     <div class="seg used" style="width: ${usedPercentage}%;"></div>
                     <div class="seg avail" style="width: ${remainingPercentage}%;"></div>
                 </div>
-                <div class="task-budget-split" aria-label="Budget split">
-                    <div class="split-item used">
-                        <div class="left"><span class="dot"></span>Used</div>
-                        <strong>$${usedCharge.toFixed(2)}</strong>
-                    </div>
-                    <div class="split-item avail">
-                        <div class="left"><span class="dot"></span>Available</div>
-                        <strong>$${availableCharge.toFixed(2)}</strong>
-                    </div>
-                    <div class="split-item total">
-                        <div class="left"><span class="dot"></span>Total</div>
-                        <strong>$${totalCharge.toFixed(2)}</strong>
-                    </div>
-                </div>
-                <button class="task-modal-recharge-btn" type="button" onclick="Swal.close(); rechargeTask('${task._id}')">
-                    <i class="ri-wallet-3-line"></i> Recharge
-                </button>
             </div>
 
             <div class="task-modal-tabs" role="tablist" aria-label="Task details sections">
@@ -9640,10 +9814,10 @@ async function viewTaskDetails(taskId) {
                     <span class="label-desktop">Analytics</span>
                     <span class="label-mobile">View Analytics</span>
                 </button>
-                <button class="task-modal-tab" type="button" data-tab="config" role="tab" aria-controls="task-panel-config">
-                    <i class="ri-information-line"></i>
-                    <span class="label-desktop">Configuration</span>
-                    <span class="label-mobile">More Details</span>
+                <button class="task-modal-tab" type="button" data-tab="details" role="tab" aria-controls="task-panel-details">
+                    <i class="ri-list-check-2"></i>
+                    <span class="label-desktop">More details</span>
+                    <span class="label-mobile">More details</span>
                 </button>
             </div>
 
@@ -9677,51 +9851,18 @@ async function viewTaskDetails(taskId) {
                     </div>
                 </div>
 
+                <div class="task-modal-panel" id="task-panel-details" data-panel="details" role="tabpanel">
+                    <div class="task-modal-section">
+                        <h3 class="task-modal-section-title" style="color: var(--primary);">
+                            <i class="ri-list-check-2"></i>More details
+                        </h3>
+                        <div class="task-modal-subtitle">Done parts</div>
+                        ${donePartsHtml}
+                    </div>
+                </div>
+
                 <div class="task-modal-panel" id="task-panel-config" data-panel="config" role="tabpanel">
                   <div class="task-modal-section">
-                  <style>
-                    .install-instructions {
-                      background-color: var(--bg-tertiary);
-                      border: 1px solid var(--border);
-                      border-radius: 8px;
-                      padding: 1rem;
-                      margin-top: 0.5rem;
-                      font-size: 0.85rem;
-                      line-height: 1.6;
-                      color: var(--text);
-                    }
-                    .install-instructions p {
-                      color: var(--text);
-                    }
-                    .install-instructions strong {
-                      color: var(--text);
-                    }
-                    .install-instructions code {
-                      display: block;
-                      background: #282c34;
-                      color: #f8f8f2;
-                      padding: 0.75rem;
-                      border-radius: 6px;
-                      overflow-x: auto;
-                      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-                      margin-top: 0.5rem;
-                      font-size: 0.8rem;
-                    }
-                    .copy-btn {
-                      background-color: var(--info);
-                      color: white;
-                      border: none;
-                      padding: 0.4rem 0.8rem;
-                      border-radius: 4px;
-                      cursor: pointer;
-                      font-size: 0.8rem;
-                      margin-top: 0.5rem;
-                    }
-                    .copy-btn:hover {
-                      background-color: #0a7ac2;
-                    }
-                  </style>
-                
                   <h3 class="task-modal-section-title" style="color: var(--info);">
                     <i class="ri-settings-3-line"></i>Configuration
                   </h3>
@@ -9739,11 +9880,11 @@ async function viewTaskDetails(taskId) {
                     </div>
                 
                     ${task.sitekey ? `
-                      <div class="install-instructions">
+                      <div class="task-install-instructions">
                         <p><strong>Installation Instruction:</strong></p>
-                        <p>Add the following code into your website?s &lt;head&gt; section, right before &lt;/head&gt;:</p>
-                        <code id="install-code">&lt;script type="text/javascript" src="https://seotize.net/seotize-engine.js?id=${task.sitekey}"&gt;&lt;/script&gt;</code>
-                        <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('install-code').innerText)">Copy Code</button>
+                        <p>Add the following code into your website's &lt;head&gt; section, right before &lt;/head&gt;:</p>
+                        <code id="install-code-${task._id}">&lt;script type="text/javascript" src="https://seotize.net/seotize-engine.js?id=${task.sitekey}"&gt;&lt;/script&gt;</code>
+                        <button class="task-copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('install-code-${task._id}').innerText)">Copy Code</button>
                       </div>
                     ` : ''}
                   </div>
@@ -9867,7 +10008,7 @@ function setupTaskDetailsTabs({ hasAnalytics }) {
         });
     });
 
-    activate(hasAnalytics ? 'analytics' : 'config');
+    activate(hasAnalytics ? 'analytics' : 'details');
 }
 
 // [NEW] Helper function to initialize charts inside the task modal
