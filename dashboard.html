@@ -4318,6 +4318,9 @@ div#modalBody {
 /* Custom CSS for the new Task Details Modal */
 .task-details-modal-container {
     text-align: left;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 .task-modal-header {
     /* User request: remove header background color */
@@ -4764,6 +4767,100 @@ div#modalBody {
 }
 .task-done-table a.task-email:hover {
     text-decoration: underline;
+}
+
+/* More details (done_parts): modern responsive cards (replaces table on all screens) */
+.task-done-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 0.75rem;
+    padding: 0.85rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+.task-done-card {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    min-width: 0;
+    box-sizing: border-box;
+}
+.task-done-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    min-width: 0;
+}
+.task-done-card-top .left {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+.task-done-idx {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(148, 163, 184, 0.10);
+    color: var(--text-secondary);
+    font-weight: 900;
+    font-size: 0.78rem;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+.task-done-time {
+    color: var(--text-secondary);
+    font-weight: 800;
+    font-size: 0.82rem;
+    text-align: right;
+    max-width: 52ch;
+    overflow-wrap: anywhere;
+}
+.task-done-kv {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    min-width: 0;
+}
+.task-done-kv .label {
+    color: var(--text-secondary);
+    font-weight: 900;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+.task-done-kv .value {
+    color: var(--text);
+    font-weight: 900;
+    font-size: 0.95rem;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    min-width: 0;
+}
+.task-done-kv .value a.task-email {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+.task-done-rawtime {
+    color: var(--text-secondary);
+    font-weight: 800;
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+}
+@media (max-width: 480px) {
+    .task-done-cards { padding: 0.7rem; grid-template-columns: 1fr; }
+    .task-done-card { padding: 0.8rem; }
+    .task-done-time { max-width: 100%; }
 }
 .task-done-pager {
     display: flex;
@@ -5586,6 +5683,19 @@ div#modalBody {
 .swal2-popup-custom-task {
     margin: 0 !important;
     padding: 0 !important;
+}
+
+/* Task details modal: dedicated popup class (prevents toast/layout bugs + overflow) */
+.swal2-popup.task-details-swal {
+    margin: 0.5rem !important;
+    width: min(1100px, 96vw) !important;
+    max-width: 96vw !important;
+    box-sizing: border-box !important;
+}
+.task-details-swal .swal2-html-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 /* Ensure SweetAlert2 modals appear above task creator */
@@ -10083,17 +10193,7 @@ async function viewTaskDetails(taskId) {
             }
             return `
                 <div class="task-done-table-wrap">
-                    <table class="task-done-table" aria-label="Done parts activity log">
-                        <thead>
-                            <tr>
-                                <th style="width:72px;">#</th>
-                                <th style="width:140px;">Country</th>
-                                <th>Email</th>
-                                <th style="width:220px;">Done at</th>
-                            </tr>
-                        </thead>
-                        <tbody id="taskDonePartsTbody"></tbody>
-                    </table>
+                    <div class="task-done-cards" id="taskDonePartsList" role="list" aria-label="Done parts activity log"></div>
                     <div class="task-done-pager" id="taskDonePartsPager"></div>
                 </div>
             `;
@@ -10259,11 +10359,10 @@ async function viewTaskDetails(taskId) {
         const modalConfig = {
             html: modalHtml,
             showCloseButton: true,
-            width: '95vw',
-            maxWidth: '1100px', // Large on desktop, as requested
+            width: 'min(1100px, 96vw)',
             padding: '1.5rem',
             customClass: { 
-                popup: 'swal2-toast swal2-popup-custom-task',
+                popup: 'task-details-swal',
                 closeButton: 'swal2-close'
             }, 
             showClass: { popup: 'swal2-show-super-fast' },
@@ -10438,9 +10537,9 @@ function initializeTaskDoneParts(donePartsNormalized) {
     const popup = Swal.getPopup();
     if (!popup) return;
 
-    const tbody = popup.querySelector('#taskDonePartsTbody');
+    const list = popup.querySelector('#taskDonePartsList');
     const pager = popup.querySelector('#taskDonePartsPager');
-    if (!tbody || !pager) return;
+    if (!list || !pager) return;
 
     const escapeHtml = (s) => String(s ?? '')
         .replace(/&/g, '&amp;')
@@ -10492,7 +10591,7 @@ function initializeTaskDoneParts(donePartsNormalized) {
             return String.fromCodePoint(A + c1, A + c2);
         };
 
-        tbody.innerHTML = slice.map((r, i) => {
+        list.innerHTML = slice.map((r, i) => {
             const idx = start + i + 1;
             const ccRaw = String(r.country_code ?? 'Unknown');
             const cc = (ccRaw || '').toLowerCase() === 'unknown' ? 'Unknown' : ccRaw.toUpperCase();
@@ -10504,29 +10603,32 @@ function initializeTaskDoneParts(donePartsNormalized) {
             const flag = flagEmojiFromCC(cc);
 
             return `
-                <tr>
-                    <td class="muted">${idx}</td>
-                    <td>
-                        <span class="country-badge" title="${escapeHtml(cc)}">
-                            <span class="country-flag" aria-hidden="true">${escapeHtml(flag)}</span>
-                            <span class="country-text">${escapeHtml(cc)}</span>
-                        </span>
-                    </td>
-                    <td>${mailto ? `<a class="task-email" href="${mailto}" target="_blank" rel="noopener noreferrer">${escapeHtml(email)}</a>` : `<span class="muted">—</span>`}</td>
-                    <td>
-                        <div>${escapeHtml(timePretty)}</div>
-                        ${dt ? `<div class="muted">${escapeHtml(timeRaw)}</div>` : ''}
-                    </td>
-                </tr>
+                <div class="task-done-card" role="listitem">
+                    <div class="task-done-card-top">
+                        <div class="left">
+                            <span class="task-done-idx">#${idx}</span>
+                            <span class="country-badge" title="${escapeHtml(cc)}">
+                                <span class="country-flag" aria-hidden="true">${escapeHtml(flag)}</span>
+                                <span class="country-text">${escapeHtml(cc)}</span>
+                            </span>
+                        </div>
+                        <div class="task-done-time" title="${escapeHtml(dt ? timeRaw : timePretty)}">${escapeHtml(timePretty)}</div>
+                    </div>
+                    <div class="task-done-kv">
+                        <div class="label">Email</div>
+                        <div class="value">
+                            ${mailto
+                                ? `<a class="task-email" href="${mailto}" target="_blank" rel="noopener noreferrer">${escapeHtml(email)}</a>`
+                                : `<span class="muted">—</span>`}
+                        </div>
+                    </div>
+                    ${dt ? `<div class="task-done-rawtime">${escapeHtml(timeRaw)}</div>` : ``}
+                </div>
             `;
         }).join('');
 
         if (slice.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="4" class="muted">No done parts yet.</td>
-                </tr>
-            `;
+            list.innerHTML = `<div class="muted" style="padding: 0.85rem;">No done parts yet.</div>`;
         }
 
         const makeBtn = (label, pageNum, opts = {}) => {
