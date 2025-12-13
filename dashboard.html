@@ -4341,6 +4341,9 @@ div#modalBody {
     justify-content: flex-end;
     align-items: center;
 }
+.task-modal-actions-slot:empty {
+    display: none;
+}
 /* Move SweetAlert2 actions into the header cleanly */
 .task-modal-actions-slot .swal2-actions {
     margin: 0 !important;
@@ -4389,21 +4392,28 @@ div#modalBody {
     border-color: rgba(99, 102, 241, 0.55);
     box-shadow: 0 10px 30px rgba(99, 102, 241, 0.12);
 }
-.task-modal-url-pill .ri-eye-line {
+.task-modal-url-pill i {
     font-size: 1.05em;
+    flex: 0 0 auto;
 }
 
 .task-modal-tabs {
-    display: flex;
-    gap: 0.75rem;
+    display: inline-flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
     margin: 1rem 0 1.25rem;
+    width: 100%;
+    flex-wrap: nowrap;
 }
 .task-modal-tab {
     appearance: none;
-    border: 1px solid var(--border);
-    background: var(--card);
+    border: 1px solid transparent;
+    background: transparent;
     color: var(--text);
     border-radius: 999px;
     padding: 0.55rem 0.85rem;
@@ -4414,10 +4424,13 @@ div#modalBody {
     align-items: center;
     gap: 0.45rem;
     transition: var(--transition);
+    flex: 1 1 0;
+    justify-content: center;
+    white-space: nowrap;
 }
 .task-modal-tab:hover {
     transform: translateY(-1px);
-    box-shadow: var(--shadow);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10);
 }
 .task-modal-tab:disabled {
     cursor: not-allowed;
@@ -4442,6 +4455,13 @@ div#modalBody {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
+}
+.task-modal-panel.panel-in {
+    animation: taskPanelIn 180ms ease-out;
+}
+@keyframes taskPanelIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 .task-modal-panel[hidden] {
     display: none !important;
@@ -4534,20 +4554,100 @@ div#modalBody {
     margin-bottom: 0;
     padding-bottom: 0;
 }
-.views-by-date-list {
-    max-height: 280px;
-    overflow-y: auto;
-}
-.views-by-date-list .list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem;
-    border-radius: var(--radius-sm);
-    margin-bottom: 0.5rem;
-}
-.views-by-date-list .list-item:nth-child(odd) {
+
+.task-budget-actions {
     background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    margin: 0 0 1.25rem 0;
+}
+.task-budget-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.65rem;
+}
+.task-budget-label {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: 0.01em;
+}
+.task-budget-meta {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex: 0 0 auto;
+}
+.task-budget-amount {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: var(--success);
+}
+.task-budget-percent {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+}
+.task-modal-recharge-btn {
+    margin-top: 0.85rem;
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.95rem;
+    border-radius: 12px;
+    border: 1px solid rgba(16, 185, 129, 0.55);
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
+    color: #ffffff;
+    font-weight: 900;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 18px 40px rgba(16, 185, 129, 0.18);
+}
+.task-modal-recharge-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 20px 48px rgba(16, 185, 129, 0.24);
+}
+.task-modal-recharge-btn:active {
+    transform: translateY(0);
+}
+.task-modal-recharge-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.22), 0 20px 48px rgba(16, 185, 129, 0.24);
+}
+
+.task-modal-breakdown-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+.task-modal-breakdown-item {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem 0.9rem;
+}
+.task-modal-breakdown-item .label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+.task-modal-breakdown-item .value {
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: var(--text);
+}
+@media (max-width: 768px) {
+    .task-modal-tabs { width: 100%; }
 }
 
 /* Mobile responsive styles for task details modal */
@@ -4621,16 +4721,6 @@ div#modalBody {
     .task-modal-mini-chart {
         height: 160px;
     }
-    
-    .views-by-date-list {
-        max-height: 200px !important;
-    }
-    
-    .views-by-date-list .list-item {
-        padding: 0.5rem !important;
-        font-size: 0.85rem;
-    }
-    
     .install-instructions {
         padding: 0.75rem !important;
         font-size: 0.8rem !important;
@@ -9273,7 +9363,13 @@ async function viewTaskDetails(taskId) {
         const totalCharge = task.total_charge || 0;
         const availableCharge = task.available_charge || 0;
         const usedCharge = Math.max(0, totalCharge - availableCharge);
-        const remainingPercentage = totalCharge > 0 ? (availableCharge / totalCharge) * 100 : 0;
+        const remainingPercentageRaw = totalCharge > 0 ? (availableCharge / totalCharge) * 100 : 0;
+        const remainingPercentageLabel = Math.max(0, remainingPercentageRaw);
+        const remainingPercentage = Math.max(0, Math.min(100, remainingPercentageRaw));
+        const remainingFillColor =
+            remainingPercentageLabel >= 50 ? 'var(--success)' :
+            remainingPercentageLabel >= 20 ? 'var(--warning)' :
+            'var(--error)';
         const priorityRate = parseFloat(task.task_priority) || 0.12;
         const priorityName = priorityRate <= 0.10 ? 'Basic' : priorityRate <= 0.12 ? 'Standard' : 'Premium';
         const priorityBadge = priorityName === 'Basic' ? 'warning' : priorityName === 'Standard' ? 'primary' : 'success';
@@ -9282,6 +9378,17 @@ async function viewTaskDetails(taskId) {
         const sortedDates = Object.entries(viewsByDate).sort(([a], [b]) => new Date(a) - new Date(b));
         const totalViews = Object.values(viewsByDate).reduce((sum, views) => sum + views, 0);
         const hasAnalytics = sortedDates.length > 0;
+
+        // Lightweight breakdown stats (no "daily" list)
+        const daysTracked = sortedDates.length;
+        const avgViewsPerDay = daysTracked > 0 ? (totalViews / daysTracked) : 0;
+        const last7 = sortedDates.slice(-7);
+        const last7Views = last7.reduce((sum, [, v]) => sum + (v || 0), 0);
+        const bestEntry = sortedDates.reduce((best, cur) => (cur[1] > (best?.[1] ?? -Infinity) ? cur : best), null);
+        const bestDayLabel = bestEntry?.[0]
+            ? new Date(bestEntry[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            : '—';
+        const bestDayViews = bestEntry?.[1] ?? 0;
 
         // --- 2. Construct Modal HTML (New Responsive Layout) ---
         const isVerified = task.verified !== false;
@@ -9299,7 +9406,7 @@ async function viewTaskDetails(taskId) {
                     <div class="task-modal-title">
                         <h3>
                             <a class="task-modal-url-pill" href="${task.url}" target="_blank" rel="noopener noreferrer">
-                                <i class="ri-eye-line"></i>
+                                <i class="ri-external-link-line"></i>
                                 <span>${task.url}</span>
                             </a>
                         </h3>
@@ -9335,14 +9442,20 @@ async function viewTaskDetails(taskId) {
                 </div>
             </div>
 
-            <div style="margin-bottom: 2rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-size: 0.875rem;">
-                    <span style="font-weight: 600;">Budget Remaining</span>
-                    <span style="color: var(--text-secondary);">${remainingPercentage.toFixed(1)}%</span>
+            <div class="task-budget-actions">
+                <div class="task-budget-top">
+                    <div class="task-budget-label">Budget Remaining</div>
+                    <div class="task-budget-meta">
+                        <span class="task-budget-amount">$${availableCharge.toFixed(2)}</span>
+                        <span class="task-budget-percent">${remainingPercentageLabel.toFixed(1)}%</span>
+                    </div>
                 </div>
                 <div class="progress-bar" style="height: 10px;">
-                    <div class="progress-fill" style="width: ${remainingPercentage}%; background: ${remainingPercentage >= 50 ? 'var(--success)' : remainingPercentage >= 20 ? 'var(--warning)' : 'var(--error)'};"></div>
+                    <div class="progress-fill" style="width: ${remainingPercentage}%; background: ${remainingFillColor};"></div>
                 </div>
+                <button class="task-modal-recharge-btn" type="button" onclick="Swal.close(); rechargeTask('${task._id}')">
+                    <i class="ri-wallet-3-line"></i> Recharge
+                </button>
             </div>
 
             <div class="task-modal-tabs" role="tablist" aria-label="Task details sections">
@@ -9361,14 +9474,19 @@ async function viewTaskDetails(taskId) {
                             <h3 class="task-modal-section-title" style="color: var(--primary);"><i class="ri-line-chart-line"></i>Views Analytics</h3>
                             <div style="height: 250px; margin-bottom: 1.5rem;"><canvas id="taskViewsTimelineChart"></canvas></div>
                             <div class="task-modal-subtitle">Breakdown</div>
-                            <div class="task-modal-mini-chart"><canvas id="taskDailyBreakdownChart"></canvas></div>
-                            <div class="views-by-date-list">
-                                ${sortedDates.map(([date, views]) => `
-                                    <div class="list-item">
-                                        <span>${new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                                        <span class="badge badge-primary">${formatNumber(views)}</span>
-                                    </div>
-                                `).join('')}
+                            <div class="task-modal-breakdown-grid">
+                                <div class="task-modal-breakdown-item">
+                                    <div class="label">Last 7 days</div>
+                                    <div class="value">${formatNumber(last7Views)}</div>
+                                </div>
+                                <div class="task-modal-breakdown-item">
+                                    <div class="label">Avg / day</div>
+                                    <div class="value">${avgViewsPerDay.toFixed(1)}</div>
+                                </div>
+                                <div class="task-modal-breakdown-item">
+                                    <div class="label">Best day</div>
+                                    <div class="value">${formatNumber(bestDayViews)} <span style="font-size: 0.8rem; font-weight: 800; color: var(--text-secondary);">(${bestDayLabel})</span></div>
+                                </div>
                             </div>
                         </div>
                     ` : `
@@ -9487,12 +9605,8 @@ async function viewTaskDetails(taskId) {
                     initializeTaskAnalyticsChart(sortedDates);
                 }
             },
-            showDenyButton: true,
-            showCancelButton: true,
-            denyButtonText: `<i class="ri-wallet-line"></i> Recharge <span class="task-action-sub">$${availableCharge.toFixed(2)} left</span>`,
-            denyButtonColor: '#10b981',
-            cancelButtonText: `<i class="ri-close-line"></i> Close`,
-            cancelButtonColor: '#6b7280',
+            showDenyButton: false,
+            showCancelButton: false,
         };
         
         // Add verify button if task is not verified
@@ -9509,9 +9623,6 @@ async function viewTaskDetails(taskId) {
                 // The "Verify Task" button was clicked
                 Swal.close();
                 verifyTask(taskId);
-            } else if (result.isDenied) {
-                // The "Recharge" button was clicked
-                rechargeTask(taskId);
             }
         });
 
@@ -9545,8 +9656,15 @@ function setupTaskDetailsTabs({ hasAnalytics }) {
 
         panels.forEach(panel => {
             const isPanelActive = panel.dataset.panel === name;
-            if (isPanelActive) panel.removeAttribute('hidden');
-            else panel.setAttribute('hidden', '');
+            if (isPanelActive) {
+                panel.removeAttribute('hidden');
+                // Trigger a tiny fade/slide-in for polish
+                panel.classList.remove('panel-in');
+                panel.offsetWidth; // force reflow
+                panel.classList.add('panel-in');
+            } else {
+                panel.setAttribute('hidden', '');
+            }
         });
     };
 
@@ -9571,9 +9689,6 @@ function initializeTaskAnalyticsChart(sortedDates) {
         // Destroy previous charts if modal reopened
         if (window.charts?.taskModalTimeline) {
             try { window.charts.taskModalTimeline.destroy(); } catch (e) {}
-        }
-        if (window.charts?.taskModalDaily) {
-            try { window.charts.taskModalDaily.destroy(); } catch (e) {}
         }
 
         const ctx2d = timelineCtx.getContext('2d');
@@ -9633,52 +9748,6 @@ function initializeTaskAnalyticsChart(sortedDates) {
                             precision: 0,
                             callback: (v) => formatNumber(v)
                         },
-                        grid: { color: gridColor, drawBorder: false },
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
-
-    // Daily breakdown mini bar chart
-    const breakdownCtx = document.getElementById('taskDailyBreakdownChart');
-    if (breakdownCtx) {
-        window.charts = window.charts || {};
-        window.charts.taskModalDaily = new Chart(breakdownCtx, {
-            type: 'bar',
-            data: {
-                labels: sortedDates.map(([date]) =>
-                    new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                ),
-                datasets: [{
-                    label: 'Views',
-                    data: sortedDates.map(([, views]) => views),
-                    backgroundColor: isDark ? 'rgba(99, 102, 241, 0.55)' : 'rgba(99, 102, 241, 0.35)',
-                    borderColor: 'rgba(99, 102, 241, 0.9)',
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    maxBarThickness: 28
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: (ctx) => ` ${formatNumber(ctx.parsed.y || 0)} views`
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: { color: textColor, font: { size: 10 }, maxRotation: 0, autoSkip: true },
-                        grid: { display: false, drawBorder: false }
-                    },
-                    y: {
-                        ticks: { color: textColor, font: { size: 10 }, precision: 0, callback: (v) => formatNumber(v) },
                         grid: { color: gridColor, drawBorder: false },
                         beginAtZero: true
                     }
