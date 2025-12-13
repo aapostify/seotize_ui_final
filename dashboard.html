@@ -801,62 +801,6 @@ tr:hover {
     color: var(--error);
 }
 
-/* Task status row with inline verify button */
-.task-status-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-shrink: 0;
-}
-
-.btn-verify-inline {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem 0.65rem;
-    border-radius: 8px;
-    border: 1px solid rgba(245, 158, 11, 0.5);
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.12) 100%);
-    color: #d97706;
-    font-size: 0.72rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-}
-
-.btn-verify-inline i {
-    font-size: 0.85rem;
-}
-
-.btn-verify-inline:hover {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.2) 100%);
-    border-color: rgba(245, 158, 11, 0.7);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
-}
-
-.btn-verify-inline:active {
-    transform: translateY(0);
-}
-
-@media (max-width: 768px) {
-    .btn-verify-inline {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.68rem;
-        gap: 0.25rem;
-    }
-    .btn-verify-inline span {
-        display: none;
-    }
-    .btn-verify-inline i {
-        font-size: 0.9rem;
-    }
-    .task-status-row {
-        gap: 0.35rem;
-    }
-}
-
 .task-card.unverified {
     opacity: 0.7;
     border: 1px dashed var(--border);
@@ -4655,88 +4599,6 @@ div#modalBody {
     align-items: center;
     gap: 0.5rem;
 }
-
-/* Analytics Toggle Switch */
-.analytics-toggle-header {
-    border-bottom: none !important;
-    padding-bottom: 0 !important;
-    margin-bottom: 0.75rem !important;
-}
-
-.analytics-toggle-switch {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.25rem;
-    border-radius: 12px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
-    width: 100%;
-}
-
-.analytics-toggle-btn {
-    flex: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    padding: 0.55rem 0.75rem;
-    border: 1px solid transparent;
-    border-radius: 10px;
-    background: transparent;
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-}
-
-.analytics-toggle-btn:hover {
-    color: var(--text);
-    background: rgba(148, 163, 184, 0.08);
-}
-
-.analytics-toggle-btn.active {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%);
-    border-color: rgba(99, 102, 241, 0.4);
-    color: var(--primary);
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
-}
-
-.analytics-toggle-btn.active[data-view="map"] {
-    background: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
-    border-color: rgba(14, 165, 233, 0.4);
-    color: var(--info);
-    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.15);
-}
-
-.analytics-toggle-btn i {
-    font-size: 1rem;
-}
-
-.analytics-view-panel {
-    animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 600px) {
-    .analytics-toggle-btn {
-        padding: 0.45rem 0.5rem;
-        font-size: 0.78rem;
-        gap: 0.3rem;
-    }
-    .analytics-toggle-btn span {
-        display: none;
-    }
-    .analytics-toggle-btn i {
-        font-size: 1.1rem;
-    }
-}
 .xpath-list {
     max-height: 200px;
     overflow-y: auto;
@@ -5017,16 +4879,14 @@ div#modalBody {
 .task-done-kv .value a.task-email:hover {
     text-decoration: underline;
 }
-/* Time row styling for task-done-card */
-.task-done-time-row {
-    border-top: 1px dashed rgba(148, 163, 184, 0.15);
-    padding-top: 0.35rem;
-    margin-top: 0.15rem;
-}
-.task-done-time-row .value {
-    font-size: 0.78rem;
+.task-done-rawtime {
     color: var(--text-secondary);
     font-weight: 500;
+    font-size: 0.72rem;
+    opacity: 0.8;
+    padding-top: 0.2rem;
+    border-top: 1px dashed rgba(148, 163, 184, 0.15);
+    margin-top: 0.15rem;
 }
 
 /* Country badge styling for task-done-card (more details section) */
@@ -5103,6 +4963,10 @@ div#modalBody {
         height: 13px;
         font-size: 0.72rem;
     }
+    .task-done-time { 
+        font-size: 0.72rem;
+        padding: 0.12rem 0.35rem;
+    }
     .task-done-kv {
         gap: 0.35rem;
     }
@@ -5112,11 +4976,10 @@ div#modalBody {
     .task-done-kv .value {
         font-size: 0.8rem;
     }
-    .task-done-time-row {
-        padding-top: 0.25rem;
-    }
-    .task-done-time-row .value {
-        font-size: 0.72rem;
+    .task-done-rawtime {
+        font-size: 0.68rem;
+        padding-top: 0.15rem;
+        margin-top: 0.1rem;
     }
 }
 
@@ -5153,6 +5016,10 @@ div#modalBody {
         height: 11px;
         font-size: 0.65rem;
     }
+    .task-done-time { 
+        font-size: 0.68rem;
+        padding: 0.1rem 0.28rem;
+    }
     .task-done-kv {
         gap: 0.3rem;
     }
@@ -5162,8 +5029,8 @@ div#modalBody {
     .task-done-kv .value {
         font-size: 0.75rem;
     }
-    .task-done-time-row .value {
-        font-size: 0.68rem;
+    .task-done-rawtime {
+        font-size: 0.62rem;
     }
 }
 .task-done-pager {
@@ -5520,48 +5387,6 @@ div#modalBody {
 }
 @media (max-width: 768px) {
     .task-modal-tabs { width: 100%; }
-    
-    /* Force icon-only tabs on mobile */
-    .task-modal-tab .label-mobile,
-    .task-modal-tab .label-desktop {
-        display: none !important;
-    }
-    .task-modal-tab {
-        padding: 0.5rem 0.75rem !important;
-        gap: 0 !important;
-    }
-    .task-modal-tab i {
-        margin: 0 !important;
-        font-size: 1.1rem;
-    }
-    
-    /* Fix pagination buttons on mobile - compact single line */
-    .task-done-pager .task-done-page-btn {
-        padding: 0.35rem 0.5rem !important;
-        font-size: 0.75rem !important;
-        min-width: auto !important;
-    }
-    .task-done-pager .task-done-page-btn.nav {
-        min-width: auto !important;
-        padding: 0.35rem 0.55rem !important;
-    }
-    .task-done-pager .task-done-page-btn.nav span {
-        display: none !important;
-    }
-    .task-done-pager .task-done-page-btn.nav i {
-        margin: 0 !important;
-    }
-    .task-done-pager .meta {
-        font-size: 0.7rem !important;
-        text-align: center;
-        width: 100%;
-    }
-    .task-done-pager .btns {
-        gap: 0.25rem !important;
-    }
-    .task-done-pager .pages {
-        gap: 0.2rem !important;
-    }
 }
 
 /* Mobile responsive styles for task details modal */
@@ -8136,10 +7961,7 @@ async function loadTasks(page = 1) {
             </button>
             <div class="task-header">
             <a href="${task.url}" target="_blank" class="task-url" onclick="event.stopPropagation()">${task.url}</a>
-            <div class="task-status-row">
-            ${!isVerified ? `<button class="btn-verify-inline" onclick="event.stopPropagation(); verifyTask('${task._id}')" title="Verify Task"><i class="ri-shield-check-line"></i><span>Verify</span></button>` : ''}
             <span class="task-status ${statusClass}">${statusText}</span>
-            </div>
             </div>
 
             <div class="task-stats">
@@ -8175,10 +7997,15 @@ async function loadTasks(page = 1) {
             <i class="ri-wallet-line"></i> Recharge
             </button>
             </div>
-            <div class="task-actions task-actions-secondary task-actions-delete-only" style="margin-top: 8px;">
+            <div class="task-actions task-actions-secondary ${isVerified ? 'task-actions-delete-only' : ''}" style="margin-top: 8px;">
             <button class="btn btn-sm btn-danger btn-delete-task-desktop" onclick="event.stopPropagation(); deleteTask('${task._id}')" style="background: var(--danger); color: white;">
             <i class="ri-delete-bin-line"></i> Delete
             </button>
+            ${!isVerified ? `
+            <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); verifyTask('${task._id}')" style="background: var(--warning); color: white;">
+            <i class="ri-shield-check-line"></i> Verify Task
+            </button>
+            ` : ''}
             </div>
             </div>
             `;
@@ -10625,21 +10452,9 @@ async function viewTaskDetails(taskId) {
 
             <div class="task-modal-panels">
                 <div class="task-modal-panel" id="task-panel-analytics" data-panel="analytics" role="tabpanel">
-                    <div class="task-modal-section">
-                        <div class="task-modal-section-title analytics-toggle-header">
-                            <div class="analytics-toggle-switch" role="tablist" aria-label="Analytics view toggle">
-                                <button class="analytics-toggle-btn active" data-view="charts" role="tab" aria-selected="true">
-                                    <i class="ri-line-chart-line"></i>
-                                    <span>View Analytics</span>
-                                </button>
-                                <button class="analytics-toggle-btn" data-view="map" role="tab" aria-selected="false">
-                                    <i class="ri-map-2-line"></i>
-                                    <span>Traffic Map</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="analytics-view-panel" id="analytics-charts-view" data-view="charts">
+                    <div class="task-modal-grid">
+                        <div class="task-modal-section">
+                            <h3 class="task-modal-section-title" style="color: var(--primary);"><i class="ri-line-chart-line"></i>View Analytics</h3>
                             ${hasViewsAnalytics ? `
                                 <div class="task-modal-chart-stack">
                                     <div class="task-modal-chart-wrap"><canvas id="taskViewsTimelineChart"></canvas></div>
@@ -10654,7 +10469,8 @@ async function viewTaskDetails(taskId) {
                             `}
                         </div>
 
-                        <div class="analytics-view-panel" id="analytics-map-view" data-view="map" style="display: none;">
+                        <div class="task-modal-section">
+                            <h3 class="task-modal-section-title" style="color: var(--info);"><i class="ri-map-2-line"></i>Traffic Map</h3>
                             <div class="task-modal-map" id="taskCountryMap"></div>
                             <div class="task-modal-subtitle">Top Countries</div>
                             <div class="task-modal-map-note">
@@ -10735,7 +10551,6 @@ async function viewTaskDetails(taskId) {
                 setupTaskDetailsTabs({ hasAnalytics: hasAnyAnalytics });
                 attachTaskModalTabAutoIconOnly(Swal.getPopup());
                 initializeTaskDoneParts(donePartsNormalized);
-                setupAnalyticsToggle(Swal.getPopup());
                 // Charts + Map (Analytics + Country visits)
                 if (hasViewsAnalytics) initializeTaskAnalyticsCharts(sortedDates);
                 initializeTaskCountryMap(countryVisits);
@@ -10835,40 +10650,6 @@ function setupTaskDetailsTabs({ hasAnalytics }) {
     activate(hasAnalytics ? 'analytics' : 'details');
 }
 
-// Setup analytics toggle between charts and map views
-function setupAnalyticsToggle(popup) {
-    const root = popup || Swal.getPopup();
-    if (!root) return;
-
-    const toggleBtns = root.querySelectorAll('.analytics-toggle-btn');
-    const chartsView = root.querySelector('#analytics-charts-view');
-    const mapView = root.querySelector('#analytics-map-view');
-
-    if (toggleBtns.length === 0 || !chartsView || !mapView) return;
-
-    const switchView = (viewName) => {
-        toggleBtns.forEach(btn => {
-            const isActive = btn.dataset.view === viewName;
-            btn.classList.toggle('active', isActive);
-            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-        });
-
-        if (viewName === 'charts') {
-            chartsView.style.display = '';
-            mapView.style.display = 'none';
-        } else {
-            chartsView.style.display = 'none';
-            mapView.style.display = '';
-        }
-    };
-
-    toggleBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            switchView(btn.dataset.view);
-        });
-    });
-}
-
 function attachTaskModalTabAutoIconOnly(popup) {
     const root = popup || Swal.getPopup();
     if (!root) return;
@@ -10960,7 +10741,7 @@ function initializeTaskDoneParts(donePartsNormalized) {
             return a.__idx - b.__idx;
         });
 
-    const perPage = 9;
+    const perPage = 10;
     const total = rows.length;
     const totalPages = Math.max(1, Math.ceil(total / perPage));
     let currentPage = 1;
@@ -11002,6 +10783,7 @@ function initializeTaskDoneParts(donePartsNormalized) {
                                 <span class="country-text">${escapeHtml(cc)}</span>
                             </span>
                         </div>
+                        <div class="task-done-time" title="${escapeHtml(dt ? timeRaw : timePretty)}">${escapeHtml(timePretty)}</div>
                     </div>
                     <div class="task-done-kv">
                         <div class="label">Email</div>
@@ -11011,10 +10793,7 @@ function initializeTaskDoneParts(donePartsNormalized) {
                                 : `<span class="muted">—</span>`}
                         </div>
                     </div>
-                    <div class="task-done-kv task-done-time-row">
-                        <div class="label">Time</div>
-                        <div class="value">${escapeHtml(timePretty)}</div>
-                    </div>
+                    ${dt ? `<div class="task-done-rawtime">${escapeHtml(timeRaw)}</div>` : ``}
                 </div>
             `;
         }).join('');
@@ -14959,4 +14738,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
    
 </body>
-</html
+</html>
