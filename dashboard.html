@@ -4528,24 +4528,29 @@ div#modalBody {
     align-items: center;
 }
 .task-verify-inline-btn {
-    background: #f59e0b !important;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
     color: white !important;
     border: none !important;
-    padding: 0.25rem 0.6rem !important;
-    border-radius: 6px !important;
-    font-size: 0.75rem !important;
-    font-weight: 600 !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 8px !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
     cursor: pointer !important;
     display: inline-flex !important;
     align-items: center !important;
-    gap: 0.3rem !important;
+    gap: 0.4rem !important;
     transition: all 0.2s ease !important;
     flex-shrink: 0 !important;
+    box-shadow: 0 2px 8px rgba(249, 158, 11, 0.25) !important;
+    letter-spacing: 0.01em !important;
 }
 .task-verify-inline-btn:hover {
-    background: #d97706 !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(249, 158, 11, 0.3) !important;
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(249, 158, 11, 0.4) !important;
+}
+.task-verify-inline-btn i {
+    font-size: 1.1em !important;
 }
 .task-config-btn {
     appearance: none;
@@ -4853,7 +4858,6 @@ div#modalBody {
     color: var(--text-secondary);
     font-weight: 600;
     font-size: 0.78rem;
-    text-align: right;
     white-space: nowrap;
     flex-shrink: 1;
     min-width: 0;
@@ -4988,7 +4992,7 @@ div#modalBody {
         font-size: 0.72rem;
     }
     .task-done-time { 
-        display: none;
+        font-size: 0.68rem;
     }
     .task-done-kv {
         gap: 0.35rem;
@@ -5040,7 +5044,7 @@ div#modalBody {
         font-size: 0.65rem;
     }
     .task-done-time { 
-        display: none;
+        font-size: 0.62rem;
     }
     .task-done-kv {
         gap: 0.3rem;
@@ -5070,7 +5074,7 @@ div#modalBody {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.5rem;
+    gap: 0.75rem;
     min-width: 0;
 }
 .task-done-pager .pages {
@@ -5081,6 +5085,7 @@ div#modalBody {
     flex-wrap: wrap;
     min-width: 0;
     flex: 1 1 auto;
+    padding: 0 0.5rem;
 }
 .task-done-pager .task-done-page-btn {
     appearance: none;
@@ -5280,6 +5285,74 @@ div#modalBody {
 .task-modal-chart-wrap.small {
     height: 200px;
 }
+/* Mobile analytics/map toggle switch */
+.analytics-mobile-switch {
+    display: none;
+    width: 100%;
+    padding: 0.25rem;
+    background: rgba(148, 163, 184, 0.08);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 1rem;
+    gap: 0.25rem;
+}
+.analytics-switch-btn {
+    flex: 1;
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 10px;
+    padding: 0.6rem 0.75rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+}
+.analytics-switch-btn:hover {
+    color: var(--text);
+    background: rgba(148, 163, 184, 0.1);
+}
+.analytics-switch-btn.active {
+    background: var(--bg);
+    color: var(--primary);
+    border-color: rgba(99, 102, 241, 0.4);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+}
+.analytics-switch-btn.active[data-view="map"] {
+    color: var(--info);
+    border-color: rgba(14, 165, 233, 0.4);
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.15);
+}
+.analytics-switch-btn i {
+    font-size: 1.1em;
+}
+
+@media (max-width: 768px) {
+    .analytics-mobile-switch {
+        display: flex;
+    }
+    /* Hide section titles on mobile since the switch shows which one is active */
+    .task-modal-grid .analytics-section > .task-modal-section-title,
+    .task-modal-grid .map-section > .task-modal-section-title {
+        display: none;
+    }
+    /* Initially hide both, JS will show the active one */
+    .task-modal-grid .analytics-section,
+    .task-modal-grid .map-section {
+        display: none !important;
+    }
+    .task-modal-grid .analytics-section.active,
+    .task-modal-grid .map-section.active {
+        display: block !important;
+    }
+}
+
 .task-modal-map {
     height: 360px;
     border-radius: var(--radius);
@@ -5460,8 +5533,8 @@ div#modalBody {
     .task-modal-header .header-meta .header-meta-left .task-verify-inline-btn {
         width: auto !important;
         max-width: none !important;
-        padding: 0.2rem 0.5rem !important;
-        font-size: 0.7rem !important;
+        padding: 0.4rem 0.85rem !important;
+        font-size: 0.8rem !important;
     }
     .task-modal-header .header-meta .header-meta-right {
         width: 100%;
@@ -6284,6 +6357,7 @@ div#modalBody {
     .swal2-html-container .task-done-pager .pages {
         flex: 1 1 auto !important;
         min-width: 0 !important;
+        padding: 0 0.35rem !important;
     }
     
     .swal2-html-container [class*="grid"],
@@ -10440,9 +10514,9 @@ async function viewTaskDetails(taskId) {
                         <span><i class="ri-calendar-line"></i> Created: ${new Date(task.date_created).toLocaleString()}</span>
                         ${task.email ? `<span><i class="ri-mail-line"></i> Email: ${task.email}</span>` : ''}
                         <span><i class="ri-key-line"></i> ID: ${task._id}</span>
-                        <span style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                            ${!isVerified ? `<button class="btn btn-sm task-verify-inline-btn" onclick="Swal.close(); verifyTask('${task._id}')" style="background: #f59e0b; color: white; border: none; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem;"><i class="ri-shield-check-line"></i> Verify</button>` : ''}
+                        <span style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
                             <span style="display: inline-flex; align-items: center; gap: 0.35rem;"><i class="ri-shield-check-line"></i> Status: ${verificationStatus}</span>
+                            ${!isVerified ? `<button class="btn task-verify-inline-btn" onclick="Swal.close(); verifyTask('${task._id}')"><i class="ri-shield-check-line"></i> Verify</button>` : ''}
                         </span>
                         ${lastVerifiedText}
                     </div>
@@ -10504,8 +10578,18 @@ async function viewTaskDetails(taskId) {
 
             <div class="task-modal-panels">
                 <div class="task-modal-panel" id="task-panel-analytics" data-panel="analytics" role="tabpanel">
+                    <div class="analytics-mobile-switch" role="tablist" aria-label="Analytics view toggle">
+                        <button class="analytics-switch-btn active" type="button" data-view="analytics" role="tab" aria-selected="true">
+                            <i class="ri-line-chart-line"></i>
+                            <span>View Analytics</span>
+                        </button>
+                        <button class="analytics-switch-btn" type="button" data-view="map" role="tab" aria-selected="false">
+                            <i class="ri-map-2-line"></i>
+                            <span>Traffic Map</span>
+                        </button>
+                    </div>
                     <div class="task-modal-grid">
-                        <div class="task-modal-section">
+                        <div class="task-modal-section analytics-section" data-analytics-view="analytics">
                             <h3 class="task-modal-section-title" style="color: var(--primary);"><i class="ri-line-chart-line"></i>View Analytics</h3>
                             ${hasViewsAnalytics ? `
                                 <div class="task-modal-chart-stack">
@@ -10521,7 +10605,7 @@ async function viewTaskDetails(taskId) {
                             `}
                         </div>
 
-                        <div class="task-modal-section">
+                        <div class="task-modal-section map-section" data-analytics-view="map">
                             <h3 class="task-modal-section-title" style="color: var(--info);"><i class="ri-map-2-line"></i>Traffic Map</h3>
                             <div class="task-modal-map" id="taskCountryMap"></div>
                             <div class="task-modal-subtitle">Top Countries</div>
@@ -10686,6 +10770,47 @@ function setupTaskDetailsTabs({ hasAnalytics }) {
     });
 
     activate(hasAnalytics ? 'analytics' : 'details');
+    
+    // Setup mobile analytics/map switch
+    setupAnalyticsMobileSwitch(popup);
+}
+
+function setupAnalyticsMobileSwitch(popup) {
+    if (!popup) return;
+    
+    const switchContainer = popup.querySelector('.analytics-mobile-switch');
+    if (!switchContainer) return;
+    
+    const switchBtns = Array.from(switchContainer.querySelectorAll('.analytics-switch-btn'));
+    const analyticsSection = popup.querySelector('.analytics-section');
+    const mapSection = popup.querySelector('.map-section');
+    
+    if (switchBtns.length === 0 || !analyticsSection || !mapSection) return;
+    
+    const activateView = (viewName) => {
+        switchBtns.forEach(btn => {
+            const isActive = btn.dataset.view === viewName;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+        
+        if (viewName === 'analytics') {
+            analyticsSection.classList.add('active');
+            mapSection.classList.remove('active');
+        } else {
+            analyticsSection.classList.remove('active');
+            mapSection.classList.add('active');
+        }
+    };
+    
+    switchBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            activateView(btn.dataset.view);
+        });
+    });
+    
+    // Default to analytics view
+    activateView('analytics');
 }
 
 function attachTaskModalTabAutoIconOnly(popup) {
@@ -10816,12 +10941,12 @@ function initializeTaskDoneParts(donePartsNormalized) {
                     <div class="task-done-card-top">
                         <div class="left">
                             <span class="task-done-idx">#${idx}</span>
-                            <span class="country-badge" title="${escapeHtml(cc)}">
-                                <span class="country-flag" aria-hidden="true">${escapeHtml(flag)}</span>
-                                <span class="country-text">${escapeHtml(cc)}</span>
-                            </span>
+                            <span class="task-done-time" title="${escapeHtml(dt ? timeRaw : timePretty)}">${escapeHtml(timePretty)}</span>
                         </div>
-                        <div class="task-done-time" title="${escapeHtml(dt ? timeRaw : timePretty)}">${escapeHtml(timePretty)}</div>
+                        <span class="country-badge" title="${escapeHtml(cc)}">
+                            <span class="country-flag" aria-hidden="true">${escapeHtml(flag)}</span>
+                            <span class="country-text">${escapeHtml(cc)}</span>
+                        </span>
                     </div>
                     <div class="task-done-kv">
                         <div class="label">Email</div>
