@@ -4325,6 +4325,46 @@ div#modalBody {
     margin: -1.5rem -1.5rem 1.5rem -1.5rem;
     border-bottom: 1px solid var(--border);
 }
+.task-modal-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.task-modal-title {
+    min-width: 0;
+    flex: 1;
+}
+.task-modal-actions-slot {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+/* Move SweetAlert2 actions into the header cleanly */
+.task-modal-actions-slot .swal2-actions {
+    margin: 0 !important;
+    gap: 0.5rem !important;
+    padding: 0 !important;
+    width: auto !important;
+    justify-content: flex-end !important;
+}
+.task-modal-actions-slot .swal2-actions button {
+    padding: 0.55rem 0.9rem !important;
+    font-size: 0.85rem !important;
+    line-height: 1.1 !important;
+}
+.task-modal-subtitle {
+    font-size: 0.9rem;
+    margin: 0.75rem 0 0.5rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+.task-modal-mini-chart {
+    height: 140px;
+    position: relative;
+    margin-bottom: 1rem;
+}
 .task-modal-header h3 {
     font-size: 1.25rem;
     margin: 0 0 0.5rem 0;
@@ -4420,6 +4460,24 @@ div#modalBody {
 
 /* Mobile responsive styles for task details modal */
 @media (max-width: 768px) {
+    .task-modal-header-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+    .task-modal-actions-slot {
+        justify-content: flex-start;
+    }
+    .task-modal-actions-slot .swal2-actions {
+        width: 100% !important;
+        justify-content: stretch !important;
+    }
+    .task-modal-actions-slot .swal2-actions button {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        padding: 0.65rem 0.85rem !important;
+        font-size: 0.9rem !important;
+    }
     .task-modal-header h3 {
         font-size: 1rem !important;
         word-break: break-all;
@@ -4468,6 +4526,9 @@ div#modalBody {
     .task-modal-section canvas {
         max-height: 180px !important;
     }
+    .task-modal-mini-chart {
+        height: 160px;
+    }
     
     .views-by-date-list {
         max-height: 200px !important;
@@ -4493,8 +4554,9 @@ div#modalBody {
         font-size: 0.75rem !important;
     }
 }
+/* Keep modal header background visible (do not force transparent) */
 .task-modal-header {
-    background: transparent!important;
+    background: var(--bg-tertiary) !important;
 }
 
 /* ADD THIS CSS to your main <style> block */
@@ -9141,7 +9203,12 @@ async function viewTaskDetails(taskId) {
         const modalHtml = `
         <div class="task-details-modal-container">
             <div class="task-modal-header">
-                <h3>${task.url}</h3>
+                <div class="task-modal-header-row">
+                    <div class="task-modal-title">
+                        <h3>${task.url}</h3>
+                    </div>
+                    <div class="task-modal-actions-slot" aria-label="Task actions"></div>
+                </div>
                 <div class="header-meta">
                     <span><i class="ri-calendar-line"></i> Created: ${new Date(task.date_created).toLocaleString()}</span>
                     <span><i class="ri-key-line"></i> ID: ${task._id}</span>
@@ -9186,7 +9253,8 @@ async function viewTaskDetails(taskId) {
                     <div class="task-modal-section">
                         <h3 class="task-modal-section-title" style="color: var(--primary);"><i class="ri-line-chart-line"></i>Views Analytics</h3>
                         <div style="height: 250px; margin-bottom: 1.5rem;"><canvas id="taskViewsTimelineChart"></canvas></div>
-                        <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-secondary);">Daily Breakdown</h4>
+                        <div class="task-modal-subtitle">Daily Breakdown</div>
+                        <div class="task-modal-mini-chart"><canvas id="taskDailyBreakdownChart"></canvas></div>
                         <div class="views-by-date-list">
                             ${sortedDates.map(([date, views]) => `
                                 <div class="list-item">
@@ -9297,6 +9365,15 @@ async function viewTaskDetails(taskId) {
             showClass: { popup: 'swal2-show-super-fast' },
             hideClass: { popup: 'swal2-hide-super-fast' },
             didOpen: () => {
+                // Move SweetAlert2 action buttons up next to the URL (header)
+                try {
+                    const popup = Swal.getPopup();
+                    const actions = popup?.querySelector('.swal2-actions');
+                    const slot = popup?.querySelector('.task-modal-actions-slot');
+                    if (actions && slot) slot.appendChild(actions);
+                } catch (e) {
+                    // no-op
+                }
                 if (hasAnalytics) {
                     initializeTaskAnalyticsChart(sortedDates);
                 }
@@ -9344,30 +9421,120 @@ function initializeTaskAnalyticsChart(sortedDates) {
     
     const timelineCtx = document.getElementById('taskViewsTimelineChart');
     if (timelineCtx) {
-        new Chart(timelineCtx, {
+        // Destroy previous charts if modal reopened
+        if (window.charts?.taskModalTimeline) {
+            try { window.charts.taskModalTimeline.destroy(); } catch (e) {}
+        }
+        if (window.charts?.taskModalDaily) {
+            try { window.charts.taskModalDaily.destroy(); } catch (e) {}
+        }
+
+        const ctx2d = timelineCtx.getContext('2d');
+        const gradient = ctx2d ? (() => {
+            const g = ctx2d.createLinearGradient(0, 0, 0, 240);
+            g.addColorStop(0, isDark ? 'rgba(16, 185, 129, 0.30)' : 'rgba(16, 185, 129, 0.22)');
+            g.addColorStop(1, 'rgba(16, 185, 129, 0.02)');
+            return g;
+        })() : 'rgba(16, 185, 129, 0.1)';
+
+        const labels = sortedDates.map(([date]) =>
+            new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        );
+        const values = sortedDates.map(([, views]) => views);
+
+        window.charts = window.charts || {};
+        window.charts.taskModalTimeline = new Chart(timelineCtx, {
             type: 'line',
             data: {
-                labels: sortedDates.map(([date]) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+                labels,
                 datasets: [{
                     label: 'Views',
-                    data: sortedDates.map(([, views]) => views),
+                    data: values,
                     borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    tension: 0.3,
+                    backgroundColor: gradient,
+                    tension: 0.35,
                     fill: true,
-                    pointRadius: 2,
-                    pointHoverRadius: 5
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                    pointHitRadius: 16
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: (ctx) => ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y || 0)}`
+                        }
+                    }
+                },
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    x: {
+                        ticks: { color: textColor, font: { size: 10 }, maxRotation: 0, autoSkip: true },
+                        grid: { color: gridColor, drawBorder: false }
+                    },
+                    y: {
+                        ticks: {
+                            color: textColor,
+                            font: { size: 10 },
+                            precision: 0,
+                            callback: (v) => formatNumber(v)
+                        },
+                        grid: { color: gridColor, drawBorder: false },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Daily breakdown mini bar chart
+    const breakdownCtx = document.getElementById('taskDailyBreakdownChart');
+    if (breakdownCtx) {
+        window.charts = window.charts || {};
+        window.charts.taskModalDaily = new Chart(breakdownCtx, {
+            type: 'bar',
+            data: {
+                labels: sortedDates.map(([date]) =>
+                    new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                ),
+                datasets: [{
+                    label: 'Daily Views',
+                    data: sortedDates.map(([, views]) => views),
+                    backgroundColor: isDark ? 'rgba(99, 102, 241, 0.55)' : 'rgba(99, 102, 241, 0.35)',
+                    borderColor: 'rgba(99, 102, 241, 0.9)',
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    maxBarThickness: 28
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => ` ${formatNumber(ctx.parsed.y || 0)} views`
+                        }
+                    }
                 },
                 scales: {
-                    x: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } },
-                    y: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor }, beginAtZero: true }
+                    x: {
+                        ticks: { color: textColor, font: { size: 10 }, maxRotation: 0, autoSkip: true },
+                        grid: { display: false, drawBorder: false }
+                    },
+                    y: {
+                        ticks: { color: textColor, font: { size: 10 }, precision: 0, callback: (v) => formatNumber(v) },
+                        grid: { color: gridColor, drawBorder: false },
+                        beginAtZero: true
+                    }
                 }
             }
         });
