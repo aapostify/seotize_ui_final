@@ -4445,6 +4445,12 @@ div#modalBody {
     color: var(--primary);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20), 0 14px 40px rgba(99, 102, 241, 0.15);
 }
+.task-modal-tab[data-tab="details"].active {
+    background: rgba(16, 185, 129, 0.14);
+    border-color: rgba(16, 185, 129, 0.55);
+    color: var(--success);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.16), 0 14px 40px rgba(16, 185, 129, 0.12);
+}
 .task-modal-tab[data-tab="config"].active {
     background: rgba(14, 165, 233, 0.14);
     border-color: rgba(14, 165, 233, 0.65);
@@ -4624,9 +4630,9 @@ div#modalBody {
 }
 .task-budget-recharge {
     appearance: none;
-    border: 1px solid rgba(16, 185, 129, 0.55);
-    background: rgba(16, 185, 129, 0.10);
-    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.95);
+    background: rgba(16, 185, 129, 0.95);
+    color: #ffffff;
     border-radius: 999px;
     padding: 0.55rem 0.85rem;
     font-weight: 900;
@@ -4635,20 +4641,123 @@ div#modalBody {
     gap: 0.5rem;
     cursor: pointer;
     transition: var(--transition);
-    box-shadow: none;
+    box-shadow: 0 14px 32px rgba(16, 185, 129, 0.18);
 }
 .task-budget-recharge:hover {
     transform: translateY(-1px);
-    background: rgba(16, 185, 129, 0.14);
-    box-shadow: 0 16px 40px rgba(16, 185, 129, 0.14);
+    background: rgba(5, 150, 105, 0.98);
+    border-color: rgba(5, 150, 105, 0.98);
+    box-shadow: 0 18px 46px rgba(16, 185, 129, 0.22);
 }
 .task-budget-recharge:active { transform: translateY(0); }
 .task-budget-recharge:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18), 0 16px 40px rgba(16, 185, 129, 0.14);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.22), 0 18px 46px rgba(16, 185, 129, 0.22);
 }
 
 /* More details (done_parts) */
+.task-done-table-wrap {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.02);
+}
+.task-done-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+.task-done-table thead th {
+    text-align: left;
+    padding: 0.75rem 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 900;
+    letter-spacing: 0.01em;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border);
+}
+.task-done-table tbody td {
+    padding: 0.75rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-weight: 700;
+    vertical-align: top;
+}
+.task-done-table tbody tr:last-child td {
+    border-bottom: none;
+}
+.task-done-table .muted {
+    color: var(--text-secondary);
+    font-weight: 800;
+    font-size: 0.8rem;
+}
+.task-done-table .country-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.22rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(99, 102, 241, 0.10);
+    color: var(--primary);
+    font-weight: 900;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+.task-done-table a.task-email {
+    color: var(--info);
+    text-decoration: none;
+    font-weight: 900;
+}
+.task-done-table a.task-email:hover {
+    text-decoration: underline;
+}
+.task-done-pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 0.85rem;
+    border-top: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.01);
+    flex-wrap: wrap;
+}
+.task-done-pager .btns {
+    display: inline-flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+.task-done-pager button {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: rgba(148, 163, 184, 0.10);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 0.4rem 0.6rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.82rem;
+}
+.task-done-pager button:hover {
+    transform: translateY(-1px);
+    background: rgba(148, 163, 184, 0.16);
+}
+.task-done-pager button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+.task-done-pager button.active {
+    border-color: rgba(16, 185, 129, 0.65);
+    background: rgba(16, 185, 129, 0.12);
+    color: var(--success);
+}
+.task-done-pager .meta {
+    color: var(--text-secondary);
+    font-weight: 800;
+    font-size: 0.82rem;
+}
 .task-done-list {
     list-style: none;
     padding: 0;
@@ -4777,10 +4886,10 @@ div#modalBody {
     height: 100%;
 }
 .task-budget-bar .seg.used {
-    background: linear-gradient(90deg, rgba(245, 158, 11, 0.95), rgba(239, 68, 68, 0.90));
+    background: rgba(99, 102, 241, 0.95);
 }
 .task-budget-bar .seg.avail {
-    background: linear-gradient(90deg, rgba(16, 185, 129, 0.95), rgba(34, 211, 238, 0.90));
+    background: rgba(16, 185, 129, 0.95);
 }
 .task-modal-chart-stack {
     display: grid;
@@ -9644,7 +9753,8 @@ async function viewTaskDetails(taskId) {
         const usedPercentage = Math.max(0, Math.min(100, usedPercentageRaw));
         const remainingPercentageRaw = totalCharge > 0 ? (availableCharge / totalCharge) * 100 : 0;
         const remainingPercentageLabel = Math.max(0, remainingPercentageRaw);
-        const remainingPercentage = Math.max(0, Math.min(100, remainingPercentageRaw));
+        // Keep the bar visually consistent (always sums to 100%)
+        const remainingPercentage = Math.max(0, Math.min(100, 100 - usedPercentage));
         const remainingFillColor =
             remainingPercentageLabel >= 50 ? 'var(--success)' :
             remainingPercentageLabel >= 20 ? 'var(--warning)' :
@@ -9671,6 +9781,8 @@ async function viewTaskDetails(taskId) {
         
         const countryVisits = task.country_visits || {};
         const hasAnyAnalytics = hasViewsAnalytics || Object.keys(countryVisits).length > 0;
+        const totalCountryVisits = Object.values(countryVisits).reduce((sum, v) => sum + (Number(v) || 0), 0);
+        const countryBuckets = Object.keys(countryVisits || {}).length;
         const topCountryChips = Object.entries(countryVisits)
             .sort((a, b) => (Number(b[1]) || 0) - (Number(a[1]) || 0))
             .slice(0, 6)
@@ -9680,6 +9792,10 @@ async function viewTaskDetails(taskId) {
                 return `<div class="chip"><span>${nice}</span>${formatNumber(Number(v) || 0)}</div>`;
             })
             .join('');
+        const mapSummaryChips = `
+            <div class="chip"><span>Total</span>${formatNumber(totalCountryVisits)}</div>
+            <div class="chip"><span>Countries</span>${formatNumber(countryBuckets)}</div>
+        `;
 
         // --- 2. Construct Modal HTML (New Responsive Layout) ---
         const isVerified = task.verified !== false;
@@ -9697,8 +9813,47 @@ async function viewTaskDetails(taskId) {
             : (donePartsRaw && typeof donePartsRaw === 'object')
                 ? Object.entries(donePartsRaw).map(([k, v]) => ({ key: k, value: v }))
                 : [];
+        const donePartsNormalized = (() => {
+            const arr = Array.isArray(doneParts) ? doneParts : [];
+            const out = [];
+            for (let i = 0; i < arr.length; i++) {
+                const p = arr[i];
+                if (p == null) continue;
+                if (typeof p === 'string' || typeof p === 'number' || typeof p === 'boolean') {
+                    out.push({ country_code: '—', partner_email: '—', time: String(p) });
+                    continue;
+                }
+                if (typeof p === 'object') {
+                    // Preferred API shape: {country_code, partner_email, time}
+                    const cc = p.country_code ?? p.countryCode ?? p.country ?? p.cc ?? p.location ?? '';
+                    const email = p.partner_email ?? p.partnerEmail ?? p.email ?? p.user_email ?? '';
+                    const time = p.time ?? p.date ?? p.at ?? p.created_at ?? p.createdAt ?? '';
+
+                    if (cc || email || time) {
+                        out.push({
+                            country_code: String(cc || 'Unknown'),
+                            partner_email: String(email || '—'),
+                            time: String(time || '—')
+                        });
+                        continue;
+                    }
+
+                    // Fallback for key/value objects
+                    if ('key' in p && 'value' in p) {
+                        const v = (typeof p.value === 'object') ? JSON.stringify(p.value) : String(p.value);
+                        out.push({ country_code: '—', partner_email: String(p.key || '—'), time: v || '—' });
+                        continue;
+                    }
+
+                    // Last-resort stringify
+                    out.push({ country_code: '—', partner_email: '—', time: JSON.stringify(p) });
+                }
+            }
+            return out;
+        })();
+
         const donePartsHtml = (() => {
-            if (!doneParts || doneParts.length === 0) {
+            if (!donePartsNormalized || donePartsNormalized.length === 0) {
                 return `
                     <div class="empty-state" style="padding: 1rem 0;">
                         <div class="empty-state-icon"><i class="ri-list-check-2"></i></div>
@@ -9707,32 +9862,22 @@ async function viewTaskDetails(taskId) {
                     </div>
                 `;
             }
-
-            const escapeHtml = (s) => String(s)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
-
-            const rows = doneParts.map((p) => {
-                if (typeof p === 'string' || typeof p === 'number') {
-                    return `<li><i class="ri-checkbox-circle-line"></i><span>${escapeHtml(p)}</span></li>`;
-                }
-                if (p && typeof p === 'object' && 'key' in p && 'value' in p) {
-                    const v = (typeof p.value === 'object') ? JSON.stringify(p.value) : String(p.value);
-                    return `<li><i class="ri-checkbox-circle-line"></i><span><strong>${escapeHtml(p.key)}:</strong> ${escapeHtml(v)}</span></li>`;
-                }
-                if (p && typeof p === 'object') {
-                    const label = p.title ?? p.name ?? p.label ?? p.part ?? 'Done';
-                    const meta = p.date ?? p.time ?? p.at ?? p.value ?? '';
-                    const metaText = meta ? ` <span style="color: var(--text-secondary); font-weight: 700;">(${escapeHtml(meta)})</span>` : '';
-                    return `<li><i class="ri-checkbox-circle-line"></i><span>${escapeHtml(label)}${metaText}</span></li>`;
-                }
-                return '';
-            }).filter(Boolean).join('');
-
-            return `<ul class="task-done-list">${rows}</ul>`;
+            return `
+                <div class="task-done-table-wrap">
+                    <table class="task-done-table" aria-label="Done parts activity log">
+                        <thead>
+                            <tr>
+                                <th style="width:72px;">#</th>
+                                <th style="width:140px;">Country</th>
+                                <th>Email</th>
+                                <th style="width:220px;">Done at</th>
+                            </tr>
+                        </thead>
+                        <tbody id="taskDonePartsTbody"></tbody>
+                    </table>
+                    <div class="task-done-pager" id="taskDonePartsPager"></div>
+                </div>
+            `;
         })();
         
         const modalHtml = `
@@ -9752,18 +9897,12 @@ async function viewTaskDetails(taskId) {
                 <div class="header-meta">
                     <div class="header-meta-left">
                         <span><i class="ri-calendar-line"></i> Created: ${new Date(task.date_created).toLocaleString()}</span>
+                        ${task.email ? `<span><i class="ri-mail-line"></i> Email: ${task.email}</span>` : ''}
                         <span><i class="ri-key-line"></i> ID: ${task._id}</span>
                         <span style="display: flex; align-items: center; gap: 0.5rem;">
                             <i class="ri-shield-check-line"></i> Status: ${verificationStatus}
                         </span>
                         ${lastVerifiedText}
-                    </div>
-                    <div class="header-meta-right">
-                        <button class="task-modal-tab task-config-btn" type="button" data-tab="config" role="tab" aria-controls="task-panel-config">
-                            <i class="ri-settings-3-line"></i>
-                            <span class="label-desktop">Configuration</span>
-                            <span class="label-mobile">Configuration</span>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -9819,6 +9958,11 @@ async function viewTaskDetails(taskId) {
                     <span class="label-desktop">More details</span>
                     <span class="label-mobile">More details</span>
                 </button>
+                <button class="task-modal-tab" type="button" data-tab="config" role="tab" aria-controls="task-panel-config">
+                    <i class="ri-settings-3-line"></i>
+                    <span class="label-desktop">Configuration</span>
+                    <span class="label-mobile">Config</span>
+                </button>
             </div>
 
             <div class="task-modal-panels">
@@ -9845,7 +9989,9 @@ async function viewTaskDetails(taskId) {
                             <div class="task-modal-map" id="taskCountryMap"></div>
                             <div class="task-modal-subtitle">Top Countries</div>
                             <div class="task-modal-map-note">
-                                ${topCountryChips || '<div class="chip"><span>—</span>No country data</div>'}
+                                ${(Object.keys(countryVisits || {}).length > 0)
+                                    ? (mapSummaryChips + topCountryChips)
+                                    : '<div class="chip"><span>—</span>No country data</div>'}
                             </div>
                         </div>
                     </div>
@@ -9856,7 +10002,7 @@ async function viewTaskDetails(taskId) {
                         <h3 class="task-modal-section-title" style="color: var(--primary);">
                             <i class="ri-list-check-2"></i>More details
                         </h3>
-                        <div class="task-modal-subtitle">Done parts</div>
+                        <div class="task-modal-subtitle">Done parts (activity log)</div>
                         ${donePartsHtml}
                     </div>
                 </div>
@@ -9919,6 +10065,7 @@ async function viewTaskDetails(taskId) {
                     // no-op
                 }
                 setupTaskDetailsTabs({ hasAnalytics: hasAnyAnalytics });
+                initializeTaskDoneParts(donePartsNormalized);
                 // Charts + Map (Analytics + Country visits)
                 if (hasViewsAnalytics) initializeTaskAnalyticsCharts(sortedDates);
                 initializeTaskCountryMap(countryVisits);
@@ -10009,6 +10156,131 @@ function setupTaskDetailsTabs({ hasAnalytics }) {
     });
 
     activate(hasAnalytics ? 'analytics' : 'details');
+}
+
+// Task details modal: Done parts table + pagination (task.done_parts)
+function initializeTaskDoneParts(donePartsNormalized) {
+    const popup = Swal.getPopup();
+    if (!popup) return;
+
+    const tbody = popup.querySelector('#taskDonePartsTbody');
+    const pager = popup.querySelector('#taskDonePartsPager');
+    if (!tbody || !pager) return;
+
+    const escapeHtml = (s) => String(s ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
+    const parseApiDate = (value) => {
+        const s = String(value ?? '').trim();
+        if (!s) return null;
+        // API often returns "YYYY-MM-DD HH:mm:ss" -> make it ISO-ish for parsing
+        const iso = s.includes('T') ? s : s.replace(' ', 'T');
+        const d = new Date(iso);
+        if (!isNaN(d.getTime())) return d;
+        return null;
+    };
+
+    const baseRows = Array.isArray(donePartsNormalized) ? donePartsNormalized : [];
+    const rows = baseRows
+        .map((r, idx) => ({ ...r, __idx: idx }))
+        .sort((a, b) => {
+            const ad = parseApiDate(a.time);
+            const bd = parseApiDate(b.time);
+            const am = ad ? ad.getTime() : -Infinity;
+            const bm = bd ? bd.getTime() : -Infinity;
+            if (bm !== am) return bm - am; // newest first
+            return a.__idx - b.__idx;
+        });
+
+    const perPage = 10;
+    const total = rows.length;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    let currentPage = 1;
+
+    const render = (page) => {
+        currentPage = Math.max(1, Math.min(totalPages, Number(page) || 1));
+        const start = (currentPage - 1) * perPage;
+        const slice = rows.slice(start, start + perPage);
+
+        tbody.innerHTML = slice.map((r, i) => {
+            const idx = start + i + 1;
+            const ccRaw = String(r.country_code ?? 'Unknown');
+            const cc = (ccRaw || '').toLowerCase() === 'unknown' ? 'Unknown' : ccRaw.toUpperCase();
+            const email = String(r.partner_email ?? '—');
+            const timeRaw = String(r.time ?? '—');
+            const dt = parseApiDate(timeRaw);
+            const timePretty = dt ? dt.toLocaleString() : timeRaw;
+            const mailto = (email && email !== '—') ? `mailto:${encodeURIComponent(email)}` : '';
+
+            return `
+                <tr>
+                    <td class="muted">${idx}</td>
+                    <td><span class="country-badge"><i class="ri-map-pin-2-line"></i>${escapeHtml(cc)}</span></td>
+                    <td>${mailto ? `<a class="task-email" href="${mailto}" target="_blank" rel="noopener noreferrer">${escapeHtml(email)}</a>` : `<span class="muted">—</span>`}</td>
+                    <td>
+                        <div>${escapeHtml(timePretty)}</div>
+                        ${dt ? `<div class="muted">${escapeHtml(timeRaw)}</div>` : ''}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        if (slice.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="muted">No done parts yet.</td>
+                </tr>
+            `;
+        }
+
+        const makeBtn = (label, pageNum, opts = {}) => {
+            const disabled = opts.disabled ? 'disabled' : '';
+            const active = opts.active ? 'active' : '';
+            return `<button ${disabled} class="${active}" data-page="${pageNum}">${label}</button>`;
+        };
+
+        // Condensed page buttons
+        const pageBtns = [];
+        const maxBtns = 5;
+        if (totalPages <= maxBtns) {
+            for (let p = 1; p <= totalPages; p++) pageBtns.push(makeBtn(String(p), p, { active: p === currentPage }));
+        } else {
+            const pushEllipsis = () => pageBtns.push(`<span class="meta">…</span>`);
+            pageBtns.push(makeBtn('1', 1, { active: currentPage === 1 }));
+
+            const startP = Math.max(2, currentPage - 1);
+            const endP = Math.min(totalPages - 1, currentPage + 1);
+            if (startP > 2) pushEllipsis();
+            for (let p = startP; p <= endP; p++) pageBtns.push(makeBtn(String(p), p, { active: p === currentPage }));
+            if (endP < totalPages - 1) pushEllipsis();
+
+            pageBtns.push(makeBtn(String(totalPages), totalPages, { active: currentPage === totalPages }));
+        }
+
+        pager.innerHTML = `
+            <div class="btns">
+                ${makeBtn('Prev', currentPage - 1, { disabled: currentPage <= 1 })}
+                ${pageBtns.join('')}
+                ${makeBtn('Next', currentPage + 1, { disabled: currentPage >= totalPages })}
+            </div>
+            <div class="meta">Page ${currentPage} of ${totalPages} · ${total} total</div>
+        `;
+    };
+
+    // Replace any previous handler (modal can be reopened)
+    pager.onclick = (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest('button[data-page]') : null;
+        if (!btn) return;
+        const next = Number(btn.getAttribute('data-page'));
+        if (!isFinite(next)) return;
+        render(next);
+    };
+
+    render(1);
 }
 
 // [NEW] Helper function to initialize charts inside the task modal
@@ -10197,9 +10469,9 @@ function initializeTaskCountryMap(countryVisits) {
     const rows = Object.entries(raw).map(([id, value]) => ({ id: String(id || '').toUpperCase(), value: Number(value) || 0 }));
     const data = rows.filter(r => /^[A-Z]{2}$/.test(r.id) && r.value > 0);
 
-    // More colorful ramp than the dashboard home map
-    const STOPS = ['#34d399', '#22d3ee', '#818cf8', '#f472b6', '#fb923c', '#ef4444']; // green->cyan->indigo->pink->orange->red
-    const HOVER_FILL = '#facc15';
+    // Clean, modern 2-color ramp (simple + readable)
+    const STOPS = ['#bbf7d0', '#10b981']; // light green -> green
+    const HOVER_FILL = '#34d399';
     const BASE_EDGE = '#334155';
 
     container.innerHTML = `<div id="taskCountryMapCanvas" style="width:100%;height:100%;"></div>`;
