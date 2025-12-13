@@ -3447,21 +3447,28 @@ tr:hover {
     }
     
     .task-actions {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         gap: 0.5rem;
         margin-top: 0.75rem;
         width: 100%;
     }
     
     .task-actions button {
-        width: 100%;
+        flex: 1 1 calc(50% - 0.25rem);
+        width: auto;
         justify-content: center;
         padding: 0.625rem 1rem;
         font-size: 0.875rem;
     }
     
     .task-actions .btn-sm {
-        width: 100%;
+        width: auto;
+    }
+
+    /* If there's only one action button, let it span full width */
+    .task-actions button:only-child {
+        flex-basis: 100%;
     }
 
     .media-grid {
