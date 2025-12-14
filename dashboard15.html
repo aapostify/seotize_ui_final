@@ -4213,12 +4213,9 @@ tr:hover {
         display: block !important;
     }
 }
-div#modalBody {
-    padding-bottom: 100px;
-}
+div#modalBody { padding-bottom: 100px; }
 
-/* ADD THIS CSS to your main <style> block */
-
+/* SweetAlert2 Toast */
 .swal2-popup.swal2-toast {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 40px rgba(99, 102, 241, 0.08) !important;
     background: linear-gradient(135deg, var(--card) 0%, var(--bg-secondary) 100%) !important;
@@ -4313,9 +4310,7 @@ div#modalBody {
     font-size: 3em!important;
 }
 
-/* ADD THIS CSS to your main <style> block */
-
-/* Custom CSS for the new Task Details Modal */
+/* Task Details Modal */
 .task-details-modal-container {
     text-align: left;
     width: 100%;
@@ -4323,7 +4318,6 @@ div#modalBody {
     box-sizing: border-box;
 }
 .task-modal-header {
-    /* User request: remove header background color */
     background: transparent;
     padding: 0 0 1rem 0;
     margin: 0 0 1rem 0;
@@ -4528,24 +4522,29 @@ div#modalBody {
     align-items: center;
 }
 .task-verify-inline-btn {
-    background: #f59e0b !important;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
     color: white !important;
     border: none !important;
-    padding: 0.25rem 0.6rem !important;
-    border-radius: 6px !important;
-    font-size: 0.75rem !important;
-    font-weight: 600 !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 8px !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
     cursor: pointer !important;
     display: inline-flex !important;
     align-items: center !important;
-    gap: 0.3rem !important;
+    gap: 0.4rem !important;
     transition: all 0.2s ease !important;
     flex-shrink: 0 !important;
+    box-shadow: 0 2px 8px rgba(249, 158, 11, 0.25) !important;
+    letter-spacing: 0.01em !important;
 }
 .task-verify-inline-btn:hover {
-    background: #d97706 !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(249, 158, 11, 0.3) !important;
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(249, 158, 11, 0.4) !important;
+}
+.task-verify-inline-btn i {
+    font-size: 1.1em !important;
 }
 .task-config-btn {
     appearance: none;
@@ -4790,32 +4789,30 @@ div#modalBody {
 }
 
 /* More details (done_parts): modern responsive cards (replaces table on all screens) */
+/* Task Done Cards - Activity Log */
 .task-done-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 0.85rem;
     padding: 1rem;
-    width: 100%;
-    box-sizing: border-box;
     background: rgba(0, 0, 0, 0.02);
     border-radius: 12px;
 }
 .task-done-card {
     border: 1px solid var(--border);
     border-radius: 14px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
     padding: 0.9rem 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.55rem;
     min-width: 0;
-    box-sizing: border-box;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 .task-done-card:hover {
-    border-color: rgba(148, 163, 184, 0.35);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: rgba(148,163,184,0.35);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     transform: translateY(-1px);
 }
 .task-done-card-top {
@@ -4824,7 +4821,6 @@ div#modalBody {
     justify-content: space-between;
     gap: 0.6rem;
     min-width: 0;
-    flex-wrap: nowrap;
 }
 .task-done-card-top .left {
     display: inline-flex;
@@ -4840,36 +4836,32 @@ div#modalBody {
     justify-content: center;
     padding: 0.22rem 0.5rem;
     border-radius: 8px;
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%);
+    border: 1px solid rgba(148,163,184,0.18);
+    background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.08));
     color: var(--primary);
     font-weight: 800;
     font-size: 0.75rem;
-    flex: 0 0 auto;
     white-space: nowrap;
     min-width: 28px;
 }
 .task-done-time {
+    display: none;
     color: var(--text-secondary);
     font-weight: 600;
     font-size: 0.78rem;
-    text-align: right;
     white-space: nowrap;
-    flex-shrink: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
     padding: 0.15rem 0.45rem;
-    background: rgba(148, 163, 184, 0.08);
+    background: rgba(148,163,184,0.08);
     border-radius: 6px;
     max-width: 50%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .task-done-kv {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     min-width: 0;
-    flex-wrap: nowrap;
 }
 .task-done-kv .label {
     color: var(--text-secondary);
@@ -4877,7 +4869,6 @@ div#modalBody {
     font-size: 0.72rem;
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    flex-shrink: 0;
     white-space: nowrap;
 }
 .task-done-kv .value {
@@ -4886,7 +4877,7 @@ div#modalBody {
     font-size: 0.9rem;
     line-height: 1.25;
     min-width: 0;
-    flex: 1 1 auto;
+    flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -4895,38 +4886,36 @@ div#modalBody {
     color: var(--info);
     text-decoration: none;
     font-weight: 700;
+    display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: block;
 }
-.task-done-kv .value a.task-email:hover {
-    text-decoration: underline;
-}
+.task-done-kv .value a.task-email:hover { text-decoration: underline; }
 .task-done-rawtime {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     color: var(--text-secondary);
-    font-weight: 500;
-    font-size: 0.72rem;
-    opacity: 0.8;
-    padding-top: 0.2rem;
-    border-top: 1px dashed rgba(148, 163, 184, 0.15);
-    margin-top: 0.15rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.5rem;
+    background: rgba(148,163,184,0.08);
+    border-radius: 6px;
 }
-
-/* Country badge styling for task-done-card (more details section) */
+.task-done-rawtime i { color: var(--primary); font-size: 0.9rem; opacity: 0.8; }
 .task-done-card .country-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     padding: 0.2rem 0.55rem;
     border-radius: 999px;
-    border: 1px solid rgba(148, 163, 184, 0.22);
-    background: rgba(148, 163, 184, 0.10);
+    border: 1px solid rgba(148,163,184,0.22);
+    background: rgba(148,163,184,0.10);
     color: var(--text);
     font-weight: 800;
     font-size: 0.78rem;
     white-space: nowrap;
-    flex-shrink: 0;
 }
 .task-done-card .country-badge .country-flag {
     width: 16px;
@@ -4937,213 +4926,71 @@ div#modalBody {
     justify-content: center;
     font-size: 0.85rem;
     line-height: 1;
-    background: rgba(255, 255, 255, 0.06);
-    flex-shrink: 0;
+    background: rgba(255,255,255,0.06);
 }
-.task-done-card .country-badge .country-text {
-    letter-spacing: 0.02em;
-    color: var(--text);
-    white-space: nowrap;
-}
+.task-done-card .country-badge .country-text { letter-spacing: 0.02em; }
 
-/* Mobile responsive fixes for more details cards */
-@media (max-width: 600px) {
-    .task-done-cards { 
-        padding: 0.6rem; 
-        grid-template-columns: 1fr; 
-        gap: 0.6rem;
-        border-radius: 10px;
-    }
-    .task-done-card { 
-        padding: 0.7rem 0.65rem; 
-        gap: 0.45rem;
-        border-radius: 10px;
-    }
-    .task-done-card:hover {
-        transform: none;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
-    .task-done-card-top {
-        flex-wrap: nowrap;
-        gap: 0.45rem;
-    }
-    .task-done-card-top .left {
-        gap: 0.35rem;
-        flex-shrink: 1;
-        min-width: 0;
-    }
-    .task-done-idx {
-        padding: 0.18rem 0.4rem;
-        font-size: 0.7rem;
-        min-width: 24px;
-    }
-    .task-done-card .country-badge {
-        padding: 0.15rem 0.4rem;
-        gap: 0.22rem;
-        font-size: 0.7rem;
-    }
-    .task-done-card .country-badge .country-flag {
-        width: 13px;
-        height: 13px;
-        font-size: 0.72rem;
-    }
-    .task-done-time { 
-        display: none;
-    }
-    .task-done-kv {
-        gap: 0.35rem;
-    }
-    .task-done-kv .label {
-        font-size: 0.66rem;
-    }
-    .task-done-kv .value {
-        font-size: 0.8rem;
-    }
-    .task-done-rawtime {
-        font-size: 0.68rem;
-        padding-top: 0.15rem;
-        margin-top: 0.1rem;
-    }
-}
-
-@media (max-width: 400px) {
-    .task-done-cards { 
-        padding: 0.45rem; 
-        gap: 0.5rem;
-        border-radius: 8px;
-    }
-    .task-done-card { 
-        padding: 0.6rem 0.55rem; 
-        gap: 0.4rem;
-        border-radius: 8px;
-    }
-    .task-done-card-top {
-        gap: 0.35rem;
-    }
-    .task-done-card-top .left {
-        gap: 0.28rem;
-    }
-    .task-done-idx {
-        padding: 0.15rem 0.32rem;
-        font-size: 0.65rem;
-        min-width: 22px;
-        border-radius: 6px;
-    }
-    .task-done-card .country-badge {
-        padding: 0.12rem 0.32rem;
-        gap: 0.18rem;
-        font-size: 0.65rem;
-    }
-    .task-done-card .country-badge .country-flag {
-        width: 11px;
-        height: 11px;
-        font-size: 0.65rem;
-    }
-    .task-done-time { 
-        display: none;
-    }
-    .task-done-kv {
-        gap: 0.3rem;
-    }
-    .task-done-kv .label {
-        font-size: 0.62rem;
-    }
-    .task-done-kv .value {
-        font-size: 0.75rem;
-    }
-    .task-done-rawtime {
-        font-size: 0.62rem;
-    }
-}
+/* Task Done Pager */
 .task-done-pager {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
     padding: 0.75rem 0.85rem;
     border-top: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.01);
-    flex-wrap: wrap;
+    background: rgba(255,255,255,0.01);
 }
 .task-done-pager .btns {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.5rem;
+    gap: 0.75rem;
     min-width: 0;
 }
 .task-done-pager .pages {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    flex: 1;
+    min-width: 0;
+    padding: 0 0.25rem;
+}
+.task-done-pager .pages .task-done-page-btn.page {
+    flex: 1 1 auto;
+    max-width: 48px;
+}
+.task-done-pager .task-done-page-btn {
+    appearance: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.35rem;
-    flex-wrap: wrap;
-    min-width: 0;
-    flex: 1 1 auto;
-}
-.task-done-pager .task-done-page-btn {
-    appearance: none;
     border: 1px solid var(--border);
-    background: rgba(148, 163, 184, 0.10);
+    background: rgba(148,163,184,0.10);
     color: var(--text);
     border-radius: 999px;
     padding: 0.45rem 0.7rem;
     font-weight: 900;
-    cursor: pointer;
-    transition: var(--transition);
     font-size: 0.82rem;
     min-width: 36px;
     height: 34px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
+    cursor: pointer;
+    transition: var(--transition);
     user-select: none;
 }
-.task-done-pager .task-done-page-btn:hover {
-    transform: translateY(-1px);
-    background: rgba(148, 163, 184, 0.16);
-}
-.task-done-pager .task-done-page-btn:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-    transform: none;
-}
-.task-done-pager .task-done-page-btn.active {
-    border-color: rgba(16, 185, 129, 0.65);
-    background: rgba(16, 185, 129, 0.12);
-    color: var(--success);
-}
-.task-done-pager .task-done-page-btn.nav {
-    min-width: 78px;
-    justify-content: center;
-}
-.task-done-pager .task-done-page-btn.nav i {
-    font-size: 1.1em;
-}
-.task-done-pager .ellipsis {
-    color: var(--text-secondary);
-    font-weight: 900;
-    padding: 0 0.25rem;
-    line-height: 1;
-    user-select: none;
-}
-.task-done-pager .meta {
-    color: var(--text-secondary);
-    font-weight: 800;
-    font-size: 0.82rem;
-    width: 100%;
-    text-align: right;
-}
-.task-done-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-}
+.task-done-pager .task-done-page-btn:hover { transform: translateY(-1px); background: rgba(148,163,184,0.16); }
+.task-done-pager .task-done-page-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.task-done-pager .task-done-page-btn.active { border-color: rgba(16,185,129,0.65); background: rgba(16,185,129,0.12); color: var(--success); }
+.task-done-pager .task-done-page-btn.nav { min-width: 78px; }
+.task-done-pager .task-done-page-btn.nav i { font-size: 1.1em; }
+.task-done-pager .ellipsis { color: var(--text-secondary); font-weight: 900; padding: 0 0.25rem; line-height: 1; user-select: none; }
+.task-done-pager .meta { color: var(--text-secondary); font-weight: 800; font-size: 0.82rem; width: 100%; text-align: right; }
+
+/* Task Done List */
+.task-done-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
 .task-done-list li {
     display: flex;
     align-items: flex-start;
@@ -5151,19 +4998,43 @@ div#modalBody {
     padding: 0.75rem 0.8rem;
     border-radius: 12px;
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(255,255,255,0.02);
     color: var(--text);
     font-weight: 700;
 }
-.task-done-list li i {
-    color: var(--success);
-    font-size: 1.05rem;
-    margin-top: 0.05rem;
-    flex: 0 0 auto;
+.task-done-list li i { color: var(--success); font-size: 1.05rem; margin-top: 0.05rem; }
+.task-done-list li strong { font-weight: 900; }
+
+/* Task Done Cards - Mobile Responsive */
+@media (max-width: 600px) {
+    .task-done-cards { padding: 0.6rem; grid-template-columns: 1fr; gap: 0.6rem; border-radius: 10px; }
+    .task-done-card { padding: 0.7rem 0.65rem; gap: 0.45rem; border-radius: 10px; }
+    .task-done-card:hover { transform: none; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .task-done-card-top, .task-done-card-top .left { gap: 0.35rem; }
+    .task-done-card-top .left { min-width: 0; }
+    .task-done-idx { padding: 0.18rem 0.4rem; font-size: 0.7rem; min-width: 24px; }
+    .task-done-card .country-badge { padding: 0.15rem 0.4rem; gap: 0.22rem; font-size: 0.7rem; }
+    .task-done-card .country-badge .country-flag { width: 13px; height: 13px; font-size: 0.72rem; }
+    .task-done-time { font-size: 0.68rem; }
+    .task-done-kv { gap: 0.35rem; }
+    .task-done-kv .label { font-size: 0.66rem; }
+    .task-done-kv .value { font-size: 0.8rem; }
 }
-.task-done-list li strong {
-    color: var(--text);
-    font-weight: 900;
+@media (max-width: 550px) {
+    .task-done-time { display: inline-block; }
+    .task-done-rawtime { display: none !important; }
+}
+@media (max-width: 400px) {
+    .task-done-cards { padding: 0.45rem; gap: 0.5rem; border-radius: 8px; }
+    .task-done-card { padding: 0.6rem 0.55rem; gap: 0.4rem; border-radius: 8px; }
+    .task-done-card-top, .task-done-card-top .left { gap: 0.28rem; }
+    .task-done-idx { padding: 0.15rem 0.32rem; font-size: 0.65rem; min-width: 22px; border-radius: 6px; }
+    .task-done-card .country-badge { padding: 0.12rem 0.32rem; gap: 0.18rem; font-size: 0.65rem; }
+    .task-done-card .country-badge .country-flag { width: 11px; height: 11px; font-size: 0.65rem; }
+    .task-done-time { font-size: 0.62rem; }
+    .task-done-kv { gap: 0.3rem; }
+    .task-done-kv .label { font-size: 0.62rem; }
+    .task-done-kv .value { font-size: 0.75rem; }
 }
 
 /* Configuration install instructions */
@@ -5280,6 +5151,74 @@ div#modalBody {
 .task-modal-chart-wrap.small {
     height: 200px;
 }
+/* Mobile analytics/map toggle switch */
+.analytics-mobile-switch {
+    display: none;
+    width: 100%;
+    padding: 0.25rem;
+    background: rgba(148, 163, 184, 0.08);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 1rem;
+    gap: 0.25rem;
+}
+.analytics-switch-btn {
+    flex: 1;
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 10px;
+    padding: 0.6rem 0.75rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+}
+.analytics-switch-btn:hover {
+    color: var(--text);
+    background: rgba(148, 163, 184, 0.1);
+}
+.analytics-switch-btn.active {
+    background: var(--bg);
+    color: var(--primary);
+    border-color: rgba(99, 102, 241, 0.4);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+}
+.analytics-switch-btn.active[data-view="map"] {
+    color: var(--info);
+    border-color: rgba(14, 165, 233, 0.4);
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.15);
+}
+.analytics-switch-btn i {
+    font-size: 1.1em;
+}
+
+@media (max-width: 768px) {
+    .analytics-mobile-switch {
+        display: flex;
+    }
+    /* Hide section titles on mobile since the switch shows which one is active */
+    .task-modal-grid .analytics-section > .task-modal-section-title,
+    .task-modal-grid .map-section > .task-modal-section-title {
+        display: none;
+    }
+    /* Initially hide both, JS will show the active one */
+    .task-modal-grid .analytics-section,
+    .task-modal-grid .map-section {
+        display: none !important;
+    }
+    .task-modal-grid .analytics-section.active,
+    .task-modal-grid .map-section.active {
+        display: block !important;
+    }
+}
+
 .task-modal-map {
     height: 360px;
     border-radius: var(--radius);
@@ -5460,8 +5399,8 @@ div#modalBody {
     .task-modal-header .header-meta .header-meta-left .task-verify-inline-btn {
         width: auto !important;
         max-width: none !important;
-        padding: 0.2rem 0.5rem !important;
-        font-size: 0.7rem !important;
+        padding: 0.4rem 0.85rem !important;
+        font-size: 0.8rem !important;
     }
     .task-modal-header .header-meta .header-meta-right {
         width: 100%;
@@ -5618,28 +5557,15 @@ div#modalBody {
     .task-done-table tbody td:nth-child(4) .muted { display: none; }
 }
 
-/* Task details modal: Mobile pagination fixes */
+/* Pager mobile fix */
 @media (max-width: 480px) {
-    .task-done-pager {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .task-done-pager .pages {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        justify-content: flex-start;
-        padding-bottom: 0.15rem;
-        -webkit-overflow-scrolling: touch;
-    }
-    .task-done-pager .meta {
-        text-align: center;
-    }
+    .task-done-pager { flex-direction: column; align-items: stretch; }
+    .task-done-pager .pages { overflow-x: auto; padding-bottom: 0.15rem; -webkit-overflow-scrolling: touch; gap: 0.2rem; }
+    .task-done-pager .pages .task-done-page-btn.page { flex: 0 0 auto; max-width: none; min-width: 32px; }
+    .task-done-pager .meta { text-align: center; }
 }
-/* Header background intentionally removed (see above) */
 
-/* ADD THIS CSS to your main <style> block */
-
-/* Custom CSS for the new Recharge Modal */
+/* Recharge Modal */
 .recharge-modal-container {
     text-align: left;
     padding-top: 1rem;
@@ -5718,9 +5644,8 @@ div#modalBody {
     padding: 0.5rem 0;
     font-size: 0.9rem;
 }
-    /* ADD THIS CSS to your main <style> block */
 
-/* Custom width for the Recharge Task modal */
+/* Recharge Task Modal */
 .swal2-popup.recharge-modal-custom {
     width: 95vw !important; /* Mobile-first: default width */
 }
@@ -5912,9 +5837,8 @@ div#modalBody {
 .swal2-container {
     z-index: 10000 !important;
 }
-/* ADD THIS CSS to your main <style> block */
 
-/* Custom CSS for the new Active Sessions Modal */
+/* Active Sessions Modal */
 .sessions-modal-custom {
     width: 95vw !important;
 }
@@ -6265,118 +6189,29 @@ div#modalBody {
         max-width: none !important;
     }
     .swal2-html-container .task-done-pager .task-done-page-btn {
-        display: inline-flex !important;
-        white-space: nowrap !important;
-        flex: 0 0 auto !important;
-        padding: 0.3rem 0.5rem !important;
-        font-size: 0.72rem !important;
-        min-width: 28px !important;
-        height: 28px !important;
-        gap: 0.2rem !important;
+        display: inline-flex !important; white-space: nowrap !important; flex: 0 0 auto !important;
+        padding: 0.3rem 0.5rem !important; font-size: 0.72rem !important; min-width: 28px !important; height: 28px !important; gap: 0.2rem !important;
     }
-    .swal2-html-container .task-done-pager .task-done-page-btn.nav {
-        min-width: auto !important;
-        padding: 0.3rem 0.45rem !important;
-    }
-    .swal2-html-container .task-done-pager .task-done-page-btn.nav span {
-        display: none !important;
-    }
-    .swal2-html-container .task-done-pager .pages {
-        flex: 1 1 auto !important;
-        min-width: 0 !important;
-    }
-    
-    .swal2-html-container [class*="grid"],
-    .swal2-html-container [class*="flex"] {
-        max-width: 100% !important;
-        overflow-x: hidden !important;
-    }
-    
-    .swal2-html-container [style*="grid-template-columns"],
-    .swal2-html-container [style*="display: grid"] {
-        grid-template-columns: 1fr !important;
-        gap: 0.75rem !important;
-    }
-    
-    .swal2-html-container [style*="display: flex"] {
-        flex-wrap: wrap !important;
-    }
-    
-    /* Ensure all containers respect viewport width */
-    .swal2-html-container > * {
-        max-width: 100% !important;
-        overflow-x: hidden !important;
-    }
-    
-    /* Fix AI Keywords button layout on mobile */
-    #aiKeywordsBtn {
-        white-space: nowrap !important;
-        flex-shrink: 0 !important;
-        padding: 0.5rem 0.75rem !important;
-        font-size: 0.85rem !important;
-    }
-    
-    #aiKeywordsBtn i {
-        margin-right: 0.25rem !important;
-    }
-    
-    /* Improve budget input on mobile */
-    #taskBudget {
-        font-size: 1.1rem !important;
-        font-weight: 600 !important;
-        padding: 0.75rem 1rem 0.75rem 2.25rem !important;
-    }
-    
-    /* Images grid - show 2 images per line on mobile */
-    .card-body > div[style*="grid-template-columns"] {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 0.75rem !important;
-    }
-    
-    #current-images-container {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 0.75rem !important;
-    }
-    
-    /* Cancel Previous Tasks container on mobile */
-    #cancelPreviousContainer {
-        padding: 1rem !important;
-        margin-bottom: 1rem !important;
-    }
-    
-    #cancelPreviousContainer label {
-        font-size: 0.85rem !important;
-        line-height: 1.4 !important;
-    }
-    
-    #previousTasksWarning {
-        font-size: 0.8rem !important;
-        padding: 0.65rem !important;
-    }
-    
-    .swal2-html-container canvas {
-        max-height: 200px !important;
-    }
-    
-    /* Better chart display on mobile */
-    .chart-container {
-        height: 250px !important;
-        margin-bottom: 1rem;
-    }
-    
-    /* Improved stat cards on mobile */
-    .stat-card .stat-value {
-        font-size: 1.5rem !important;
-    }
-    
-    .stat-card .stat-label {
-        font-size: 0.75rem !important;
-    }
-    
-    /* Better spacing for cards */
-    .card {
-        margin-bottom: 1rem;
-    }
+    .swal2-html-container .task-done-pager .task-done-page-btn.nav { min-width: auto !important; padding: 0.3rem 0.45rem !important; }
+    .swal2-html-container .task-done-pager .task-done-page-btn.nav span { display: none !important; }
+    .swal2-html-container .task-done-pager .pages { flex: 1 !important; min-width: 0 !important; padding: 0 0.25rem !important; justify-content: center !important; gap: 0.2rem !important; }
+    .swal2-html-container .task-done-pager .pages .task-done-page-btn.page { flex: 1 1 auto !important; max-width: 40px !important; }
+    .swal2-html-container [class*="grid"], .swal2-html-container [class*="flex"] { max-width: 100% !important; overflow-x: hidden !important; }
+    .swal2-html-container [style*="grid-template-columns"], .swal2-html-container [style*="display: grid"] { grid-template-columns: 1fr !important; gap: 0.75rem !important; }
+    .swal2-html-container [style*="display: flex"] { flex-wrap: wrap !important; }
+    .swal2-html-container > * { max-width: 100% !important; overflow-x: hidden !important; }
+    #aiKeywordsBtn { white-space: nowrap !important; flex-shrink: 0 !important; padding: 0.5rem 0.75rem !important; font-size: 0.85rem !important; }
+    #aiKeywordsBtn i { margin-right: 0.25rem !important; }
+    #taskBudget { font-size: 1.1rem !important; font-weight: 600 !important; padding: 0.75rem 1rem 0.75rem 2.25rem !important; }
+    .card-body > div[style*="grid-template-columns"], #current-images-container { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem !important; }
+    #cancelPreviousContainer { padding: 1rem !important; margin-bottom: 1rem !important; }
+    #cancelPreviousContainer label { font-size: 0.85rem !important; line-height: 1.4 !important; }
+    #previousTasksWarning { font-size: 0.8rem !important; padding: 0.65rem !important; }
+    .swal2-html-container canvas { max-height: 200px !important; }
+    .chart-container { height: 250px !important; margin-bottom: 1rem; }
+    .stat-card .stat-value { font-size: 1.5rem !important; }
+    .stat-card .stat-label { font-size: 0.75rem !important; }
+    .card { margin-bottom: 1rem; }
     
     /* Improved button sizing on mobile */
     .btn {
@@ -10440,9 +10275,9 @@ async function viewTaskDetails(taskId) {
                         <span><i class="ri-calendar-line"></i> Created: ${new Date(task.date_created).toLocaleString()}</span>
                         ${task.email ? `<span><i class="ri-mail-line"></i> Email: ${task.email}</span>` : ''}
                         <span><i class="ri-key-line"></i> ID: ${task._id}</span>
-                        <span style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                            ${!isVerified ? `<button class="btn btn-sm task-verify-inline-btn" onclick="Swal.close(); verifyTask('${task._id}')" style="background: #f59e0b; color: white; border: none; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem;"><i class="ri-shield-check-line"></i> Verify</button>` : ''}
+                        <span style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
                             <span style="display: inline-flex; align-items: center; gap: 0.35rem;"><i class="ri-shield-check-line"></i> Status: ${verificationStatus}</span>
+                            ${!isVerified ? `<button class="btn task-verify-inline-btn" onclick="Swal.close(); verifyTask('${task._id}')"><i class="ri-shield-check-line"></i> Verify</button>` : ''}
                         </span>
                         ${lastVerifiedText}
                     </div>
@@ -10504,8 +10339,18 @@ async function viewTaskDetails(taskId) {
 
             <div class="task-modal-panels">
                 <div class="task-modal-panel" id="task-panel-analytics" data-panel="analytics" role="tabpanel">
+                    <div class="analytics-mobile-switch" role="tablist" aria-label="Analytics view toggle">
+                        <button class="analytics-switch-btn active" type="button" data-view="analytics" role="tab" aria-selected="true">
+                            <i class="ri-line-chart-line"></i>
+                            <span>View Analytics</span>
+                        </button>
+                        <button class="analytics-switch-btn" type="button" data-view="map" role="tab" aria-selected="false">
+                            <i class="ri-map-2-line"></i>
+                            <span>Traffic Map</span>
+                        </button>
+                    </div>
                     <div class="task-modal-grid">
-                        <div class="task-modal-section">
+                        <div class="task-modal-section analytics-section" data-analytics-view="analytics">
                             <h3 class="task-modal-section-title" style="color: var(--primary);"><i class="ri-line-chart-line"></i>View Analytics</h3>
                             ${hasViewsAnalytics ? `
                                 <div class="task-modal-chart-stack">
@@ -10521,7 +10366,7 @@ async function viewTaskDetails(taskId) {
                             `}
                         </div>
 
-                        <div class="task-modal-section">
+                        <div class="task-modal-section map-section" data-analytics-view="map">
                             <h3 class="task-modal-section-title" style="color: var(--info);"><i class="ri-map-2-line"></i>Traffic Map</h3>
                             <div class="task-modal-map" id="taskCountryMap"></div>
                             <div class="task-modal-subtitle">Top Countries</div>
@@ -10686,6 +10531,47 @@ function setupTaskDetailsTabs({ hasAnalytics }) {
     });
 
     activate(hasAnalytics ? 'analytics' : 'details');
+    
+    // Setup mobile analytics/map switch
+    setupAnalyticsMobileSwitch(popup);
+}
+
+function setupAnalyticsMobileSwitch(popup) {
+    if (!popup) return;
+    
+    const switchContainer = popup.querySelector('.analytics-mobile-switch');
+    if (!switchContainer) return;
+    
+    const switchBtns = Array.from(switchContainer.querySelectorAll('.analytics-switch-btn'));
+    const analyticsSection = popup.querySelector('.analytics-section');
+    const mapSection = popup.querySelector('.map-section');
+    
+    if (switchBtns.length === 0 || !analyticsSection || !mapSection) return;
+    
+    const activateView = (viewName) => {
+        switchBtns.forEach(btn => {
+            const isActive = btn.dataset.view === viewName;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+        
+        if (viewName === 'analytics') {
+            analyticsSection.classList.add('active');
+            mapSection.classList.remove('active');
+        } else {
+            analyticsSection.classList.remove('active');
+            mapSection.classList.add('active');
+        }
+    };
+    
+    switchBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            activateView(btn.dataset.view);
+        });
+    });
+    
+    // Default to analytics view
+    activateView('analytics');
 }
 
 function attachTaskModalTabAutoIconOnly(popup) {
@@ -10816,12 +10702,12 @@ function initializeTaskDoneParts(donePartsNormalized) {
                     <div class="task-done-card-top">
                         <div class="left">
                             <span class="task-done-idx">#${idx}</span>
-                            <span class="country-badge" title="${escapeHtml(cc)}">
-                                <span class="country-flag" aria-hidden="true">${escapeHtml(flag)}</span>
-                                <span class="country-text">${escapeHtml(cc)}</span>
-                            </span>
+                            <span class="task-done-time" title="${escapeHtml(dt ? timeRaw : timePretty)}">${escapeHtml(timePretty)}</span>
                         </div>
-                        <div class="task-done-time" title="${escapeHtml(dt ? timeRaw : timePretty)}">${escapeHtml(timePretty)}</div>
+                        <span class="country-badge" title="${escapeHtml(cc)}">
+                            <span class="country-flag" aria-hidden="true">${escapeHtml(flag)}</span>
+                            <span class="country-text">${escapeHtml(cc)}</span>
+                        </span>
                     </div>
                     <div class="task-done-kv">
                         <div class="label">Email</div>
@@ -10830,6 +10716,10 @@ function initializeTaskDoneParts(donePartsNormalized) {
                                 ? `<a class="task-email" href="${mailto}" target="_blank" rel="noopener noreferrer">${escapeHtml(email)}</a>`
                                 : `<span class="muted">—</span>`}
                         </div>
+                    </div>
+                    <div class="task-done-rawtime">
+                        <i class="ri-time-line" aria-hidden="true"></i>
+                        <span title="${escapeHtml(dt ? timeRaw : timePretty)}">${escapeHtml(timePretty)}</span>
                     </div>
                 </div>
             `;
@@ -10849,21 +10739,57 @@ function initializeTaskDoneParts(donePartsNormalized) {
             return `<button type="button" ${aria} ${disabled} class="${classes.join(' ')}" data-page="${pageNum}">${label}</button>`;
         };
 
-        // Condensed page buttons
+        // Responsive page buttons - show more buttons based on screen width
         const pageBtns = [];
-        const maxBtns = 5;
+        const screenWidth = window.innerWidth;
+        // Calculate max buttons based on available space
+        let maxBtns;
+        if (screenWidth >= 900) maxBtns = 11;
+        else if (screenWidth >= 700) maxBtns = 9;
+        else if (screenWidth >= 550) maxBtns = 7;
+        else if (screenWidth >= 400) maxBtns = 5;
+        else maxBtns = 3;
+        
         if (totalPages <= maxBtns) {
+            // Show all pages if they fit
             for (let p = 1; p <= totalPages; p++) pageBtns.push(makeBtn(String(p), p, { active: p === currentPage }));
         } else {
             const pushEllipsis = () => pageBtns.push(`<span class="ellipsis" aria-hidden="true">…</span>`);
+            
+            // Calculate how many buttons we can show around current page
+            // Reserve 2 slots for first and last page, 2 for potential ellipses
+            const sideSlots = Math.floor((maxBtns - 3) / 2); // buttons on each side of current
+            
+            // Always show first page
             pageBtns.push(makeBtn('1', 1, { active: currentPage === 1 }));
-
-            const startP = Math.max(2, currentPage - 1);
-            const endP = Math.min(totalPages - 1, currentPage + 1);
-            if (startP > 2) pushEllipsis();
-            for (let p = startP; p <= endP; p++) pageBtns.push(makeBtn(String(p), p, { active: p === currentPage }));
-            if (endP < totalPages - 1) pushEllipsis();
-
+            
+            // Calculate range around current page
+            let rangeStart = Math.max(2, currentPage - sideSlots);
+            let rangeEnd = Math.min(totalPages - 1, currentPage + sideSlots);
+            
+            // Adjust range to maximize button count
+            const rangeSize = rangeEnd - rangeStart + 1;
+            const targetSize = maxBtns - 2; // exclude first and last
+            if (rangeSize < targetSize) {
+                if (rangeStart === 2) {
+                    rangeEnd = Math.min(totalPages - 1, rangeStart + targetSize - 1);
+                } else if (rangeEnd === totalPages - 1) {
+                    rangeStart = Math.max(2, rangeEnd - targetSize + 1);
+                }
+            }
+            
+            // Add ellipsis if gap after first page
+            if (rangeStart > 2) pushEllipsis();
+            
+            // Add middle range buttons
+            for (let p = rangeStart; p <= rangeEnd; p++) {
+                pageBtns.push(makeBtn(String(p), p, { active: p === currentPage }));
+            }
+            
+            // Add ellipsis if gap before last page
+            if (rangeEnd < totalPages - 1) pushEllipsis();
+            
+            // Always show last page
             pageBtns.push(makeBtn(String(totalPages), totalPages, { active: currentPage === totalPages }));
         }
 
@@ -10887,6 +10813,16 @@ function initializeTaskDoneParts(donePartsNormalized) {
         if (!isFinite(next)) return;
         render(next);
     };
+
+    // Responsive: re-render on window resize (debounced)
+    let resizeTimeout;
+    const handleResize = () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => render(currentPage), 150);
+    };
+    window.removeEventListener('resize', window._taskPagerResize);
+    window._taskPagerResize = handleResize;
+    window.addEventListener('resize', handleResize);
 
     render(1);
 }
