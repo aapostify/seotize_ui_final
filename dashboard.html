@@ -4227,28 +4227,58 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 /* =====================================================
-   IMAGE DETAILS MODAL - Clean Design Like Task Details
+   IMAGE DETAILS MODAL - Premium Design
    ===================================================== */
 
 .image-details-modal-container {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 1rem;
     text-align: left;
     width: 100%;
-    max-width: 100%;
     box-sizing: border-box;
 }
 
-/* Image Modal Header */
-.image-modal-header {
-    background: transparent;
-    padding: 0 0 1rem 0;
-    margin: 0 0 1rem 0;
+/* Image Hero Section - Top */
+.image-hero-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid var(--border);
 }
 
-.image-modal-header-row {
+.image-hero-preview {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.03), rgba(99, 102, 241, 0.05));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+    position: relative;
+}
+
+.image-hero-img {
+    max-width: 100%;
+    max-height: 200px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.image-hero-img:hover {
+    transform: scale(1.03);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* Image Info Bar */
+.image-info-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -4256,87 +4286,126 @@ div#modalBody { padding-bottom: 100px; }
     flex-wrap: wrap;
 }
 
-.image-modal-title {
+.image-info-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     flex: 1;
     min-width: 0;
 }
 
-.image-modal-title h3 {
-    margin: 0;
+.image-filename {
     font-size: 1rem;
     font-weight: 700;
-    line-height: 1.35;
-}
-
-.image-modal-url-pill {
-    display: inline-flex;
+    color: var(--text);
+    display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.45rem 0.75rem;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08));
-    border: 1px solid rgba(99, 102, 241, 0.35);
-    border-radius: 999px;
+    margin: 0;
+}
+
+.image-filename i {
     color: var(--primary);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.8rem;
-    max-width: 100%;
-    transition: all 0.2s ease;
-    cursor: pointer;
+    font-size: 1.1rem;
 }
 
-.image-modal-url-pill:hover {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(139, 92, 246, 0.12));
-    transform: translateY(-1px);
-}
-
-.image-modal-url-pill span {
+.image-filename span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 300px;
 }
 
-.image-modal-actions-slot {
+.image-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.image-meta-row span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.image-meta-row i {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+/* Image Actions */
+.image-actions-bar {
     display: flex;
     gap: 0.5rem;
     flex-shrink: 0;
 }
 
-.image-modal-actions-slot .btn {
-    padding: 0.45rem 0.7rem;
-    font-size: 0.8rem;
-}
-
-.image-header-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1rem;
-    margin-top: 0.75rem;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-}
-
-.image-header-meta span {
+.image-action-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border);
+    background: var(--bg-tertiary);
+    color: var(--text);
 }
 
-.image-header-meta i {
-    font-size: 0.9rem;
-    opacity: 0.7;
+.image-action-btn:hover {
+    background: var(--card-hover);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.image-action-btn.btn-copy {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+    color: var(--primary);
+}
+
+.image-action-btn.btn-copy:hover {
+    background: rgba(99, 102, 241, 0.2);
+}
+
+.image-action-btn.btn-open {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: var(--success);
+}
+
+.image-action-btn.btn-open:hover {
+    background: rgba(16, 185, 129, 0.2);
+}
+
+.image-action-btn.btn-delete {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: var(--error);
+}
+
+.image-action-btn.btn-delete:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.image-action-btn i {
+    font-size: 1rem;
 }
 
 /* Image Stats Grid */
-.image-modal-stat-grid {
+.image-stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 0.75rem;
-    margin-bottom: 1rem;
 }
 
-.image-modal-stat-card {
+.image-stat-card {
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -4345,20 +4414,21 @@ div#modalBody { padding-bottom: 100px; }
     transition: all 0.2s ease;
 }
 
-.image-modal-stat-card:hover {
+.image-stat-card:hover {
     border-color: rgba(99, 102, 241, 0.3);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
-.image-modal-stat-card .stat-value {
-    font-size: 1.25rem;
+.image-stat-card .stat-value {
+    font-size: 1.4rem;
     font-weight: 800;
     line-height: 1.2;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.25rem;
 }
 
-.image-modal-stat-card .stat-label {
-    font-size: 0.65rem;
+.image-stat-card .stat-label {
+    font-size: 0.68rem;
     color: var(--text-secondary);
     font-weight: 600;
     text-transform: uppercase;
@@ -4367,16 +4437,17 @@ div#modalBody { padding-bottom: 100px; }
 
 /* Image Modal Tabs */
 .image-modal-tabs {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.25rem;
-    padding: 0.25rem;
+    gap: 0.35rem;
+    padding: 0.3rem;
     border-radius: 999px;
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
-    margin: 0 0 1rem;
     width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
 }
 
 .image-modal-tab {
@@ -4385,7 +4456,7 @@ div#modalBody { padding-bottom: 100px; }
     background: transparent;
     color: var(--text);
     border-radius: 999px;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.25rem;
     font-weight: 700;
     font-size: 0.85rem;
     cursor: pointer;
@@ -4395,31 +4466,24 @@ div#modalBody { padding-bottom: 100px; }
     gap: 0.4rem;
     transition: all 0.2s ease;
     flex: 1;
-    max-width: 200px;
 }
 
 .image-modal-tab:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-}
-
-.image-modal-tab:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
+    background: rgba(99, 102, 241, 0.08);
 }
 
 .image-modal-tab[data-tab="analytics"].active {
     background: rgba(99, 102, 241, 0.14);
-    border-color: rgba(99, 102, 241, 0.65);
+    border-color: rgba(99, 102, 241, 0.5);
     color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
 }
 
 .image-modal-tab[data-tab="traffic"].active {
     background: rgba(245, 158, 11, 0.14);
-    border-color: rgba(245, 158, 11, 0.65);
+    border-color: rgba(245, 158, 11, 0.5);
     color: var(--warning);
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
 }
 
 /* Image Modal Panels */
@@ -4444,41 +4508,8 @@ div#modalBody { padding-bottom: 100px; }
     display: none !important;
 }
 
-/* Image Analytics Panel - Grid Layout */
-.image-analytics-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-}
-
-.image-preview-section {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 200px;
-}
-
-.image-preview-img {
-    max-width: 100%;
-    max-height: 180px;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    border-radius: var(--radius-sm);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.image-preview-img:hover {
-    transform: scale(1.02);
-}
-
-.image-charts-section {
+/* Image Analytics Panel */
+.image-analytics-content {
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.75rem;
@@ -4495,7 +4526,7 @@ div#modalBody { padding-bottom: 100px; }
     padding: 0.6rem 0.85rem;
     background: var(--bg-tertiary);
     border-bottom: 1px solid var(--border);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -4504,19 +4535,19 @@ div#modalBody { padding-bottom: 100px; }
 
 .image-chart-card .chart-header i {
     color: var(--primary);
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 
 .image-chart-card .chart-body {
-    padding: 0.5rem;
-    height: 160px;
+    padding: 0.65rem;
+    height: 180px;
 }
 
 /* Image Traffic Panel */
-.image-traffic-grid {
+.image-traffic-content {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .image-traffic-card {
@@ -4527,7 +4558,7 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 .image-traffic-card .card-header {
-    padding: 0.65rem 0.85rem;
+    padding: 0.6rem 0.85rem;
     background: var(--bg-tertiary);
     border-bottom: 1px solid var(--border);
     font-size: 0.85rem;
@@ -4539,11 +4570,14 @@ div#modalBody { padding-bottom: 100px; }
 
 .image-traffic-card .card-header i {
     font-size: 1rem;
-    opacity: 0.8;
 }
 
+.image-traffic-card .card-header i.ri-window-line { color: var(--primary); }
+.image-traffic-card .card-header i.ri-device-line { color: var(--warning); }
+.image-traffic-card .card-header i.ri-earth-line { color: var(--success); }
+
 .image-traffic-card .card-body {
-    padding: 0.75rem;
+    padding: 0.65rem;
 }
 
 .image-traffic-list {
@@ -4565,7 +4599,7 @@ div#modalBody { padding-bottom: 100px; }
 
 .image-traffic-item:hover {
     background: var(--card-hover);
-    border-color: rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.25);
 }
 
 .image-traffic-item .item-name {
@@ -4574,10 +4608,38 @@ div#modalBody { padding-bottom: 100px; }
     font-size: 0.85rem;
 }
 
-/* SweetAlert2 custom class for Image details */
+/* Empty State */
+.image-empty-state {
+    padding: 2rem 1rem;
+    text-align: center;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.image-empty-state i {
+    font-size: 2.5rem;
+    color: var(--text-secondary);
+    opacity: 0.5;
+    margin-bottom: 0.75rem;
+}
+
+.image-empty-state h4 {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+    color: var(--text);
+}
+
+.image-empty-state p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* SweetAlert2 custom class */
 .swal2-popup.image-details-swal {
     margin: 0.5rem !important;
-    width: min(950px, 96vw) !important;
+    width: min(900px, 96vw) !important;
     max-width: 96vw !important;
     box-sizing: border-box !important;
     padding: 1.25rem !important;
@@ -4592,115 +4654,158 @@ div#modalBody { padding-bottom: 100px; }
     overflow: visible !important;
 }
 
-.swal2-popup.image-details-swal .swal2-title {
-    display: none !important;
-}
-
+.swal2-popup.image-details-swal .swal2-title,
 .swal2-popup.image-details-swal .swal2-actions {
     display: none !important;
 }
 
 /* Desktop - Image Details */
 @media (min-width: 769px) {
-    .image-modal-stat-grid {
+    .image-hero-preview {
+        min-height: 280px;
+        padding: 2rem;
+    }
+    
+    .image-hero-img {
+        max-height: 250px;
+    }
+    
+    .image-stats-grid {
         grid-template-columns: repeat(4, 1fr);
     }
     
-    .image-analytics-grid {
-        grid-template-columns: 280px 1fr;
-        gap: 1.25rem;
-    }
-    
-    .image-preview-section {
-        min-height: 340px;
-    }
-    
-    .image-preview-img {
-        max-height: 300px;
-    }
-    
-    .image-charts-section {
-        grid-template-columns: 1fr 1fr;
+    .image-analytics-content {
+        grid-template-columns: repeat(2, 1fr);
     }
     
     .image-chart-card .chart-body {
-        height: 155px;
+        height: 200px;
     }
     
-    .image-traffic-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .image-traffic-content {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
 /* Tablet - Image Details */
 @media (max-width: 768px) {
-    .image-modal-header-row {
+    .image-info-bar {
         flex-direction: column;
         align-items: stretch;
         gap: 0.75rem;
     }
     
-    .image-modal-actions-slot {
+    .image-actions-bar {
         justify-content: flex-start;
+        flex-wrap: wrap;
     }
     
-    .image-modal-stat-grid {
+    .image-stats-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 0.5rem;
     }
     
-    .image-modal-stat-card {
-        padding: 0.65rem 0.35rem;
+    .image-stat-card {
+        padding: 0.7rem 0.35rem;
     }
     
-    .image-modal-stat-card .stat-value {
-        font-size: 1.1rem;
+    .image-stat-card .stat-value {
+        font-size: 1.15rem;
     }
     
-    .image-modal-stat-card .stat-label {
+    .image-stat-card .stat-label {
         font-size: 0.6rem;
     }
     
-    .image-preview-section {
+    .image-hero-preview {
         min-height: 180px;
-        padding: 0.75rem;
+        padding: 1rem;
     }
     
-    .image-preview-img {
+    .image-hero-img {
         max-height: 160px;
     }
     
     .image-chart-card .chart-body {
-        height: 140px;
+        height: 160px;
+    }
+    
+    .image-traffic-content {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 /* Mobile - Image Details */
 @media (max-width: 480px) {
-    .image-modal-stat-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .image-details-modal-container {
+        gap: 0.85rem;
     }
     
-    .image-header-meta {
-        gap: 0.4rem 0.75rem;
-        font-size: 0.75rem;
+    .image-hero-section {
+        gap: 0.75rem;
+        padding-bottom: 0.85rem;
     }
     
-    .image-preview-section {
+    .image-hero-preview {
         min-height: 150px;
+        padding: 0.85rem;
     }
     
-    .image-preview-img {
+    .image-hero-img {
         max-height: 130px;
     }
     
+    .image-filename {
+        font-size: 0.9rem;
+    }
+    
+    .image-meta-row {
+        font-size: 0.75rem;
+        gap: 0.35rem 0.65rem;
+    }
+    
+    .image-action-btn {
+        padding: 0.45rem 0.65rem;
+        font-size: 0.75rem;
+    }
+    
+    .image-action-btn span {
+        display: none;
+    }
+    
+    .image-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .image-stat-card {
+        padding: 0.65rem 0.4rem;
+    }
+    
+    .image-stat-card .stat-value {
+        font-size: 1.1rem;
+    }
+    
+    .image-modal-tabs {
+        max-width: 100%;
+    }
+    
+    .image-modal-tab {
+        font-size: 0.8rem;
+        padding: 0.45rem 0.85rem;
+    }
+    
     .image-chart-card .chart-body {
-        height: 120px;
-        padding: 0.35rem;
+        height: 140px;
+        padding: 0.5rem;
+    }
+    
+    .image-traffic-content {
+        grid-template-columns: 1fr;
     }
     
     .image-traffic-item {
-        padding: 0.4rem 0.55rem;
+        padding: 0.45rem 0.6rem;
     }
     
     .image-traffic-item .item-name {
@@ -14912,55 +15017,62 @@ async function showImageDetails(imageId) {
     const last7Views = sortedDates.slice(-7).reduce((sum, [, v]) => sum + v, 0);
 
     // Truncate filename for display
-    const displayFilename = image.original_filename.length > 40 
-        ? image.original_filename.substring(0, 37) + '...' 
+    const displayFilename = image.original_filename.length > 35 
+        ? image.original_filename.substring(0, 32) + '...' 
         : image.original_filename;
 
     // --- 2. Construct Modal HTML ---
     const modalHtml = `
     <div class="image-details-modal-container">
-        <!-- Header -->
-        <div class="image-modal-header">
-            <div class="image-modal-header-row">
-                <div class="image-modal-title">
-                    <h3>
-                        <span class="image-modal-url-pill" onclick="window.open('${image.cdn_url}', '_blank')" title="${image.original_filename}">
-                            <i class="ri-image-line"></i>
-                            <span>${displayFilename}</span>
-                            <i class="ri-external-link-line" style="font-size: 0.75rem; opacity: 0.7;"></i>
-                        </span>
-                    </h3>
-                </div>
-                <div class="image-modal-actions-slot">
-                    <button class="btn btn-sm" onclick="copyToClipboard('${image.cdn_url}')" title="Copy CDN URL">
-                        <i class="ri-file-copy-line"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger" onclick="Swal.close(); deleteImage('${image.image_id}')" title="Delete Image">
-                        <i class="ri-delete-bin-line"></i>
-                    </button>
-                </div>
+        <!-- Hero Section: Image at Top -->
+        <div class="image-hero-section">
+            <div class="image-hero-preview">
+                <img src="${image.cdn_url}" alt="${image.original_filename}" class="image-hero-img" onclick="window.open('${image.cdn_url}', '_blank')" title="Click to view full size">
             </div>
-            <div class="image-header-meta">
-                <span><i class="ri-calendar-line"></i> ${formattedDate}</span>
-                <span><i class="ri-key-2-line"></i> ${image.image_id.substring(0, 10)}...</span>
+            
+            <div class="image-info-bar">
+                <div class="image-info-left">
+                    <h3 class="image-filename">
+                        <i class="ri-image-line"></i>
+                        <span title="${image.original_filename}">${displayFilename}</span>
+                    </h3>
+                    <div class="image-meta-row">
+                        <span><i class="ri-calendar-line"></i> ${formattedDate}</span>
+                        <span><i class="ri-key-2-line"></i> ${image.image_id.substring(0, 8)}...</span>
+                    </div>
+                </div>
+                <div class="image-actions-bar">
+                    <button class="image-action-btn btn-copy" onclick="copyToClipboard('${image.cdn_url}')" title="Copy CDN URL">
+                        <i class="ri-file-copy-line"></i>
+                        <span>Copy URL</span>
+                    </button>
+                    <button class="image-action-btn btn-open" onclick="window.open('${image.cdn_url}', '_blank')" title="Open Full Size">
+                        <i class="ri-external-link-line"></i>
+                        <span>Open</span>
+                    </button>
+                    <button class="image-action-btn btn-delete" onclick="Swal.close(); deleteImage('${image.image_id}')" title="Delete Image">
+                        <i class="ri-delete-bin-line"></i>
+                        <span>Delete</span>
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Stats Grid -->
-        <div class="image-modal-stat-grid">
-            <div class="image-modal-stat-card">
+        <div class="image-stats-grid">
+            <div class="image-stat-card">
                 <div class="stat-value" style="color: var(--success);">${formatNumber(totalViews)}</div>
                 <div class="stat-label">Total Views</div>
             </div>
-            <div class="image-modal-stat-card">
+            <div class="image-stat-card">
                 <div class="stat-value" style="color: var(--primary);">${formatNumber(last7Views)}</div>
                 <div class="stat-label">Last 7 Days</div>
             </div>
-            <div class="image-modal-stat-card">
+            <div class="image-stat-card">
                 <div class="stat-value" style="color: var(--info);">${countryCount}</div>
                 <div class="stat-label">Countries</div>
             </div>
-            <div class="image-modal-stat-card">
+            <div class="image-stat-card">
                 <div class="stat-value" style="color: var(--warning);">${browserCount}</div>
                 <div class="stat-label">Browsers</div>
             </div>
@@ -14980,74 +15092,77 @@ async function showImageDetails(imageId) {
         <div class="image-modal-panels">
             <!-- Analytics Panel -->
             <div class="image-modal-panel" id="image-panel-analytics" data-panel="analytics" role="tabpanel">
-                <div class="image-analytics-grid">
-                    <div class="image-preview-section">
-                        <img src="${image.cdn_url}" alt="${image.original_filename}" class="image-preview-img" onclick="window.open('${image.cdn_url}', '_blank')" title="Click to view full size">
+                ${hasAnalytics ? `
+                    <div class="image-analytics-content">
+                        <div class="image-chart-card">
+                            <div class="chart-header"><i class="ri-line-chart-line"></i> Views Over Time</div>
+                            <div class="chart-body"><canvas id="imageViewsTimelineChart"></canvas></div>
+                        </div>
+                        <div class="image-chart-card">
+                            <div class="chart-header"><i class="ri-earth-line"></i> Top Countries</div>
+                            <div class="chart-body"><canvas id="imageCountriesChart"></canvas></div>
+                        </div>
                     </div>
-                    <div class="image-charts-section">
-                        ${hasAnalytics ? `
-                            <div class="image-chart-card">
-                                <div class="chart-header"><i class="ri-line-chart-line"></i> Views Over Time</div>
-                                <div class="chart-body"><canvas id="imageViewsTimelineChart"></canvas></div>
-                            </div>
-                            <div class="image-chart-card">
-                                <div class="chart-header"><i class="ri-earth-line"></i> Top Countries</div>
-                                <div class="chart-body"><canvas id="imageCountriesChart"></canvas></div>
-                            </div>
-                        ` : `
-                            <div class="empty-state" style="padding: 2rem 1rem; background: var(--bg-tertiary); border-radius: var(--radius); border: 1px solid var(--border); grid-column: 1 / -1;">
-                                <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
-                                <div class="empty-state-title" style="font-size: 1rem;">No Analytics Yet</div>
-                                <p class="empty-state-description" style="font-size: 0.8rem; margin: 0;">Analytics will appear once the image receives views.</p>
-                            </div>
-                        `}
+                ` : `
+                    <div class="image-empty-state">
+                        <i class="ri-bar-chart-line"></i>
+                        <h4>No Analytics Yet</h4>
+                        <p>Analytics will appear once the image receives views.</p>
                     </div>
-                </div>
+                `}
             </div>
 
             <!-- Traffic Panel -->
             <div class="image-modal-panel" id="image-panel-traffic" data-panel="traffic" role="tabpanel" hidden>
-                <div class="image-traffic-grid">
-                    <div class="image-traffic-card">
-                        <div class="card-header"><i class="ri-window-line"></i> Browsers</div>
-                        <div class="card-body">
-                            <div class="image-traffic-list">
-                                ${topBrowsers.length > 0 ? topBrowsers.map(b => `
-                                    <div class="image-traffic-item">
-                                        <span class="item-name">${b[0]}</span>
-                                        <span class="badge badge-primary">${formatNumber(b[1])}</span>
-                                    </div>
-                                `).join('') : '<div class="image-traffic-item"><span class="item-name">No data yet</span><span>—</span></div>'}
+                ${hasAnalytics ? `
+                    <div class="image-traffic-content">
+                        <div class="image-traffic-card">
+                            <div class="card-header"><i class="ri-window-line"></i> Browsers</div>
+                            <div class="card-body">
+                                <div class="image-traffic-list">
+                                    ${topBrowsers.length > 0 ? topBrowsers.map(b => `
+                                        <div class="image-traffic-item">
+                                            <span class="item-name">${b[0]}</span>
+                                            <span class="badge badge-primary">${formatNumber(b[1])}</span>
+                                        </div>
+                                    `).join('') : '<div class="image-traffic-item"><span class="item-name">No data</span><span>—</span></div>'}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="image-traffic-card">
+                            <div class="card-header"><i class="ri-device-line"></i> Devices</div>
+                            <div class="card-body">
+                                <div class="image-traffic-list">
+                                    ${topDevices.length > 0 ? topDevices.map(d => `
+                                        <div class="image-traffic-item">
+                                            <span class="item-name">${d[0]}</span>
+                                            <span class="badge badge-warning">${formatNumber(d[1])}</span>
+                                        </div>
+                                    `).join('') : '<div class="image-traffic-item"><span class="item-name">No data</span><span>—</span></div>'}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="image-traffic-card">
+                            <div class="card-header"><i class="ri-earth-line"></i> Countries</div>
+                            <div class="card-body">
+                                <div class="image-traffic-list">
+                                    ${topCountries.length > 0 ? topCountries.map(c => `
+                                        <div class="image-traffic-item">
+                                            <span class="item-name">${c[0]}</span>
+                                            <span class="badge badge-success">${formatNumber(c[1])}</span>
+                                        </div>
+                                    `).join('') : '<div class="image-traffic-item"><span class="item-name">No data</span><span>—</span></div>'}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="image-traffic-card">
-                        <div class="card-header"><i class="ri-device-line"></i> Devices</div>
-                        <div class="card-body">
-                            <div class="image-traffic-list">
-                                ${topDevices.length > 0 ? topDevices.map(d => `
-                                    <div class="image-traffic-item">
-                                        <span class="item-name">${d[0]}</span>
-                                        <span class="badge badge-warning">${formatNumber(d[1])}</span>
-                                    </div>
-                                `).join('') : '<div class="image-traffic-item"><span class="item-name">No data yet</span><span>—</span></div>'}
-                            </div>
-                        </div>
+                ` : `
+                    <div class="image-empty-state">
+                        <i class="ri-pie-chart-line"></i>
+                        <h4>No Traffic Data</h4>
+                        <p>Traffic breakdown will appear once the image receives views.</p>
                     </div>
-                    <div class="image-traffic-card">
-                        <div class="card-header"><i class="ri-earth-line"></i> Countries</div>
-                        <div class="card-body">
-                            <div class="image-traffic-list">
-                                ${topCountries.length > 0 ? topCountries.map(c => `
-                                    <div class="image-traffic-item">
-                                        <span class="item-name">${c[0]}</span>
-                                        <span class="badge badge-success">${formatNumber(c[1])}</span>
-                                    </div>
-                                `).join('') : '<div class="image-traffic-item"><span class="item-name">No data yet</span><span>—</span></div>'}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                `}
             </div>
         </div>
     </div>`;
@@ -15057,7 +15172,7 @@ async function showImageDetails(imageId) {
         html: modalHtml,
         showCloseButton: true,
         showConfirmButton: false,
-        width: 'min(950px, 96vw)',
+        width: 'min(900px, 96vw)',
         customClass: {
             popup: 'swal2-toast image-details-swal',
             closeButton: 'swal2-close'
@@ -15065,7 +15180,7 @@ async function showImageDetails(imageId) {
         showClass: { popup: 'swal2-show-super-fast' },
         hideClass: { popup: 'swal2-hide-super-fast' },
         didOpen: () => {
-            setupImageDetailsTabs({ hasAnalytics });
+            setupImageDetailsTabs();
             if (hasAnalytics) {
                 initializeImageAnalyticsCharts(sortedDates, topCountries);
             }
@@ -15074,7 +15189,7 @@ async function showImageDetails(imageId) {
 }
 
 // Setup image details tabs
-function setupImageDetailsTabs({ hasAnalytics }) {
+function setupImageDetailsTabs() {
     const popup = Swal.getPopup();
     if (!popup) return;
 
