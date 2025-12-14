@@ -4952,11 +4952,15 @@ div#modalBody { padding-bottom: 100px; }
 .task-done-pager .pages {
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
-    gap: 0.35rem;
+    justify-content: center;
+    gap: 0.25rem;
     flex: 1;
     min-width: 0;
-    padding: 0 0.5rem;
+    padding: 0 0.25rem;
+}
+.task-done-pager .pages .task-done-page-btn.page {
+    flex: 1 1 auto;
+    max-width: 48px;
 }
 .task-done-pager .task-done-page-btn {
     appearance: none;
@@ -5556,7 +5560,8 @@ div#modalBody { padding-bottom: 100px; }
 /* Pager mobile fix */
 @media (max-width: 480px) {
     .task-done-pager { flex-direction: column; align-items: stretch; }
-    .task-done-pager .pages { overflow-x: auto; padding-bottom: 0.15rem; -webkit-overflow-scrolling: touch; }
+    .task-done-pager .pages { overflow-x: auto; padding-bottom: 0.15rem; -webkit-overflow-scrolling: touch; gap: 0.2rem; }
+    .task-done-pager .pages .task-done-page-btn.page { flex: 0 0 auto; max-width: none; min-width: 32px; }
     .task-done-pager .meta { text-align: center; }
 }
 
@@ -6189,7 +6194,8 @@ div#modalBody { padding-bottom: 100px; }
     }
     .swal2-html-container .task-done-pager .task-done-page-btn.nav { min-width: auto !important; padding: 0.3rem 0.45rem !important; }
     .swal2-html-container .task-done-pager .task-done-page-btn.nav span { display: none !important; }
-    .swal2-html-container .task-done-pager .pages { flex: 1 !important; min-width: 0 !important; padding: 0 0.35rem !important; justify-content: space-evenly !important; }
+    .swal2-html-container .task-done-pager .pages { flex: 1 !important; min-width: 0 !important; padding: 0 0.25rem !important; justify-content: center !important; gap: 0.2rem !important; }
+    .swal2-html-container .task-done-pager .pages .task-done-page-btn.page { flex: 1 1 auto !important; max-width: 40px !important; }
     .swal2-html-container [class*="grid"], .swal2-html-container [class*="flex"] { max-width: 100% !important; overflow-x: hidden !important; }
     .swal2-html-container [style*="grid-template-columns"], .swal2-html-container [style*="display: grid"] { grid-template-columns: 1fr !important; gap: 0.75rem !important; }
     .swal2-html-container [style*="display: flex"] { flex-wrap: wrap !important; }
@@ -10733,21 +10739,57 @@ function initializeTaskDoneParts(donePartsNormalized) {
             return `<button type="button" ${aria} ${disabled} class="${classes.join(' ')}" data-page="${pageNum}">${label}</button>`;
         };
 
-        // Condensed page buttons
+        // Responsive page buttons - show more buttons based on screen width
         const pageBtns = [];
-        const maxBtns = 5;
+        const screenWidth = window.innerWidth;
+        // Calculate max buttons based on available space
+        let maxBtns;
+        if (screenWidth >= 900) maxBtns = 11;
+        else if (screenWidth >= 700) maxBtns = 9;
+        else if (screenWidth >= 550) maxBtns = 7;
+        else if (screenWidth >= 400) maxBtns = 5;
+        else maxBtns = 3;
+        
         if (totalPages <= maxBtns) {
+            // Show all pages if they fit
             for (let p = 1; p <= totalPages; p++) pageBtns.push(makeBtn(String(p), p, { active: p === currentPage }));
         } else {
             const pushEllipsis = () => pageBtns.push(`<span class="ellipsis" aria-hidden="true">…</span>`);
+            
+            // Calculate how many buttons we can show around current page
+            // Reserve 2 slots for first and last page, 2 for potential ellipses
+            const sideSlots = Math.floor((maxBtns - 3) / 2); // buttons on each side of current
+            
+            // Always show first page
             pageBtns.push(makeBtn('1', 1, { active: currentPage === 1 }));
-
-            const startP = Math.max(2, currentPage - 1);
-            const endP = Math.min(totalPages - 1, currentPage + 1);
-            if (startP > 2) pushEllipsis();
-            for (let p = startP; p <= endP; p++) pageBtns.push(makeBtn(String(p), p, { active: p === currentPage }));
-            if (endP < totalPages - 1) pushEllipsis();
-
+            
+            // Calculate range around current page
+            let rangeStart = Math.max(2, currentPage - sideSlots);
+            let rangeEnd = Math.min(totalPages - 1, currentPage + sideSlots);
+            
+            // Adjust range to maximize button count
+            const rangeSize = rangeEnd - rangeStart + 1;
+            const targetSize = maxBtns - 2; // exclude first and last
+            if (rangeSize < targetSize) {
+                if (rangeStart === 2) {
+                    rangeEnd = Math.min(totalPages - 1, rangeStart + targetSize - 1);
+                } else if (rangeEnd === totalPages - 1) {
+                    rangeStart = Math.max(2, rangeEnd - targetSize + 1);
+                }
+            }
+            
+            // Add ellipsis if gap after first page
+            if (rangeStart > 2) pushEllipsis();
+            
+            // Add middle range buttons
+            for (let p = rangeStart; p <= rangeEnd; p++) {
+                pageBtns.push(makeBtn(String(p), p, { active: p === currentPage }));
+            }
+            
+            // Add ellipsis if gap before last page
+            if (rangeEnd < totalPages - 1) pushEllipsis();
+            
+            // Always show last page
             pageBtns.push(makeBtn(String(totalPages), totalPages, { active: currentPage === totalPages }));
         }
 
@@ -10771,6 +10813,16 @@ function initializeTaskDoneParts(donePartsNormalized) {
         if (!isFinite(next)) return;
         render(next);
     };
+
+    // Responsive: re-render on window resize (debounced)
+    let resizeTimeout;
+    const handleResize = () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => render(currentPage), 150);
+    };
+    window.removeEventListener('resize', window._taskPagerResize);
+    window._taskPagerResize = handleResize;
+    window.addEventListener('resize', handleResize);
 
     render(1);
 }
