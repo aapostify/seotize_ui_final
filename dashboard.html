@@ -4463,13 +4463,13 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 /* =====================================================
-   ARTICLE DETAILS MODAL - Enhanced Styles
+   ARTICLE DETAILS MODAL - Premium Design with Tabs
    ===================================================== */
 
 .article-details-modal-container {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 0;
     text-align: left;
     width: 100%;
     max-width: 100%;
@@ -4477,254 +4477,673 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 /* Article Modal Header */
-.article-details-modal-container .article-modal-header {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding-bottom: 1rem;
+.article-modal-header {
+    background: transparent;
+    padding: 0 0 1rem 0;
+    margin: 0 0 1rem 0;
     border-bottom: 1px solid var(--border);
 }
 
-.article-details-modal-container .article-meta-row {
+.article-modal-header-row {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
 }
 
-.article-details-modal-container .article-meta-item {
+.article-modal-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.article-modal-title h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.article-modal-url-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.85rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08));
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    border-radius: 999px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    max-width: 100%;
+    transition: all 0.2s ease;
+}
+
+.article-modal-url-pill:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(139, 92, 246, 0.12));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.article-modal-url-pill span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.article-modal-actions-slot {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.article-modal-actions-slot .btn {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.8rem;
+}
+
+.article-header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.article-header-meta span {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
+}
+
+.article-header-meta i {
+    font-size: 0.95rem;
+    opacity: 0.7;
+}
+
+/* Article Stats Grid */
+.article-modal-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.article-modal-stat-card {
     background: var(--bg-tertiary);
-    padding: 0.4rem 0.75rem;
-    border-radius: 999px;
     border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem;
+    text-align: center;
+    transition: all 0.2s ease;
 }
 
-.article-details-modal-container .article-meta-item i {
+.article-modal-stat-card:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateY(-1px);
+}
+
+.article-modal-stat-card .stat-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+}
+
+.article-modal-stat-card .stat-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* Article Modal Tabs */
+.article-modal-tabs {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    margin: 0 0 1.25rem;
+    width: 100%;
+    flex-wrap: nowrap;
+}
+
+.article-modal-tab {
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.55rem 0.85rem;
+    font-weight: 700;
     font-size: 0.9rem;
-    opacity: 0.8;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    transition: all 0.2s ease;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
 }
 
-/* Article Analytics Grid */
-.article-details-modal-container .article-analytics-grid {
+.article-modal-tab:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10);
+}
+
+.article-modal-tab:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none;
+    box-shadow: none;
+}
+
+.article-modal-tab[data-tab="analytics"].active {
+    background: rgba(99, 102, 241, 0.14);
+    border-color: rgba(99, 102, 241, 0.65);
+    color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20), 0 14px 40px rgba(99, 102, 241, 0.15);
+}
+
+.article-modal-tab[data-tab="images"].active {
+    background: rgba(245, 158, 11, 0.14);
+    border-color: rgba(245, 158, 11, 0.65);
+    color: var(--warning);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.20), 0 14px 40px rgba(245, 158, 11, 0.15);
+}
+
+.article-modal-tab[data-tab="content"].active {
+    background: rgba(16, 185, 129, 0.14);
+    border-color: rgba(16, 185, 129, 0.55);
+    color: var(--success);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.16), 0 14px 40px rgba(16, 185, 129, 0.12);
+}
+
+.article-modal-tab .label-mobile { display: none; }
+.article-modal-tab .label-desktop { display: inline; }
+.article-modal-tab.icon-only .label-mobile,
+.article-modal-tab.icon-only .label-desktop { display: none !important; }
+.article-modal-tab.icon-only { padding-left: 0.55rem; padding-right: 0.55rem; }
+.article-modal-tab.icon-only i { margin: 0; }
+
+/* Article Modal Panels */
+.article-modal-panels {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
 }
 
-.article-details-modal-container .article-chart-card {
+.article-modal-panel.panel-in {
+    animation: articlePanelIn 180ms ease-out;
+}
+
+@keyframes articlePanelIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.article-modal-panel[hidden] {
+    display: none !important;
+}
+
+/* Article Analytics Panel */
+.article-analytics-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.article-chart-wrap {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 1rem;
+    height: 280px;
 }
 
-.article-details-modal-container .article-chart-card .chart-header {
-    padding: 0.75rem 1rem;
-    background: var(--bg-tertiary);
-    border-bottom: 1px solid var(--border);
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.article-details-modal-container .article-chart-card .chart-header i {
-    color: var(--primary);
-    font-size: 1rem;
-}
-
-.article-details-modal-container .article-chart-card .chart-body {
-    padding: 0.75rem;
-    height: 180px;
-}
-
-.article-details-modal-container .article-chart-card.full-width .chart-body {
+.article-chart-wrap.small {
     height: 200px;
 }
 
-/* Article Mini Charts Grid */
-.article-details-modal-container .article-mini-charts {
+.article-mini-charts-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 0.75rem;
 }
 
-/* Article Images Section */
-.article-details-modal-container .article-images-section {
+.article-mini-chart-card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     overflow: hidden;
 }
 
-.article-details-modal-container .article-images-section .section-header {
-    padding: 0.75rem 1rem;
+.article-mini-chart-card .chart-title {
+    padding: 0.6rem 0.85rem;
     background: var(--bg-tertiary);
     border-bottom: 1px solid var(--border);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: var(--text);
     display: flex;
     align-items: center;
+    gap: 0.4rem;
+}
+
+.article-mini-chart-card .chart-title i {
+    font-size: 0.95rem;
+    opacity: 0.7;
+}
+
+.article-mini-chart-card .chart-body {
+    padding: 0.5rem;
+    height: 160px;
+}
+
+/* Article Images Slider Panel */
+.article-images-slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.article-image-slider {
+    position: relative;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.article-slider-image {
+    max-width: 100%;
+    max-height: 300px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.article-slider-image:hover {
+    transform: scale(1.02);
+}
+
+.article-slider-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.article-slider-nav:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.article-slider-nav.prev { left: 0.75rem; }
+.article-slider-nav.next { right: 0.75rem; }
+
+.article-slider-counter {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.article-slider-counter span {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.article-slider-thumbnails {
+    display: flex;
     gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0.5rem;
 }
 
-.article-details-modal-container .article-images-section .section-header i {
-    color: var(--warning);
-}
-
-.article-details-modal-container .article-images-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 0.5rem;
-    padding: 0.75rem;
-}
-
-.article-details-modal-container .article-image-thumb {
-    aspect-ratio: 1;
+.article-slider-thumb {
+    width: 60px;
+    height: 60px;
     border-radius: var(--radius-sm);
     overflow: hidden;
-    background: var(--bg-tertiary);
     cursor: pointer;
-    border: 1px solid var(--border);
-    transition: all 0.15s ease;
+    border: 2px solid var(--border);
+    transition: all 0.2s ease;
+    opacity: 0.6;
 }
 
-.article-details-modal-container .article-image-thumb:hover {
-    transform: scale(1.05);
+.article-slider-thumb:hover {
+    opacity: 1;
+    border-color: var(--text-secondary);
+}
+
+.article-slider-thumb.active {
+    opacity: 1;
     border-color: var(--primary);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
 }
 
-.article-details-modal-container .article-image-thumb img {
+.article-slider-thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-/* Article Content Preview */
-.article-details-modal-container .article-content-section {
+.article-no-images {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.article-no-images i {
+    font-size: 3rem;
+    color: var(--text-secondary);
+    opacity: 0.4;
+    margin-bottom: 1rem;
+}
+
+.article-no-images h4 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    color: var(--text);
+}
+
+.article-no-images p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Article Content Panel */
+.article-content-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.article-content-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+
+.article-content-info-card {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem;
+    text-align: center;
+}
+
+.article-content-info-card .info-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.15rem;
+}
+
+.article-content-info-card .info-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.article-content-preview {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     overflow: hidden;
 }
 
-.article-details-modal-container .article-content-section .section-header {
+.article-content-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 0.75rem 1rem;
     background: var(--bg-tertiary);
     border-bottom: 1px solid var(--border);
+}
+
+.article-content-preview-header h4 {
+    margin: 0;
     font-size: 0.9rem;
     font-weight: 700;
-    color: var(--text);
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.article-details-modal-container .article-content-section .section-header i {
-    color: var(--info);
+.article-content-preview-header h4 i {
+    color: var(--success);
 }
 
-.article-details-modal-container .article-content-body {
-    max-height: 220px;
-    overflow-y: auto;
-    padding: 1rem;
+.article-content-body {
+    padding: 1.25rem;
     font-family: Georgia, 'Times New Roman', serif;
-    font-size: 0.9rem;
-    line-height: 1.7;
+    font-size: 0.95rem;
+    line-height: 1.8;
     color: var(--text);
+    max-height: 380px;
+    overflow-y: auto;
 }
 
-.article-details-modal-container .article-content-body::-webkit-scrollbar {
+.article-content-body::-webkit-scrollbar {
     width: 6px;
 }
 
-.article-details-modal-container .article-content-body::-webkit-scrollbar-track {
+.article-content-body::-webkit-scrollbar-track {
     background: var(--bg-tertiary);
 }
 
-.article-details-modal-container .article-content-body::-webkit-scrollbar-thumb {
+.article-content-body::-webkit-scrollbar-thumb {
     background: var(--border);
     border-radius: 3px;
 }
 
+.article-content-body::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* SweetAlert2 custom class for Article details */
+.swal2-popup.article-details-swal {
+    margin: 0.5rem !important;
+    width: min(1100px, 96vw) !important;
+    max-width: 96vw !important;
+    box-sizing: border-box !important;
+    padding: 1.25rem !important;
+}
+
+.swal2-popup.article-details-swal .swal2-html-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+}
+
+.swal2-popup.article-details-swal .swal2-title {
+    display: none !important;
+}
+
+.swal2-popup.article-details-swal .swal2-actions {
+    display: none !important;
+}
+
 /* Desktop Breakpoint - Article Details */
 @media (min-width: 769px) {
-    .article-details-modal-container {
-        gap: 1.5rem;
+    .article-modal-stat-grid {
+        grid-template-columns: repeat(4, 1fr);
     }
     
-    .article-details-modal-container .article-analytics-grid {
-        grid-template-columns: 1fr;
+    .article-chart-wrap {
+        height: 300px;
     }
     
-    .article-details-modal-container .article-mini-charts {
+    .article-mini-charts-grid {
         grid-template-columns: repeat(3, 1fr);
     }
     
-    .article-details-modal-container .article-chart-card .chart-body {
-        height: 200px;
+    .article-slider-thumb {
+        width: 70px;
+        height: 70px;
     }
     
-    .article-details-modal-container .article-chart-card.full-width .chart-body {
-        height: 220px;
-    }
-    
-    .article-details-modal-container .article-images-grid {
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-        gap: 0.75rem;
-        padding: 1rem;
-    }
-    
-    .article-details-modal-container .article-content-body {
-        max-height: 280px;
+    .article-content-body {
+        max-height: 420px;
     }
 }
 
 /* Mobile Breakpoint - Article Details */
-@media (max-width: 480px) {
-    .article-details-modal-container {
-        gap: 1rem;
+@media (max-width: 768px) {
+    .article-modal-header-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
     }
     
-    .article-details-modal-container .article-meta-row {
+    .article-modal-actions-slot {
+        justify-content: flex-start;
+    }
+    
+    .article-modal-stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .article-modal-tabs { width: 100%; }
+    .article-modal-tab .label-mobile,
+    .article-modal-tab .label-desktop { display: none !important; }
+    .article-modal-tab { padding-left: 0.55rem !important; padding-right: 0.55rem !important; }
+    .article-modal-tab i { margin: 0 !important; }
+    
+    .article-mini-charts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .article-chart-wrap {
+        height: 220px;
+    }
+    
+    .article-mini-chart-card .chart-body {
+        height: 140px;
+    }
+    
+    .article-image-slider {
+        min-height: 240px;
+        padding: 1rem;
+    }
+    
+    .article-slider-image {
+        max-height: 220px;
+    }
+    
+    .article-slider-nav {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+    
+    .article-slider-nav.prev { left: 0.5rem; }
+    .article-slider-nav.next { right: 0.5rem; }
+    
+    .article-slider-thumb {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .article-content-info {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .article-content-body {
+        max-height: 280px;
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .article-modal-stat-grid {
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.5rem;
     }
     
-    .article-details-modal-container .article-meta-item {
-        font-size: 0.7rem;
-        padding: 0.3rem 0.6rem;
+    .article-modal-stat-card {
+        padding: 0.65rem;
     }
     
-    .article-details-modal-container .article-chart-card .chart-header {
-        font-size: 0.8rem;
-        padding: 0.6rem 0.75rem;
+    .article-modal-stat-card .stat-value {
+        font-size: 1.1rem;
     }
     
-    .article-details-modal-container .article-chart-card .chart-body {
-        height: 150px;
-        padding: 0.5rem;
+    .article-modal-stat-card .stat-label {
+        font-size: 0.65rem;
     }
     
-    .article-details-modal-container .article-images-grid {
-        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-        gap: 0.4rem;
-        padding: 0.5rem;
+    .article-header-meta {
+        gap: 0.5rem;
+        font-size: 0.75rem;
     }
     
-    .article-details-modal-container .article-content-body {
+    .article-image-slider {
+        min-height: 200px;
+    }
+    
+    .article-slider-image {
         max-height: 180px;
+    }
+    
+    .article-content-info-card {
+        padding: 0.65rem;
+    }
+    
+    .article-content-info-card .info-value {
+        font-size: 0.95rem;
+    }
+    
+    .article-content-body {
+        max-height: 240px;
         font-size: 0.85rem;
-        padding: 0.75rem;
+        line-height: 1.7;
     }
 }
 
@@ -12176,6 +12595,7 @@ async function viewArticle(articleId) {
         });
         const sortedDates = Object.entries(viewsByDate).sort(([a], [b]) => new Date(a) - new Date(b));
         const haveStats = Object.keys(stats).length > 0;
+        const hasImages = article.images && article.images.length > 0;
         
         // Format dates nicely
         const creationDate = new Date(article.creation_date);
@@ -12185,141 +12605,298 @@ async function viewArticle(articleId) {
             day: 'numeric'
         });
         
-        // --- Build new responsive HTML for Swal ---
+        // Calculate content stats
+        const wordCount = article.body ? article.body.replace(/<[^>]*>/g, '').split(/\s+/).filter(w => w.length > 0).length : 0;
+        const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+        const charCount = article.body ? article.body.replace(/<[^>]*>/g, '').length : 0;
+        
+        // Calculate analytics stats
+        const totalViews = article.total_views || 0;
+        const countryCount = Object.keys(countries).length;
+        const last7Views = sortedDates.slice(-7).reduce((sum, [, v]) => sum + v, 0);
+        const avgViews = sortedDates.length > 0 ? Math.round(sortedDates.reduce((sum, [, v]) => sum + v, 0) / sortedDates.length) : 0;
+        
+        // --- Build new responsive HTML for Swal with Tabs ---
         const modalHtml = `
         <div class="article-details-modal-container">
-            <!-- Article Meta Information -->
+            <!-- Header Section -->
             <div class="article-modal-header">
-                <div class="article-meta-row">
-                    <span class="article-meta-item">
-                        <i class="ri-calendar-line"></i> ${formattedDate}
-                    </span>
-                    <span class="article-meta-item">
-                        <i class="ri-eye-line"></i> ${formatNumber(article.total_views || 0)} views
-                    </span>
-                    <span class="article-meta-item">
-                        <i class="ri-image-line"></i> ${(article.images || []).length} images
-                    </span>
-                    <a href="https://${article.url}" target="_blank" class="article-meta-item" style="color: var(--primary); text-decoration: none;">
-                        <i class="ri-global-line"></i> ${article.url}
-                    </a>
+                <div class="article-modal-header-row">
+                    <div class="article-modal-title">
+                        <h3>
+                            <a class="article-modal-url-pill" href="https://${article.url}" target="_blank" rel="noopener noreferrer">
+                                <span>${article.url}</span>
+                                <i class="ri-external-link-line"></i>
+                            </a>
+                        </h3>
+                    </div>
+                    <div class="article-modal-actions-slot">
+                        <button class="btn btn-sm" onclick="window.open('https://${article.url}', '_blank')" title="View Live">
+                            <i class="ri-external-link-line"></i> <span class="label-desktop">View Live</span>
+                        </button>
+                        <button class="btn btn-sm" onclick="Swal.close(); showArticleModal('${articleId}')" title="Edit">
+                            <i class="ri-edit-line"></i> <span class="label-desktop">Edit</span>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="Swal.close(); deleteArticle('${articleId}')" title="Delete">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="article-header-meta">
+                    <span><i class="ri-calendar-line"></i> Published: ${formattedDate}</span>
+                    <span><i class="ri-key-line"></i> ID: ${article.article_id}</span>
+                    <span><i class="ri-text"></i> ${formatNumber(wordCount)} words</span>
+                    <span><i class="ri-time-line"></i> ${readingTime} min read</span>
                 </div>
             </div>
 
-            <!-- Analytics Section -->
-            ${haveStats ? `
-                <div class="article-analytics-grid">
-                    <div class="article-chart-card full-width">
-                        <div class="chart-header">
-                            <i class="ri-line-chart-line"></i> Views Timeline
-                        </div>
-                        <div class="chart-body">
-                            <canvas id="articleViewsChart"></canvas>
-                        </div>
-                    </div>
+            <!-- Stats Grid -->
+            <div class="article-modal-stat-grid">
+                <div class="article-modal-stat-card">
+                    <div class="stat-value" style="color: var(--success);">${formatNumber(totalViews)}</div>
+                    <div class="stat-label">Total Views</div>
                 </div>
-                <div class="article-mini-charts">
-                    <div class="article-chart-card">
-                        <div class="chart-header">
-                            <i class="ri-earth-line"></i> Countries
-                        </div>
-                        <div class="chart-body">
-                            <canvas id="articleCountriesChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="article-chart-card">
-                        <div class="chart-header">
-                            <i class="ri-window-line"></i> Browsers
-                        </div>
-                        <div class="chart-body">
-                            <canvas id="articleBrowsersChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="article-chart-card">
-                        <div class="chart-header">
-                            <i class="ri-device-line"></i> Devices
-                        </div>
-                        <div class="chart-body">
-                            <canvas id="articleDevicesChart"></canvas>
-                        </div>
-                    </div>
+                <div class="article-modal-stat-card">
+                    <div class="stat-value" style="color: var(--primary);">${formatNumber(last7Views)}</div>
+                    <div class="stat-label">Last 7 Days</div>
                 </div>
-            ` : `
-                <div class="empty-state" style="padding: 2rem 1rem; background: var(--bg-tertiary); border-radius: var(--radius); border: 1px solid var(--border);">
-                    <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
-                    <div class="empty-state-title" style="font-size: 1.1rem;">No Analytics Yet</div>
-                    <p class="empty-state-description" style="font-size: 0.85rem; margin: 0;">Data will appear once your article receives traffic.</p>
+                <div class="article-modal-stat-card">
+                    <div class="stat-value" style="color: var(--info);">${countryCount}</div>
+                    <div class="stat-label">Countries</div>
                 </div>
-            `}
+                <div class="article-modal-stat-card">
+                    <div class="stat-value" style="color: var(--warning);">${hasImages ? article.images.length : 0}</div>
+                    <div class="stat-label">Images</div>
+                </div>
+            </div>
 
-            <!-- Images Section -->
-            ${article.images && article.images.length > 0 ? `
-                <div class="article-images-section">
-                    <div class="section-header">
-                        <i class="ri-image-line"></i> Images (${article.images.length})
-                    </div>
-                    <div class="article-images-grid">
-                        ${article.images.map(img => `
-                            <div class="article-image-thumb" onclick="window.open('${img}', '_blank')" title="Click to view full image">
-                                <img src="${img}" alt="Article image" loading="lazy">
+            <!-- Tabs Navigation -->
+            <div class="article-modal-tabs" role="tablist" aria-label="Article details sections">
+                <button class="article-modal-tab active" type="button" data-tab="analytics" role="tab" aria-controls="article-panel-analytics">
+                    <i class="ri-line-chart-line"></i>
+                    <span class="label-desktop">Analytics</span>
+                </button>
+                <button class="article-modal-tab" type="button" data-tab="images" role="tab" aria-controls="article-panel-images">
+                    <i class="ri-image-line"></i>
+                    <span class="label-desktop">Images</span>
+                </button>
+                <button class="article-modal-tab" type="button" data-tab="content" role="tab" aria-controls="article-panel-content">
+                    <i class="ri-file-text-line"></i>
+                    <span class="label-desktop">Content</span>
+                </button>
+            </div>
+
+            <!-- Panels -->
+            <div class="article-modal-panels">
+                <!-- Analytics Panel -->
+                <div class="article-modal-panel" id="article-panel-analytics" data-panel="analytics" role="tabpanel">
+                    ${haveStats ? `
+                        <div class="article-analytics-section">
+                            <div class="article-chart-wrap">
+                                <canvas id="articleViewsChart"></canvas>
                             </div>
-                        `).join('')}
-                    </div>
+                            <div class="article-mini-charts-grid">
+                                <div class="article-mini-chart-card">
+                                    <div class="chart-title"><i class="ri-earth-line"></i> Countries</div>
+                                    <div class="chart-body"><canvas id="articleCountriesChart"></canvas></div>
+                                </div>
+                                <div class="article-mini-chart-card">
+                                    <div class="chart-title"><i class="ri-window-line"></i> Browsers</div>
+                                    <div class="chart-body"><canvas id="articleBrowsersChart"></canvas></div>
+                                </div>
+                                <div class="article-mini-chart-card">
+                                    <div class="chart-title"><i class="ri-device-line"></i> Devices</div>
+                                    <div class="chart-body"><canvas id="articleDevicesChart"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="empty-state" style="padding: 3rem 1.5rem; background: var(--bg-tertiary); border-radius: var(--radius); border: 1px solid var(--border);">
+                            <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
+                            <div class="empty-state-title" style="font-size: 1.2rem;">No Analytics Yet</div>
+                            <p class="empty-state-description" style="font-size: 0.9rem; margin: 0;">Analytics will appear once your article receives traffic.</p>
+                        </div>
+                    `}
                 </div>
-            ` : ''}
 
-            <!-- Content Preview Section -->
-            <div class="article-content-section">
-                <div class="section-header">
-                    <i class="ri-file-text-line"></i> Content Preview
+                <!-- Images Panel -->
+                <div class="article-modal-panel" id="article-panel-images" data-panel="images" role="tabpanel" hidden>
+                    ${hasImages ? `
+                        <div class="article-images-slider-container">
+                            <div class="article-image-slider">
+                                <button class="article-slider-nav prev" onclick="articleSliderPrev()" aria-label="Previous image">
+                                    <i class="ri-arrow-left-s-line"></i>
+                                </button>
+                                <img id="articleSliderImage" class="article-slider-image" src="${article.images[0]}" alt="Article image" onclick="window.open(this.src, '_blank')">
+                                <button class="article-slider-nav next" onclick="articleSliderNext()" aria-label="Next image">
+                                    <i class="ri-arrow-right-s-line"></i>
+                                </button>
+                            </div>
+                            <div class="article-slider-counter">
+                                <span id="articleSliderCurrent">1</span> / <span>${article.images.length}</span>
+                            </div>
+                            <div class="article-slider-thumbnails" id="articleSliderThumbnails">
+                                ${article.images.map((img, idx) => `
+                                    <div class="article-slider-thumb ${idx === 0 ? 'active' : ''}" onclick="articleSliderGoTo(${idx})" data-index="${idx}">
+                                        <img src="${img}" alt="Thumbnail ${idx + 1}" loading="lazy">
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="article-no-images">
+                            <i class="ri-image-line"></i>
+                            <h4>No Images</h4>
+                            <p>This article doesn't have any images attached.</p>
+                        </div>
+                    `}
                 </div>
-                <div class="article-content-body">
-                    ${article.body}
+
+                <!-- Content Panel -->
+                <div class="article-modal-panel" id="article-panel-content" data-panel="content" role="tabpanel" hidden>
+                    <div class="article-content-panel">
+                        <div class="article-content-info">
+                            <div class="article-content-info-card">
+                                <div class="info-value">${formatNumber(wordCount)}</div>
+                                <div class="info-label">Words</div>
+                            </div>
+                            <div class="article-content-info-card">
+                                <div class="info-value">${formatNumber(charCount)}</div>
+                                <div class="info-label">Characters</div>
+                            </div>
+                            <div class="article-content-info-card">
+                                <div class="info-value">${readingTime} min</div>
+                                <div class="info-label">Read Time</div>
+                            </div>
+                        </div>
+                        <div class="article-content-preview">
+                            <div class="article-content-preview-header">
+                                <h4><i class="ri-file-text-line"></i> ${article.subject}</h4>
+                            </div>
+                            <div class="article-content-body">
+                                ${article.body}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         `;
 
+        // Store images for slider functionality
+        window.articleSliderImages = article.images || [];
+        window.articleSliderIndex = 0;
+
         Swal.fire({
-            title: `<div style="text-align: left; line-height: 1.35; font-size: 1.15rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><i class="ri-article-line" style="margin-right: 0.5rem; opacity: 0.7;"></i>${article.subject}</div>`,
             html: modalHtml,
-            width: 'min(1100px, 95vw)',
+            width: 'min(1100px, 96vw)',
             showCloseButton: true,
-            showConfirmButton: true,
-            confirmButtonText: '<i class="ri-external-link-line"></i> View Live',
-            confirmButtonColor: 'var(--primary)',
-            showDenyButton: true,
-            denyButtonText: '<i class="ri-edit-line"></i> Edit',
-            showCancelButton: true,
-            cancelButtonText: '<i class="ri-delete-bin-line"></i> Delete',
+            showConfirmButton: false,
+            showDenyButton: false,
+            showCancelButton: false,
             customClass: {
-                popup: 'swal2-toast image-article-details-swal',
-                actions: 'swal2-actions-separated',
-                cancelButton: 'swal2-cancel btn-danger',
+                popup: 'swal2-toast article-details-swal',
                 closeButton: 'swal2-close'
             },
             showClass: { popup: 'swal2-show-super-fast' },
-            hideClass: { popup: 'swal2-hide-super-fast' }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.open(`https://${article.url}`, '_blank');
-            } else if (result.isDenied) {
-                editArticle(articleId);
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-                // We call your existing confirm delete logic
-                deleteArticle(articleId); 
+            hideClass: { popup: 'swal2-hide-super-fast' },
+            didOpen: () => {
+                setupArticleDetailsTabs({ hasAnalytics: haveStats });
+                // Initialize charts after the modal is in the DOM
+                if (haveStats) {
+                    setTimeout(() => {
+                        initializeArticleCharts(countries, browsers, devices, sortedDates);
+                    }, 100);
+                }
+            },
+            willClose: () => {
+                // Cleanup
+                window.articleSliderImages = null;
+                window.articleSliderIndex = 0;
             }
         });
-        
-        // Initialize charts after the modal is in the DOM
-        setTimeout(() => {
-            initializeArticleCharts(countries, browsers, devices, sortedDates);
-        }, 100);
 
     } catch (error) {
         console.error('View article error:', error);
         showToast('Failed to load article details', 'error');
     }
+}
+
+// Setup article details tabs
+function setupArticleDetailsTabs({ hasAnalytics }) {
+    const popup = Swal.getPopup();
+    if (!popup) return;
+
+    const tabs = Array.from(popup.querySelectorAll('.article-modal-tab'));
+    const panels = Array.from(popup.querySelectorAll('.article-modal-panel'));
+    if (tabs.length === 0 || panels.length === 0) return;
+
+    const analyticsTab = tabs.find(t => t.dataset.tab === 'analytics');
+    if (analyticsTab && !hasAnalytics) {
+        analyticsTab.disabled = true;
+        analyticsTab.title = 'Analytics will appear once the article receives traffic.';
+    }
+
+    const activate = (name) => {
+        tabs.forEach(btn => {
+            const isActive = btn.dataset.tab === name;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            btn.setAttribute('tabindex', isActive ? '0' : '-1');
+        });
+
+        panels.forEach(panel => {
+            const isPanelActive = panel.dataset.panel === name;
+            if (isPanelActive) {
+                panel.removeAttribute('hidden');
+                panel.classList.remove('panel-in');
+                panel.offsetWidth; // force reflow
+                panel.classList.add('panel-in');
+            } else {
+                panel.setAttribute('hidden', '');
+            }
+        });
+    };
+
+    tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.disabled) return;
+            activate(btn.dataset.tab);
+        });
+    });
+
+    // Default to analytics if has data, otherwise content
+    activate(hasAnalytics ? 'analytics' : 'content');
+}
+
+// Article slider navigation functions
+function articleSliderGoTo(index) {
+    if (!window.articleSliderImages || window.articleSliderImages.length === 0) return;
+    
+    const images = window.articleSliderImages;
+    if (index < 0) index = images.length - 1;
+    if (index >= images.length) index = 0;
+    
+    window.articleSliderIndex = index;
+    
+    const mainImage = document.getElementById('articleSliderImage');
+    const counter = document.getElementById('articleSliderCurrent');
+    const thumbnails = document.querySelectorAll('.article-slider-thumb');
+    
+    if (mainImage) mainImage.src = images[index];
+    if (counter) counter.textContent = index + 1;
+    
+    thumbnails.forEach((thumb, i) => {
+        thumb.classList.toggle('active', i === index);
+    });
+}
+
+function articleSliderNext() {
+    articleSliderGoTo(window.articleSliderIndex + 1);
+}
+
+function articleSliderPrev() {
+    articleSliderGoTo(window.articleSliderIndex - 1);
 }
 
 // Charts
