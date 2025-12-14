@@ -4227,237 +4227,450 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 /* =====================================================
-   IMAGES & ARTICLES DETAILS MODALS - Enhanced Styles
+   IMAGE DETAILS MODAL - Premium Design with Tabs
    ===================================================== */
 
-/* Image Details Modal Container */
 .image-details-modal-container {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0;
     text-align: left;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
 }
 
-/* Header Section - Image Preview + Info */
-.image-details-modal-container .modal-header-section {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    align-items: start;
+/* Image Modal Header */
+.image-modal-header {
+    background: transparent;
+    padding: 0 0 1rem 0;
+    margin: 0 0 1rem 0;
+    border-bottom: 1px solid var(--border);
 }
 
-.image-details-modal-container .modal-preview-container {
-    text-align: center;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
-    padding: 1rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border);
-}
-
-.image-details-modal-container .modal-image-preview {
-    max-width: 100%;
-    max-height: 280px;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    border-radius: var(--radius);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    border: 2px solid var(--border);
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.image-details-modal-container .modal-image-preview:hover {
-    transform: scale(1.02);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
-}
-
-/* Info List Styling */
-.image-details-modal-container .modal-info-list {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    line-height: 1.8;
+.image-modal-header-row {
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
 }
 
-.image-details-modal-container .modal-info-list p {
+.image-modal-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.image-modal-title h3 {
     margin: 0;
-    padding: 0.75rem;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-}
-
-.image-details-modal-container .modal-info-list strong {
-    color: var(--text);
-    font-weight: 700;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    opacity: 0.8;
-}
-
-.image-details-modal-container .modal-info-list code {
-    background: rgba(99, 102, 241, 0.1);
-    padding: 0.35rem 0.5rem;
-    border-radius: var(--radius-sm);
-    font-size: 0.8rem;
-    word-break: break-all;
-    color: var(--primary);
-    font-weight: 500;
-    border: 1px solid rgba(99, 102, 241, 0.2);
-}
-
-/* Section Titles */
-.image-details-modal-container .modal-section-title {
     font-size: 1rem;
     font-weight: 700;
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid var(--border);
+    line-height: 1.35;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.image-details-modal-container .modal-section-title i {
-    font-size: 1.1rem;
+.image-modal-filename {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text);
 }
 
-/* Analytics Grid */
-.image-details-modal-container .modal-stat-grid {
+.image-modal-actions-slot {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.image-modal-actions-slot .btn {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.8rem;
+}
+
+.image-header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.image-header-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.image-header-meta i {
+    font-size: 0.95rem;
+    opacity: 0.7;
+}
+
+/* Image Modal Main Grid - Desktop Side by Side */
+.image-modal-main-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+/* Image Preview Container */
+.image-modal-preview-wrap {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+}
+
+.image-modal-preview {
+    max-width: 100%;
+    max-height: 260px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.image-modal-preview:hover {
+    transform: scale(1.02);
+}
+
+/* Image Stats Grid */
+.image-modal-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.image-modal-stat-card {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.image-modal-stat-card:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateY(-1px);
+}
+
+.image-modal-stat-card .stat-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+}
+
+.image-modal-stat-card .stat-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* Image Modal Tabs */
+.image-modal-tabs {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    margin: 0 0 1.25rem;
+    width: 100%;
+    flex-wrap: nowrap;
+}
+
+.image-modal-tab {
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.55rem 0.85rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    transition: all 0.2s ease;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.image-modal-tab:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10);
+}
+
+.image-modal-tab:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none;
+    box-shadow: none;
+}
+
+.image-modal-tab[data-tab="analytics"].active {
+    background: rgba(99, 102, 241, 0.14);
+    border-color: rgba(99, 102, 241, 0.65);
+    color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20), 0 14px 40px rgba(99, 102, 241, 0.15);
+}
+
+.image-modal-tab[data-tab="traffic"].active {
+    background: rgba(245, 158, 11, 0.14);
+    border-color: rgba(245, 158, 11, 0.65);
+    color: var(--warning);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.20), 0 14px 40px rgba(245, 158, 11, 0.15);
+}
+
+.image-modal-tab .label-desktop { display: inline; }
+.image-modal-tab.icon-only .label-desktop { display: none !important; }
+.image-modal-tab.icon-only { padding-left: 0.55rem; padding-right: 0.55rem; }
+.image-modal-tab.icon-only i { margin: 0; }
+
+/* Image Modal Panels */
+.image-modal-panels {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
 }
 
-.image-details-modal-container .modal-chart-container {
-    height: 220px;
-    background: var(--card);
-    padding: 0.75rem;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+.image-modal-panel.panel-in {
+    animation: imagePanelIn 180ms ease-out;
 }
 
-/* Analytics List Items */
-.image-details-modal-container .analytics-list-item {
+@keyframes imagePanelIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.image-modal-panel[hidden] {
+    display: none !important;
+}
+
+/* Image Analytics Panel */
+.image-analytics-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.image-chart-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    height: 280px;
+}
+
+/* Image Traffic Panel */
+.image-traffic-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.image-traffic-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.image-traffic-card .card-title {
+    padding: 0.65rem 0.85rem;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.image-traffic-card .card-title i {
+    font-size: 1rem;
+    opacity: 0.7;
+}
+
+.image-traffic-card .card-body {
+    padding: 0.75rem;
+}
+
+.image-traffic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.image-traffic-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.65rem 0.85rem;
+    padding: 0.55rem 0.75rem;
     background: var(--bg-tertiary);
-    border-radius: var(--radius);
-    margin-bottom: 0.5rem;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     transition: all 0.15s ease;
 }
 
-.image-details-modal-container .analytics-list-item:hover {
+.image-traffic-item:hover {
     background: var(--card-hover);
     border-color: rgba(99, 102, 241, 0.3);
 }
 
-.image-details-modal-container .analytics-list-item:last-child {
-    margin-bottom: 0;
-}
-
-.image-details-modal-container .analytics-list-item span:first-child {
+.image-traffic-item span:first-child {
     font-weight: 600;
     color: var(--text);
     font-size: 0.85rem;
 }
 
-/* Referrers Grid */
-.image-details-modal-container .referrers-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
+/* SweetAlert2 custom class for Image details */
+.swal2-popup.image-details-swal {
+    margin: 0.5rem !important;
+    width: min(1000px, 96vw) !important;
+    max-width: 96vw !important;
+    box-sizing: border-box !important;
+    padding: 1.25rem !important;
 }
 
-.image-details-modal-container .referrer-section h4 {
-    font-size: 0.85rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+.swal2-popup.image-details-swal .swal2-html-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
 }
 
-.image-details-modal-container .referrer-section h4 i {
-    font-size: 1rem;
-    opacity: 0.7;
+.swal2-popup.image-details-swal .swal2-title {
+    display: none !important;
+}
+
+.swal2-popup.image-details-swal .swal2-actions {
+    display: none !important;
 }
 
 /* Desktop Breakpoint - Image Details */
 @media (min-width: 769px) {
-    .image-details-modal-container .modal-header-section {
-        grid-template-columns: 320px 1fr;
-        gap: 2rem;
+    .image-modal-main-grid {
+        grid-template-columns: 340px 1fr;
+        gap: 1.5rem;
     }
     
-    .image-details-modal-container .modal-image-preview {
-        max-height: 320px;
+    .image-modal-preview-wrap {
+        min-height: 320px;
     }
     
-    .image-details-modal-container .modal-stat-grid {
+    .image-modal-preview {
+        max-height: 300px;
+    }
+    
+    .image-modal-stat-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .image-analytics-section {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    .image-details-modal-container .modal-chart-container {
-        height: 250px;
+    .image-chart-wrap {
+        height: 300px;
         padding: 1rem;
     }
     
-    .image-details-modal-container .referrers-grid {
+    .image-traffic-section {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 /* Mobile Breakpoint - Image Details */
+@media (max-width: 768px) {
+    .image-modal-header-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+    
+    .image-modal-actions-slot {
+        justify-content: flex-start;
+    }
+    
+    .image-modal-stat-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .image-modal-tabs { width: 100%; }
+    .image-modal-tab .label-desktop { display: none !important; }
+    .image-modal-tab { padding-left: 0.55rem !important; padding-right: 0.55rem !important; }
+    .image-modal-tab i { margin: 0 !important; }
+    
+    .image-chart-wrap {
+        height: 220px;
+    }
+    
+    .image-modal-preview-wrap {
+        min-height: 200px;
+        padding: 1rem;
+    }
+    
+    .image-modal-preview {
+        max-height: 180px;
+    }
+}
+
 @media (max-width: 480px) {
-    .image-details-modal-container {
-        gap: 1rem;
-    }
-    
-    .image-details-modal-container .modal-preview-container {
-        padding: 0.75rem;
-    }
-    
-    .image-details-modal-container .modal-image-preview {
-        max-height: 200px;
-    }
-    
-    .image-details-modal-container .modal-info-list {
+    .image-modal-stat-grid {
+        grid-template-columns: repeat(3, 1fr);
         gap: 0.5rem;
     }
     
-    .image-details-modal-container .modal-info-list p {
-        padding: 0.6rem;
+    .image-modal-stat-card {
+        padding: 0.65rem 0.5rem;
     }
     
-    .image-details-modal-container .modal-section-title {
-        font-size: 0.9rem;
-        margin-bottom: 0.75rem;
-        padding-bottom: 0.5rem;
+    .image-modal-stat-card .stat-value {
+        font-size: 1.1rem;
     }
     
-    .image-details-modal-container .modal-chart-container {
+    .image-modal-stat-card .stat-label {
+        font-size: 0.6rem;
+    }
+    
+    .image-header-meta {
+        gap: 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .image-chart-wrap {
         height: 180px;
         padding: 0.5rem;
     }
     
-    .image-details-modal-container .analytics-list-item {
-        padding: 0.5rem 0.65rem;
+    .image-traffic-item {
+        padding: 0.45rem 0.6rem;
         font-size: 0.8rem;
     }
 }
@@ -12972,36 +13185,56 @@ function initializeArticleCharts(countries, browsers, devices, sortedDates) {
         }
     }
 
-    // Doughnuts
+    // Doughnuts with distinct readable colors
+    const distinctColors = [
+        '#10b981', // green
+        '#6366f1', // indigo
+        '#f59e0b', // amber
+        '#ef4444', // red
+        '#8b5cf6', // violet
+        '#06b6d4', // cyan
+        '#ec4899', // pink
+        '#84cc16', // lime
+        '#f97316', // orange
+        '#14b8a6'  // teal
+    ];
+    
     const chartConfigs = [
-        { id: 'articleCountriesChart', data: countries, colors: ['#10b981', '#059669', '#047857', '#065f46', '#064e3b'] },
-        { id: 'articleBrowsersChart', data: browsers, colors: ['#6366f1', '#4f46e5', '#4338ca', '#3730a3', '#312e81'] },
-        { id: 'articleDevicesChart', data: devices, colors: ['#f59e0b', '#d97706', '#b45309', '#92400e', '#78350f'] }
+        { id: 'articleCountriesChart', data: countries },
+        { id: 'articleBrowsersChart', data: browsers },
+        { id: 'articleDevicesChart', data: devices }
     ];
 
-    chartConfigs.forEach(({ id, data, colors }) => {
+    chartConfigs.forEach(({ id, data }) => {
         if (data && Object.keys(data).length > 0) {
             const el = document.getElementById(id);
             if (!el) return;
-            const sortedData = Object.entries(data).sort(([, a], [, b]) => b - a);
+            const sortedData = Object.entries(data).sort(([, a], [, b]) => b - a).slice(0, 10);
             new Chart(el, {
                 type: 'doughnut',
                 data: {
                     labels: sortedData.map(([key]) => key.charAt(0).toUpperCase() + key.slice(1)),
                     datasets: [{
                         data: sortedData.map(([, v]) => v),
-                        backgroundColor: colors,
-                        borderWidth: 0
+                        backgroundColor: distinctColors.slice(0, sortedData.length),
+                        borderWidth: 2,
+                        borderColor: isDark ? 'rgba(30, 41, 59, 0.8)' : 'rgba(255, 255, 255, 0.8)'
                     }]
                 },
                 options: {
                     ...commonOptions,
-                    cutout: '60%',
+                    cutout: '55%',
                     plugins: {
                         ...commonOptions.plugins,
                         legend: {
                             ...commonOptions.plugins.legend,
-                            display: true
+                            display: true,
+                            position: 'right',
+                            labels: {
+                                ...commonOptions.plugins.legend.labels,
+                                boxWidth: 12,
+                                padding: 8
+                            }
                         }
                     }
                 }
@@ -14635,118 +14868,216 @@ async function showImageDetails(imageId) {
     const topCountries = Object.entries(countries).sort(([,a], [,b]) => b - a).slice(0, 5);
     const topBrowsers = Object.entries(browsers).sort(([,a], [,b]) => b - a).slice(0, 5);
     const topDevices = Object.entries(devices).sort(([,a], [,b]) => b - a).slice(0, 5);
+    const hasAnalytics = sortedDates.length > 0;
 
     // Format the upload date nicely
     const uploadDate = new Date(image.upload_date);
     const formattedDate = uploadDate.toLocaleDateString('en-US', { 
         year: 'numeric', 
         month: 'short', 
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        day: 'numeric'
     });
+    
+    // Calculate stats
+    const totalViews = image.total_views || 0;
+    const countryCount = Object.keys(countries).length;
+    const last7Views = sortedDates.slice(-7).reduce((sum, [, v]) => sum + v, 0);
 
-    // --- 2. Construct Modal HTML (New Responsive Layout) ---
+    // --- 2. Construct Modal HTML with Tabs ---
     const modalHtml = `
     <div class="image-details-modal-container">
-        <div class="modal-header-section">
-            <div class="modal-preview-container">
-                <img src="${image.cdn_url}" alt="${image.original_filename}" class="modal-image-preview" onclick="window.open('${image.cdn_url}', '_blank')" title="Click to view full image">
-            </div>
-            <div class="modal-info-list">
-                <p>
-                    <strong><i class="ri-file-line"></i> Filename</strong>
-                    <code>${image.original_filename}</code>
-                </p>
-                <p>
-                    <strong><i class="ri-calendar-line"></i> Uploaded</strong>
-                    <span>${formattedDate}</span>
-                </p>
-                <p>
-                    <strong><i class="ri-eye-line"></i> Total Views</strong>
-                    <span class="badge badge-success" style="font-size: 0.95rem; padding: 0.35rem 0.6rem;">${formatNumber(image.total_views)}</span>
-                </p>
-                <p>
-                    <strong><i class="ri-link"></i> CDN URL</strong>
-                    <button class="btn btn-sm" onclick="copyToClipboard('${image.cdn_url}')" style="margin-top: 0.25rem;">
-                        <i class="ri-file-copy-line"></i> Copy URL
+        <!-- Header Section -->
+        <div class="image-modal-header">
+            <div class="image-modal-header-row">
+                <div class="image-modal-title">
+                    <h3>
+                        <i class="ri-image-line" style="color: var(--primary);"></i>
+                        <span class="image-modal-filename" title="${image.original_filename}">${image.original_filename}</span>
+                    </h3>
+                </div>
+                <div class="image-modal-actions-slot">
+                    <button class="btn btn-sm" onclick="copyToClipboard('${image.cdn_url}')" title="Copy URL">
+                        <i class="ri-file-copy-line"></i> <span class="label-desktop">Copy URL</span>
                     </button>
-                </p>
-                <p>
-                    <strong><i class="ri-key-2-line"></i> Image ID</strong>
-                    <code style="font-size: 0.7rem;">${image.image_id}</code>
-                </p>
+                    <button class="btn btn-sm" onclick="window.open('${image.cdn_url}', '_blank')" title="Open Full Size">
+                        <i class="ri-external-link-line"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="Swal.close(); deleteImage('${image.image_id}')" title="Delete">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="image-header-meta">
+                <span><i class="ri-calendar-line"></i> Uploaded: ${formattedDate}</span>
+                <span><i class="ri-key-2-line"></i> ID: ${image.image_id.substring(0, 12)}...</span>
             </div>
         </div>
 
-        ${sortedDates.length > 0 ? `
+        <!-- Main Grid: Image + Stats -->
+        <div class="image-modal-main-grid">
+            <div class="image-modal-preview-wrap">
+                <img src="${image.cdn_url}" alt="${image.original_filename}" class="image-modal-preview" onclick="window.open('${image.cdn_url}', '_blank')" title="Click to view full size">
+            </div>
             <div>
-                <h3 class="modal-section-title" style="color: var(--primary);">
-                    <i class="ri-bar-chart-2-line"></i> Analytics Overview
-                </h3>
-                <div class="modal-stat-grid">
-                    <div class="modal-chart-container">
-                        <canvas id="imageViewsTimelineChart"></canvas>
+                <!-- Stats Grid -->
+                <div class="image-modal-stat-grid">
+                    <div class="image-modal-stat-card">
+                        <div class="stat-value" style="color: var(--success);">${formatNumber(totalViews)}</div>
+                        <div class="stat-label">Total Views</div>
                     </div>
-                    <div class="modal-chart-container">
-                        <canvas id="imageCountriesChart"></canvas>
+                    <div class="image-modal-stat-card">
+                        <div class="stat-value" style="color: var(--primary);">${formatNumber(last7Views)}</div>
+                        <div class="stat-label">Last 7 Days</div>
+                    </div>
+                    <div class="image-modal-stat-card">
+                        <div class="stat-value" style="color: var(--info);">${countryCount}</div>
+                        <div class="stat-label">Countries</div>
+                    </div>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <div class="image-modal-tabs" role="tablist" aria-label="Image details sections">
+                    <button class="image-modal-tab active" type="button" data-tab="analytics" role="tab">
+                        <i class="ri-line-chart-line"></i>
+                        <span class="label-desktop">Analytics</span>
+                    </button>
+                    <button class="image-modal-tab" type="button" data-tab="traffic" role="tab">
+                        <i class="ri-pie-chart-line"></i>
+                        <span class="label-desktop">Traffic</span>
+                    </button>
+                </div>
+
+                <!-- Panels -->
+                <div class="image-modal-panels">
+                    <!-- Analytics Panel -->
+                    <div class="image-modal-panel" id="image-panel-analytics" data-panel="analytics" role="tabpanel">
+                        ${hasAnalytics ? `
+                            <div class="image-analytics-section">
+                                <div class="image-chart-wrap">
+                                    <canvas id="imageViewsTimelineChart"></canvas>
+                                </div>
+                                <div class="image-chart-wrap">
+                                    <canvas id="imageCountriesChart"></canvas>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="empty-state" style="padding: 2rem 1rem; background: var(--bg-tertiary); border-radius: var(--radius); border: 1px solid var(--border);">
+                                <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
+                                <div class="empty-state-title" style="font-size: 1.1rem;">No Analytics Yet</div>
+                                <p class="empty-state-description" style="font-size: 0.85rem; margin: 0;">Data will appear once the image receives traffic.</p>
+                            </div>
+                        `}
+                    </div>
+
+                    <!-- Traffic Panel -->
+                    <div class="image-modal-panel" id="image-panel-traffic" data-panel="traffic" role="tabpanel" hidden>
+                        ${hasAnalytics ? `
+                            <div class="image-traffic-section">
+                                <div class="image-traffic-card">
+                                    <div class="card-title"><i class="ri-window-line"></i> Browsers</div>
+                                    <div class="card-body">
+                                        <div class="image-traffic-list">
+                                            ${topBrowsers.length > 0 ? topBrowsers.map(b => `
+                                                <div class="image-traffic-item">
+                                                    <span>${b[0]}</span>
+                                                    <span class="badge badge-primary">${formatNumber(b[1])}</span>
+                                                </div>
+                                            `).join('') : '<div class="image-traffic-item"><span>No data</span><span>-</span></div>'}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="image-traffic-card">
+                                    <div class="card-title"><i class="ri-device-line"></i> Devices</div>
+                                    <div class="card-body">
+                                        <div class="image-traffic-list">
+                                            ${topDevices.length > 0 ? topDevices.map(d => `
+                                                <div class="image-traffic-item">
+                                                    <span>${d[0]}</span>
+                                                    <span class="badge badge-warning">${formatNumber(d[1])}</span>
+                                                </div>
+                                            `).join('') : '<div class="image-traffic-item"><span>No data</span><span>-</span></div>'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="empty-state" style="padding: 2rem 1rem; background: var(--bg-tertiary); border-radius: var(--radius); border: 1px solid var(--border);">
+                                <div class="empty-state-icon"><i class="ri-pie-chart-line"></i></div>
+                                <div class="empty-state-title" style="font-size: 1.1rem;">No Traffic Data</div>
+                                <p class="empty-state-description" style="font-size: 0.85rem; margin: 0;">Traffic breakdown will appear once the image receives views.</p>
+                            </div>
+                        `}
                     </div>
                 </div>
             </div>
-            <div>
-                <h3 class="modal-section-title" style="color: var(--warning);">
-                    <i class="ri-pie-chart-line"></i> Traffic Breakdown
-                </h3>
-                <div class="referrers-grid">
-                    <div class="referrer-section">
-                        <h4><i class="ri-window-line"></i> Browsers</h4>
-                        ${topBrowsers.length > 0 ? topBrowsers.map(b => `
-                            <div class="analytics-list-item">
-                                <span>${b[0]}</span>
-                                <span class="badge badge-primary">${formatNumber(b[1])}</span>
-                            </div>
-                        `).join('') : '<div class="analytics-list-item"><span>No data</span></div>'}
-                    </div>
-                    <div class="referrer-section">
-                        <h4><i class="ri-device-line"></i> Devices</h4>
-                        ${topDevices.length > 0 ? topDevices.map(d => `
-                            <div class="analytics-list-item">
-                                <span>${d[0]}</span>
-                                <span class="badge badge-warning">${formatNumber(d[1])}</span>
-                            </div>
-                        `).join('') : '<div class="analytics-list-item"><span>No data</span></div>'}
-                    </div>
-                </div>
-            </div>
-        ` : `
-            <div class="empty-state" style="padding: 2rem 1rem; margin-top: 0.5rem;">
-                <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
-                <div class="empty-state-title" style="font-size: 1.1rem;">No Analytics Yet</div>
-                <div class="empty-state-description" style="font-size: 0.85rem;">View data will appear here once the image receives traffic.</div>
-            </div>
-        `}
+        </div>
     </div>`;
 
     // --- 3. Fire SweetAlert2 Modal ---
     Swal.fire({
-        title: '<i class="ri-image-line" style="margin-right: 0.5rem; opacity: 0.7;"></i> Image Details',
         html: modalHtml,
         showCloseButton: true,
         showConfirmButton: false,
-        width: 'min(900px, 95vw)',
+        width: 'min(1000px, 96vw)',
         customClass: {
-            popup: 'swal2-toast image-article-details-swal',
+            popup: 'swal2-toast image-details-swal',
             closeButton: 'swal2-close'
         },
         showClass: { popup: 'swal2-show-super-fast' },
         hideClass: { popup: 'swal2-hide-super-fast' },
         didOpen: () => {
-            // Initialize charts only if there is data
-            if (sortedDates.length > 0) {
+            setupImageDetailsTabs({ hasAnalytics });
+            if (hasAnalytics) {
                 initializeImageAnalyticsCharts(sortedDates, topCountries);
             }
         }
     });
+}
+
+// Setup image details tabs
+function setupImageDetailsTabs({ hasAnalytics }) {
+    const popup = Swal.getPopup();
+    if (!popup) return;
+
+    const tabs = Array.from(popup.querySelectorAll('.image-modal-tab'));
+    const panels = Array.from(popup.querySelectorAll('.image-modal-panel'));
+    if (tabs.length === 0 || panels.length === 0) return;
+
+    if (!hasAnalytics) {
+        tabs.forEach(tab => {
+            tab.disabled = true;
+            tab.title = 'Data will appear once the image receives traffic.';
+        });
+    }
+
+    const activate = (name) => {
+        tabs.forEach(btn => {
+            const isActive = btn.dataset.tab === name;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        panels.forEach(panel => {
+            const isPanelActive = panel.dataset.panel === name;
+            if (isPanelActive) {
+                panel.removeAttribute('hidden');
+                panel.classList.remove('panel-in');
+                panel.offsetWidth;
+                panel.classList.add('panel-in');
+            } else {
+                panel.setAttribute('hidden', '');
+            }
+        });
+    };
+
+    tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.disabled) return;
+            activate(btn.dataset.tab);
+        });
+    });
+
+    activate('analytics');
 }
 
 // [NEW] Helper function to initialize charts inside the modal
