@@ -4226,217 +4226,80 @@ div#modalBody { padding-bottom: 100px; }
     color: var(--text) !important;
 }
 
-/* Details Modal - Shared Styles for Image & Article */
-.details-modal {
+/* Custom CSS for our new Image Details Modal */
+.image-details-modal-container {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
     text-align: left;
 }
-.details-modal-header {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
-    background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(139,92,246,0.03));
-    border-radius: 14px;
-    border: 1px solid rgba(99,102,241,0.12);
+.image-details-modal-container .modal-header-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
 }
-.details-modal-header .preview-wrap { text-align: center; }
-.details-modal-header .preview-img {
+.image-details-modal-container .modal-preview-container {
+    text-align: center;
+}
+.image-details-modal-container .modal-image-preview {
     max-width: 100%;
-    max-height: 220px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
     border: 2px solid var(--border);
     cursor: pointer;
-    transition: transform 0.2s;
 }
-.details-modal-header .preview-img:hover { transform: scale(1.02); }
-.details-modal-header .info-wrap { display: flex; flex-direction: column; gap: 0.5rem; }
-.details-modal-info-row {
+.image-details-modal-container .modal-info-list {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+.image-details-modal-container .modal-info-list strong {
+    color: var(--text);
+    font-weight: 600;
+}
+.image-details-modal-container .modal-info-list code {
+    background: var(--bg-tertiary);
+    padding: 0.2rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    word-break: break-all;
+}
+.image-details-modal-container .modal-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.45rem 0.65rem;
-    background: rgba(255,255,255,0.02);
-    border-radius: 8px;
-    border: 1px solid var(--border);
 }
-.details-modal-info-row .label {
-    color: var(--text-secondary);
-    font-weight: 700;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-    min-width: 65px;
-}
-.details-modal-info-row .value {
-    color: var(--text);
-    font-weight: 600;
-    font-size: 0.82rem;
-    min-width: 0;
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.details-modal-info-row .value code {
-    background: var(--bg-tertiary);
-    padding: 0.12rem 0.35rem;
-    border-radius: 5px;
-    font-size: 0.75rem;
-    word-break: break-all;
-    white-space: normal;
-}
-.details-modal-section {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-}
-.details-modal-section-header {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0.65rem 0.85rem;
-    background: linear-gradient(135deg, rgba(255,255,255,0.02), transparent);
-    border-bottom: 1px solid var(--border);
-    font-weight: 800;
-    font-size: 0.85rem;
-    color: var(--primary);
-}
-.details-modal-section-header i { font-size: 1rem; }
-.details-modal-section-header.success { color: var(--success); }
-.details-modal-section-header.warning { color: var(--warning); }
-.details-modal-section-body { padding: 0.85rem; }
-.details-modal-stats-grid {
+.image-details-modal-container .modal-stat-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.6rem;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
 }
-.details-modal-stat-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.75rem 0.5rem;
-    background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(16,185,129,0.02));
-    border: 1px solid rgba(16,185,129,0.15);
-    border-radius: 10px;
-    text-align: center;
+.image-details-modal-container .modal-chart-container {
+    height: 250px;
+    background: var(--card);
+    padding: 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
 }
-.details-modal-stat-card.primary { background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(99,102,241,0.02)); border-color: rgba(99,102,241,0.15); }
-.details-modal-stat-card.warning { background: linear-gradient(135deg, rgba(245,158,11,0.06), rgba(245,158,11,0.02)); border-color: rgba(245,158,11,0.15); }
-.details-modal-stat-card.info { background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(59,130,246,0.02)); border-color: rgba(59,130,246,0.15); }
-.details-modal-stat-card .stat-value { font-size: 1.35rem; font-weight: 900; color: var(--text); line-height: 1; }
-.details-modal-stat-card .stat-label { font-size: 0.65rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.02em; }
-.details-modal-chart-wrap { height: 200px; background: rgba(0,0,0,0.015); border-radius: 8px; padding: 0.5rem; }
-.details-modal-chart-grid { display: grid; grid-template-columns: 1fr; gap: 0.85rem; }
-.details-modal-list-item {
+.image-details-modal-container .analytics-list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 0.65rem;
-    background: rgba(0,0,0,0.015);
-    border-radius: 6px;
-    margin-bottom: 0.3rem;
-    font-size: 0.82rem;
-}
-.details-modal-list-item:last-child { margin-bottom: 0; }
-.details-modal-list-item .name { color: var(--text); font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.details-modal-list-item .count { color: var(--primary); font-weight: 800; flex-shrink: 0; }
-.details-modal-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
     padding: 0.75rem;
-    background: rgba(0,0,0,0.02);
-    border-radius: 10px;
-    margin-top: 0.25rem;
-}
-.details-modal-actions .btn { flex: 1; min-width: 90px; justify-content: center; font-size: 0.82rem; padding: 0.55rem 0.75rem; }
-.details-modal-images-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-    gap: 0.45rem;
-}
-.details-modal-images-grid .img-thumb {
-    aspect-ratio: 1;
-    border-radius: 8px;
-    overflow: hidden;
     background: var(--bg-tertiary);
-    cursor: pointer;
-    transition: transform 0.2s;
-    border: 2px solid transparent;
-}
-.details-modal-images-grid .img-thumb:hover { transform: scale(1.05); border-color: var(--primary); }
-.details-modal-images-grid .img-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.details-modal-content-preview {
-    max-height: 180px;
-    overflow-y: auto;
-    padding: 0.85rem;
-    background: rgba(0,0,0,0.015);
-    border-radius: 8px;
-    font-family: Georgia, serif;
-    line-height: 1.65;
-    font-size: 0.85rem;
-    color: var(--text);
-}
-.details-modal-content-preview img { max-width: 100%; border-radius: 6px; margin: 0.4rem 0; }
-.details-modal-referrers-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
-.details-modal-referrers-grid[style*="repeat(3"] { grid-template-columns: 1fr !important; }
-@media (min-width: 450px) {
-    .details-modal-referrers-grid[style*="repeat(3"] { grid-template-columns: repeat(2, 1fr) !important; }
-}
-@media (min-width: 650px) {
-    .details-modal-referrers-grid[style*="repeat(3"] { grid-template-columns: repeat(3, 1fr) !important; }
-}
-@media (min-width: 550px) {
-    .details-modal-header { flex-direction: row; align-items: flex-start; }
-    .details-modal-header .preview-wrap { flex: 0 0 180px; }
-    .details-modal-header .info-wrap { flex: 1; min-width: 0; }
-    .details-modal-chart-grid { grid-template-columns: 1fr 1fr; }
-    .details-modal-stats-grid { grid-template-columns: repeat(4, 1fr); }
-    .details-modal-referrers-grid { grid-template-columns: 1fr 1fr; }
-}
-@media (min-width: 768px) {
-    .details-modal-header .preview-wrap { flex: 0 0 220px; }
-    .details-modal-header .preview-img { max-height: 260px; }
-}
-@media (max-width: 400px) {
-    .details-modal-header { padding: 0.75rem; }
-    .details-modal-info-row { padding: 0.35rem 0.5rem; }
-    .details-modal-info-row .label { font-size: 0.65rem; min-width: 55px; }
-    .details-modal-info-row .value { font-size: 0.78rem; }
-    .details-modal-section-body { padding: 0.65rem; }
-    .details-modal-stat-card { padding: 0.55rem 0.35rem; }
-    .details-modal-stat-card .stat-value { font-size: 1.1rem; }
-    .details-modal-actions { flex-direction: column; }
-    .details-modal-actions .btn { width: 100%; }
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.5rem;
 }
 
-/* Legacy image modal - keep for backwards compat */
-.image-details-modal-container { display: flex; flex-direction: column; gap: 1rem; text-align: left; }
-.image-details-modal-container .modal-header-section { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-.image-details-modal-container .modal-preview-container { text-align: center; }
-.image-details-modal-container .modal-image-preview { max-width: 100%; max-height: 220px; border-radius: 12px; box-shadow: var(--shadow-lg); border: 2px solid var(--border); cursor: pointer; }
-.image-details-modal-container .modal-info-list { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; display: flex; flex-direction: column; gap: 0.4rem; }
-.image-details-modal-container .modal-info-list p { margin: 0; padding: 0.4rem 0.6rem; background: rgba(0,0,0,0.02); border-radius: 6px; }
-.image-details-modal-container .modal-info-list strong { color: var(--text); font-weight: 700; font-size: 0.7rem; text-transform: uppercase; display: block; margin-bottom: 0.15rem; }
-.image-details-modal-container .modal-info-list code { background: var(--bg-tertiary); padding: 0.12rem 0.35rem; border-radius: 5px; font-size: 0.75rem; word-break: break-all; }
-.image-details-modal-container .modal-section-title { font-size: 0.9rem; font-weight: 800; margin-bottom: 0.65rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.4rem; }
-.image-details-modal-container .modal-stat-grid { display: grid; grid-template-columns: 1fr; gap: 0.85rem; }
-.image-details-modal-container .modal-chart-container { height: 200px; background: var(--card); padding: 0.65rem; border-radius: 10px; border: 1px solid var(--border); }
-.image-details-modal-container .analytics-list-item { display: flex; justify-content: space-between; align-items: center; padding: 0.45rem 0.6rem; background: rgba(0,0,0,0.02); border-radius: 6px; margin-bottom: 0.3rem; font-size: 0.82rem; }
-.image-details-modal-container .analytics-list-item:last-child { margin-bottom: 0; }
-@media (min-width: 550px) {
-    .image-details-modal-container .modal-header-section { grid-template-columns: 180px 1fr; align-items: start; }
-    .image-details-modal-container .modal-stat-grid { grid-template-columns: 1fr 1fr; }
-}
 @media (min-width: 769px) {
-    .image-details-modal-container .modal-header-section { grid-template-columns: 220px 1fr; }
+    .image-details-modal-container .modal-header-section {
+        grid-template-columns: 300px 1fr; /* Two columns on desktop */
+    }
 }
 
 .swal2-toast button:where(.swal2-close) {
@@ -11857,119 +11720,54 @@ async function viewArticle(articleId) {
         const sortedDates = Object.entries(viewsByDate).sort(([a], [b]) => new Date(a) - new Date(b));
         const haveStats = Object.keys(stats).length > 0;
         
-        // Calculate stats
-        const totalViews = Object.values(viewsByDate).reduce((a, b) => a + b, 0);
-        const topCountries = Object.entries(countries).sort(([,a], [,b]) => b - a).slice(0, 5);
-        const topBrowsers = Object.entries(browsers).sort(([,a], [,b]) => b - a).slice(0, 5);
-        const topDevices = Object.entries(devices).sort(([,a], [,b]) => b - a).slice(0, 5);
-        
         // --- Build new responsive HTML for Swal ---
         const modalHtml = `
-        <div class="details-modal">
-            <div class="details-modal-header" style="background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(16,185,129,0.02)); border-color: rgba(16,185,129,0.12);">
-                <div class="info-wrap" style="width: 100%;">
-                    <div class="details-modal-info-row">
-                        <span class="label">Title</span>
-                        <span class="value" style="font-weight: 700;">${article.subject}</span>
+        <div style="text-align: left;">
+            <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+                ${haveStats ? `
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title" style="font-size: 1rem;">Views Timeline</h3></div>
+                        <div class="card-body" style="height: 220px; padding: 0.75rem;"><canvas id="articleViewsChart"></canvas></div>
                     </div>
-                    <div class="details-modal-info-row">
-                        <span class="label">URL</span>
-                        <span class="value"><a href="https://${article.url}" target="_blank" style="color: var(--info);">${article.url}</a></span>
-                    </div>
-                    <div class="details-modal-info-row">
-                        <span class="label">Created</span>
-                        <span class="value">${article.created_at ? new Date(article.created_at).toLocaleDateString() : 'N/A'}</span>
-                    </div>
-                    <div class="details-modal-info-row">
-                        <span class="label">Views</span>
-                        <span class="value"><span class="badge badge-success">${formatNumber(totalViews)}</span></span>
-                    </div>
-                    <div class="details-modal-actions" style="margin-top: 0.5rem; padding: 0; background: none;">
-                        <button class="btn btn-sm btn-primary" onclick="window.open('https://${article.url}', '_blank')"><i class="ri-external-link-line"></i> View Live</button>
-                        <button class="btn btn-sm" onclick="Swal.close(); editArticle('${articleId}')"><i class="ri-edit-line"></i> Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="Swal.close(); deleteArticle('${articleId}')"><i class="ri-delete-bin-line"></i> Delete</button>
-                    </div>
-                </div>
-            </div>
-
-            ${haveStats ? `
-            <div class="details-modal-section">
-                <div class="details-modal-section-header success"><i class="ri-bar-chart-2-line"></i> Analytics Overview</div>
-                <div class="details-modal-section-body">
-                    <div class="details-modal-stats-grid" style="margin-bottom: 1rem;">
-                        <div class="details-modal-stat-card">
-                            <span class="stat-value">${formatNumber(totalViews)}</span>
-                            <span class="stat-label">Total Views</span>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem;">
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title" style="font-size: 0.9rem;">Top Countries</h3></div>
+                            <div class="card-body" style="height: 180px; padding: 0.75rem;"><canvas id="articleCountriesChart"></canvas></div>
                         </div>
-                        <div class="details-modal-stat-card primary">
-                            <span class="stat-value">${topCountries.length}</span>
-                            <span class="stat-label">Countries</span>
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title" style="font-size: 0.9rem;">Browsers</h3></div>
+                            <div class="card-body" style="height: 180px; padding: 0.75rem;"><canvas id="articleBrowsersChart"></canvas></div>
                         </div>
-                        <div class="details-modal-stat-card warning">
-                            <span class="stat-value">${Object.keys(browsers).length}</span>
-                            <span class="stat-label">Browsers</span>
-                        </div>
-                        <div class="details-modal-stat-card info">
-                            <span class="stat-value">${sortedDates.length}</span>
-                            <span class="stat-label">Active Days</span>
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title" style="font-size: 0.9rem;">Devices</h3></div>
+                            <div class="card-body" style="height: 180px; padding: 0.75rem;"><canvas id="articleDevicesChart"></canvas></div>
                         </div>
                     </div>
-                    <div class="details-modal-chart-wrap" style="height: 200px;">
-                        <canvas id="articleViewsChart"></canvas>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="details-modal-section">
-                <div class="details-modal-section-header warning"><i class="ri-pie-chart-line"></i> Traffic Breakdown</div>
-                <div class="details-modal-section-body">
-                    <div class="details-modal-referrers-grid" style="grid-template-columns: repeat(3, 1fr);">
-                        <div>
-                            <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.4rem;">Countries</div>
-                            ${topCountries.length > 0 ? topCountries.map(c => `<div class="details-modal-list-item"><span class="name">${c[0]}</span><span class="count">${formatNumber(c[1])}</span></div>`).join('') : '<div class="muted" style="font-size: 0.8rem;">No data</div>'}
-                        </div>
-                        <div>
-                            <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.4rem;">Browsers</div>
-                            ${topBrowsers.length > 0 ? topBrowsers.map(b => `<div class="details-modal-list-item"><span class="name">${b[0]}</span><span class="count">${formatNumber(b[1])}</span></div>`).join('') : '<div class="muted" style="font-size: 0.8rem;">No data</div>'}
-                        </div>
-                        <div>
-                            <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.4rem;">Devices</div>
-                            ${topDevices.length > 0 ? topDevices.map(d => `<div class="details-modal-list-item"><span class="name">${d[0]}</span><span class="count">${formatNumber(d[1])}</span></div>`).join('') : '<div class="muted" style="font-size: 0.8rem;">No data</div>'}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            ` : `
-            <div class="details-modal-section">
-                <div class="details-modal-section-body">
-                    <div class="empty-state" style="padding: 1.25rem 0;">
+                ` : `
+                    <div class="empty-state" style="padding: 1.5rem;">
                         <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
-                        <div class="empty-state-title" style="font-size: 1rem;">No Analytics Yet</div>
-                        <p class="empty-state-description" style="font-size: 0.85rem;">Data will appear once your article receives views.</p>
+                        <div class="empty-state-title">No Analytics Yet</div>
+                        <p class="empty-state-description">Data will appear once your article receives views.</p>
                     </div>
-                </div>
-            </div>
-            `}
+                `}
 
-            ${article.images && article.images.length > 0 ? `
-            <div class="details-modal-section">
-                <div class="details-modal-section-header"><i class="ri-image-line"></i> Images (${article.images.length})</div>
-                <div class="details-modal-section-body">
-                    <div class="details-modal-images-grid">
-                        ${article.images.map(img => `
-                            <div class="img-thumb" onclick="window.open('${img}', '_blank')">
-                                <img src="${img}" alt="Article image" loading="lazy">
+                ${article.images && article.images.length > 0 ? `
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title" style="font-size: 0.95rem;">Images (${article.images.length})</h3></div>
+                        <div class="card-body" style="padding: 0.75rem;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.5rem;">
+                                ${article.images.map(img => `
+                                    <div onclick="window.open('${img}', '_blank')" style="cursor: pointer; aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; background: var(--bg-tertiary);">
+                                        <img src="${img}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
+                                    </div>
+                                `).join('')}
                             </div>
-                        `).join('')}
+                        </div>
                     </div>
-                </div>
-            </div>
-            ` : ''}
-            
-            <div class="details-modal-section">
-                <div class="details-modal-section-header"><i class="ri-file-text-line"></i> Content Preview</div>
-                <div class="details-modal-section-body" style="padding: 0;">
-                    <div class="details-modal-content-preview">
+                ` : ''}
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title" style="font-size: 0.95rem;">Content Preview</h3></div>
+                    <div class="card-body" style="max-height: 250px; overflow-y: auto; font-family: Georgia, serif; line-height: 1.6; font-size: 0.85rem; padding: 0.75rem;">
                         ${article.body}
                     </div>
                 </div>
@@ -11978,17 +11776,32 @@ async function viewArticle(articleId) {
         `;
 
         Swal.fire({
-            title: `<div style="display: flex; align-items: center; gap: 0.5rem;"><i class="ri-article-line" style="color: var(--success);"></i> Article Details</div>`,
+            title: `<div style="text-align: left; line-height: 1.3; font-size: 1.2rem;">${article.subject}</div>`,
             html: modalHtml,
             width: '95vw',
-            showCloseButton: true,
-            showConfirmButton: false,
+            maxWidth: '1200px', // Allow it to be nice and wide on desktop
+            showCloseButton: true, // Adds the 'X' button
+            showConfirmButton: true,
+            confirmButtonText: '<i class="ri-external-link-line"></i> View Live',
+            confirmButtonColor: 'var(--primary)',
+            showDenyButton: true,
+            denyButtonText: '<i class="ri-edit-line"></i> Edit',
+            showCancelButton: true,
+            cancelButtonText: 'Delete',
             customClass: {
-                popup: 'swal2-toast task-details-swal',
+                actions: 'swal2-actions-separated', // Optional: adds a bit more space
+                cancelButton: 'swal2-cancel btn-danger', // Style delete button
                 closeButton: 'swal2-close'
-            },
-            showClass: { popup: 'swal2-show-super-fast' },
-            hideClass: { popup: 'swal2-hide-super-fast' }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.open(`https://${article.url}`, '_blank');
+            } else if (result.isDenied) {
+                editArticle(articleId);
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // We call your existing confirm delete logic
+                deleteArticle(articleId); 
+            }
         });
         
         // Initialize charts after the modal is in the DOM
@@ -13739,115 +13552,73 @@ async function showImageDetails(imageId) {
     const topBrowsers = Object.entries(browsers).sort(([,a], [,b]) => b - a).slice(0, 5);
 
     // --- 2. Construct Modal HTML (New Responsive Layout) ---
-    const totalViews = image.total_views || 0;
-    const topDevices = Object.entries(devices).sort(([,a], [,b]) => b - a).slice(0, 5);
-    
     const modalHtml = `
-    <div class="details-modal">
-        <div class="details-modal-header">
-            <div class="preview-wrap">
-                <img src="${image.cdn_url}" alt="${image.original_filename}" class="preview-img" onclick="window.open('${image.cdn_url}', '_blank')" title="Click to open full size">
+    <div class="image-details-modal-container">
+        <div class="modal-header-section">
+            <div class="modal-preview-container">
+                <img src="${image.cdn_url}" alt="${image.original_filename}" class="modal-image-preview" onclick="window.open('${image.cdn_url}', '_blank')">
             </div>
-            <div class="info-wrap">
-                <div class="details-modal-info-row">
-                    <span class="label">Filename</span>
-                    <span class="value"><code>${image.original_filename}</code></span>
-                </div>
-                <div class="details-modal-info-row">
-                    <span class="label">Uploaded</span>
-                    <span class="value">${new Date(image.upload_date).toLocaleDateString()} ${new Date(image.upload_date).toLocaleTimeString()}</span>
-                </div>
-                <div class="details-modal-info-row">
-                    <span class="label">Views</span>
-                    <span class="value"><span class="badge badge-primary">${formatNumber(totalViews)}</span></span>
-                </div>
-                <div class="details-modal-info-row">
-                    <span class="label">Image ID</span>
-                    <span class="value"><code>${image.image_id}</code></span>
-                </div>
-                <div class="details-modal-actions" style="margin-top: 0.5rem; padding: 0; background: none;">
-                    <button class="btn btn-sm btn-primary" onclick="copyToClipboard('${image.cdn_url}')"><i class="ri-file-copy-line"></i> Copy URL</button>
-                    <button class="btn btn-sm" onclick="window.open('${image.cdn_url}', '_blank')"><i class="ri-external-link-line"></i> Open</button>
-                    <button class="btn btn-sm btn-danger" onclick="Swal.close(); deleteImage('${image.image_id}')"><i class="ri-delete-bin-line"></i> Delete</button>
-                </div>
+            <div class="modal-info-list">
+                <p><strong>Filename:</strong><br><code>${image.original_filename}</code></p>
+                <p><strong>Uploaded:</strong><br>${new Date(image.upload_date).toLocaleString()}</p>
+                <p><strong>Total Views:</strong><br><span class="badge badge-primary" style="font-size: 1rem;">${formatNumber(image.total_views)}</span></p>
+                <p><strong>CDN URL:</strong><br>
+                    <button class="btn btn-sm" onclick="copyToClipboard('${image.cdn_url}')"><i class="ri-file-copy-line"></i> Copy URL</button>
+                </p>
+                <p><strong>Image ID:</strong><br><code>${image.image_id}</code></p>
             </div>
         </div>
 
         ${sortedDates.length > 0 ? `
-        <div class="details-modal-section">
-            <div class="details-modal-section-header"><i class="ri-bar-chart-2-line"></i> Analytics Overview</div>
-            <div class="details-modal-section-body">
-                <div class="details-modal-stats-grid" style="margin-bottom: 1rem;">
-                    <div class="details-modal-stat-card primary">
-                        <span class="stat-value">${formatNumber(totalViews)}</span>
-                        <span class="stat-label">Total Views</span>
-                    </div>
-                    <div class="details-modal-stat-card">
-                        <span class="stat-value">${topCountries.length}</span>
-                        <span class="stat-label">Countries</span>
-                    </div>
-                    <div class="details-modal-stat-card warning">
-                        <span class="stat-value">${Object.keys(browsers).length}</span>
-                        <span class="stat-label">Browsers</span>
-                    </div>
-                    <div class="details-modal-stat-card info">
-                        <span class="stat-value">${Object.keys(devices).length}</span>
-                        <span class="stat-label">Devices</span>
-                    </div>
-                </div>
-                <div class="details-modal-chart-grid">
-                    <div class="details-modal-chart-wrap">
+            <div>
+                <h3 class="modal-section-title" style="color: var(--primary);"><i class="ri-bar-chart-2-line"></i>Analytics Overview</h3>
+                <div class="modal-stat-grid">
+                    <div class="modal-chart-container">
                         <canvas id="imageViewsTimelineChart"></canvas>
                     </div>
-                    <div class="details-modal-chart-wrap">
+                    <div class="modal-chart-container">
                         <canvas id="imageCountriesChart"></canvas>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="details-modal-section">
-            <div class="details-modal-section-header warning"><i class="ri-pie-chart-line"></i> Traffic Breakdown</div>
-            <div class="details-modal-section-body">
-                <div class="details-modal-referrers-grid">
+            <div>
+                <h3 class="modal-section-title" style="color: var(--warning);"><i class="ri-list-check"></i>Top Referrers</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div>
-                        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem;">Top Browsers</div>
-                        ${topBrowsers.length > 0 ? topBrowsers.map(b => `<div class="details-modal-list-item"><span class="name">${b[0]}</span><span class="count">${formatNumber(b[1])}</span></div>`).join('') : '<div class="muted" style="font-size: 0.82rem;">No data</div>'}
+                        <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-secondary);">Browsers</h4>
+                        ${topBrowsers.map(b => `<div class="analytics-list-item"><span>${b[0]}</span><span class="badge badge-primary">${formatNumber(b[1])}</span></div>`).join('')}
                     </div>
                     <div>
-                        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem;">Devices</div>
-                        ${topDevices.length > 0 ? topDevices.map(d => `<div class="details-modal-list-item"><span class="name">${d[0]}</span><span class="count">${formatNumber(d[1])}</span></div>`).join('') : '<div class="muted" style="font-size: 0.82rem;">No data</div>'}
+                        <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-secondary);">Devices</h4>
+                        ${Object.entries(devices).map(d => `<div class="analytics-list-item"><span>${d[0]}</span><span class="badge badge-warning">${formatNumber(d[1])}</span></div>`).join('')}
                     </div>
                 </div>
             </div>
-        </div>
         ` : `
-        <div class="details-modal-section">
-            <div class="details-modal-section-body">
-                <div class="empty-state" style="padding: 1.5rem 0;">
-                    <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
-                    <div class="empty-state-title" style="font-size: 1.1rem;">No Analytics Yet</div>
-                    <div class="empty-state-description">View data will appear here once the image is viewed.</div>
-                </div>
+            <div class="empty-state" style="padding: 1rem 0;">
+                <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
+                <div class="empty-state-title" style="font-size: 1.2rem;">No Analytics Yet</div>
+                <div class="empty-state-description">View data will appear here once the image is viewed.</div>
             </div>
-        </div>
         `}
     </div>`;
 
     // --- 3. Fire SweetAlert2 Modal ---
     Swal.fire({
-        title: `<div style="display: flex; align-items: center; gap: 0.5rem;"><i class="ri-image-line" style="color: var(--primary);"></i> Image Details</div>`,
+        title: 'Image Details',
         html: modalHtml,
         showCloseButton: true,
         showConfirmButton: false,
-        width: '95vw',
+        width: '90vw',
+        maxWidth: '900px',
         customClass: {
-            popup: 'swal2-toast task-details-swal',
+            popup: 'swal2-toast', // Re-use toast class for theming
             closeButton: 'swal2-close'
         },
         showClass: { popup: 'swal2-show-super-fast' },
         hideClass: { popup: 'swal2-hide-super-fast' },
         didOpen: () => {
+            // Initialize charts only if there is data
             if (sortedDates.length > 0) {
                 initializeImageAnalyticsCharts(sortedDates, topCountries);
             }
