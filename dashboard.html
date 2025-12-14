@@ -4867,6 +4867,15 @@ div#modalBody {
     background: rgba(148, 163, 184, 0.08);
     border-radius: 6px;
     max-width: 50%;
+    display: none; /* Hide on desktop, show on mobile */
+}
+@media (max-width: 550px) {
+    .task-done-time {
+        display: inline-block; /* Show on mobile */
+    }
+    .task-done-rawtime {
+        display: none !important; /* Hide rawtime on mobile since time is in header */
+    }
 }
 .task-done-kv {
     display: flex;
@@ -4909,12 +4918,19 @@ div#modalBody {
 }
 .task-done-rawtime {
     color: var(--text-secondary);
-    font-weight: 500;
-    font-size: 0.72rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.5rem;
+    background: rgba(148, 163, 184, 0.08);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.task-done-rawtime i {
+    color: var(--primary);
+    font-size: 0.9rem;
     opacity: 0.8;
-    padding-top: 0.2rem;
-    border-top: 1px dashed rgba(148, 163, 184, 0.15);
-    margin-top: 0.15rem;
 }
 
 /* Country badge styling for task-done-card (more details section) */
@@ -5003,11 +5019,6 @@ div#modalBody {
     .task-done-kv .value {
         font-size: 0.8rem;
     }
-    .task-done-rawtime {
-        font-size: 0.68rem;
-        padding-top: 0.15rem;
-        margin-top: 0.1rem;
-    }
 }
 
 @media (max-width: 400px) {
@@ -5055,9 +5066,6 @@ div#modalBody {
     .task-done-kv .value {
         font-size: 0.75rem;
     }
-    .task-done-rawtime {
-        font-size: 0.62rem;
-    }
 }
 .task-done-pager {
     display: flex;
@@ -5078,11 +5086,11 @@ div#modalBody {
     min-width: 0;
 }
 .task-done-pager .pages {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     gap: 0.35rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     min-width: 0;
     flex: 1 1 auto;
     padding: 0 0.5rem;
@@ -5700,7 +5708,7 @@ div#modalBody {
     .task-done-pager .pages {
         flex-wrap: nowrap;
         overflow-x: auto;
-        justify-content: flex-start;
+        justify-content: space-evenly;
         padding-bottom: 0.15rem;
         -webkit-overflow-scrolling: touch;
     }
@@ -6358,6 +6366,7 @@ div#modalBody {
         flex: 1 1 auto !important;
         min-width: 0 !important;
         padding: 0 0.35rem !important;
+        justify-content: space-evenly !important;
     }
     
     .swal2-html-container [class*="grid"],
@@ -10955,6 +10964,10 @@ function initializeTaskDoneParts(donePartsNormalized) {
                                 ? `<a class="task-email" href="${mailto}" target="_blank" rel="noopener noreferrer">${escapeHtml(email)}</a>`
                                 : `<span class="muted">—</span>`}
                         </div>
+                    </div>
+                    <div class="task-done-rawtime">
+                        <i class="ri-time-line" aria-hidden="true"></i>
+                        <span title="${escapeHtml(dt ? timeRaw : timePretty)}">${escapeHtml(timePretty)}</span>
                     </div>
                 </div>
             `;
