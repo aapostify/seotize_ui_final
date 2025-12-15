@@ -4227,587 +4227,237 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 /* =====================================================
-   IMAGE DETAILS MODAL - Premium Design
+   IMAGES & ARTICLES DETAILS MODALS - Enhanced Styles
    ===================================================== */
 
+/* Image Details Modal Container */
 .image-details-modal-container {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
     text-align: left;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
 }
 
-/* Image Hero Section - Top */
-.image-hero-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
+/* Header Section - Image Preview + Info */
+.image-details-modal-container .modal-header-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: start;
 }
 
-.image-hero-preview {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.03), rgba(99, 102, 241, 0.05));
-    border: 1px solid var(--border);
+.image-details-modal-container .modal-preview-container {
+    text-align: center;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+    padding: 1rem;
     border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 220px;
-    position: relative;
+    border: 1px solid var(--border);
 }
 
-.image-hero-img {
+.image-details-modal-container .modal-image-preview {
     max-width: 100%;
-    max-height: 200px;
+    max-height: 280px;
     width: auto;
     height: auto;
     object-fit: contain;
     border-radius: var(--radius);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border: 2px solid var(--border);
     cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.image-hero-img:hover {
-    transform: scale(1.03);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+.image-details-modal-container .modal-image-preview:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
 }
 
-/* Image Info Bar */
-.image-info-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.image-info-left {
+/* Info List Styling */
+.image-details-modal-container .modal-info-list {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    flex: 1;
-    min-width: 0;
+    gap: 0.75rem;
 }
 
-.image-filename {
+.image-details-modal-container .modal-info-list p {
+    margin: 0;
+    padding: 0.75rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.image-details-modal-container .modal-info-list strong {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    opacity: 0.8;
+}
+
+.image-details-modal-container .modal-info-list code {
+    background: rgba(99, 102, 241, 0.1);
+    padding: 0.35rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    word-break: break-all;
+    color: var(--primary);
+    font-weight: 500;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+/* Section Titles */
+.image-details-modal-container .modal-section-title {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--text);
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border);
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin: 0;
 }
 
-.image-filename i {
-    color: var(--primary);
+.image-details-modal-container .modal-section-title i {
     font-size: 1.1rem;
 }
 
-.image-filename span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.image-meta-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1rem;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-}
-
-.image-meta-row span {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-}
-
-.image-meta-row i {
-    font-size: 0.85rem;
-    opacity: 0.7;
-}
-
-/* Image Actions */
-.image-actions-bar {
-    display: flex;
-    gap: 0.5rem;
-    flex-shrink: 0;
-}
-
-.image-action-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    padding: 0.55rem 0.85rem;
-    border-radius: var(--radius);
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid var(--border);
-    background: var(--bg-tertiary);
-    color: var(--text);
-}
-
-.image-action-btn:hover {
-    background: var(--card-hover);
-    border-color: var(--primary);
-    color: var(--primary);
-    transform: translateY(-1px);
-}
-
-.image-action-btn.btn-copy {
-    background: rgba(99, 102, 241, 0.1);
-    border-color: rgba(99, 102, 241, 0.3);
-    color: var(--primary);
-}
-
-.image-action-btn.btn-copy:hover {
-    background: rgba(99, 102, 241, 0.2);
-}
-
-.image-action-btn.btn-open {
-    background: rgba(16, 185, 129, 0.1);
-    border-color: rgba(16, 185, 129, 0.3);
-    color: var(--success);
-}
-
-.image-action-btn.btn-open:hover {
-    background: rgba(16, 185, 129, 0.2);
-}
-
-.image-action-btn.btn-delete {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.3);
-    color: var(--error);
-}
-
-.image-action-btn.btn-delete:hover {
-    background: rgba(239, 68, 68, 0.2);
-}
-
-.image-action-btn i {
-    font-size: 1rem;
-}
-
-/* Image Stats Grid */
-.image-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.75rem;
-}
-
-.image-stat-card {
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 0.85rem 0.5rem;
-    text-align: center;
-    transition: all 0.2s ease;
-}
-
-.image-stat-card:hover {
-    border-color: rgba(99, 102, 241, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-}
-
-.image-stat-card .stat-value {
-    font-size: 1.4rem;
-    font-weight: 800;
-    line-height: 1.2;
-    margin-bottom: 0.25rem;
-}
-
-.image-stat-card .stat-label {
-    font-size: 0.68rem;
-    color: var(--text-secondary);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-}
-
-/* Image Modal Tabs */
-.image-modal-tabs {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    padding: 0.3rem;
-    border-radius: 999px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
-    width: 100%;
-    max-width: 320px;
-    margin: 0 auto;
-}
-
-.image-modal-tab {
-    appearance: none;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--text);
-    border-radius: 999px;
-    padding: 0.5rem 1.25rem;
-    font-weight: 700;
-    font-size: 0.85rem;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    transition: all 0.2s ease;
-    flex: 1;
-}
-
-.image-modal-tab:hover:not(:disabled) {
-    background: rgba(99, 102, 241, 0.08);
-}
-
-.image-modal-tab[data-tab="analytics"].active {
-    background: rgba(99, 102, 241, 0.14);
-    border-color: rgba(99, 102, 241, 0.5);
-    color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
-}
-
-.image-modal-tab[data-tab="traffic"].active {
-    background: rgba(245, 158, 11, 0.14);
-    border-color: rgba(245, 158, 11, 0.5);
-    color: var(--warning);
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
-}
-
-/* Image Modal Panels */
-.image-modal-panels {
-    width: 100%;
-}
-
-.image-modal-panel {
-    width: 100%;
-}
-
-.image-modal-panel.panel-in {
-    animation: imagePanelIn 180ms ease-out;
-}
-
-@keyframes imagePanelIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.image-modal-panel[hidden] {
-    display: none !important;
-}
-
-/* Image Analytics Panel */
-.image-analytics-content {
+/* Analytics Grid */
+.image-details-modal-container .modal-stat-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0.75rem;
+    gap: 1rem;
 }
 
-.image-chart-card {
+.image-details-modal-container .modal-chart-container {
+    height: 220px;
     background: var(--card);
-    border: 1px solid var(--border);
+    padding: 0.75rem;
     border-radius: var(--radius);
-    overflow: hidden;
-}
-
-.image-chart-card .chart-header {
-    padding: 0.6rem 0.85rem;
-    background: var(--bg-tertiary);
-    border-bottom: 1px solid var(--border);
-    font-size: 0.85rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.image-chart-card .chart-header i {
-    color: var(--primary);
-    font-size: 1rem;
-}
-
-.image-chart-card .chart-body {
-    padding: 0.65rem;
-    height: 180px;
-}
-
-/* Image Traffic Panel */
-.image-traffic-content {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-}
-
-.image-traffic-card {
-    background: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.image-traffic-card .card-header {
-    padding: 0.6rem 0.85rem;
-    background: var(--bg-tertiary);
-    border-bottom: 1px solid var(--border);
-    font-size: 0.85rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.image-traffic-card .card-header i {
-    font-size: 1rem;
-}
-
-.image-traffic-card .card-header i.ri-window-line { color: var(--primary); }
-.image-traffic-card .card-header i.ri-device-line { color: var(--warning); }
-.image-traffic-card .card-header i.ri-earth-line { color: var(--success); }
-
-.image-traffic-card .card-body {
-    padding: 0.65rem;
-}
-
-.image-traffic-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-}
-
-.image-traffic-item {
+/* Analytics List Items */
+.image-details-modal-container .analytics-list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 0.7rem;
+    padding: 0.65rem 0.85rem;
     background: var(--bg-tertiary);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
+    margin-bottom: 0.5rem;
     border: 1px solid var(--border);
     transition: all 0.15s ease;
 }
 
-.image-traffic-item:hover {
+.image-details-modal-container .analytics-list-item:hover {
     background: var(--card-hover);
-    border-color: rgba(99, 102, 241, 0.25);
+    border-color: rgba(99, 102, 241, 0.3);
 }
 
-.image-traffic-item .item-name {
+.image-details-modal-container .analytics-list-item:last-child {
+    margin-bottom: 0;
+}
+
+.image-details-modal-container .analytics-list-item span:first-child {
     font-weight: 600;
     color: var(--text);
     font-size: 0.85rem;
 }
 
-/* Empty State */
-.image-empty-state {
-    padding: 2rem 1rem;
-    text-align: center;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
+/* Referrers Grid */
+.image-details-modal-container .referrers-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
 }
 
-.image-empty-state i {
-    font-size: 2.5rem;
-    color: var(--text-secondary);
-    opacity: 0.5;
-    margin-bottom: 0.75rem;
-}
-
-.image-empty-state h4 {
-    margin: 0 0 0.35rem;
-    font-size: 1rem;
-    color: var(--text);
-}
-
-.image-empty-state p {
-    margin: 0;
+.image-details-modal-container .referrer-section h4 {
     font-size: 0.85rem;
-    color: var(--text-secondary);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-/* SweetAlert2 custom class */
-.swal2-popup.image-details-swal {
-    margin: 0.5rem !important;
-    width: min(900px, 96vw) !important;
-    max-width: 96vw !important;
-    box-sizing: border-box !important;
-    padding: 1.25rem !important;
+.image-details-modal-container .referrer-section h4 i {
+    font-size: 1rem;
+    opacity: 0.7;
 }
 
-.swal2-popup.image-details-swal .swal2-html-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-}
-
-.swal2-popup.image-details-swal .swal2-title,
-.swal2-popup.image-details-swal .swal2-actions {
-    display: none !important;
-}
-
-/* Desktop - Image Details */
+/* Desktop Breakpoint - Image Details */
 @media (min-width: 769px) {
-    .image-hero-preview {
-        min-height: 280px;
-        padding: 2rem;
+    .image-details-modal-container .modal-header-section {
+        grid-template-columns: 320px 1fr;
+        gap: 2rem;
     }
     
-    .image-hero-img {
-        max-height: 250px;
+    .image-details-modal-container .modal-image-preview {
+        max-height: 320px;
     }
     
-    .image-stats-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-    
-    .image-analytics-content {
+    .image-details-modal-container .modal-stat-grid {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    .image-chart-card .chart-body {
-        height: 200px;
-    }
-    
-    .image-traffic-content {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-/* Tablet - Image Details */
-@media (max-width: 768px) {
-    .image-info-bar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.75rem;
-    }
-    
-    .image-actions-bar {
-        justify-content: flex-start;
-    }
-    
-    .image-stats-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0.5rem;
-    }
-    
-    .image-stat-card {
-        padding: 0.7rem 0.35rem;
-    }
-    
-    .image-stat-card .stat-value {
-        font-size: 1.15rem;
-    }
-    
-    .image-stat-card .stat-label {
-        font-size: 0.6rem;
-    }
-    
-    .image-hero-preview {
-        min-height: 180px;
+    .image-details-modal-container .modal-chart-container {
+        height: 250px;
         padding: 1rem;
     }
     
-    .image-hero-img {
-        max-height: 160px;
-    }
-    
-    .image-chart-card .chart-body {
-        height: 160px;
-    }
-    
-    .image-traffic-content {
+    .image-details-modal-container .referrers-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-/* Mobile - Image Details */
+/* Mobile Breakpoint - Image Details */
 @media (max-width: 480px) {
     .image-details-modal-container {
-        gap: 0.85rem;
+        gap: 1rem;
     }
     
-    .image-hero-section {
-        gap: 0.75rem;
-        padding-bottom: 0.85rem;
+    .image-details-modal-container .modal-preview-container {
+        padding: 0.75rem;
     }
     
-    .image-hero-preview {
-        min-height: 150px;
-        padding: 0.85rem;
+    .image-details-modal-container .modal-image-preview {
+        max-height: 200px;
     }
     
-    .image-hero-img {
-        max-height: 130px;
-    }
-    
-    .image-filename {
-        font-size: 0.9rem;
-    }
-    
-    .image-meta-row {
-        font-size: 0.75rem;
-        gap: 0.35rem 0.65rem;
-    }
-    
-    .image-action-btn {
-        padding: 0.45rem 0.65rem;
-        font-size: 0.75rem;
-    }
-    
-    .image-action-btn span {
-        display: none;
-    }
-    
-    .image-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .image-details-modal-container .modal-info-list {
         gap: 0.5rem;
     }
     
-    .image-stat-card {
-        padding: 0.65rem 0.4rem;
+    .image-details-modal-container .modal-info-list p {
+        padding: 0.6rem;
     }
     
-    .image-stat-card .stat-value {
-        font-size: 1.1rem;
+    .image-details-modal-container .modal-section-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
     }
     
-    .image-modal-tabs {
-        max-width: 100%;
-    }
-    
-    .image-modal-tab {
-        font-size: 0.8rem;
-        padding: 0.45rem 0.85rem;
-    }
-    
-    .image-chart-card .chart-body {
-        height: 140px;
+    .image-details-modal-container .modal-chart-container {
+        height: 180px;
         padding: 0.5rem;
     }
     
-    .image-traffic-content {
-        grid-template-columns: 1fr;
-    }
-    
-    .image-traffic-item {
-        padding: 0.45rem 0.6rem;
-    }
-    
-    .image-traffic-item .item-name {
+    .image-details-modal-container .analytics-list-item {
+        padding: 0.5rem 0.65rem;
         font-size: 0.8rem;
     }
 }
@@ -13322,56 +12972,36 @@ function initializeArticleCharts(countries, browsers, devices, sortedDates) {
         }
     }
 
-    // Doughnuts with distinct readable colors
-    const distinctColors = [
-        '#10b981', // green
-        '#6366f1', // indigo
-        '#f59e0b', // amber
-        '#ef4444', // red
-        '#8b5cf6', // violet
-        '#06b6d4', // cyan
-        '#ec4899', // pink
-        '#84cc16', // lime
-        '#f97316', // orange
-        '#14b8a6'  // teal
-    ];
-    
+    // Doughnuts
     const chartConfigs = [
-        { id: 'articleCountriesChart', data: countries },
-        { id: 'articleBrowsersChart', data: browsers },
-        { id: 'articleDevicesChart', data: devices }
+        { id: 'articleCountriesChart', data: countries, colors: ['#10b981', '#059669', '#047857', '#065f46', '#064e3b'] },
+        { id: 'articleBrowsersChart', data: browsers, colors: ['#6366f1', '#4f46e5', '#4338ca', '#3730a3', '#312e81'] },
+        { id: 'articleDevicesChart', data: devices, colors: ['#f59e0b', '#d97706', '#b45309', '#92400e', '#78350f'] }
     ];
 
-    chartConfigs.forEach(({ id, data }) => {
+    chartConfigs.forEach(({ id, data, colors }) => {
         if (data && Object.keys(data).length > 0) {
             const el = document.getElementById(id);
             if (!el) return;
-            const sortedData = Object.entries(data).sort(([, a], [, b]) => b - a).slice(0, 10);
+            const sortedData = Object.entries(data).sort(([, a], [, b]) => b - a);
             new Chart(el, {
                 type: 'doughnut',
                 data: {
                     labels: sortedData.map(([key]) => key.charAt(0).toUpperCase() + key.slice(1)),
                     datasets: [{
                         data: sortedData.map(([, v]) => v),
-                        backgroundColor: distinctColors.slice(0, sortedData.length),
-                        borderWidth: 2,
-                        borderColor: isDark ? 'rgba(30, 41, 59, 0.8)' : 'rgba(255, 255, 255, 0.8)'
+                        backgroundColor: colors,
+                        borderWidth: 0
                     }]
                 },
                 options: {
                     ...commonOptions,
-                    cutout: '55%',
+                    cutout: '60%',
                     plugins: {
                         ...commonOptions.plugins,
                         legend: {
                             ...commonOptions.plugins.legend,
-                            display: true,
-                            position: 'right',
-                            labels: {
-                                ...commonOptions.plugins.legend.labels,
-                                boxWidth: 12,
-                                padding: 8
-                            }
+                            display: true
                         }
                     }
                 }
@@ -14989,7 +14619,7 @@ async function showImageDetails(imageId) {
         return;
     }
 
-    // --- 1. Process Analytics Data ---
+    // --- 1. Process Analytics Data (Same logic, preserved) ---
     const monthlyStats = image.monthly_stats || {};
     const countries = {}, browsers = {}, devices = {}, viewsByDate = {};
     Object.entries(monthlyStats).forEach(([month, stats]) => {
@@ -15005,224 +14635,118 @@ async function showImageDetails(imageId) {
     const topCountries = Object.entries(countries).sort(([,a], [,b]) => b - a).slice(0, 5);
     const topBrowsers = Object.entries(browsers).sort(([,a], [,b]) => b - a).slice(0, 5);
     const topDevices = Object.entries(devices).sort(([,a], [,b]) => b - a).slice(0, 5);
-    const hasAnalytics = sortedDates.length > 0;
 
-    // Format dates and stats
+    // Format the upload date nicely
     const uploadDate = new Date(image.upload_date);
-    const formattedDate = uploadDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-    const totalViews = image.total_views || 0;
-    const countryCount = Object.keys(countries).length;
-    const browserCount = Object.keys(browsers).length;
-    const last7Views = sortedDates.slice(-7).reduce((sum, [, v]) => sum + v, 0);
+    const formattedDate = uploadDate.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 
-    // Truncate filename for display
-    const displayFilename = image.original_filename.length > 35 
-        ? image.original_filename.substring(0, 32) + '...' 
-        : image.original_filename;
-
-    // --- 2. Construct Modal HTML ---
+    // --- 2. Construct Modal HTML (New Responsive Layout) ---
     const modalHtml = `
     <div class="image-details-modal-container">
-        <!-- Hero Section: Image at Top -->
-        <div class="image-hero-section">
-            <div class="image-hero-preview">
-                <img src="${image.cdn_url}" alt="${image.original_filename}" class="image-hero-img" onclick="window.open('${image.cdn_url}', '_blank')" title="Click to view full size">
+        <div class="modal-header-section">
+            <div class="modal-preview-container">
+                <img src="${image.cdn_url}" alt="${image.original_filename}" class="modal-image-preview" onclick="window.open('${image.cdn_url}', '_blank')" title="Click to view full image">
             </div>
-            
-            <div class="image-info-bar">
-                <div class="image-info-left">
-                    <h3 class="image-filename">
-                        <i class="ri-image-line"></i>
-                        <span title="${image.original_filename}">${displayFilename}</span>
-                    </h3>
-                    <div class="image-meta-row">
-                        <span><i class="ri-calendar-line"></i> ${formattedDate}</span>
-                        <span><i class="ri-key-2-line"></i> ${image.image_id.substring(0, 8)}...</span>
+            <div class="modal-info-list">
+                <p>
+                    <strong><i class="ri-file-line"></i> Filename</strong>
+                    <code>${image.original_filename}</code>
+                </p>
+                <p>
+                    <strong><i class="ri-calendar-line"></i> Uploaded</strong>
+                    <span>${formattedDate}</span>
+                </p>
+                <p>
+                    <strong><i class="ri-eye-line"></i> Total Views</strong>
+                    <span class="badge badge-success" style="font-size: 0.95rem; padding: 0.35rem 0.6rem;">${formatNumber(image.total_views)}</span>
+                </p>
+                <p>
+                    <strong><i class="ri-link"></i> CDN URL</strong>
+                    <button class="btn btn-sm" onclick="copyToClipboard('${image.cdn_url}')" style="margin-top: 0.25rem;">
+                        <i class="ri-file-copy-line"></i> Copy URL
+                    </button>
+                </p>
+                <p>
+                    <strong><i class="ri-key-2-line"></i> Image ID</strong>
+                    <code style="font-size: 0.7rem;">${image.image_id}</code>
+                </p>
+            </div>
+        </div>
+
+        ${sortedDates.length > 0 ? `
+            <div>
+                <h3 class="modal-section-title" style="color: var(--primary);">
+                    <i class="ri-bar-chart-2-line"></i> Analytics Overview
+                </h3>
+                <div class="modal-stat-grid">
+                    <div class="modal-chart-container">
+                        <canvas id="imageViewsTimelineChart"></canvas>
+                    </div>
+                    <div class="modal-chart-container">
+                        <canvas id="imageCountriesChart"></canvas>
                     </div>
                 </div>
-                <div class="image-actions-bar">
-                    <button class="image-action-btn btn-copy" onclick="copyToClipboard('${image.cdn_url}')" title="Copy CDN URL">
-                        <i class="ri-file-copy-line"></i>
-                        <span>Copy URL</span>
-                    </button>
-                    <button class="image-action-btn btn-open" onclick="window.open('${image.cdn_url}', '_blank')" title="Open Full Size">
-                        <i class="ri-external-link-line"></i>
-                        <span>Open</span>
-                    </button>
-                    <button class="image-action-btn btn-delete" onclick="Swal.close(); deleteImage('${image.image_id}')" title="Delete Image">
-                        <i class="ri-delete-bin-line"></i>
-                        <span>Delete</span>
-                    </button>
+            </div>
+            <div>
+                <h3 class="modal-section-title" style="color: var(--warning);">
+                    <i class="ri-pie-chart-line"></i> Traffic Breakdown
+                </h3>
+                <div class="referrers-grid">
+                    <div class="referrer-section">
+                        <h4><i class="ri-window-line"></i> Browsers</h4>
+                        ${topBrowsers.length > 0 ? topBrowsers.map(b => `
+                            <div class="analytics-list-item">
+                                <span>${b[0]}</span>
+                                <span class="badge badge-primary">${formatNumber(b[1])}</span>
+                            </div>
+                        `).join('') : '<div class="analytics-list-item"><span>No data</span></div>'}
+                    </div>
+                    <div class="referrer-section">
+                        <h4><i class="ri-device-line"></i> Devices</h4>
+                        ${topDevices.length > 0 ? topDevices.map(d => `
+                            <div class="analytics-list-item">
+                                <span>${d[0]}</span>
+                                <span class="badge badge-warning">${formatNumber(d[1])}</span>
+                            </div>
+                        `).join('') : '<div class="analytics-list-item"><span>No data</span></div>'}
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Stats Grid -->
-        <div class="image-stats-grid">
-            <div class="image-stat-card">
-                <div class="stat-value" style="color: var(--success);">${formatNumber(totalViews)}</div>
-                <div class="stat-label">Total Views</div>
+        ` : `
+            <div class="empty-state" style="padding: 2rem 1rem; margin-top: 0.5rem;">
+                <div class="empty-state-icon"><i class="ri-bar-chart-line"></i></div>
+                <div class="empty-state-title" style="font-size: 1.1rem;">No Analytics Yet</div>
+                <div class="empty-state-description" style="font-size: 0.85rem;">View data will appear here once the image receives traffic.</div>
             </div>
-            <div class="image-stat-card">
-                <div class="stat-value" style="color: var(--primary);">${formatNumber(last7Views)}</div>
-                <div class="stat-label">Last 7 Days</div>
-            </div>
-            <div class="image-stat-card">
-                <div class="stat-value" style="color: var(--info);">${countryCount}</div>
-                <div class="stat-label">Countries</div>
-            </div>
-            <div class="image-stat-card">
-                <div class="stat-value" style="color: var(--warning);">${browserCount}</div>
-                <div class="stat-label">Browsers</div>
-            </div>
-        </div>
-
-        <!-- Tabs -->
-        <div class="image-modal-tabs" role="tablist">
-            <button class="image-modal-tab active" type="button" data-tab="analytics" role="tab">
-                <i class="ri-line-chart-line"></i> Analytics
-            </button>
-            <button class="image-modal-tab" type="button" data-tab="traffic" role="tab">
-                <i class="ri-pie-chart-line"></i> Traffic
-            </button>
-        </div>
-
-        <!-- Panels -->
-        <div class="image-modal-panels">
-            <!-- Analytics Panel -->
-            <div class="image-modal-panel" id="image-panel-analytics" data-panel="analytics" role="tabpanel">
-                ${hasAnalytics ? `
-                    <div class="image-analytics-content">
-                        <div class="image-chart-card">
-                            <div class="chart-header"><i class="ri-line-chart-line"></i> Views Over Time</div>
-                            <div class="chart-body"><canvas id="imageViewsTimelineChart"></canvas></div>
-                        </div>
-                        <div class="image-chart-card">
-                            <div class="chart-header"><i class="ri-earth-line"></i> Top Countries</div>
-                            <div class="chart-body"><canvas id="imageCountriesChart"></canvas></div>
-                        </div>
-                    </div>
-                ` : `
-                    <div class="image-empty-state">
-                        <i class="ri-bar-chart-line"></i>
-                        <h4>No Analytics Yet</h4>
-                        <p>Analytics will appear once the image receives views.</p>
-                    </div>
-                `}
-            </div>
-
-            <!-- Traffic Panel -->
-            <div class="image-modal-panel" id="image-panel-traffic" data-panel="traffic" role="tabpanel" hidden>
-                ${hasAnalytics ? `
-                    <div class="image-traffic-content">
-                        <div class="image-traffic-card">
-                            <div class="card-header"><i class="ri-window-line"></i> Browsers</div>
-                            <div class="card-body">
-                                <div class="image-traffic-list">
-                                    ${topBrowsers.length > 0 ? topBrowsers.map(b => `
-                                        <div class="image-traffic-item">
-                                            <span class="item-name">${b[0]}</span>
-                                            <span class="badge badge-primary">${formatNumber(b[1])}</span>
-                                        </div>
-                                    `).join('') : '<div class="image-traffic-item"><span class="item-name">No data</span><span>—</span></div>'}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="image-traffic-card">
-                            <div class="card-header"><i class="ri-device-line"></i> Devices</div>
-                            <div class="card-body">
-                                <div class="image-traffic-list">
-                                    ${topDevices.length > 0 ? topDevices.map(d => `
-                                        <div class="image-traffic-item">
-                                            <span class="item-name">${d[0]}</span>
-                                            <span class="badge badge-warning">${formatNumber(d[1])}</span>
-                                        </div>
-                                    `).join('') : '<div class="image-traffic-item"><span class="item-name">No data</span><span>—</span></div>'}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="image-traffic-card">
-                            <div class="card-header"><i class="ri-earth-line"></i> Countries</div>
-                            <div class="card-body">
-                                <div class="image-traffic-list">
-                                    ${topCountries.length > 0 ? topCountries.map(c => `
-                                        <div class="image-traffic-item">
-                                            <span class="item-name">${c[0]}</span>
-                                            <span class="badge badge-success">${formatNumber(c[1])}</span>
-                                        </div>
-                                    `).join('') : '<div class="image-traffic-item"><span class="item-name">No data</span><span>—</span></div>'}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                ` : `
-                    <div class="image-empty-state">
-                        <i class="ri-pie-chart-line"></i>
-                        <h4>No Traffic Data</h4>
-                        <p>Traffic breakdown will appear once the image receives views.</p>
-                    </div>
-                `}
-            </div>
-        </div>
+        `}
     </div>`;
 
-    // --- 3. Fire Modal ---
+    // --- 3. Fire SweetAlert2 Modal ---
     Swal.fire({
+        title: '<i class="ri-image-line" style="margin-right: 0.5rem; opacity: 0.7;"></i> Image Details',
         html: modalHtml,
         showCloseButton: true,
         showConfirmButton: false,
-        width: 'min(900px, 96vw)',
+        width: 'min(900px, 95vw)',
         customClass: {
-            popup: 'swal2-toast image-details-swal',
+            popup: 'swal2-toast image-article-details-swal',
             closeButton: 'swal2-close'
         },
         showClass: { popup: 'swal2-show-super-fast' },
         hideClass: { popup: 'swal2-hide-super-fast' },
         didOpen: () => {
-            setupImageDetailsTabs();
-            if (hasAnalytics) {
+            // Initialize charts only if there is data
+            if (sortedDates.length > 0) {
                 initializeImageAnalyticsCharts(sortedDates, topCountries);
             }
         }
     });
-}
-
-// Setup image details tabs
-function setupImageDetailsTabs() {
-    const popup = Swal.getPopup();
-    if (!popup) return;
-
-    const tabs = Array.from(popup.querySelectorAll('.image-modal-tab'));
-    const panels = Array.from(popup.querySelectorAll('.image-modal-panel'));
-    if (tabs.length === 0 || panels.length === 0) return;
-
-    const activate = (name) => {
-        tabs.forEach(btn => {
-            const isActive = btn.dataset.tab === name;
-            btn.classList.toggle('active', isActive);
-            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-        });
-
-        panels.forEach(panel => {
-            const isPanelActive = panel.dataset.panel === name;
-            if (isPanelActive) {
-                panel.removeAttribute('hidden');
-                panel.classList.remove('panel-in');
-                panel.offsetWidth;
-                panel.classList.add('panel-in');
-            } else {
-                panel.setAttribute('hidden', '');
-            }
-        });
-    };
-
-    tabs.forEach(btn => {
-        btn.addEventListener('click', () => {
-            activate(btn.dataset.tab);
-        });
-    });
-
-    activate('analytics');
 }
 
 // [NEW] Helper function to initialize charts inside the modal
