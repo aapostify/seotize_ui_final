@@ -4227,86 +4227,75 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 /* =====================================================
-   IMAGE DETAILS MODAL - Premium Design
+   IMAGE DETAILS MODAL - Final Premium Design
    ===================================================== */
 
 .image-details-modal-container {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem;
     text-align: left;
     width: 100%;
     box-sizing: border-box;
 }
 
-/* Image Hero Section - Top */
-.image-hero-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
-}
-
-.image-hero-preview {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.03), rgba(99, 102, 241, 0.05));
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 220px;
-    position: relative;
-}
-
-.image-hero-img {
-    max-width: 100%;
-    max-height: 200px;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    border-radius: var(--radius);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.image-hero-img:hover {
-    transform: scale(1.03);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
-}
-
-/* Image Info Bar */
-.image-info-bar {
+/* Image Top Bar - Compact Header */
+.image-top-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid var(--border);
 }
 
-.image-info-left {
+.image-top-info {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.image-thumb-preview {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.image-thumb-preview:hover {
+    border-color: var(--primary);
+}
+
+.image-thumb-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-info-text {
     flex: 1;
     min-width: 0;
 }
 
 .image-filename {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: var(--text);
+    margin: 0 0 0.25rem 0;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin: 0;
+    gap: 0.4rem;
 }
 
 .image-filename i {
     color: var(--primary);
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 .image-filename span {
@@ -4318,26 +4307,26 @@ div#modalBody { padding-bottom: 100px; }
 .image-meta-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 1rem;
-    font-size: 0.8rem;
+    gap: 0.35rem 0.75rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
 }
 
 .image-meta-row span {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.25rem;
 }
 
 .image-meta-row i {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     opacity: 0.7;
 }
 
-/* Image Actions */
+/* Image Actions - Inline */
 .image-actions-bar {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.4rem;
     flex-shrink: 0;
 }
 
@@ -4345,11 +4334,10 @@ div#modalBody { padding-bottom: 100px; }
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
-    padding: 0.55rem 0.85rem;
+    width: 34px;
+    height: 34px;
     border-radius: var(--radius);
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s ease;
     border: 1px solid var(--border);
@@ -4358,9 +4346,6 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 .image-action-btn:hover {
-    background: var(--card-hover);
-    border-color: var(--primary);
-    color: var(--primary);
     transform: translateY(-1px);
 }
 
@@ -4394,41 +4379,35 @@ div#modalBody { padding-bottom: 100px; }
     background: rgba(239, 68, 68, 0.2);
 }
 
-.image-action-btn i {
-    font-size: 1rem;
-}
-
-/* Image Stats Grid */
+/* Image Stats Grid - Compact Row */
 .image-stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.75rem;
+    gap: 0.5rem;
 }
 
 .image-stat-card {
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 0.85rem 0.5rem;
+    padding: 0.6rem 0.4rem;
     text-align: center;
     transition: all 0.2s ease;
 }
 
 .image-stat-card:hover {
     border-color: rgba(99, 102, 241, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .image-stat-card .stat-value {
-    font-size: 1.4rem;
+    font-size: 1.15rem;
     font-weight: 800;
     line-height: 1.2;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.15rem;
 }
 
 .image-stat-card .stat-label {
-    font-size: 0.68rem;
+    font-size: 0.6rem;
     color: var(--text-secondary);
     font-weight: 600;
     text-transform: uppercase;
@@ -4440,13 +4419,12 @@ div#modalBody { padding-bottom: 100px; }
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.35rem;
-    padding: 0.3rem;
+    gap: 0.25rem;
+    padding: 0.2rem;
     border-radius: 999px;
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
-    width: 100%;
-    max-width: 320px;
+    width: fit-content;
     margin: 0 auto;
 }
 
@@ -4456,16 +4434,15 @@ div#modalBody { padding-bottom: 100px; }
     background: transparent;
     color: var(--text);
     border-radius: 999px;
-    padding: 0.5rem 1.25rem;
+    padding: 0.4rem 1rem;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
     transition: all 0.2s ease;
-    flex: 1;
 }
 
 .image-modal-tab:hover:not(:disabled) {
@@ -4476,19 +4453,20 @@ div#modalBody { padding-bottom: 100px; }
     background: rgba(99, 102, 241, 0.14);
     border-color: rgba(99, 102, 241, 0.5);
     color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
 }
 
 .image-modal-tab[data-tab="traffic"].active {
     background: rgba(245, 158, 11, 0.14);
     border-color: rgba(245, 158, 11, 0.5);
     color: var(--warning);
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
 }
 
-/* Image Modal Panels */
+/* Image Modal Panels - Scrollable */
 .image-modal-panels {
     width: 100%;
+    flex: 1;
+    overflow-y: auto;
+    max-height: 55vh;
 }
 
 .image-modal-panel {
@@ -4496,12 +4474,12 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 .image-modal-panel.panel-in {
-    animation: imagePanelIn 180ms ease-out;
+    animation: imagePanelIn 150ms ease-out;
 }
 
 @keyframes imagePanelIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .image-modal-panel[hidden] {
@@ -4512,7 +4490,7 @@ div#modalBody { padding-bottom: 100px; }
 .image-analytics-content {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0.75rem;
+    gap: 0.6rem;
 }
 
 .image-chart-card {
@@ -4523,31 +4501,31 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 .image-chart-card .chart-header {
-    padding: 0.6rem 0.85rem;
+    padding: 0.5rem 0.75rem;
     background: var(--bg-tertiary);
     border-bottom: 1px solid var(--border);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
 }
 
 .image-chart-card .chart-header i {
     color: var(--primary);
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 
 .image-chart-card .chart-body {
-    padding: 0.65rem;
-    height: 180px;
+    padding: 0.5rem;
+    height: 160px;
 }
 
 /* Image Traffic Panel */
 .image-traffic-content {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0.75rem;
+    gap: 0.6rem;
 }
 
 .image-traffic-card {
@@ -4558,18 +4536,18 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 .image-traffic-card .card-header {
-    padding: 0.6rem 0.85rem;
+    padding: 0.5rem 0.75rem;
     background: var(--bg-tertiary);
     border-bottom: 1px solid var(--border);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
 }
 
 .image-traffic-card .card-header i {
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 
 .image-traffic-card .card-header i.ri-window-line { color: var(--primary); }
@@ -4577,40 +4555,34 @@ div#modalBody { padding-bottom: 100px; }
 .image-traffic-card .card-header i.ri-earth-line { color: var(--success); }
 
 .image-traffic-card .card-body {
-    padding: 0.65rem;
+    padding: 0.5rem;
 }
 
 .image-traffic-list {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.3rem;
 }
 
 .image-traffic-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 0.7rem;
+    padding: 0.4rem 0.6rem;
     background: var(--bg-tertiary);
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
-    transition: all 0.15s ease;
-}
-
-.image-traffic-item:hover {
-    background: var(--card-hover);
-    border-color: rgba(99, 102, 241, 0.25);
 }
 
 .image-traffic-item .item-name {
     font-weight: 600;
     color: var(--text);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 /* Empty State */
 .image-empty-state {
-    padding: 2rem 1rem;
+    padding: 1.5rem 1rem;
     text-align: center;
     background: var(--bg-tertiary);
     border-radius: var(--radius);
@@ -4618,31 +4590,32 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 .image-empty-state i {
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: var(--text-secondary);
     opacity: 0.5;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .image-empty-state h4 {
-    margin: 0 0 0.35rem;
-    font-size: 1rem;
+    margin: 0 0 0.25rem;
+    font-size: 0.9rem;
     color: var(--text);
 }
 
 .image-empty-state p {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
 }
 
 /* SweetAlert2 custom class */
 .swal2-popup.image-details-swal {
-    margin: 0.5rem !important;
-    width: min(900px, 96vw) !important;
-    max-width: 96vw !important;
+    margin: 0 !important;
+    width: min(480px, 94vw) !important;
+    max-width: 94vw !important;
+    max-height: 92vh !important;
     box-sizing: border-box !important;
-    padding: 1.25rem !important;
+    padding: 1rem !important;
 }
 
 .swal2-popup.image-details-swal .swal2-html-container {
@@ -4661,17 +4634,35 @@ div#modalBody { padding-bottom: 100px; }
 
 /* Desktop - Image Details */
 @media (min-width: 769px) {
-    .image-hero-preview {
-        min-height: 280px;
-        padding: 2rem;
+    .swal2-popup.image-details-swal {
+        width: min(600px, 94vw) !important;
+        padding: 1.25rem !important;
     }
     
-    .image-hero-img {
-        max-height: 250px;
+    .image-thumb-preview {
+        width: 64px;
+        height: 64px;
     }
     
-    .image-stats-grid {
-        grid-template-columns: repeat(4, 1fr);
+    .image-action-btn {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .image-stat-card {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .image-stat-card .stat-value {
+        font-size: 1.3rem;
+    }
+    
+    .image-stat-card .stat-label {
+        font-size: 0.65rem;
+    }
+    
+    .image-modal-panels {
+        max-height: 50vh;
     }
     
     .image-analytics-content {
@@ -4679,7 +4670,7 @@ div#modalBody { padding-bottom: 100px; }
     }
     
     .image-chart-card .chart-body {
-        height: 200px;
+        height: 180px;
     }
     
     .image-traffic-content {
@@ -4687,123 +4678,29 @@ div#modalBody { padding-bottom: 100px; }
     }
 }
 
-/* Tablet - Image Details */
-@media (max-width: 768px) {
-    .swal2-popup.image-details-swal {
-        padding: 1rem !important;
-    }
-    
-    .image-details-modal-container {
-        gap: 0.75rem;
-    }
-    
-    .image-hero-section {
-        gap: 0.65rem;
-        padding-bottom: 0.75rem;
-    }
-    
-    .image-info-bar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.6rem;
-    }
-    
-    .image-actions-bar {
-        justify-content: flex-start;
-    }
-    
-    .image-action-btn {
-        padding: 0.45rem 0.6rem;
-        font-size: 0.75rem;
-    }
-    
-    /* Keep stats in one row - smaller */
-    .image-stats-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0.45rem;
-    }
-    
-    .image-stat-card {
-        padding: 0.55rem 0.3rem;
-    }
-    
-    .image-stat-card .stat-value {
-        font-size: 1rem;
-    }
-    
-    .image-stat-card .stat-label {
-        font-size: 0.55rem;
-    }
-    
-    .image-hero-preview {
-        min-height: 150px;
-        padding: 0.85rem;
-    }
-    
-    .image-hero-img {
-        max-height: 130px;
-    }
-    
-    .image-modal-tabs {
-        padding: 0.25rem;
-    }
-    
-    .image-modal-tab {
-        font-size: 0.8rem;
-        padding: 0.45rem 0.85rem;
-    }
-    
-    .image-analytics-content {
-        gap: 0.6rem;
-    }
-    
-    .image-chart-card .chart-header {
-        padding: 0.5rem 0.7rem;
-        font-size: 0.8rem;
-    }
-    
-    .image-chart-card .chart-body {
-        height: 130px;
-        padding: 0.5rem;
-    }
-    
-    .image-traffic-content {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.6rem;
-    }
-    
-    .image-traffic-card .card-header {
-        padding: 0.5rem 0.7rem;
-        font-size: 0.8rem;
-    }
-    
-    .image-traffic-card .card-body {
-        padding: 0.5rem;
-    }
-}
-
 /* Mobile - Image Details */
 @media (max-width: 480px) {
     .swal2-popup.image-details-swal {
-        padding: 0.85rem !important;
+        padding: 0.75rem !important;
+        max-height: 90vh !important;
     }
     
     .image-details-modal-container {
-        gap: 0.65rem;
-    }
-    
-    .image-hero-section {
         gap: 0.6rem;
-        padding-bottom: 0.65rem;
     }
     
-    .image-hero-preview {
-        min-height: 120px;
-        padding: 0.65rem;
+    .image-top-bar {
+        gap: 0.5rem;
+        padding-bottom: 0.5rem;
     }
     
-    .image-hero-img {
-        max-height: 100px;
+    .image-top-info {
+        gap: 0.5rem;
+    }
+    
+    .image-thumb-preview {
+        width: 44px;
+        height: 44px;
     }
     
     .image-filename {
@@ -4812,30 +4709,25 @@ div#modalBody { padding-bottom: 100px; }
     
     .image-meta-row {
         font-size: 0.7rem;
-        gap: 0.3rem 0.5rem;
+        gap: 0.25rem 0.5rem;
     }
     
     .image-action-btn {
-        padding: 0.4rem 0.5rem;
-        font-size: 0.7rem;
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
     }
     
-    .image-action-btn span {
-        display: none;
-    }
-    
-    /* Stats in single row - compact */
     .image-stats-grid {
-        grid-template-columns: repeat(4, 1fr);
         gap: 0.35rem;
     }
     
     .image-stat-card {
-        padding: 0.4rem 0.25rem;
+        padding: 0.45rem 0.25rem;
     }
     
     .image-stat-card .stat-value {
-        font-size: 0.9rem;
+        font-size: 0.95rem;
     }
     
     .image-stat-card .stat-label {
@@ -4843,44 +4735,33 @@ div#modalBody { padding-bottom: 100px; }
     }
     
     .image-modal-tabs {
-        max-width: 100%;
-        padding: 0.2rem;
+        padding: 0.15rem;
     }
     
     .image-modal-tab {
         font-size: 0.75rem;
-        padding: 0.4rem 0.65rem;
+        padding: 0.35rem 0.75rem;
         gap: 0.25rem;
     }
     
-    .image-modal-tab i {
-        font-size: 0.85rem;
+    .image-modal-panels {
+        max-height: 58vh;
     }
     
-    /* Compact charts */
-    .image-analytics-content {
+    .image-analytics-content,
+    .image-traffic-content {
         gap: 0.5rem;
     }
     
-    .image-chart-card .chart-header {
+    .image-chart-card .chart-header,
+    .image-traffic-card .card-header {
         padding: 0.4rem 0.6rem;
         font-size: 0.75rem;
     }
     
     .image-chart-card .chart-body {
-        height: 100px;
-        padding: 0.35rem;
-    }
-    
-    /* Compact traffic */
-    .image-traffic-content {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-    }
-    
-    .image-traffic-card .card-header {
-        padding: 0.4rem 0.6rem;
-        font-size: 0.75rem;
+        height: 130px;
+        padding: 0.4rem;
     }
     
     .image-traffic-card .card-body {
@@ -4901,54 +4782,35 @@ div#modalBody { padding-bottom: 100px; }
     
     .image-traffic-item .badge {
         font-size: 0.65rem;
-        padding: 0.15rem 0.4rem;
-    }
-    
-    .image-empty-state {
-        padding: 1rem 0.75rem;
-    }
-    
-    .image-empty-state i {
-        font-size: 1.75rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .image-empty-state h4 {
-        font-size: 0.85rem;
-    }
-    
-    .image-empty-state p {
-        font-size: 0.75rem;
+        padding: 0.1rem 0.35rem;
     }
 }
 
 /* =====================================================
-   ARTICLE DETAILS MODAL - Premium Design with Tabs
+   ARTICLE DETAILS MODAL - Final Premium Design
    ===================================================== */
 
 .article-details-modal-container {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 0.75rem;
     text-align: left;
     width: 100%;
-    max-width: 100%;
     box-sizing: border-box;
 }
 
-/* Article Modal Header */
+/* Article Modal Header - Compact */
 .article-modal-header {
     background: transparent;
-    padding: 0 0 1rem 0;
-    margin: 0 0 1rem 0;
+    padding: 0 0 0.65rem 0;
     border-bottom: 1px solid var(--border);
 }
 
 .article-modal-header-row {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .article-modal-title {
@@ -4958,120 +4820,127 @@ div#modalBody { padding-bottom: 100px; }
 
 .article-modal-title h3 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 700;
-    line-height: 1.35;
+    line-height: 1.3;
 }
 
 .article-modal-url-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.85rem;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08));
-    border: 1px solid rgba(99, 102, 241, 0.35);
+    gap: 0.4rem;
+    padding: 0.4rem 0.7rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.06));
+    border: 1px solid rgba(99, 102, 241, 0.3);
     border-radius: 999px;
     color: var(--primary);
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     max-width: 100%;
     transition: all 0.2s ease;
 }
 
 .article-modal-url-pill:hover {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(139, 92, 246, 0.12));
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
 }
 
 .article-modal-url-pill span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    max-width: 200px;
 }
 
+/* Article Actions - Icon Buttons */
 .article-modal-actions-slot {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.35rem;
     flex-shrink: 0;
 }
 
 .article-modal-actions-slot .btn {
-    padding: 0.5rem 0.85rem;
-    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-size: 0.95rem;
+    border-radius: var(--radius);
+}
+
+.article-modal-actions-slot .btn .label-desktop {
+    display: none;
 }
 
 .article-header-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem 1.25rem;
-    margin-top: 0.75rem;
-    font-size: 0.8rem;
+    gap: 0.4rem 0.85rem;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
 }
 
 .article-header-meta span {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.25rem;
 }
 
 .article-header-meta i {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     opacity: 0.7;
 }
 
-/* Article Stats Grid */
+/* Article Stats Grid - Compact Row */
 .article-modal-stat-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    gap: 0.5rem;
 }
 
 .article-modal-stat-card {
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 0.85rem;
+    padding: 0.6rem 0.4rem;
     text-align: center;
     transition: all 0.2s ease;
 }
 
 .article-modal-stat-card:hover {
     border-color: rgba(99, 102, 241, 0.3);
-    transform: translateY(-1px);
 }
 
 .article-modal-stat-card .stat-value {
-    font-size: 1.35rem;
+    font-size: 1.15rem;
     font-weight: 800;
     line-height: 1.2;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.15rem;
 }
 
 .article-modal-stat-card .stat-label {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     color: var(--text-secondary);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
 }
 
 /* Article Modal Tabs */
 .article-modal-tabs {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 0.25rem;
-    padding: 0.25rem;
+    padding: 0.2rem;
     border-radius: 999px;
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
-    margin: 0 0 1.25rem;
-    width: 100%;
-    flex-wrap: nowrap;
+    width: fit-content;
+    margin: 0 auto;
 }
 
 .article-modal-tab {
@@ -5080,74 +4949,62 @@ div#modalBody { padding-bottom: 100px; }
     background: transparent;
     color: var(--text);
     border-radius: 999px;
-    padding: 0.55rem 0.85rem;
+    padding: 0.4rem 0.85rem;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
+    gap: 0.35rem;
     transition: all 0.2s ease;
-    flex: 1;
-    min-width: 0;
-    white-space: nowrap;
 }
 
-.article-modal-tab:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10);
+.article-modal-tab:hover:not(:disabled) {
+    background: rgba(99, 102, 241, 0.08);
 }
 
 .article-modal-tab:disabled {
     cursor: not-allowed;
     opacity: 0.5;
-    transform: none;
-    box-shadow: none;
 }
 
 .article-modal-tab[data-tab="analytics"].active {
     background: rgba(99, 102, 241, 0.14);
-    border-color: rgba(99, 102, 241, 0.65);
+    border-color: rgba(99, 102, 241, 0.5);
     color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20), 0 14px 40px rgba(99, 102, 241, 0.15);
 }
 
 .article-modal-tab[data-tab="images"].active {
     background: rgba(245, 158, 11, 0.14);
-    border-color: rgba(245, 158, 11, 0.65);
+    border-color: rgba(245, 158, 11, 0.5);
     color: var(--warning);
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.20), 0 14px 40px rgba(245, 158, 11, 0.15);
 }
 
 .article-modal-tab[data-tab="content"].active {
     background: rgba(16, 185, 129, 0.14);
-    border-color: rgba(16, 185, 129, 0.55);
+    border-color: rgba(16, 185, 129, 0.5);
     color: var(--success);
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.16), 0 14px 40px rgba(16, 185, 129, 0.12);
 }
 
 .article-modal-tab .label-mobile { display: none; }
 .article-modal-tab .label-desktop { display: inline; }
-.article-modal-tab.icon-only .label-mobile,
-.article-modal-tab.icon-only .label-desktop { display: none !important; }
-.article-modal-tab.icon-only { padding-left: 0.55rem; padding-right: 0.55rem; }
-.article-modal-tab.icon-only i { margin: 0; }
 
-/* Article Modal Panels */
+/* Article Modal Panels - Scrollable */
 .article-modal-panels {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    width: 100%;
+    flex: 1;
+    overflow-y: auto;
+    max-height: 55vh;
 }
 
 .article-modal-panel.panel-in {
-    animation: articlePanelIn 180ms ease-out;
+    animation: articlePanelIn 150ms ease-out;
 }
 
 @keyframes articlePanelIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .article-modal-panel[hidden] {
@@ -5158,25 +5015,21 @@ div#modalBody { padding-bottom: 100px; }
 .article-analytics-section {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.6rem;
 }
 
 .article-chart-wrap {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1rem;
-    height: 280px;
-}
-
-.article-chart-wrap.small {
-    height: 200px;
+    padding: 0.6rem;
+    height: 180px;
 }
 
 .article-mini-charts-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
+    gap: 0.5rem;
 }
 
 .article-mini-chart-card {
@@ -5187,41 +5040,41 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 .article-mini-chart-card .chart-title {
-    padding: 0.6rem 0.85rem;
+    padding: 0.45rem 0.65rem;
     background: var(--bg-tertiary);
     border-bottom: 1px solid var(--border);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: var(--text);
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.3rem;
 }
 
 .article-mini-chart-card .chart-title i {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     opacity: 0.7;
 }
 
 .article-mini-chart-card .chart-body {
-    padding: 0.5rem;
-    height: 160px;
+    padding: 0.4rem;
+    height: 120px;
 }
 
 /* Article Images Slider Panel */
 .article-images-slider-container {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.6rem;
 }
 
 .article-image-slider {
     position: relative;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.03), rgba(139, 92, 246, 0.03));
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    min-height: 320px;
+    border-radius: var(--radius);
+    padding: 1rem;
+    min-height: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -5229,14 +5082,14 @@ div#modalBody { padding-bottom: 100px; }
 
 .article-slider-image {
     max-width: 100%;
-    max-height: 300px;
+    max-height: 180px;
     width: auto;
     height: auto;
     object-fit: contain;
     border-radius: var(--radius);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 .article-slider-image:hover {
@@ -5247,8 +5100,8 @@ div#modalBody { padding-bottom: 100px; }
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 42px;
-    height: 42px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: var(--card);
     border: 1px solid var(--border);
@@ -5257,27 +5110,30 @@ div#modalBody { padding-bottom: 100px; }
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1rem;
     transition: all 0.2s ease;
     z-index: 10;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .article-slider-nav:hover {
     background: var(--primary);
     color: white;
     border-color: var(--primary);
-    transform: translateY(-50%) scale(1.05);
 }
 
-.article-slider-nav.prev { left: 0.75rem; }
-.article-slider-nav.next { right: 0.75rem; }
+.article-slider-nav.prev { left: 0.5rem; }
+.article-slider-nav.next { right: 0.5rem; }
 
 .article-slider-counter {
     text-align: center;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    background: var(--bg-tertiary);
+    border-radius: 999px;
+    width: fit-content;
+    margin: 0 auto;
 }
 
 .article-slider-counter span {
@@ -5287,15 +5143,14 @@ div#modalBody { padding-bottom: 100px; }
 
 .article-slider-thumbnails {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.4rem;
     justify-content: center;
     flex-wrap: wrap;
-    padding: 0.5rem;
 }
 
 .article-slider-thumb {
-    width: 60px;
-    height: 60px;
+    width: 48px;
+    height: 36px;
     border-radius: var(--radius-sm);
     overflow: hidden;
     cursor: pointer;
@@ -5312,7 +5167,6 @@ div#modalBody { padding-bottom: 100px; }
 .article-slider-thumb.active {
     opacity: 1;
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
 }
 
 .article-slider-thumb img {
@@ -5326,7 +5180,7 @@ div#modalBody { padding-bottom: 100px; }
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 3rem 1.5rem;
+    padding: 1.5rem 1rem;
     text-align: center;
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
@@ -5334,21 +5188,21 @@ div#modalBody { padding-bottom: 100px; }
 }
 
 .article-no-images i {
-    font-size: 3rem;
+    font-size: 2rem;
     color: var(--text-secondary);
     opacity: 0.4;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .article-no-images h4 {
-    margin: 0 0 0.5rem;
-    font-size: 1.1rem;
+    margin: 0 0 0.25rem;
+    font-size: 0.9rem;
     color: var(--text);
 }
 
 .article-no-images p {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
 }
 
@@ -5356,32 +5210,32 @@ div#modalBody { padding-bottom: 100px; }
 .article-content-panel {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.6rem;
 }
 
 .article-content-info {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
+    gap: 0.5rem;
 }
 
 .article-content-info-card {
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 0.85rem;
+    padding: 0.5rem 0.4rem;
     text-align: center;
 }
 
 .article-content-info-card .info-value {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: var(--text);
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.1rem;
 }
 
 .article-content-info-card .info-label {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     color: var(--text-secondary);
     font-weight: 600;
     text-transform: uppercase;
@@ -5397,37 +5251,37 @@ div#modalBody { padding-bottom: 100px; }
 .article-content-preview-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 0.75rem;
     background: var(--bg-tertiary);
     border-bottom: 1px solid var(--border);
 }
 
 .article-content-preview-header h4 {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
 }
 
 .article-content-preview-header h4 i {
     color: var(--success);
+    font-size: 0.9rem;
 }
 
 .article-content-body {
-    padding: 1.25rem;
+    padding: 0.75rem;
     font-family: Georgia, 'Times New Roman', serif;
-    font-size: 0.95rem;
-    line-height: 1.8;
+    font-size: 0.85rem;
+    line-height: 1.7;
     color: var(--text);
-    max-height: 380px;
+    max-height: 200px;
     overflow-y: auto;
 }
 
 .article-content-body::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
 }
 
 .article-content-body::-webkit-scrollbar-track {
@@ -5439,17 +5293,14 @@ div#modalBody { padding-bottom: 100px; }
     border-radius: 3px;
 }
 
-.article-content-body::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
-}
-
 /* SweetAlert2 custom class for Article details */
 .swal2-popup.article-details-swal {
-    margin: 0.5rem !important;
-    width: min(1100px, 96vw) !important;
-    max-width: 96vw !important;
+    margin: 0 !important;
+    width: min(520px, 94vw) !important;
+    max-width: 94vw !important;
+    max-height: 92vh !important;
     box-sizing: border-box !important;
-    padding: 1.25rem !important;
+    padding: 1rem !important;
 }
 
 .swal2-popup.article-details-swal .swal2-html-container {
@@ -5461,67 +5312,74 @@ div#modalBody { padding-bottom: 100px; }
     overflow: visible !important;
 }
 
-.swal2-popup.article-details-swal .swal2-title {
-    display: none !important;
-}
-
+.swal2-popup.article-details-swal .swal2-title,
 .swal2-popup.article-details-swal .swal2-actions {
     display: none !important;
 }
 
 /* Desktop Breakpoint - Article Details */
 @media (min-width: 769px) {
-    .article-modal-stat-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-    
-    .article-chart-wrap {
-        height: 300px;
-    }
-    
-    .article-mini-charts-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .article-slider-thumb {
-        width: 70px;
-        height: 70px;
-    }
-    
-    .article-content-body {
-        max-height: 420px;
-    }
-}
-
-/* Mobile Breakpoint - Article Details */
-@media (max-width: 768px) {
     .swal2-popup.article-details-swal {
-        padding: 1rem !important;
-    }
-    
-    .article-modal-header-row {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.6rem;
-    }
-    
-    .article-modal-actions-slot {
-        justify-content: flex-start;
-    }
-    
-    .article-modal-actions-slot .btn {
-        padding: 0.4rem 0.6rem;
-        font-size: 0.75rem;
-    }
-    
-    /* Keep stats in one row but smaller */
-    .article-modal-stat-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0.5rem;
+        width: min(640px, 94vw) !important;
+        padding: 1.25rem !important;
     }
     
     .article-modal-stat-card {
-        padding: 0.55rem 0.35rem;
+        padding: 0.7rem 0.5rem;
+    }
+    
+    .article-modal-stat-card .stat-value {
+        font-size: 1.25rem;
+    }
+    
+    .article-modal-stat-card .stat-label {
+        font-size: 0.65rem;
+    }
+    
+    .article-modal-panels {
+        max-height: 50vh;
+    }
+    
+    .article-chart-wrap {
+        height: 200px;
+    }
+    
+    .article-mini-chart-card .chart-body {
+        height: 140px;
+    }
+    
+    .article-slider-thumb {
+        width: 56px;
+        height: 42px;
+    }
+    
+    .article-content-body {
+        max-height: 250px;
+    }
+}
+
+/* Tablet Breakpoint - Article Details */
+@media (max-width: 768px) {
+    .swal2-popup.article-details-swal {
+        padding: 0.85rem !important;
+    }
+    
+    .article-modal-header-row {
+        gap: 0.5rem;
+    }
+    
+    .article-modal-actions-slot .btn {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+    
+    .article-modal-stat-grid {
+        gap: 0.4rem;
+    }
+    
+    .article-modal-stat-card {
+        padding: 0.5rem 0.3rem;
     }
     
     .article-modal-stat-card .stat-value {
@@ -5617,91 +5475,89 @@ div#modalBody { padding-bottom: 100px; }
 
 @media (max-width: 480px) {
     .swal2-popup.article-details-swal {
-        padding: 0.85rem !important;
+        padding: 0.75rem !important;
+        max-height: 90vh !important;
     }
     
     .article-details-modal-container {
-        gap: 0;
+        gap: 0.6rem;
     }
     
     .article-modal-header {
-        padding: 0 0 0.65rem 0;
-        margin: 0 0 0.65rem 0;
+        padding: 0 0 0.5rem 0;
     }
     
     .article-modal-header-row {
-        gap: 0.5rem;
+        gap: 0.4rem;
     }
     
     .article-modal-title h3 {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
     }
     
     .article-modal-url-pill {
-        padding: 0.35rem 0.55rem;
+        padding: 0.3rem 0.5rem;
         font-size: 0.7rem;
     }
     
     .article-modal-url-pill span {
-        max-width: 150px;
+        max-width: 130px;
     }
     
     .article-modal-actions-slot {
-        gap: 0.35rem;
+        gap: 0.3rem;
     }
     
     .article-modal-actions-slot .btn {
-        padding: 0.35rem 0.5rem;
-        font-size: 0.7rem;
-    }
-    
-    .article-modal-actions-slot .label-desktop {
-        display: none;
+        width: 28px;
+        height: 28px;
+        font-size: 0.85rem;
     }
     
     .article-header-meta {
-        gap: 0.35rem 0.5rem;
-        font-size: 0.7rem;
-        margin-top: 0.5rem;
+        gap: 0.3rem 0.45rem;
+        font-size: 0.65rem;
+        margin-top: 0.4rem;
     }
     
     /* Stats in single row - compact */
     .article-modal-stat-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0.35rem;
-        margin-bottom: 0.65rem;
+        gap: 0.3rem;
     }
     
     .article-modal-stat-card {
-        padding: 0.4rem 0.25rem;
+        padding: 0.4rem 0.2rem;
     }
     
     .article-modal-stat-card .stat-value {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
     
     .article-modal-stat-card .stat-label {
-        font-size: 0.5rem;
+        font-size: 0.45rem;
     }
     
     /* Tabs compact */
     .article-modal-tabs {
-        padding: 0.2rem;
-        margin-bottom: 0.65rem;
+        padding: 0.15rem;
     }
     
     .article-modal-tab {
-        padding: 0.4rem 0.5rem;
+        padding: 0.35rem 0.6rem;
         font-size: 0.7rem;
         gap: 0.2rem;
     }
     
     .article-modal-tab i {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
     }
     
     .article-modal-tab .label-desktop {
-        display: none;
+        display: none !important;
+    }
+    
+    .article-modal-panels {
+        max-height: 58vh;
     }
     
     /* Analytics panel compact */
@@ -13464,7 +13320,6 @@ async function viewArticle(articleId) {
 
         Swal.fire({
             html: modalHtml,
-            width: 'min(1100px, 96vw)',
             showCloseButton: true,
             showConfirmButton: false,
             showDenyButton: false,
@@ -15348,14 +15203,13 @@ async function showImageDetails(imageId) {
     // --- 2. Construct Modal HTML ---
     const modalHtml = `
     <div class="image-details-modal-container">
-        <!-- Hero Section: Image at Top -->
-        <div class="image-hero-section">
-            <div class="image-hero-preview">
-                <img src="${image.cdn_url}" alt="${image.original_filename}" class="image-hero-img" onclick="window.open('${image.cdn_url}', '_blank')" title="Click to view full size">
-            </div>
-            
-            <div class="image-info-bar">
-                <div class="image-info-left">
+        <!-- Compact Header with Thumbnail -->
+        <div class="image-top-bar">
+            <div class="image-top-info">
+                <div class="image-thumb-preview" onclick="window.open('${image.cdn_url}', '_blank')" title="Click to view full size">
+                    <img src="${image.cdn_url}" alt="${image.original_filename}">
+                </div>
+                <div class="image-info-text">
                     <h3 class="image-filename">
                         <i class="ri-image-line"></i>
                         <span title="${image.original_filename}">${displayFilename}</span>
@@ -15365,20 +15219,17 @@ async function showImageDetails(imageId) {
                         <span><i class="ri-key-2-line"></i> ${image.image_id.substring(0, 8)}...</span>
                     </div>
                 </div>
-                <div class="image-actions-bar">
-                    <button class="image-action-btn btn-copy" onclick="copyToClipboard('${image.cdn_url}')" title="Copy CDN URL">
-                        <i class="ri-file-copy-line"></i>
-                        <span>Copy URL</span>
-                    </button>
-                    <button class="image-action-btn btn-open" onclick="window.open('${image.cdn_url}', '_blank')" title="Open Full Size">
-                        <i class="ri-external-link-line"></i>
-                        <span>Open</span>
-                    </button>
-                    <button class="image-action-btn btn-delete" onclick="Swal.close(); deleteImage('${image.image_id}')" title="Delete Image">
-                        <i class="ri-delete-bin-line"></i>
-                        <span>Delete</span>
-                    </button>
-                </div>
+            </div>
+            <div class="image-actions-bar">
+                <button class="image-action-btn btn-copy" onclick="copyToClipboard('${image.cdn_url}')" title="Copy URL">
+                    <i class="ri-file-copy-line"></i>
+                </button>
+                <button class="image-action-btn btn-open" onclick="window.open('${image.cdn_url}', '_blank')" title="Open">
+                    <i class="ri-external-link-line"></i>
+                </button>
+                <button class="image-action-btn btn-delete" onclick="Swal.close(); deleteImage('${image.image_id}')" title="Delete">
+                    <i class="ri-delete-bin-line"></i>
+                </button>
             </div>
         </div>
 
@@ -15386,11 +15237,11 @@ async function showImageDetails(imageId) {
         <div class="image-stats-grid">
             <div class="image-stat-card">
                 <div class="stat-value" style="color: var(--success);">${formatNumber(totalViews)}</div>
-                <div class="stat-label">Total Views</div>
+                <div class="stat-label">Views</div>
             </div>
             <div class="image-stat-card">
                 <div class="stat-value" style="color: var(--primary);">${formatNumber(last7Views)}</div>
-                <div class="stat-label">Last 7 Days</div>
+                <div class="stat-label">7 Days</div>
             </div>
             <div class="image-stat-card">
                 <div class="stat-value" style="color: var(--info);">${countryCount}</div>
@@ -15412,7 +15263,7 @@ async function showImageDetails(imageId) {
             </button>
         </div>
 
-        <!-- Panels -->
+        <!-- Scrollable Panels -->
         <div class="image-modal-panels">
             <!-- Analytics Panel -->
             <div class="image-modal-panel" id="image-panel-analytics" data-panel="analytics" role="tabpanel">
@@ -15496,7 +15347,6 @@ async function showImageDetails(imageId) {
         html: modalHtml,
         showCloseButton: true,
         showConfirmButton: false,
-        width: 'min(900px, 96vw)',
         customClass: {
             popup: 'swal2-toast image-details-swal',
             closeButton: 'swal2-close'
