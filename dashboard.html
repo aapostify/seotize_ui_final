@@ -15182,7 +15182,6 @@ async function showImageDetails(imageId) {
                         <span><i class="ri-calendar-line"></i> ${formattedDate}</span>
                         <span><i class="ri-key-2-line"></i> ${image.image_id.substring(0, 8)}...</span>
                     </div>
-                </div>
                 <div class="image-actions-bar">
                     <button class="image-action-btn btn-copy" onclick="copyToClipboard('${image.cdn_url}')" title="Copy CDN URL">
                         <i class="ri-file-copy-line"></i>
@@ -15197,6 +15196,7 @@ async function showImageDetails(imageId) {
                         <span>Delete</span>
                     </button>
                 </div>
+                </div>                
             </div>
         </div>
 
