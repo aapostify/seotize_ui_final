@@ -4689,10 +4689,23 @@ div#modalBody { padding-bottom: 100px; }
 
 /* Tablet - Image Details */
 @media (max-width: 768px) {
+    .swal2-popup.image-details-swal {
+        padding: 1rem !important;
+    }
+    
+    .image-details-modal-container {
+        gap: 0.75rem;
+    }
+    
+    .image-hero-section {
+        gap: 0.65rem;
+        padding-bottom: 0.75rem;
+    }
+    
     .image-info-bar {
         flex-direction: column;
         align-items: stretch;
-        gap: 0.75rem;
+        gap: 0.6rem;
     }
     
     .image-actions-bar {
@@ -4700,50 +4713,27 @@ div#modalBody { padding-bottom: 100px; }
         flex-wrap: wrap;
     }
     
+    .image-action-btn {
+        padding: 0.45rem 0.6rem;
+        font-size: 0.75rem;
+    }
+    
+    /* Keep stats in one row - smaller */
     .image-stats-grid {
         grid-template-columns: repeat(4, 1fr);
-        gap: 0.5rem;
+        gap: 0.45rem;
     }
     
     .image-stat-card {
-        padding: 0.7rem 0.35rem;
+        padding: 0.55rem 0.3rem;
     }
     
     .image-stat-card .stat-value {
-        font-size: 1.15rem;
+        font-size: 1rem;
     }
     
     .image-stat-card .stat-label {
-        font-size: 0.6rem;
-    }
-    
-    .image-hero-preview {
-        min-height: 180px;
-        padding: 1rem;
-    }
-    
-    .image-hero-img {
-        max-height: 160px;
-    }
-    
-    .image-chart-card .chart-body {
-        height: 160px;
-    }
-    
-    .image-traffic-content {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* Mobile - Image Details */
-@media (max-width: 480px) {
-    .image-details-modal-container {
-        gap: 0.85rem;
-    }
-    
-    .image-hero-section {
-        gap: 0.75rem;
-        padding-bottom: 0.85rem;
+        font-size: 0.55rem;
     }
     
     .image-hero-preview {
@@ -4755,39 +4745,8 @@ div#modalBody { padding-bottom: 100px; }
         max-height: 130px;
     }
     
-    .image-filename {
-        font-size: 0.9rem;
-    }
-    
-    .image-meta-row {
-        font-size: 0.75rem;
-        gap: 0.35rem 0.65rem;
-    }
-    
-    .image-action-btn {
-        padding: 0.45rem 0.65rem;
-        font-size: 0.75rem;
-    }
-    
-    .image-action-btn span {
-        display: none;
-    }
-    
-    .image-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
-    }
-    
-    .image-stat-card {
-        padding: 0.65rem 0.4rem;
-    }
-    
-    .image-stat-card .stat-value {
-        font-size: 1.1rem;
-    }
-    
     .image-modal-tabs {
-        max-width: 100%;
+        padding: 0.25rem;
     }
     
     .image-modal-tab {
@@ -4795,21 +4754,172 @@ div#modalBody { padding-bottom: 100px; }
         padding: 0.45rem 0.85rem;
     }
     
+    .image-analytics-content {
+        gap: 0.6rem;
+    }
+    
+    .image-chart-card .chart-header {
+        padding: 0.5rem 0.7rem;
+        font-size: 0.8rem;
+    }
+    
     .image-chart-card .chart-body {
-        height: 140px;
+        height: 130px;
         padding: 0.5rem;
     }
     
     .image-traffic-content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.6rem;
+    }
+    
+    .image-traffic-card .card-header {
+        padding: 0.5rem 0.7rem;
+        font-size: 0.8rem;
+    }
+    
+    .image-traffic-card .card-body {
+        padding: 0.5rem;
+    }
+}
+
+/* Mobile - Image Details */
+@media (max-width: 480px) {
+    .swal2-popup.image-details-swal {
+        padding: 0.85rem !important;
+    }
+    
+    .image-details-modal-container {
+        gap: 0.65rem;
+    }
+    
+    .image-hero-section {
+        gap: 0.6rem;
+        padding-bottom: 0.65rem;
+    }
+    
+    .image-hero-preview {
+        min-height: 120px;
+        padding: 0.65rem;
+    }
+    
+    .image-hero-img {
+        max-height: 100px;
+    }
+    
+    .image-filename {
+        font-size: 0.85rem;
+    }
+    
+    .image-meta-row {
+        font-size: 0.7rem;
+        gap: 0.3rem 0.5rem;
+    }
+    
+    .image-action-btn {
+        padding: 0.4rem 0.5rem;
+        font-size: 0.7rem;
+    }
+    
+    .image-action-btn span {
+        display: none;
+    }
+    
+    /* Stats in single row - compact */
+    .image-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.35rem;
+    }
+    
+    .image-stat-card {
+        padding: 0.4rem 0.25rem;
+    }
+    
+    .image-stat-card .stat-value {
+        font-size: 0.9rem;
+    }
+    
+    .image-stat-card .stat-label {
+        font-size: 0.5rem;
+    }
+    
+    .image-modal-tabs {
+        max-width: 100%;
+        padding: 0.2rem;
+    }
+    
+    .image-modal-tab {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.65rem;
+        gap: 0.25rem;
+    }
+    
+    .image-modal-tab i {
+        font-size: 0.85rem;
+    }
+    
+    /* Compact charts */
+    .image-analytics-content {
+        gap: 0.5rem;
+    }
+    
+    .image-chart-card .chart-header {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+    }
+    
+    .image-chart-card .chart-body {
+        height: 100px;
+        padding: 0.35rem;
+    }
+    
+    /* Compact traffic */
+    .image-traffic-content {
         grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .image-traffic-card .card-header {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+    }
+    
+    .image-traffic-card .card-body {
+        padding: 0.4rem;
+    }
+    
+    .image-traffic-list {
+        gap: 0.25rem;
     }
     
     .image-traffic-item {
-        padding: 0.45rem 0.6rem;
+        padding: 0.35rem 0.5rem;
     }
     
     .image-traffic-item .item-name {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
+    }
+    
+    .image-traffic-item .badge {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.4rem;
+    }
+    
+    .image-empty-state {
+        padding: 1rem 0.75rem;
+    }
+    
+    .image-empty-state i {
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .image-empty-state h4 {
+        font-size: 0.85rem;
+    }
+    
+    .image-empty-state p {
+        font-size: 0.75rem;
     }
 }
 
@@ -5386,115 +5496,330 @@ div#modalBody { padding-bottom: 100px; }
 
 /* Mobile Breakpoint - Article Details */
 @media (max-width: 768px) {
+    .swal2-popup.article-details-swal {
+        padding: 1rem !important;
+    }
+    
     .article-modal-header-row {
         flex-direction: column;
         align-items: stretch;
-        gap: 0.75rem;
+        gap: 0.6rem;
     }
     
     .article-modal-actions-slot {
         justify-content: flex-start;
     }
     
+    .article-modal-actions-slot .btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+    }
+    
+    /* Keep stats in one row but smaller */
     .article-modal-stat-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .article-modal-tabs { width: 100%; }
-    .article-modal-tab .label-mobile,
-    .article-modal-tab .label-desktop { display: none !important; }
-    .article-modal-tab { padding-left: 0.55rem !important; padding-right: 0.55rem !important; }
-    .article-modal-tab i { margin: 0 !important; }
-    
-    .article-mini-charts-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .article-chart-wrap {
-        height: 220px;
-    }
-    
-    .article-mini-chart-card .chart-body {
-        height: 140px;
-    }
-    
-    .article-image-slider {
-        min-height: 240px;
-        padding: 1rem;
-    }
-    
-    .article-slider-image {
-        max-height: 220px;
-    }
-    
-    .article-slider-nav {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
-    }
-    
-    .article-slider-nav.prev { left: 0.5rem; }
-    .article-slider-nav.next { right: 0.5rem; }
-    
-    .article-slider-thumb {
-        width: 50px;
-        height: 50px;
-    }
-    
-    .article-content-info {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .article-content-body {
-        max-height: 280px;
-        padding: 1rem;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .article-modal-stat-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 0.5rem;
     }
     
     .article-modal-stat-card {
-        padding: 0.65rem;
+        padding: 0.55rem 0.35rem;
     }
     
     .article-modal-stat-card .stat-value {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
     
     .article-modal-stat-card .stat-label {
-        font-size: 0.65rem;
+        font-size: 0.55rem;
     }
     
-    .article-header-meta {
+    .article-modal-tabs { 
+        width: 100%; 
+        padding: 0.25rem;
+    }
+    
+    .article-modal-tab { 
+        padding: 0.45rem 0.6rem;
+        font-size: 0.8rem;
+    }
+    
+    .article-modal-tab .label-desktop { 
+        display: none !important; 
+    }
+    
+    .article-mini-charts-grid {
+        grid-template-columns: repeat(3, 1fr);
         gap: 0.5rem;
-        font-size: 0.75rem;
+    }
+    
+    .article-chart-wrap {
+        height: 160px;
+    }
+    
+    .article-mini-chart-card {
+        padding: 0.5rem;
+    }
+    
+    .article-mini-chart-card .chart-title {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.45rem;
+    }
+    
+    .article-mini-chart-card .chart-body {
+        height: 90px;
     }
     
     .article-image-slider {
-        min-height: 200px;
+        min-height: 180px;
+        padding: 0.75rem;
     }
     
     .article-slider-image {
-        max-height: 180px;
+        max-height: 160px;
     }
     
-    .article-content-info-card {
-        padding: 0.65rem;
-    }
-    
-    .article-content-info-card .info-value {
+    .article-slider-nav {
+        width: 32px;
+        height: 32px;
         font-size: 0.95rem;
     }
     
+    .article-slider-nav.prev { left: 0.4rem; }
+    .article-slider-nav.next { right: 0.4rem; }
+    
+    .article-slider-thumb {
+        width: 45px;
+        height: 35px;
+    }
+    
+    .article-content-info {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .article-content-info-card {
+        padding: 0.5rem 0.35rem;
+    }
+    
+    .article-content-info-card .info-value {
+        font-size: 0.9rem;
+    }
+    
+    .article-content-info-card .info-label {
+        font-size: 0.6rem;
+    }
+    
     .article-content-body {
-        max-height: 240px;
+        max-height: 200px;
+        padding: 0.85rem;
         font-size: 0.85rem;
-        line-height: 1.7;
+    }
+}
+
+@media (max-width: 480px) {
+    .swal2-popup.article-details-swal {
+        padding: 0.85rem !important;
+    }
+    
+    .article-details-modal-container {
+        gap: 0;
+    }
+    
+    .article-modal-header {
+        padding: 0 0 0.65rem 0;
+        margin: 0 0 0.65rem 0;
+    }
+    
+    .article-modal-header-row {
+        gap: 0.5rem;
+    }
+    
+    .article-modal-title h3 {
+        font-size: 0.85rem;
+    }
+    
+    .article-modal-url-pill {
+        padding: 0.35rem 0.55rem;
+        font-size: 0.7rem;
+    }
+    
+    .article-modal-url-pill span {
+        max-width: 150px;
+    }
+    
+    .article-modal-actions-slot {
+        gap: 0.35rem;
+    }
+    
+    .article-modal-actions-slot .btn {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.7rem;
+    }
+    
+    .article-modal-actions-slot .label-desktop {
+        display: none;
+    }
+    
+    .article-header-meta {
+        gap: 0.35rem 0.5rem;
+        font-size: 0.7rem;
+        margin-top: 0.5rem;
+    }
+    
+    /* Stats in single row - compact */
+    .article-modal-stat-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.35rem;
+        margin-bottom: 0.65rem;
+    }
+    
+    .article-modal-stat-card {
+        padding: 0.4rem 0.25rem;
+    }
+    
+    .article-modal-stat-card .stat-value {
+        font-size: 0.9rem;
+    }
+    
+    .article-modal-stat-card .stat-label {
+        font-size: 0.5rem;
+    }
+    
+    /* Tabs compact */
+    .article-modal-tabs {
+        padding: 0.2rem;
+        margin-bottom: 0.65rem;
+    }
+    
+    .article-modal-tab {
+        padding: 0.4rem 0.5rem;
+        font-size: 0.7rem;
+        gap: 0.2rem;
+    }
+    
+    .article-modal-tab i {
+        font-size: 0.8rem;
+    }
+    
+    .article-modal-tab .label-desktop {
+        display: none;
+    }
+    
+    /* Analytics panel compact */
+    .article-analytics-section {
+        gap: 0.5rem;
+    }
+    
+    .article-chart-wrap {
+        height: 100px;
+        padding: 0.35rem;
+    }
+    
+    .article-mini-charts-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.35rem;
+    }
+    
+    .article-mini-chart-card {
+        padding: 0.35rem;
+    }
+    
+    .article-mini-chart-card .chart-title {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.35rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .article-mini-chart-card .chart-title i {
+        font-size: 0.7rem;
+    }
+    
+    .article-mini-chart-card .chart-body {
+        height: 70px;
+    }
+    
+    /* Images slider compact */
+    .article-images-slider-container {
+        gap: 0.5rem;
+    }
+    
+    .article-image-slider {
+        min-height: 140px;
+        padding: 0.5rem;
+    }
+    
+    .article-slider-nav {
+        width: 28px;
+        height: 28px;
+        font-size: 0.85rem;
+    }
+    
+    .article-slider-image {
+        max-height: 120px;
+    }
+    
+    .article-slider-counter {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+    }
+    
+    .article-slider-thumbnails {
+        gap: 0.35rem;
+    }
+    
+    .article-slider-thumb {
+        width: 40px;
+        height: 30px;
+    }
+    
+    /* Content panel compact */
+    .article-content-panel {
+        gap: 0.5rem;
+    }
+    
+    .article-content-info {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.35rem;
+    }
+    
+    .article-content-info-card {
+        padding: 0.4rem 0.25rem;
+    }
+    
+    .article-content-info-card .info-value {
+        font-size: 0.85rem;
+    }
+    
+    .article-content-info-card .info-label {
+        font-size: 0.55rem;
+    }
+    
+    .article-content-preview-header h4 {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.65rem;
+    }
+    
+    .article-content-body {
+        max-height: 150px;
+        padding: 0.65rem;
+        font-size: 0.8rem;
+        line-height: 1.6;
+    }
+    
+    .article-no-images {
+        padding: 1.25rem 0.75rem;
+    }
+    
+    .article-no-images i {
+        font-size: 2rem;
+    }
+    
+    .article-no-images h4 {
+        font-size: 0.9rem;
+    }
+    
+    .article-no-images p {
+        font-size: 0.75rem;
     }
 }
 
