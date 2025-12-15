@@ -8941,11 +8941,16 @@ async function loadDashboard(page = 1) {
                 progressBarWidth = 100;
             }
 
+            const isVerified = task.verified !== false;
+            const statusClass = isVerified ? 'success' : 'warning';
+            const statusText = isVerified ? 'Active' : 'Unverified';
+            const displayUrl = task.url.replace(/^https?:\/\//, '');
+
             return `
             <tr>
             <td>
             <a href="${task.url}" target="_blank" style="color: var(--primary); text-decoration: none;">
-            ${task.url.length > 30 ? task.url.substring(0, 30) + '...' : task.url}
+            ${displayUrl.length > 30 ? displayUrl.substring(0, 30) + '...' : displayUrl}
             </a>
             </td>
             <td style="font-size: 0.875rem; color: var(--text-secondary);">${createdDate}</td>
@@ -8967,8 +8972,8 @@ async function loadDashboard(page = 1) {
             </td>
             <td style="font-weight: 600;">$${availableCharge.toFixed(2)}</td>
             <td>
-            <span class="badge badge-${availableCharge > 0 ? 'success' : 'warning'}">
-            ${availableCharge > 0 ? 'Active' : 'Depleted'}
+            <span class="badge badge-${statusClass}">
+            ${statusText}
             </span>
             </td>
             <td>
@@ -9028,6 +9033,11 @@ async function loadDashboard(page = 1) {
                 progressBarWidth = 100;
             }
 
+            const isVerified = task.verified !== false;
+            const statusClass = isVerified ? 'success' : 'warning';
+            const statusText = isVerified ? 'Active' : 'Unverified';
+            const displayUrl = task.url.replace(/^https?:\/\//, '');
+
             return `
             <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; cursor: pointer; transition: var(--transition);" onclick="viewTaskDetails('${task._id}')" ontouchstart="this.style.background='var(--card-hover)'" ontouchend="this.style.background='var(--bg-secondary)'">
 
@@ -9035,14 +9045,14 @@ async function loadDashboard(page = 1) {
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;    flex-direction: column;">
                     <div style="flex: 1; min-width: 0;">
                         <a href="${task.url}" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 500; font-size: 0.9rem; display: block; word-break: break-all; line-height: 1.3;" onclick="event.stopPropagation()">
-                            ${task.url.length > 45 ? task.url.substring(0, 45) + '...' : task.url}
+                            ${displayUrl.length > 45 ? displayUrl.substring(0, 45) + '...' : displayUrl}
                         </a>
                         <div style="font-size: 0.75rem; color: var(--text-tertiary); margin-top: 0.25rem;">
                             ${createdDate}
                         </div>
                     </div>
-                    <span class="badge badge-${availableCharge > 0 ? 'success' : 'warning'}" style="margin-left: 0rem; flex-shrink: 0; font-size: 0.7rem;">
-                        ${availableCharge > 0 ? 'Active' : 'Depleted'}
+                    <span class="badge badge-${statusClass}" style="margin-left: 0rem; flex-shrink: 0; font-size: 0.7rem;">
+                        ${statusText}
                     </span>
                 </div>
 
