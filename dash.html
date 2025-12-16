@@ -5813,6 +5813,286 @@ async function loadArticles(page = 1) {
         showErrorState('Failed to load articles and domains');
     }
 }
+// Package Purchase Modal State
+const packagePurchaseState = {
+    selectedPackage: 'professional',
+    paymentType: 'subscription',
+    paymentProvider: 'stripe',
+    duration: '3month'
+};
+
+// Hosting Packages Configuration
+const hostingPackages = {
+    basic: {
+        name: 'Basic',
+        icon: 'ri-seedling-line',
+        color: '#10b981',
+        gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+        price: { '3month': 10, '6month': 18, '12month': 32 },
+        limits: { articles: 200, images: 1000 },
+        features: ['1,000 Image Uploads', '200 Article Uploads', 'Email Support', 'Basic Analytics']
+    },
+    professional: {
+        name: 'Professional',
+        icon: 'ri-rocket-line',
+        color: '#6366f1',
+        gradient: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+        popular: true,
+        price: { '3month': 25, '6month': 45, '12month': 80 },
+        limits: { articles: 600, images: 4000 },
+        features: ['4,000 Image Uploads', '600 Article Uploads', 'Priority Support', 'Advanced Analytics', 'API Access']
+    },
+    enterprise: {
+        name: 'Enterprise',
+        icon: 'ri-building-line',
+        color: '#f59e0b',
+        gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+        price: { '3month': 50, '6month': 90, '12month': 160 },
+        limits: { articles: 2000, images: 20000 },
+        features: ['20,000 Image Uploads', '2,000 Article Uploads', 'Dedicated Support', 'White-label Options', 'Custom Integrations', 'SLA Guarantee']
+    }
+};
+
+// Duration Labels
+const durationLabels = {
+    '3month': { label: '3 Months', months: 3, discount: 0 },
+    '6month': { label: '6 Months', months: 6, discount: 10 },
+    '12month': { label: '12 Months', months: 12, discount: 20 }
+};
+
+// Open Package Purchase Modal
+function openPackagePurchaseModal() {
+    const modal = document.getElementById('packagePurchaseModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        updatePackagePurchaseUI();
+    }
+}
+
+// Close Package Purchase Modal
+function closePackagePurchaseModal() {
+    const modal = document.getElementById('packagePurchaseModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Select Package in Purchase Modal
+function selectPackageOption(packageName) {
+    packagePurchaseState.selectedPackage = packageName;
+    document.querySelectorAll('.pkg-option-card').forEach(card => {
+        card.classList.toggle('selected', card.dataset.package === packageName);
+    });
+    updatePackagePurchaseUI();
+}
+
+// Select Payment Type
+function selectPackagePaymentType(type) {
+    packagePurchaseState.paymentType = type;
+    document.querySelectorAll('.pkg-payment-type-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.type === type);
+    });
+    
+    // Show/hide provider options based on type
+    const stripeOption = document.querySelector('.pkg-provider-option[data-provider="stripe"]');
+    const oxapayOption = document.querySelector('.pkg-provider-option[data-provider="oxapay"]');
+    
+    if (type === 'subscription') {
+        // Subscription only supports Stripe
+        if (oxapayOption) oxapayOption.style.display = 'none';
+        if (stripeOption) stripeOption.style.display = 'flex';
+        packagePurchaseState.paymentProvider = 'stripe';
+        document.querySelectorAll('.pkg-provider-option').forEach(opt => {
+            opt.classList.toggle('selected', opt.dataset.provider === 'stripe');
+        });
+    } else {
+        // One-time supports both
+        if (oxapayOption) oxapayOption.style.display = 'flex';
+        if (stripeOption) stripeOption.style.display = 'flex';
+    }
+    
+    updatePackagePurchaseUI();
+}
+
+// Select Payment Provider
+function selectPackageProvider(provider) {
+    packagePurchaseState.paymentProvider = provider;
+    document.querySelectorAll('.pkg-provider-option').forEach(opt => {
+        opt.classList.toggle('selected', opt.dataset.provider === provider);
+    });
+    updatePackagePurchaseUI();
+}
+
+// Select Duration
+function selectPackageDuration(duration) {
+    packagePurchaseState.duration = duration;
+    document.querySelectorAll('.pkg-duration-option').forEach(opt => {
+        opt.classList.toggle('selected', opt.dataset.duration === duration);
+    });
+    updatePackagePurchaseUI();
+}
+
+// Update Package Purchase UI
+function updatePackagePurchaseUI() {
+    const pkg = hostingPackages[packagePurchaseState.selectedPackage];
+    const duration = durationLabels[packagePurchaseState.duration];
+    const basePrice = pkg.price[packagePurchaseState.duration];
+    
+    // Calculate per month price
+    const perMonth = (basePrice / duration.months).toFixed(2);
+    
+    // Update summary
+    const summaryEl = document.getElementById('pkgPurchaseSummary');
+    if (summaryEl) {
+        summaryEl.innerHTML = `
+            <div class="pkg-summary-row">
+                <span>Package</span>
+                <span class="pkg-summary-value">${pkg.name}</span>
+            </div>
+            <div class="pkg-summary-row">
+                <span>Duration</span>
+                <span class="pkg-summary-value">${duration.label}</span>
+            </div>
+            <div class="pkg-summary-row">
+                <span>Payment Type</span>
+                <span class="pkg-summary-value">${packagePurchaseState.paymentType === 'subscription' ? 'Subscription' : 'One-time'}</span>
+            </div>
+            <div class="pkg-summary-row">
+                <span>Provider</span>
+                <span class="pkg-summary-value">${packagePurchaseState.paymentProvider === 'stripe' ? 'Card (Stripe)' : 'Crypto (OxaPay)'}</span>
+            </div>
+            ${duration.discount > 0 ? `
+            <div class="pkg-summary-row pkg-discount">
+                <span>Discount</span>
+                <span class="pkg-summary-value">-${duration.discount}%</span>
+            </div>
+            ` : ''}
+            <div class="pkg-summary-divider"></div>
+            <div class="pkg-summary-row pkg-total">
+                <span>Total</span>
+                <span class="pkg-summary-value">$${basePrice.toFixed(2)}</span>
+            </div>
+            <div class="pkg-summary-row pkg-permonth">
+                <span></span>
+                <span>$${perMonth}/month</span>
+            </div>
+        `;
+    }
+    
+    // Update purchase button
+    const purchaseBtn = document.getElementById('pkgPurchaseBtn');
+    if (purchaseBtn) {
+        purchaseBtn.innerHTML = `<i class="ri-shopping-cart-2-line"></i> Purchase ${pkg.name} - $${basePrice.toFixed(2)}`;
+    }
+}
+
+// Process Package Purchase
+async function processPackagePurchase() {
+    const pkg = hostingPackages[packagePurchaseState.selectedPackage];
+    const currentPlan = window.currentPlanData;
+    
+    // Check if user has active plan
+    if (currentPlan && currentPlan.current_plan && currentPlan.current_plan !== 'free') {
+        const result = await Swal.fire({
+            title: 'Active Plan Detected',
+            html: `
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    You currently have an active <strong>${hostingPackages[currentPlan.current_plan]?.name || currentPlan.current_plan}</strong> plan.
+                </p>
+                <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                    Would you like to cancel your current plan and purchase the new one?
+                </p>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: 'var(--primary)',
+            cancelButtonColor: 'var(--bg-tertiary)',
+            confirmButtonText: 'Yes, Replace Plan',
+            cancelButtonText: 'Keep Current Plan',
+            customClass: { popup: 'swal2-toast' }
+        });
+        
+        if (!result.isConfirmed) return;
+    }
+    
+    // Show loading
+    Swal.fire({
+        title: 'Processing...',
+        html: 'Preparing your payment...',
+        didOpen: () => Swal.showLoading(),
+        allowOutsideClick: false,
+        customClass: { popup: 'swal2-toast' }
+    });
+    
+    try {
+        const response = await api('/hosting/buy-package', {
+            method: 'POST',
+            body: JSON.stringify({
+                package: packagePurchaseState.selectedPackage,
+                provider: packagePurchaseState.paymentProvider,
+                duration: packagePurchaseState.duration,
+                subscription: packagePurchaseState.paymentType === 'subscription',
+                cancel_previous: true,
+                cancel_current_plan: true
+            })
+        });
+        
+        Swal.close();
+        
+        if (response.data?.payment_url) {
+            closePackagePurchaseModal();
+            window.open(response.data.payment_url, '_blank');
+            
+            Swal.fire({
+                icon: 'info',
+                title: 'Payment Page Opened',
+                html: 'Complete your payment in the new tab. This page will refresh when you return.',
+                confirmButtonText: 'I\'ve Completed Payment',
+                customClass: { popup: 'swal2-toast' }
+            }).then(() => {
+                loadBilling();
+            });
+        } else if (response.data?.message) {
+            // Handle pending payment message
+            Swal.fire({
+                icon: 'info',
+                title: 'Pending Payment',
+                html: response.data.message,
+                showCancelButton: true,
+                confirmButtonText: 'Go to Payment',
+                cancelButtonText: 'Cancel',
+                customClass: { popup: 'swal2-toast' }
+            }).then((result) => {
+                if (result.isConfirmed && response.data.payment_url) {
+                    window.open(response.data.payment_url, '_blank');
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Purchase error:', error);
+        
+        // Handle specific error cases
+        if (error.code === 409) {
+            // Active subscription or plan conflict
+            Swal.fire({
+                icon: 'warning',
+                title: 'Plan Conflict',
+                html: error.message || 'You have an active plan. Please cancel it first or enable replacement.',
+                customClass: { popup: 'swal2-toast' }
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Purchase Failed',
+                text: error.message || 'Failed to process purchase. Please try again.',
+                customClass: { popup: 'swal2-toast' }
+            });
+        }
+    }
+}
+
 // Upgraded Billing Function with Modern Design
 async function loadBilling(page = 1, type = 'all') {
     try {
@@ -5824,6 +6104,9 @@ async function loadBilling(page = 1, type = 'all') {
         ]);
         const planData = planResponse.data;
         const historyData = historyResponse.data;
+        
+        // Store for global access
+        window.currentPlanData = planData;
         
         // --- 1. Current Plan Data ---
         const planName = planData.current_plan || 'free';
@@ -5866,763 +6149,786 @@ async function loadBilling(page = 1, type = 'all') {
             hasNext: historyData.pagination.page < historyData.pagination.pages
         };
         
-        // Calculate billing stats
-        const totalSpent = allPayments.filter(p => p.status === 'paid').reduce((sum, p) => sum + (p.total_payment || 0), 0);
-        const pendingPayments = allPayments.filter(p => p.status === 'pending').length;
+        // Get last payment amount
         const lastPayment = planData.billing?.last_payment_amount || 0;
+        
+        // Get current package info
+        const currentPkg = hostingPackages[planName] || null;
         
         // --- 3. Render everything together ---
         const content = document.getElementById('content');
         content.innerHTML = `
         <style>
-            /* Billing Page Styles */
-            .billing-page-header {
-                display: flex; justify-content: space-between; align-items: center; 
-                margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+            /* ========================================
+               BILLING & PLANS PAGE STYLES
+               ======================================== */
+            
+            /* Page Header */
+            .billing-header {
+                display: flex; justify-content: space-between; align-items: center;
+                margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
             }
-            .billing-page-title {
+            .billing-header-left h1 {
                 font-size: 1.75rem; font-weight: 800; color: var(--text);
-                display: flex; align-items: center; gap: 0.75rem;
+                display: flex; align-items: center; gap: 0.75rem; margin: 0 0 0.25rem 0;
             }
-            .billing-page-title i {
-                font-size: 1.5rem; color: var(--primary);
+            .billing-header-left h1 i { color: var(--primary); }
+            .billing-header-left p {
+                color: var(--text-secondary); font-size: 0.9rem; margin: 0;
+            }
+            .billing-header-actions { display: flex; gap: 0.75rem; }
+            
+            /* SweetAlert2 Custom Theme */
+            .swal2-popup.swal2-toast {
+                background: var(--card) !important;
+                border: 1px solid var(--border) !important;
+                border-radius: var(--radius-lg) !important;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3) !important;
+            }
+            .swal2-popup .swal2-title {
+                color: var(--text) !important;
+                font-weight: 700 !important;
+                font-size: 1.35rem !important;
+            }
+            .swal2-popup .swal2-html-container {
+                color: var(--text-secondary) !important;
+                font-size: 0.95rem !important;
+                line-height: 1.6 !important;
+            }
+            .swal2-popup .swal2-confirm {
+                background: var(--primary) !important;
+                border-radius: var(--radius) !important;
+                font-weight: 600 !important;
+                padding: 0.75rem 1.5rem !important;
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+                transition: all 0.3s ease !important;
+            }
+            .swal2-popup .swal2-confirm:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4) !important;
+            }
+            .swal2-popup .swal2-cancel {
+                background: var(--bg-tertiary) !important;
+                color: var(--text) !important;
+                border-radius: var(--radius) !important;
+                font-weight: 600 !important;
+                padding: 0.75rem 1.5rem !important;
+                border: 1px solid var(--border) !important;
+            }
+            .swal2-popup .swal2-cancel:hover {
+                background: var(--bg-secondary) !important;
+            }
+            .swal2-popup .swal2-icon {
+                border-color: transparent !important;
+                margin: 1.5rem auto !important;
+            }
+            .swal2-popup .swal2-icon.swal2-question {
+                border-color: var(--primary) !important;
+                color: var(--primary) !important;
+            }
+            .swal2-popup .swal2-icon.swal2-warning {
+                border-color: #f59e0b !important;
+                color: #f59e0b !important;
+            }
+            .swal2-popup .swal2-icon.swal2-success {
+                border-color: var(--success) !important;
+            }
+            .swal2-popup .swal2-icon.swal2-success .swal2-success-ring {
+                border-color: rgba(16, 185, 129, 0.3) !important;
+            }
+            .swal2-popup .swal2-icon.swal2-success [class^=swal2-success-line] {
+                background-color: var(--success) !important;
+            }
+            .swal2-popup .swal2-icon.swal2-error {
+                border-color: var(--error) !important;
+            }
+            .swal2-popup .swal2-icon.swal2-error .swal2-x-mark-line-left,
+            .swal2-popup .swal2-icon.swal2-error .swal2-x-mark-line-right {
+                background-color: var(--error) !important;
+            }
+            .swal2-popup .swal2-actions {
+                margin-top: 1.5rem !important;
+                gap: 0.75rem !important;
+            }
+            .swal2-popup .swal2-loader {
+                border-color: var(--primary) transparent var(--primary) transparent !important;
             }
             
-            /* Current Plan Hero Card */
-            .plan-hero-card {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                border-radius: var(--radius-xl); padding: 0; margin-bottom: 1.5rem;
-                position: relative; overflow: hidden; color: white;
+            /* Current Plan Card - Integrated with Usage */
+            .current-plan-card {
+                background: var(--card); border-radius: var(--radius-xl);
+                border: 1px solid var(--border); overflow: hidden; margin-bottom: 1.5rem;
             }
-            .plan-hero-card::before {
-                content: ''; position: absolute; top: -50%; right: -20%;
-                width: 60%; height: 200%; background: rgba(255,255,255,0.05);
-                transform: rotate(-15deg); pointer-events: none;
+            .current-plan-gradient {
+                padding: 2rem; position: relative; overflow: hidden;
             }
-            .plan-hero-card::after {
-                content: ''; position: absolute; bottom: -30%; left: -10%;
-                width: 40%; height: 150%; background: rgba(255,255,255,0.03);
-                transform: rotate(20deg); pointer-events: none;
+            .current-plan-gradient::before {
+                content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+                background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+                opacity: 0.5;
             }
-            .plan-hero-content {
-                position: relative; z-index: 1; padding: 2rem;
+            .current-plan-header {
+                position: relative; z-index: 1; display: flex; justify-content: space-between;
+                align-items: flex-start; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1.5rem;
             }
-            .plan-hero-header {
-                display: flex; justify-content: space-between; align-items: flex-start;
-                margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
-            }
-            .plan-hero-info {
-                flex: 1;
-            }
-            .plan-hero-badge {
+            .current-plan-info { flex: 1; min-width: 250px; }
+            .current-plan-badge {
                 display: inline-flex; align-items: center; gap: 0.5rem;
                 background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
-                padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.8rem;
-                font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
-                margin-bottom: 0.75rem;
+                padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.7rem;
+                font-weight: 600; color: white; margin-bottom: 0.75rem;
+                text-transform: uppercase; letter-spacing: 0.5px;
             }
-            .plan-hero-badge i { font-size: 1rem; }
-            .plan-hero-title {
-                font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;
-                text-transform: capitalize;
+            .current-plan-name {
+                font-size: 1.75rem; font-weight: 800; color: white; margin: 0 0 0.5rem 0;
+                display: flex; align-items: center; gap: 0.6rem;
             }
-            .plan-hero-subtitle {
-                font-size: 0.95rem; opacity: 0.9;
+            .current-plan-name i { font-size: 1.5rem; }
+            .current-plan-meta {
+                display: flex; flex-wrap: wrap; gap: 1rem;
             }
-            .plan-hero-actions {
-                display: flex; gap: 0.75rem; flex-wrap: wrap;
+            .current-plan-meta-item {
+                display: flex; align-items: center; gap: 0.4rem;
+                color: rgba(255,255,255,0.9); font-size: 0.8rem;
             }
-            .plan-hero-btn {
-                padding: 0.75rem 1.5rem; border-radius: var(--radius);
-                font-weight: 600; font-size: 0.875rem; cursor: pointer;
-                transition: all 0.3s; border: none; display: inline-flex;
-                align-items: center; gap: 0.5rem;
+            .current-plan-meta-item i { font-size: 1rem; opacity: 0.8; }
+            .current-plan-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+            .current-plan-actions .btn {
+                background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);
+                backdrop-filter: blur(10px); font-size: 0.85rem; padding: 0.6rem 1rem;
             }
-            .plan-hero-btn-primary {
-                background: white; color: #667eea;
+            .current-plan-actions .btn:hover {
+                background: rgba(255,255,255,0.3); transform: translateY(-2px);
             }
-            .plan-hero-btn-primary:hover {
-                transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            .current-plan-actions .btn-upgrade {
+                background: white; color: var(--primary);
             }
-            .plan-hero-btn-secondary {
-                background: rgba(255,255,255,0.15); color: white;
-                border: 1px solid rgba(255,255,255,0.3);
+            .current-plan-actions .btn-upgrade:hover {
+                background: rgba(255,255,255,0.9);
             }
-            .plan-hero-btn-secondary:hover {
-                background: rgba(255,255,255,0.25);
+            
+            /* Usage Progress Section inside Plan Card */
+            .plan-usage-section {
+                position: relative; z-index: 1;
+                display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+            .plan-usage-item {
+                background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+                border-radius: var(--radius-lg); padding: 1rem 1.25rem;
+                border: 1px solid rgba(255,255,255,0.15);
+            }
+            .plan-usage-header {
+                display: flex; justify-content: space-between; align-items: center;
+                margin-bottom: 0.6rem;
+            }
+            .plan-usage-title {
+                display: flex; align-items: center; gap: 0.5rem;
+                font-size: 0.85rem; font-weight: 600; color: white;
+            }
+            .plan-usage-title i { font-size: 1rem; opacity: 0.8; }
+            .plan-usage-count {
+                font-size: 0.8rem; color: rgba(255,255,255,0.85);
+            }
+            .plan-usage-bar {
+                height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px;
+                overflow: hidden; margin-bottom: 0.4rem;
+            }
+            .plan-usage-fill {
+                height: 100%; border-radius: 3px; transition: width 0.5s ease;
+            }
+            .plan-usage-fill.safe { background: rgba(255,255,255,0.9); }
+            .plan-usage-fill.warning { background: #fbbf24; }
+            .plan-usage-fill.danger { background: #ef4444; }
+            .plan-usage-percent {
+                font-size: 0.7rem; color: rgba(255,255,255,0.7); text-align: right;
             }
             
             /* Plan Stats Row */
             .plan-stats-row {
-                display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                gap: 1rem; margin-top: 1.5rem;
+                display: flex; gap: 0.75rem; flex-wrap: wrap; padding: 1.25rem 1.5rem;
+                background: var(--bg-secondary); border-top: 1px solid var(--border);
             }
-            .plan-stat-item {
-                background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-                border-radius: var(--radius); padding: 1rem; text-align: center;
-            }
-            .plan-stat-value {
-                font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem;
-            }
-            .plan-stat-label {
-                font-size: 0.75rem; opacity: 0.8; text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-            
-            /* Usage Cards */
-            .usage-grid {
-                display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-                gap: 1rem; margin-bottom: 1.5rem;
-            }
-            .usage-card {
-                background: var(--card); border: 1px solid var(--border);
-                border-radius: var(--radius-lg); padding: 1.5rem;
-                transition: var(--transition);
-            }
-            .usage-card:hover {
-                box-shadow: var(--shadow-lg); transform: translateY(-2px);
-            }
-            .usage-card-header {
-                display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;
-            }
-            .usage-card-icon {
-                width: 48px; height: 48px; border-radius: var(--radius);
-                display: flex; align-items: center; justify-content: center;
-                font-size: 1.5rem;
-            }
-            .usage-card-icon.images {
-                background: rgba(59, 130, 246, 0.1); color: #3b82f6;
-            }
-            .usage-card-icon.articles {
-                background: rgba(16, 185, 129, 0.1); color: #10b981;
-            }
-            .usage-card-title {
-                font-weight: 600; color: var(--text); font-size: 1rem;
-            }
-            .usage-card-subtitle {
-                font-size: 0.8rem; color: var(--text-secondary);
-            }
-            .usage-progress-wrapper {
-                margin-top: 1rem;
-            }
-            .usage-progress-header {
-                display: flex; justify-content: space-between; align-items: center;
-                margin-bottom: 0.5rem;
-            }
-            .usage-progress-text {
-                font-size: 0.875rem; color: var(--text);
-            }
-            .usage-progress-percent {
-                font-size: 0.875rem; font-weight: 600; color: var(--primary);
-            }
-            .usage-progress-bar {
-                height: 8px; background: var(--bg-tertiary); border-radius: 4px;
-                overflow: hidden;
-            }
-            .usage-progress-fill {
-                height: 100%; border-radius: 4px; transition: width 0.5s ease;
-            }
-            .usage-progress-fill.images {
-                background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
-            }
-            .usage-progress-fill.articles {
-                background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
-            }
-            
-            /* Quick Stats */
-            .billing-stats-grid {
-                display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-                gap: 1rem; margin-bottom: 1.5rem;
-            }
-            .billing-stat-card {
-                background: var(--card); border: 1px solid var(--border);
-                border-radius: var(--radius-lg); padding: 1.25rem;
-                display: flex; align-items: center; gap: 1rem;
-                transition: var(--transition);
-            }
-            .billing-stat-card:hover {
-                box-shadow: var(--shadow); transform: translateY(-2px);
-            }
-            .billing-stat-icon {
-                width: 44px; height: 44px; border-radius: var(--radius);
-                display: flex; align-items: center; justify-content: center;
-                font-size: 1.25rem;
-            }
-            .billing-stat-icon.primary {
-                background: rgba(99, 102, 241, 0.1); color: var(--primary);
-            }
-            .billing-stat-icon.success {
-                background: rgba(16, 185, 129, 0.1); color: var(--success);
-            }
-            .billing-stat-icon.warning {
-                background: rgba(245, 158, 11, 0.1); color: var(--warning);
-            }
-            .billing-stat-info { flex: 1; }
-            .billing-stat-value {
-                font-size: 1.25rem; font-weight: 700; color: var(--text);
-            }
-            .billing-stat-label {
-                font-size: 0.8rem; color: var(--text-secondary);
-            }
-            
-            /* Upgrade Plans Section */
-            .upgrade-section {
-                background: var(--card); border: 1px solid var(--border);
-                border-radius: var(--radius-xl); padding: 2rem; margin-bottom: 1.5rem;
-            }
-            .upgrade-header {
-                display: flex; justify-content: space-between; align-items: center;
-                margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
-            }
-            .upgrade-title {
-                font-size: 1.25rem; font-weight: 700; color: var(--text);
+            .plan-stat-chip {
                 display: flex; align-items: center; gap: 0.5rem;
+                background: var(--card); padding: 0.6rem 1rem; border-radius: var(--radius);
+                border: 1px solid var(--border); font-size: 0.8rem;
             }
-            .upgrade-title i { color: var(--primary); }
-            .plan-grid {
-                display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-                gap: 1.25rem; margin-bottom: 1.5rem;
-            }
-            .plan-card {
-                background: var(--bg-secondary); border: 2px solid var(--border);
-                border-radius: var(--radius-lg); padding: 1.5rem; cursor: pointer;
-                transition: all 0.3s; position: relative; overflow: hidden;
-            }
-            .plan-card::before {
-                content: ''; position: absolute; top: 0; left: 0; right: 0;
-                height: 4px; background: var(--border); transition: all 0.3s;
-            }
-            .plan-card:hover {
-                border-color: var(--primary-light); transform: translateY(-4px);
-                box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15);
-            }
-            .plan-card.selected {
-                border-color: var(--primary);
-                background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.08) 100%);
-            }
-            .plan-card.selected::before {
-                background: linear-gradient(90deg, var(--primary) 0%, #8b5cf6 100%);
-            }
-            .plan-card-header {
-                display: flex; justify-content: space-between; align-items: flex-start;
-                margin-bottom: 1rem;
-            }
-            .plan-card h4 {
-                font-size: 1.15rem; font-weight: 700; color: var(--text); margin: 0;
-            }
-            .plan-card-check {
-                width: 24px; height: 24px; border-radius: 50%;
-                border: 2px solid var(--border); display: flex;
-                align-items: center; justify-content: center;
-                font-size: 0.75rem; transition: all 0.3s;
-            }
-            .plan-card.selected .plan-card-check {
-                background: var(--primary); border-color: var(--primary); color: white;
-            }
-            .plan-card ul {
-                list-style: none; padding: 0; margin: 0;
-                font-size: 0.875rem; color: var(--text-secondary);
-            }
-            .plan-card ul li {
-                display: flex; align-items: center; gap: 0.5rem;
-                margin-bottom: 0.5rem; color: var(--text);
-            }
-            .plan-card ul li i {
-                color: var(--success); font-size: 0.9rem;
-            }
+            .plan-stat-chip i { color: var(--text-secondary); }
+            .plan-stat-chip-value { font-weight: 600; color: var(--text); }
+            .plan-stat-chip-label { color: var(--text-secondary); }
             
-            /* Duration Selector */
-            .duration-selector {
-                display: flex; gap: 0.5rem; background: var(--bg-tertiary);
-                padding: 0.5rem; border-radius: var(--radius-lg);
-                margin-bottom: 1.5rem; justify-content: center; flex-wrap: wrap;
-            }
-            .duration-selector label {
-                flex: 1; text-align: center; min-width: 100px; position: relative;
-            }
-            .duration-selector input { display: none; }
-            .duration-selector span {
-                padding: 0.75rem 1.25rem; border-radius: var(--radius);
-                display: block; cursor: pointer; transition: all 0.3s;
-                font-weight: 600; font-size: 0.875rem; color: var(--text);
-                position: relative;
-            }
-            .duration-selector input:checked + span {
-                background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
-                color: white; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-            }
-            .duration-selector .duration-badge {
-                position: absolute; top: -8px; right: 10px;
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                color: white; font-size: 0.65rem; padding: 0.15rem 0.4rem;
-                border-radius: 0.25rem; font-weight: 700;
-            }
-            
-            /* Payment Summary */
-            .payment-summary {
-                display: flex; justify-content: space-between; align-items: center;
-                background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
-                padding: 1.25rem 1.5rem; border-radius: var(--radius-lg);
-                border: 1px solid var(--border); margin-bottom: 1rem;
-                flex-wrap: wrap; gap: 1rem;
-            }
-            .payment-method-section {
-                display: flex; flex-direction: column; gap: 0.35rem;
-            }
-            .payment-method-label {
-                font-size: 0.75rem; color: var(--text-secondary);
-                text-transform: uppercase; letter-spacing: 0.5px;
-            }
-            .payment-method-select {
-                padding: 0.5rem 1rem; border-radius: var(--radius);
-                border: 1px solid var(--border); background: var(--card);
-                color: var(--text); font-size: 0.875rem; font-weight: 500;
-                cursor: pointer;
-            }
-            .payment-total-section { text-align: right; }
-            .payment-total-label {
-                font-size: 0.75rem; color: var(--text-secondary);
-                text-transform: uppercase; letter-spacing: 0.5px;
-            }
-            .payment-total-amount {
-                font-size: 2rem; font-weight: 800;
-                background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
-                -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-                background-clip: text;
-            }
-            .purchase-btn {
-                width: 100%; padding: 1rem; border: none; border-radius: var(--radius);
-                background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
-                color: white; font-size: 1rem; font-weight: 700; cursor: pointer;
-                transition: all 0.3s; display: flex; align-items: center;
-                justify-content: center; gap: 0.5rem;
-            }
-            .purchase-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
-            }
             
             /* Transaction History */
-            .transactions-card {
-                background: var(--card); border: 1px solid var(--border);
-                border-radius: var(--radius-xl); overflow: hidden;
+            .transactions-section {
+                background: var(--card); border-radius: var(--radius-xl);
+                border: 1px solid var(--border); overflow: hidden;
             }
             .transactions-header {
-                padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
                 display: flex; justify-content: space-between; align-items: center;
+                padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
                 flex-wrap: wrap; gap: 1rem;
             }
             .transactions-title {
-                font-size: 1.125rem; font-weight: 700; color: var(--text);
+                font-size: 1.1rem; font-weight: 700; color: var(--text);
                 display: flex; align-items: center; gap: 0.5rem;
             }
-            .transactions-title i { color: var(--primary); }
-            .transactions-filter {
-                display: flex; align-items: center; gap: 0.75rem;
-            }
-            .transactions-filter-label {
-                font-size: 0.8rem; color: var(--text-secondary);
-            }
-            .transactions-filter-select {
+            .transactions-filter select {
                 padding: 0.5rem 1rem; border-radius: var(--radius);
                 border: 1px solid var(--border); background: var(--bg-secondary);
                 color: var(--text); font-size: 0.875rem; cursor: pointer;
             }
-            .transactions-body { padding: 0; }
-            
-            /* Desktop Transaction Row */
-            .transaction-row {
-                display: grid;
-                grid-template-columns: 100px 100px 1fr 100px 100px 140px;
-                gap: 1rem; padding: 1rem 1.5rem; align-items: center;
-                border-bottom: 1px solid var(--border); transition: var(--transition);
+            .transactions-table {
+                width: 100%; border-collapse: collapse;
             }
-            .transaction-row:hover {
-                background: var(--bg-secondary);
+            .transactions-table th {
+                text-align: left; padding: 0.875rem 1rem; font-size: 0.75rem;
+                font-weight: 600; color: var(--text-secondary);
+                text-transform: uppercase; letter-spacing: 0.5px;
+                background: var(--bg-secondary); border-bottom: 1px solid var(--border);
             }
-            .transaction-row:last-child { border-bottom: none; }
-            .transaction-date {
-                font-size: 0.875rem; color: var(--text-secondary);
-            }
-            .transaction-type { }
-            .transaction-desc {
+            .transactions-table td {
+                padding: 1rem; border-bottom: 1px solid var(--border);
                 font-size: 0.875rem; color: var(--text);
-                white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             }
-            .transaction-amount {
-                font-size: 0.95rem; font-weight: 700; color: var(--text);
+            .transactions-table tr:last-child td { border-bottom: none; }
+            .transactions-table tr:hover { background: var(--bg-secondary); }
+            .transaction-type-cell {
+                display: flex; align-items: center; gap: 0.75rem;
             }
-            .transaction-status { }
-            .transaction-actions {
-                display: flex; gap: 0.5rem; justify-content: flex-end;
+            .transaction-type-icon {
+                width: 36px; height: 36px; border-radius: var(--radius);
+                display: flex; align-items: center; justify-content: center; font-size: 1rem;
+            }
+            .transaction-type-info { display: flex; flex-direction: column; }
+            .transaction-type-name { font-weight: 600; }
+            .transaction-type-desc { font-size: 0.75rem; color: var(--text-secondary); }
+            
+            /* Mobile Transaction Cards */
+            .mobile-transactions { display: none; }
+            .mobile-transaction-card {
+                background: var(--bg-secondary); border-radius: var(--radius);
+                padding: 1rem; margin: 0.5rem 1rem;
+            }
+            .mobile-transaction-header {
+                display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;
+            }
+            .mobile-transaction-type {
+                display: flex; align-items: center; gap: 0.75rem;
+            }
+            .mobile-transaction-body {
+                display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+                font-size: 0.8rem;
+            }
+            .mobile-transaction-item label {
+                display: block; color: var(--text-secondary); font-size: 0.7rem;
+                text-transform: uppercase; margin-bottom: 0.15rem;
+            }
+            .mobile-transaction-actions {
+                display: flex; gap: 0.5rem; margin-top: 0.75rem; padding-top: 0.75rem;
+                border-top: 1px solid var(--border);
             }
             
-            /* Mobile Transaction Card */
-            .transaction-mobile-card {
-                background: var(--bg-secondary); border: 1px solid var(--border);
-                border-radius: var(--radius); padding: 1rem; margin: 0.75rem 1rem;
-                transition: var(--transition);
+            /* Package Purchase Modal */
+            .package-purchase-modal {
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(10px);
+                z-index: 9998; display: none; animation: fadeIn 0.3s ease;
             }
-            .transaction-mobile-card:first-child { margin-top: 1rem; }
-            .transaction-mobile-card:last-child { margin-bottom: 1rem; }
-            .transaction-mobile-header {
-                display: flex; justify-content: space-between; align-items: flex-start;
-                margin-bottom: 0.75rem;
+            .package-purchase-modal.active {
+                display: flex; align-items: center; justify-content: center;
             }
-            .transaction-mobile-info { flex: 1; }
-            .transaction-mobile-badges {
-                display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;
-                flex-wrap: wrap;
+            .pkg-modal-container {
+                background: var(--bg-secondary); border-radius: 1.5rem;
+                width: 95vw; max-width: 1100px; max-height: 90vh;
+                overflow: hidden; display: flex; flex-direction: column;
+                box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.3);
+                animation: slideUpDesktop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             }
-            .transaction-mobile-desc {
-                font-size: 0.875rem; color: var(--text); margin-bottom: 0.25rem;
-                word-break: break-word;
-            }
-            .transaction-mobile-date {
-                font-size: 0.75rem; color: var(--text-tertiary);
-            }
-            .transaction-mobile-amount {
-                font-size: 1.35rem; font-weight: 800; color: var(--text);
-            }
-            .transaction-mobile-actions {
-                display: flex; gap: 0.5rem; padding-top: 0.75rem;
-                border-top: 1px solid var(--border); margin-top: 0.5rem;
-            }
-            .transaction-mobile-actions .btn {
-                flex: 1; justify-content: center; font-size: 0.8rem;
-            }
-            
-            /* Subscription Management Modal */
-            .subscription-modal-content {
-                text-align: center; padding: 1rem;
-            }
-            .subscription-modal-icon {
-                width: 80px; height: 80px; margin: 0 auto 1.5rem;
-                background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.15) 100%);
-                border-radius: 50%; display: flex; align-items: center;
-                justify-content: center; font-size: 2.5rem; color: var(--primary);
-            }
-            .subscription-modal-title {
-                font-size: 1.5rem; font-weight: 700; color: var(--text);
-                margin-bottom: 0.5rem;
-            }
-            .subscription-modal-subtitle {
-                font-size: 0.95rem; color: var(--text-secondary);
-                margin-bottom: 1.5rem;
-            }
-            .subscription-details-card {
-                background: var(--bg-tertiary); border-radius: var(--radius-lg);
-                padding: 1.5rem; margin-bottom: 1.5rem; text-align: left;
-            }
-            .subscription-detail-row {
+            .pkg-modal-header {
+                padding: 1.5rem 2rem; border-bottom: 1px solid var(--border);
                 display: flex; justify-content: space-between; align-items: center;
-                padding: 0.75rem 0; border-bottom: 1px solid var(--border);
             }
-            .subscription-detail-row:last-child { border-bottom: none; }
-            .subscription-detail-label {
-                font-size: 0.875rem; color: var(--text-secondary);
+            .pkg-modal-title {
+                font-size: 1.5rem; font-weight: 700; color: var(--text);
+                display: flex; align-items: center; gap: 0.75rem;
             }
-            .subscription-detail-value {
-                font-size: 0.875rem; font-weight: 600; color: var(--text);
+            .pkg-modal-title i { color: var(--primary); }
+            .pkg-modal-close {
+                width: 2.5rem; height: 2.5rem; border-radius: 50%;
+                background: var(--bg-tertiary); border: 1px solid var(--border);
+                color: var(--text-secondary); font-size: 1.25rem; cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                transition: all 0.3s ease;
             }
-            .subscription-warning {
-                background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3);
-                border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem;
-                display: flex; align-items: flex-start; gap: 0.75rem; text-align: left;
+            .pkg-modal-close:hover {
+                background: var(--error); color: white; transform: rotate(90deg);
             }
-            .subscription-warning i {
-                color: var(--warning); font-size: 1.25rem; flex-shrink: 0;
+            .pkg-modal-body {
+                flex: 1; padding: 2rem; overflow-y: auto;
+                display: grid; grid-template-columns: 1fr 340px; gap: 2rem;
             }
-            .subscription-warning-text {
-                font-size: 0.875rem; color: var(--text-secondary);
+            .pkg-options-section { }
+            .pkg-summary-section {
+                background: var(--bg-tertiary); border-radius: var(--radius-lg);
+                padding: 1.5rem; height: fit-content; position: sticky; top: 0;
             }
-            .subscription-modal-actions {
-                display: flex; gap: 1rem; flex-wrap: wrap;
-            }
-            .subscription-modal-actions .btn { flex: 1; min-width: 140px; justify-content: center; }
             
-            /* Responsive Styles */
+            /* Package Options */
+            .pkg-section-title {
+                font-size: 1rem; font-weight: 600; color: var(--text);
+                margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;
+            }
+            .pkg-section-title i { color: var(--primary); }
+            .pkg-options-grid {
+                display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem;
+            }
+            .pkg-option-card {
+                background: var(--card); border: 2px solid var(--border);
+                border-radius: var(--radius-lg); padding: 1.25rem; cursor: pointer;
+                transition: all 0.3s ease; position: relative;
+            }
+            .pkg-option-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+            .pkg-option-card.selected {
+                border-color: var(--primary); background: rgba(99, 102, 241, 0.05);
+            }
+            .pkg-option-card.selected::after {
+                content: '✓'; position: absolute; top: 0.75rem; right: 0.75rem;
+                width: 1.25rem; height: 1.25rem; background: var(--primary);
+                color: white; border-radius: 50%; display: flex;
+                align-items: center; justify-content: center; font-size: 0.7rem;
+            }
+            .pkg-option-card.popular::before {
+                content: 'POPULAR'; position: absolute; top: -10px; left: 50%;
+                transform: translateX(-50%); background: var(--primary);
+                color: white; padding: 0.2rem 0.6rem; border-radius: 1rem;
+                font-size: 0.6rem; font-weight: 700;
+            }
+            .pkg-option-icon {
+                width: 40px; height: 40px; border-radius: var(--radius);
+                display: flex; align-items: center; justify-content: center;
+                font-size: 1.25rem; margin-bottom: 0.75rem;
+            }
+            .pkg-option-name { font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+            .pkg-option-price { font-size: 0.85rem; color: var(--text-secondary); }
+            .pkg-option-price strong { color: var(--text); font-size: 1.1rem; }
+            .pkg-option-features {
+                list-style: none; padding: 0; margin: 0.75rem 0 0 0;
+                font-size: 0.75rem; color: var(--text-secondary);
+            }
+            .pkg-option-features li {
+                display: flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0;
+            }
+            .pkg-option-features li i { color: var(--success); font-size: 0.85rem; }
+            
+            /* Payment Type Toggle */
+            .pkg-payment-type-toggle {
+                display: flex; gap: 0.5rem; margin-bottom: 1.5rem;
+                background: var(--bg-tertiary); padding: 0.35rem; border-radius: var(--radius);
+            }
+            .pkg-payment-type-btn {
+                flex: 1; padding: 0.75rem 1rem; border: none; border-radius: var(--radius);
+                background: transparent; color: var(--text-secondary);
+                font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+                display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            }
+            .pkg-payment-type-btn.active {
+                background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            }
+            
+            /* Duration Options */
+            .pkg-duration-grid {
+                display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;
+            }
+            .pkg-duration-option {
+                padding: 1rem; border: 2px solid var(--border); border-radius: var(--radius);
+                cursor: pointer; transition: all 0.3s ease; text-align: center; position: relative;
+            }
+            .pkg-duration-option:hover { border-color: var(--primary); }
+            .pkg-duration-option.selected {
+                border-color: var(--primary); background: rgba(99, 102, 241, 0.05);
+            }
+            .pkg-duration-option.best-value::before {
+                content: 'BEST VALUE'; position: absolute; top: -10px; left: 50%;
+                transform: translateX(-50%); background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                color: white; padding: 0.2rem 0.6rem; border-radius: 1rem;
+                font-size: 0.55rem; font-weight: 700;
+            }
+            .pkg-duration-label { font-weight: 600; color: var(--text); }
+            .pkg-duration-discount {
+                font-size: 0.75rem; color: var(--success); margin-top: 0.25rem;
+            }
+            
+            /* Payment Providers */
+            .pkg-providers-grid {
+                display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem;
+            }
+            .pkg-provider-option {
+                display: flex; align-items: center; gap: 0.75rem; padding: 1rem;
+                border: 2px solid var(--border); border-radius: var(--radius);
+                cursor: pointer; transition: all 0.3s ease;
+            }
+            .pkg-provider-option:hover { border-color: var(--primary); }
+            .pkg-provider-option.selected {
+                border-color: var(--primary); background: rgba(99, 102, 241, 0.05);
+            }
+            .pkg-provider-icon { font-size: 1.5rem; }
+            .pkg-provider-name { font-weight: 600; color: var(--text); }
+            .pkg-provider-desc { font-size: 0.75rem; color: var(--text-secondary); }
+            
+            /* Summary Section */
+            .pkg-summary-title {
+                font-size: 1.1rem; font-weight: 700; color: var(--text);
+                margin-bottom: 1rem; padding-bottom: 0.75rem;
+                border-bottom: 1px solid var(--border);
+            }
+            .pkg-summary-row {
+                display: flex; justify-content: space-between; padding: 0.5rem 0;
+                font-size: 0.875rem; color: var(--text-secondary);
+            }
+            .pkg-summary-value { color: var(--text); font-weight: 500; }
+            .pkg-summary-row.pkg-discount { color: var(--success); }
+            .pkg-summary-row.pkg-discount .pkg-summary-value { color: var(--success); }
+            .pkg-summary-divider {
+                height: 1px; background: var(--border); margin: 0.75rem 0;
+            }
+            .pkg-summary-row.pkg-total {
+                font-size: 1rem; color: var(--text); font-weight: 600;
+            }
+            .pkg-summary-row.pkg-total .pkg-summary-value {
+                font-size: 1.25rem; font-weight: 800; color: var(--primary);
+            }
+            .pkg-summary-row.pkg-permonth {
+                font-size: 0.8rem; color: var(--text-secondary); font-style: italic;
+            }
+            #pkgPurchaseBtn {
+                width: 100%; padding: 1rem; margin-top: 1.5rem;
+                background: var(--primary); color: white; border: none;
+                border-radius: var(--radius); font-weight: 600; font-size: 1rem;
+                cursor: pointer; transition: all 0.3s ease;
+                display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            }
+            #pkgPurchaseBtn:hover {
+                background: var(--primary-dark); transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            }
+            
+            /* Free Plan Card */
+            .free-plan-card {
+                background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+                border: 2px dashed var(--border); border-radius: var(--radius-xl);
+                padding: 3rem 2rem; text-align: center; margin-bottom: 1.5rem;
+            }
+            .free-plan-icon {
+                width: 80px; height: 80px; margin: 0 auto 1.5rem;
+                background: var(--bg-secondary); border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 2.5rem; color: var(--text-secondary);
+            }
+            .free-plan-title { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+            .free-plan-desc { color: var(--text-secondary); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; }
+            
+            /* Responsive */
             @media (max-width: 1024px) {
-                .transaction-row {
-                    grid-template-columns: 90px 90px 1fr 90px 90px 120px;
-                    padding: 1rem;
-                }
+                .pkg-modal-body { grid-template-columns: 1fr; }
+                .pkg-summary-section { position: static; }
+                .pkg-options-grid { grid-template-columns: 1fr; }
             }
             @media (max-width: 768px) {
-                .plan-hero-content { padding: 1.5rem; }
-                .plan-hero-title { font-size: 1.5rem; }
-                .plan-hero-header { flex-direction: column; align-items: flex-start; }
-                .plan-hero-actions { width: 100%; }
-                .plan-hero-btn { flex: 1; justify-content: center; }
-                .plan-stats-row { grid-template-columns: repeat(2, 1fr); }
-                .billing-stats-grid { grid-template-columns: repeat(2, 1fr); }
-                .usage-grid { grid-template-columns: 1fr; }
-                .plan-grid { grid-template-columns: 1fr; gap: 1rem; }
-                .plan-card { padding: 1.25rem; }
-                .payment-summary { flex-direction: column; align-items: stretch; }
-                .payment-total-section { text-align: center; }
-                .transaction-row { display: none; }
-                .upgrade-section { padding: 1.5rem; }
-                .duration-selector { padding: 0.4rem; }
-                .duration-selector span { padding: 0.6rem 0.75rem; font-size: 0.8rem; }
+                .billing-header { flex-direction: column; align-items: flex-start; }
+                .current-plan-header { flex-direction: column; gap: 1rem; }
+                .current-plan-actions { width: 100%; justify-content: flex-start; }
+                .plan-usage-section { grid-template-columns: 1fr; }
+                .plan-stats-row { flex-wrap: wrap; }
+                .plan-stat-chip { flex: 1 1 45%; min-width: 140px; }
+                .transactions-table { display: none; }
+                .mobile-transactions { display: block; }
+                .pkg-modal-container {
+                    width: 100vw; max-width: 100vw; height: 100vh;
+                    border-radius: 0; max-height: 100vh;
+                }
+                .pkg-modal-body { padding: 1rem; gap: 1rem; }
+                .pkg-duration-grid { grid-template-columns: 1fr; }
+                .pkg-providers-grid { grid-template-columns: 1fr; }
             }
             @media (max-width: 480px) {
-                .billing-page-title { font-size: 1.35rem; }
-                .plan-hero-content { padding: 1.25rem; }
-                .plan-hero-badge { font-size: 0.7rem; padding: 0.4rem 0.75rem; }
-                .plan-hero-title { font-size: 1.35rem; }
-                .plan-stats-row { gap: 0.75rem; }
-                .plan-stat-item { padding: 0.75rem; }
-                .plan-stat-value { font-size: 1.25rem; }
-                .billing-stats-grid { grid-template-columns: 1fr; }
-                .billing-stat-card { padding: 1rem; }
-                .plan-card h4 { font-size: 1rem; }
-                .plan-card ul { font-size: 0.8rem; }
-                .duration-selector { flex-direction: column; }
-                .duration-selector label { min-width: 100%; }
-                .payment-total-amount { font-size: 1.5rem; }
-                .transactions-header { padding: 1rem; }
-                .transaction-mobile-card { margin: 0.5rem 0.75rem; padding: 0.875rem; }
+                .current-plan-name { font-size: 1.35rem; }
+                .current-plan-name i { font-size: 1.2rem; }
+                .plan-stat-chip { flex: 1 1 100%; }
+                .plan-usage-item { padding: 0.85rem 1rem; }
             }
         </style>
         
-        <!-- Page Header -->
-        <div class="billing-page-header">
-            <h2 class="billing-page-title">
-                <i class="ri-bank-card-2-line"></i>
-                Billing & Plans
-            </h2>
-        </div>
-        
-        <!-- Current Plan Hero Card -->
-        <div class="plan-hero-card" style="${isFree ? 'background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);' : ''}">
-            <div class="plan-hero-content">
-                <div class="plan-hero-header">
-                    <div class="plan-hero-info">
-                        <div class="plan-hero-badge">
-                            <i class="${isSubscribed ? 'ri-refresh-line' : (isFree ? 'ri-gift-line' : 'ri-time-line')}"></i>
-                            ${isSubscribed ? 'Active Subscription' : (isFree ? 'Free Plan' : 'One-time Purchase')}
+        <!-- Package Purchase Modal -->
+        <div class="package-purchase-modal" id="packagePurchaseModal">
+            <div class="pkg-modal-container">
+                <div class="pkg-modal-header">
+                    <h2 class="pkg-modal-title"><i class="ri-shopping-bag-3-line"></i> Purchase Package</h2>
+                    <button class="pkg-modal-close" onclick="closePackagePurchaseModal()">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="pkg-modal-body">
+                    <div class="pkg-options-section">
+                        <!-- Select Package -->
+                        <h3 class="pkg-section-title"><i class="ri-stack-line"></i> Select Package</h3>
+                        <div class="pkg-options-grid">
+                            ${Object.entries(hostingPackages).map(([key, pkg]) => `
+                                <div class="pkg-option-card ${pkg.popular ? 'popular' : ''} ${key === 'professional' ? 'selected' : ''}" 
+                                     data-package="${key}" onclick="selectPackageOption('${key}')">
+                                    <div class="pkg-option-icon" style="background: ${pkg.gradient}; color: white;">
+                                        <i class="${pkg.icon}"></i>
+                                    </div>
+                                    <div class="pkg-option-name">${pkg.name}</div>
+                                    <div class="pkg-option-price">From <strong>$${pkg.price['3month']}</strong>/3mo</div>
+                                    <ul class="pkg-option-features">
+                                        ${pkg.features.slice(0, 3).map(f => `<li><i class="ri-check-line"></i> ${f}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            `).join('')}
                         </div>
-                        <h3 class="plan-hero-title">${hostingConfig.packages[planName]?.name || planName}</h3>
-                        <p class="plan-hero-subtitle">
-                            ${isFree ? 'Upgrade to unlock more features and higher limits' : 
-                              (isSubscribed ? 
-                                (subscriptionEnd ? `Next billing date: ${subscriptionEnd.toLocaleDateString()}` : 'Subscription active') : 
-                                (expiryDate ? `${daysLeft > 0 ? 'Expires' : 'Expired'} ${expiryDate.toLocaleDateString()}` : '')
-                              )
-                            }
-                        </p>
-                    </div>
-                    <div class="plan-hero-actions">
-                        ${isFree ? `
-                            <button class="plan-hero-btn plan-hero-btn-primary" onclick="document.getElementById('upgradePlansSection').scrollIntoView({behavior: 'smooth'})">
-                                <i class="ri-rocket-line"></i> Upgrade Now
+                        
+                        <!-- Payment Type -->
+                        <h3 class="pkg-section-title"><i class="ri-repeat-line"></i> Payment Type</h3>
+                        <div class="pkg-payment-type-toggle">
+                            <button class="pkg-payment-type-btn active" data-type="subscription" onclick="selectPackagePaymentType('subscription')">
+                                <i class="ri-refresh-line"></i> Subscription
                             </button>
-                        ` : (isSubscribed ? `
-                            <button class="plan-hero-btn plan-hero-btn-secondary" onclick="showSubscriptionModal()">
-                                <i class="ri-settings-3-line"></i> Manage
+                            <button class="pkg-payment-type-btn" data-type="one-time" onclick="selectPackagePaymentType('one-time')">
+                                <i class="ri-bank-card-line"></i> One-time
                             </button>
-                        ` : `
-                            <button class="plan-hero-btn plan-hero-btn-primary" onclick="document.getElementById('upgradePlansSection').scrollIntoView({behavior: 'smooth'})">
-                                <i class="ri-refresh-line"></i> Renew Plan
-                            </button>
-                        `)}
-                    </div>
-                </div>
-                
-                <!-- Plan Stats -->
-                <div class="plan-stats-row">
-                    <div class="plan-stat-item">
-                        <div class="plan-stat-value">${daysLeft}</div>
-                        <div class="plan-stat-label">${isSubscribed ? 'Days Until Renewal' : 'Days Remaining'}</div>
-                    </div>
-                    <div class="plan-stat-item">
-                        <div class="plan-stat-value">${imagesLimit - imagesUsed}</div>
-                        <div class="plan-stat-label">Images Left</div>
-                    </div>
-                    <div class="plan-stat-item">
-                        <div class="plan-stat-value">${articlesLimit - articlesUsed}</div>
-                        <div class="plan-stat-label">Articles Left</div>
-                    </div>
-                    <div class="plan-stat-item">
-                        <div class="plan-stat-value">${planData.billing?.provider ? planData.billing.provider.charAt(0).toUpperCase() + planData.billing.provider.slice(1) : 'N/A'}</div>
-                        <div class="plan-stat-label">Payment Method</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Usage Cards -->
-        <div class="usage-grid">
-            <div class="usage-card">
-                <div class="usage-card-header">
-                    <div class="usage-card-icon images">
-                        <i class="ri-image-line"></i>
-                    </div>
-                    <div>
-                        <div class="usage-card-title">Image Storage</div>
-                        <div class="usage-card-subtitle">Monthly upload limit</div>
-                    </div>
-                </div>
-                <div class="usage-progress-wrapper">
-                    <div class="usage-progress-header">
-                        <span class="usage-progress-text">${imagesUsed.toLocaleString()} / ${imagesLimit.toLocaleString()} used</span>
-                        <span class="usage-progress-percent">${imagesUsedPercent.toFixed(1)}%</span>
-                    </div>
-                    <div class="usage-progress-bar">
-                        <div class="usage-progress-fill images" style="width: ${imagesUsedPercent}%;"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="usage-card">
-                <div class="usage-card-header">
-                    <div class="usage-card-icon articles">
-                        <i class="ri-article-line"></i>
-                    </div>
-                    <div>
-                        <div class="usage-card-title">Article Publishing</div>
-                        <div class="usage-card-subtitle">Monthly publish limit</div>
-                    </div>
-                </div>
-                <div class="usage-progress-wrapper">
-                    <div class="usage-progress-header">
-                        <span class="usage-progress-text">${articlesUsed.toLocaleString()} / ${articlesLimit.toLocaleString()} used</span>
-                        <span class="usage-progress-percent">${articlesUsedPercent.toFixed(1)}%</span>
-                    </div>
-                    <div class="usage-progress-bar">
-                        <div class="usage-progress-fill articles" style="width: ${articlesUsedPercent}%;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Quick Stats -->
-        <div class="billing-stats-grid">
-            <div class="billing-stat-card">
-                <div class="billing-stat-icon primary">
-                    <i class="ri-money-dollar-circle-line"></i>
-                </div>
-                <div class="billing-stat-info">
-                    <div class="billing-stat-value">$${totalSpent.toFixed(2)}</div>
-                    <div class="billing-stat-label">Total Spent</div>
-                </div>
-            </div>
-            <div class="billing-stat-card">
-                <div class="billing-stat-icon success">
-                    <i class="ri-checkbox-circle-line"></i>
-                </div>
-                <div class="billing-stat-info">
-                    <div class="billing-stat-value">${allPayments.filter(p => p.status === 'paid').length}</div>
-                    <div class="billing-stat-label">Completed Payments</div>
-                </div>
-            </div>
-            <div class="billing-stat-card">
-                <div class="billing-stat-icon warning">
-                    <i class="ri-time-line"></i>
-                </div>
-                <div class="billing-stat-info">
-                    <div class="billing-stat-value">${pendingPayments}</div>
-                    <div class="billing-stat-label">Pending Payments</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Upgrade Plans Section -->
-        <div class="upgrade-section" id="upgradePlansSection">
-            <div class="upgrade-header">
-                <h3 class="upgrade-title">
-                    <i class="ri-rocket-2-line"></i>
-                    ${isFree ? 'Choose a Plan' : 'Change Plan'}
-                </h3>
-            </div>
-            
-            <div class="plan-grid">
-                ${Object.keys(hostingConfig.packages).map(planKey => `
-                    <div class="plan-card ${planKey === 'professional' ? 'selected' : ''}" id="plan-${planKey}" onclick="selectPlan('${planKey}')">
-                        <div class="plan-card-header">
-                            <h4>${hostingConfig.packages[planKey].name}</h4>
-                            <div class="plan-card-check">
-                                <i class="ri-check-line"></i>
+                        </div>
+                        
+                        <!-- Duration -->
+                        <h3 class="pkg-section-title"><i class="ri-calendar-line"></i> Duration</h3>
+                        <div class="pkg-duration-grid">
+                            <div class="pkg-duration-option selected" data-duration="3month" onclick="selectPackageDuration('3month')">
+                                <div class="pkg-duration-label">3 Months</div>
+                            </div>
+                            <div class="pkg-duration-option" data-duration="6month" onclick="selectPackageDuration('6month')">
+                                <div class="pkg-duration-label">6 Months</div>
+                                <div class="pkg-duration-discount">Save 10%</div>
+                            </div>
+                            <div class="pkg-duration-option best-value" data-duration="12month" onclick="selectPackageDuration('12month')">
+                                <div class="pkg-duration-label">12 Months</div>
+                                <div class="pkg-duration-discount">Save 20%</div>
                             </div>
                         </div>
-                        <ul>${hostingConfig.packages[planKey].features.map(f => `<li><i class="ri-check-line"></i>${f}</li>`).join('')}</ul>
+                        
+                        <!-- Payment Provider -->
+                        <h3 class="pkg-section-title"><i class="ri-secure-payment-line"></i> Payment Method</h3>
+                        <div class="pkg-providers-grid">
+                            <div class="pkg-provider-option selected" data-provider="stripe" onclick="selectPackageProvider('stripe')">
+                                <div class="pkg-provider-icon">💳</div>
+                                <div>
+                                    <div class="pkg-provider-name">Card (Stripe)</div>
+                                    <div class="pkg-provider-desc">Credit/Debit cards</div>
+                                </div>
+                            </div>
+                            <div class="pkg-provider-option" data-provider="oxapay" onclick="selectPackageProvider('oxapay')" style="display: none;">
+                                <div class="pkg-provider-icon">🪙</div>
+                                <div>
+                                    <div class="pkg-provider-name">Crypto (OxaPay)</div>
+                                    <div class="pkg-provider-desc">Bitcoin, ETH, USDT...</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                `).join('')}
-            </div>
-            
-            <div class="duration-selector">
-                <label>
-                    <input type="radio" name="duration" value="3month" onchange="selectDuration('3month')" checked>
-                    <span>3 Months</span>
-                </label>
-                <label>
-                    <input type="radio" name="duration" value="6month" onchange="selectDuration('6month')">
-                    <span>6 Months<span class="duration-badge">10% OFF</span></span>
-                </label>
-                <label>
-                    <input type="radio" name="duration" value="12month" onchange="selectDuration('12month')">
-                    <span>12 Months<span class="duration-badge">20% OFF</span></span>
-                </label>
-            </div>
-            
-            <div class="payment-summary">
-                <div class="payment-method-section">
-                    <label class="payment-method-label">Payment Method</label>
-                    <select id="payment-provider" class="payment-method-select">
-                        <option value="stripe">💳 Card (Stripe)</option>
-                        <option value="oxapay">🪙 Crypto (OxaPay)</option>
-                    </select>
-                </div>
-                <div class="payment-total-section">
-                    <div class="payment-total-label">Total Price</div>
-                    <div class="payment-total-amount" id="price-display">$0.00</div>
+                    
+                    <div class="pkg-summary-section">
+                        <h3 class="pkg-summary-title">Order Summary</h3>
+                        <div id="pkgPurchaseSummary">
+                            <!-- Dynamically updated -->
+                        </div>
+                        <button id="pkgPurchaseBtn" onclick="processPackagePurchase()">
+                            <i class="ri-shopping-cart-2-line"></i> Purchase - $25.00
+                        </button>
+                    </div>
                 </div>
             </div>
-            
-            <button class="purchase-btn" onclick="purchasePlan()">
-                <i class="ri-shopping-cart-2-line"></i>
-                Complete Purchase
+        </div>
+        
+        <!-- Page Header -->
+        <div class="billing-header">
+            <div class="billing-header-left">
+                <h1><i class="ri-bank-card-line"></i> Billing & Plans</h1>
+                <p>Manage your subscription, view usage, and payment history</p>
+            </div>
+            <div class="billing-header-actions">
+                <button class="btn btn-primary" onclick="openPackagePurchaseModal()">
+                    <i class="ri-shopping-bag-3-line"></i> ${isFree ? 'Get Started' : 'Upgrade Plan'}
+                </button>
+                ${!isFree && isSubscribed ? `
+                    <button class="btn btn-secondary" onclick="showSubscriptionModal()">
+                        <i class="ri-settings-3-line"></i> Manage
+                    </button>
+                ` : ''}
+            </div>
+        </div>
+        
+        ${isFree ? `
+        <!-- Free Plan Card -->
+        <div class="free-plan-card">
+            <div class="free-plan-icon">
+                <i class="ri-gift-line"></i>
+            </div>
+            <h2 class="free-plan-title">You're on the Free Plan</h2>
+            <p class="free-plan-desc">Upgrade to unlock more features, higher limits, and priority support for your SEO needs.</p>
+            <button class="btn btn-primary btn-lg" onclick="openPackagePurchaseModal()">
+                <i class="ri-rocket-line"></i> Upgrade Now
             </button>
         </div>
+        ` : `
+        <!-- Current Plan Card with Integrated Usage -->
+        <div class="current-plan-card">
+            <div class="current-plan-gradient" style="background: ${currentPkg?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};">
+                <!-- Header with Plan Info and Actions -->
+                <div class="current-plan-header">
+                    <div class="current-plan-info">
+                        <div class="current-plan-badge">
+                            <i class="${isSubscribed ? 'ri-refresh-line' : 'ri-time-line'}"></i>
+                            ${isSubscribed ? 'Active Subscription' : 'One-time Purchase'}
+                        </div>
+                        <h2 class="current-plan-name">
+                            <i class="${currentPkg?.icon || 'ri-vip-crown-line'}"></i>
+                            ${currentPkg?.name || planName} Plan
+                        </h2>
+                        <div class="current-plan-meta">
+                            <div class="current-plan-meta-item">
+                                <i class="ri-time-line"></i>
+                                ${daysLeft} days left
+                            </div>
+                            ${subscriptionEnd ? `
+                                <div class="current-plan-meta-item">
+                                    <i class="ri-repeat-line"></i>
+                                    Renews ${subscriptionEnd.toLocaleDateString()}
+                                </div>
+                            ` : expiryDate ? `
+                                <div class="current-plan-meta-item">
+                                    <i class="ri-calendar-check-line"></i>
+                                    Expires ${expiryDate.toLocaleDateString()}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="current-plan-actions">
+                        <button class="btn btn-upgrade" onclick="openPackagePurchaseModal()">
+                            <i class="ri-arrow-up-circle-line"></i> Upgrade
+                        </button>
+                        ${isSubscribed ? `
+                            <button class="btn" onclick="showSubscriptionModal()">
+                                <i class="ri-settings-3-line"></i> Manage
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+                
+                <!-- Usage Progress Bars -->
+                <div class="plan-usage-section">
+                    <div class="plan-usage-item">
+                        <div class="plan-usage-header">
+                            <span class="plan-usage-title"><i class="ri-image-line"></i> Images</span>
+                            <span class="plan-usage-count">${imagesUsed.toLocaleString()} / ${imagesLimit.toLocaleString()}</span>
+                        </div>
+                        <div class="plan-usage-bar">
+                            <div class="plan-usage-fill ${imagesUsedPercent > 90 ? 'danger' : imagesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${imagesUsedPercent}%;"></div>
+                        </div>
+                        <div class="plan-usage-percent">${Math.round(imagesUsedPercent)}% used</div>
+                    </div>
+                    <div class="plan-usage-item">
+                        <div class="plan-usage-header">
+                            <span class="plan-usage-title"><i class="ri-article-line"></i> Articles</span>
+                            <span class="plan-usage-count">${articlesUsed.toLocaleString()} / ${articlesLimit.toLocaleString()}</span>
+                        </div>
+                        <div class="plan-usage-bar">
+                            <div class="plan-usage-fill ${articlesUsedPercent > 90 ? 'danger' : articlesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${articlesUsedPercent}%;"></div>
+                        </div>
+                        <div class="plan-usage-percent">${Math.round(articlesUsedPercent)}% used</div>
+                    </div>
+                    <div class="plan-usage-item">
+                        <div class="plan-usage-header">
+                            <span class="plan-usage-title"><i class="ri-timer-line"></i> Time Left</span>
+                            <span class="plan-usage-count">${daysLeft} days</span>
+                        </div>
+                        <div class="plan-usage-bar">
+                            <div class="plan-usage-fill ${daysLeft < 7 ? 'danger' : daysLeft < 14 ? 'warning' : 'safe'}" style="width: ${Math.min(daysLeft * 3.33, 100)}%;"></div>
+                        </div>
+                        <div class="plan-usage-percent">${expiryDate ? expiryDate.toLocaleDateString() : 'N/A'}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Stats Row -->
+            <div class="plan-stats-row">
+                <div class="plan-stat-chip">
+                    <i class="ri-shield-check-line"></i>
+                    <span class="plan-stat-chip-label">Status:</span>
+                    <span class="plan-stat-chip-value">${daysLeft > 0 ? 'Active' : 'Expired'}</span>
+                </div>
+                <div class="plan-stat-chip">
+                    <i class="ri-bank-card-line"></i>
+                    <span class="plan-stat-chip-label">Provider:</span>
+                    <span class="plan-stat-chip-value">${planData.billing?.provider ? planData.billing.provider.charAt(0).toUpperCase() + planData.billing.provider.slice(1) : 'N/A'}</span>
+                </div>
+                ${lastPayment > 0 ? `
+                <div class="plan-stat-chip">
+                    <i class="ri-money-dollar-circle-line"></i>
+                    <span class="plan-stat-chip-label">Last Payment:</span>
+                    <span class="plan-stat-chip-value">$${lastPayment.toFixed(2)}</span>
+                </div>
+                ` : ''}
+                <div class="plan-stat-chip">
+                    <i class="${isSubscribed ? 'ri-refresh-line' : 'ri-shopping-bag-line'}"></i>
+                    <span class="plan-stat-chip-label">Type:</span>
+                    <span class="plan-stat-chip-value">${isSubscribed ? 'Subscription' : 'One-time'}</span>
+                </div>
+            </div>
+        </div>
+        `}
         
         <!-- Transaction History -->
-        <div class="transactions-card">
+        <div class="transactions-section">
             <div class="transactions-header">
-                <h3 class="transactions-title">
-                    <i class="ri-file-list-3-line"></i>
-                    Transaction History
-                </h3>
+                <h3 class="transactions-title"><i class="ri-exchange-funds-line"></i> Transaction History</h3>
                 <div class="transactions-filter">
-                    <span class="transactions-filter-label">Filter:</span>
-                    <select class="transactions-filter-select" onchange="loadBilling(1, this.value)">
+                    <select onchange="loadBilling(1, this.value)">
                         <option value="all" ${type === 'all' ? 'selected' : ''}>All Transactions</option>
-                        <option value="tasks" ${type === 'tasks' ? 'selected' : ''}>SEO Tasks</option>
-                        <option value="hosting" ${type === 'hosting' ? 'selected' : ''}>Hosting Plans</option>
+                        <option value="hosting" ${type === 'hosting' ? 'selected' : ''}>Hosting Only</option>
+                        <option value="tasks" ${type === 'tasks' ? 'selected' : ''}>Tasks Only</option>
                     </select>
                 </div>
             </div>
-            <div class="transactions-body">
-                <!-- Desktop View -->
-                <div class="desktop-only">
+            
+            <!-- Desktop Table -->
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
                     ${allPayments.length > 0 ? allPayments.map(payment => {
-                        let paymentType = '', description = '', badgeClass = '', icon = '';
+                        let paymentType = '', description = '', badgeClass = '', icon = '', iconBg = '';
                         if (payment.method === 'create_task') {
                             paymentType = 'SEO Task'; badgeClass = 'primary'; 
                             description = payment.details?.url || 'Task Creation';
-                            icon = 'ri-rocket-line';
+                            icon = 'ri-rocket-line'; iconBg = 'rgba(99, 102, 241, 0.1)';
                         } else if (payment.method === 'recharge') {
                             paymentType = 'Recharge'; badgeClass = 'success'; 
                             description = 'Task Recharge';
-                            icon = 'ri-battery-charge-line';
+                            icon = 'ri-battery-charge-line'; iconBg = 'rgba(16, 185, 129, 0.1)';
                         } else if (payment.method === 'buy_package') {
                             paymentType = 'Hosting'; badgeClass = 'warning'; 
                             description = (payment.details?.package || 'Hosting') + ' Package';
-                            icon = 'ri-cloud-line';
+                            icon = 'ri-cloud-line'; iconBg = 'rgba(245, 158, 11, 0.1)';
                         } else {
                             paymentType = payment.method || 'Payment'; badgeClass = 'primary'; 
                             description = 'Payment';
-                            icon = 'ri-bank-card-line';
+                            icon = 'ri-bank-card-line'; iconBg = 'rgba(99, 102, 241, 0.1)';
                         }
                         let statusClass = 'warning'; let statusText = payment.status || 'Unknown';
                         switch (payment.status?.toLowerCase()) {
@@ -6632,97 +6938,116 @@ async function loadBilling(page = 1, type = 'all') {
                             case 'expired': statusClass = 'danger'; statusText = 'Expired'; break;
                         }
                         return `
-                        <div class="transaction-row">
-                            <div class="transaction-date">${new Date(payment.dates?.created || Date.now()).toLocaleDateString()}</div>
-                            <div class="transaction-type"><span class="badge badge-${badgeClass}"><i class="${icon}" style="margin-right: 0.25rem;"></i>${paymentType}</span></div>
-                            <div class="transaction-desc" title="${description}">${description}</div>
-                            <div class="transaction-amount">$${(payment.total_payment || 0).toFixed(2)}</div>
-                            <div class="transaction-status"><span class="badge badge-${statusClass}">${statusText}</span></div>
-                            <div class="transaction-actions">
-                                ${payment.status?.toLowerCase() === 'paid' ? `<button class="btn btn-sm" onclick="viewPaymentDetails('${payment.billing_id}')"><i class="ri-eye-line"></i></button>` : ''}
-                                ${payment.status?.toLowerCase() === 'pending' && payment.payment_url ? `<button class="btn btn-sm btn-primary" onclick="window.open('${payment.payment_url}', '_blank')"><i class="ri-external-link-line"></i> Pay</button>` : ''}
-                            </div>
-                        </div>`;
-                    }).join('') : `
-                        <div class="empty-state" style="padding: 3rem;">
-                            <div class="empty-state-icon"><i class="ri-file-list-3-line"></i></div>
-                            <div class="empty-state-title">No Transactions Yet</div>
-                            <div class="empty-state-description">Your payment history will appear here</div>
-                        </div>
-                    `}
-                </div>
-                
-                <!-- Mobile View -->
-                <div class="mobile-only">
-                    ${allPayments.length > 0 ? allPayments.map(payment => {
-                        let paymentType = '', description = '', badgeClass = '', icon = '';
-                        if (payment.method === 'create_task') {
-                            paymentType = 'SEO Task'; badgeClass = 'primary'; 
-                            description = payment.details?.url || 'Task Creation';
-                            icon = 'ri-rocket-line';
-                        } else if (payment.method === 'recharge') {
-                            paymentType = 'Recharge'; badgeClass = 'success'; 
-                            description = 'Task Recharge';
-                            icon = 'ri-battery-charge-line';
-                        } else if (payment.method === 'buy_package') {
-                            paymentType = 'Hosting'; badgeClass = 'warning'; 
-                            description = (payment.details?.package || 'Hosting') + ' Package';
-                            icon = 'ri-cloud-line';
-                        } else {
-                            paymentType = payment.method || 'Payment'; badgeClass = 'primary'; 
-                            description = 'Payment';
-                            icon = 'ri-bank-card-line';
-                        }
-                        let statusClass = 'warning'; let statusText = payment.status || 'Unknown';
-                        switch (payment.status?.toLowerCase()) {
-                            case 'paid': statusClass = 'success'; statusText = 'Paid'; break;
-                            case 'pending': statusClass = 'warning'; statusText = 'Pending'; break;
-                            case 'cancelled': statusClass = 'danger'; statusText = 'Cancelled'; break;
-                            case 'expired': statusClass = 'danger'; statusText = 'Expired'; break;
-                        }
-                        const paymentDate = new Date(payment.dates?.created || Date.now()).toLocaleDateString('en-US', {
-                            month: 'short', day: 'numeric',
-                            year: new Date(payment.dates?.created || Date.now()).getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
-                        });
-                        return `
-                        <div class="transaction-mobile-card">
-                            <div class="transaction-mobile-header">
-                                <div class="transaction-mobile-info">
-                                    <div class="transaction-mobile-badges">
-                                        <span class="badge badge-${badgeClass}" style="font-size: 0.7rem;"><i class="${icon}" style="margin-right: 0.2rem;"></i>${paymentType}</span>
-                                        <span class="badge badge-${statusClass}" style="font-size: 0.7rem;">${statusText}</span>
+                            <tr>
+                                <td>
+                                    <div class="transaction-type-cell">
+                                        <div class="transaction-type-icon" style="background: ${iconBg}; color: var(--${badgeClass});">
+                                            <i class="${icon}"></i>
+                                        </div>
+                                        <div class="transaction-type-info">
+                                            <span class="transaction-type-name">${paymentType}</span>
+                                            <span class="transaction-type-desc">${description.length > 30 ? description.substring(0, 30) + '...' : description}</span>
+                                        </div>
                                     </div>
-                                    <div class="transaction-mobile-desc">${description}</div>
-                                    <div class="transaction-mobile-date">${paymentDate}</div>
-                                </div>
-                                <div class="transaction-mobile-amount">$${(payment.total_payment || 0).toFixed(2)}</div>
-                            </div>
-                            ${(payment.status?.toLowerCase() === 'paid' || (payment.status?.toLowerCase() === 'pending' && payment.payment_url)) ? `
-                            <div class="transaction-mobile-actions">
-                                ${payment.status?.toLowerCase() === 'paid' ? `<button class="btn btn-sm" onclick="viewPaymentDetails('${payment.billing_id}')"><i class="ri-eye-line"></i> Details</button>` : ''}
-                                ${payment.status?.toLowerCase() === 'pending' && payment.payment_url ? `<button class="btn btn-sm btn-primary" onclick="window.open('${payment.payment_url}', '_blank')"><i class="ri-external-link-line"></i> Pay Now</button>` : ''}
-                            </div>
-                            ` : ''}
-                        </div>`;
+                                </td>
+                                <td>${new Date(payment.dates?.created || Date.now()).toLocaleDateString()}</td>
+                                <td style="font-weight: 600;">$${(payment.total_payment || 0).toFixed(2)}</td>
+                                <td><span class="badge badge-${statusClass}">${statusText}</span></td>
+                                <td>
+                                    ${payment.status?.toLowerCase() === 'paid' ? `<button class="btn btn-sm" onclick="viewPaymentDetails('${payment.billing_id}')"><i class="ri-eye-line"></i></button>` : ''}
+                                    ${payment.status?.toLowerCase() === 'pending' && payment.payment_url ? `<button class="btn btn-sm btn-primary" onclick="window.open('${payment.payment_url}', '_blank')"><i class="ri-external-link-line"></i> Pay</button>` : ''}
+                                </td>
+                            </tr>
+                        `;
                     }).join('') : `
-                        <div style="text-align: center; padding: 2.5rem 1.5rem; color: var(--text-secondary);">
-                            <i class="ri-file-list-3-line" style="font-size: 3rem; margin-bottom: 0.75rem; opacity: 0.4;"></i>
-                            <p style="margin: 0; font-weight: 600; font-size: 1rem;">No Transactions Yet</p>
-                            <p style="margin: 0.35rem 0 0 0; font-size: 0.85rem; opacity: 0.8;">Your payment history will appear here</p>
-                        </div>
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 3rem;">
+                                <div style="color: var(--text-secondary);">
+                                    <i class="ri-file-list-3-line" style="font-size: 2.5rem; opacity: 0.4; margin-bottom: 0.5rem; display: block;"></i>
+                                    <p style="font-weight: 600; margin: 0;">No transactions yet</p>
+                                    <p style="font-size: 0.85rem; margin: 0.25rem 0 0 0;">Your payment history will appear here</p>
+                                </div>
+                            </td>
+                        </tr>
                     `}
-                </div>
+                </tbody>
+            </table>
+            
+            <!-- Mobile Cards -->
+            <div class="mobile-transactions">
+                ${allPayments.length > 0 ? allPayments.map(payment => {
+                    let paymentType = '', description = '', badgeClass = '', icon = '', iconBg = '';
+                    if (payment.method === 'create_task') {
+                        paymentType = 'SEO Task'; badgeClass = 'primary'; 
+                        description = payment.details?.url || 'Task Creation';
+                        icon = 'ri-rocket-line'; iconBg = 'rgba(99, 102, 241, 0.1)';
+                    } else if (payment.method === 'recharge') {
+                        paymentType = 'Recharge'; badgeClass = 'success'; 
+                        description = 'Task Recharge';
+                        icon = 'ri-battery-charge-line'; iconBg = 'rgba(16, 185, 129, 0.1)';
+                    } else if (payment.method === 'buy_package') {
+                        paymentType = 'Hosting'; badgeClass = 'warning'; 
+                        description = (payment.details?.package || 'Hosting') + ' Package';
+                        icon = 'ri-cloud-line'; iconBg = 'rgba(245, 158, 11, 0.1)';
+                    } else {
+                        paymentType = payment.method || 'Payment'; badgeClass = 'primary'; 
+                        description = 'Payment';
+                        icon = 'ri-bank-card-line'; iconBg = 'rgba(99, 102, 241, 0.1)';
+                    }
+                    let statusClass = 'warning'; let statusText = payment.status || 'Unknown';
+                    switch (payment.status?.toLowerCase()) {
+                        case 'paid': statusClass = 'success'; statusText = 'Paid'; break;
+                        case 'pending': statusClass = 'warning'; statusText = 'Pending'; break;
+                        case 'cancelled': statusClass = 'danger'; statusText = 'Cancelled'; break;
+                        case 'expired': statusClass = 'danger'; statusText = 'Expired'; break;
+                    }
+                    return `
+                        <div class="mobile-transaction-card">
+                            <div class="mobile-transaction-header">
+                                <div class="mobile-transaction-type">
+                                    <div class="transaction-type-icon" style="background: ${iconBg}; color: var(--${badgeClass});">
+                                        <i class="${icon}"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600;">${paymentType}</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary);">${description.length > 25 ? description.substring(0, 25) + '...' : description}</div>
+                                    </div>
+                                </div>
+                                <span class="badge badge-${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="mobile-transaction-body">
+                                <div class="mobile-transaction-item">
+                                    <label>Date</label>
+                                    <div>${new Date(payment.dates?.created || Date.now()).toLocaleDateString()}</div>
+                                </div>
+                                <div class="mobile-transaction-item">
+                                    <label>Amount</label>
+                                    <div style="font-weight: 600;">$${(payment.total_payment || 0).toFixed(2)}</div>
+                                </div>
+                            </div>
+                            ${payment.status?.toLowerCase() === 'paid' || (payment.status?.toLowerCase() === 'pending' && payment.payment_url) ? `
+                                <div class="mobile-transaction-actions">
+                                    ${payment.status?.toLowerCase() === 'paid' ? `<button class="btn btn-sm" style="flex: 1;" onclick="viewPaymentDetails('${payment.billing_id}')"><i class="ri-eye-line"></i> Details</button>` : ''}
+                                    ${payment.status?.toLowerCase() === 'pending' && payment.payment_url ? `<button class="btn btn-sm btn-primary" style="flex: 1;" onclick="window.open('${payment.payment_url}', '_blank')"><i class="ri-external-link-line"></i> Pay Now</button>` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('') : `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        <i class="ri-file-list-3-line" style="font-size: 2.5rem; opacity: 0.4; margin-bottom: 0.5rem; display: block;"></i>
+                        <p style="font-weight: 600; margin: 0;">No transactions yet</p>
+                        <p style="font-size: 0.85rem; margin: 0.25rem 0 0 0;">Your payment history will appear here</p>
+                    </div>
+                `}
             </div>
         </div>
         
         ${paginationState.billing.total > paginationState.billing.pageSize ? generatePagination('billing', (page) => loadBilling(page, type)) : ''}
         `;
         
-        // Initialize the interactive plan selection
-        selectPlan('professional');
-        
-        // Store plan data for subscription modal
-        window.currentPlanData = planData;
+        // Initialize purchase modal UI
+        updatePackagePurchaseUI();
         
     } catch (error) {
         console.error('Billing error:', error);
@@ -6734,50 +7059,122 @@ async function loadBilling(page = 1, type = 'all') {
 function showSubscriptionModal() {
     const planData = window.currentPlanData || {};
     const planName = planData.current_plan || 'Unknown';
+    const isSubscribed = planData.is_subscription;
     const subscriptionEnd = planData.subscription_period_end ? new Date(planData.subscription_period_end) : null;
+    const expiryDate = planData.expiry_date ? new Date(planData.expiry_date) : null;
     const lastPayment = planData.billing?.last_payment_amount || 0;
     const provider = planData.billing?.provider || 'Unknown';
+    const pkg = hostingPackages[planName];
+    
+    // Calculate days left
+    let daysLeft = 0;
+    if (expiryDate) {
+        daysLeft = Math.ceil((expiryDate - new Date()) / (1000 * 60 * 60 * 24));
+        if (daysLeft < 0) daysLeft = 0;
+    }
     
     const modalContent = `
-        <div class="subscription-modal-content">
-            <div class="subscription-modal-icon">
-                <i class="ri-vip-crown-line"></i>
+        <style>
+            .sub-modal-content { text-align: center; }
+            .sub-modal-icon {
+                width: 80px; height: 80px; margin: 0 auto 1.5rem;
+                background: ${pkg?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};
+                border-radius: 50%; display: flex; align-items: center; justify-content: center;
+                font-size: 2rem; color: white;
+            }
+            .sub-modal-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); }
+            .sub-modal-subtitle { color: var(--text-secondary); margin-bottom: 1.5rem; }
+            .sub-details-card {
+                background: var(--bg-secondary); border-radius: var(--radius-lg);
+                padding: 1.25rem; margin-bottom: 1.5rem; text-align: left;
+            }
+            .sub-detail-row {
+                display: flex; justify-content: space-between; padding: 0.6rem 0;
+                border-bottom: 1px solid var(--border); font-size: 0.9rem;
+            }
+            .sub-detail-row:last-child { border-bottom: none; }
+            .sub-detail-label { color: var(--text-secondary); }
+            .sub-detail-value { font-weight: 600; color: var(--text); }
+            .sub-warning {
+                display: flex; gap: 0.75rem; padding: 1rem;
+                background: rgba(245, 158, 11, 0.1); border-radius: var(--radius);
+                margin-bottom: 1.5rem; text-align: left;
+            }
+            .sub-warning i { color: #f59e0b; font-size: 1.25rem; flex-shrink: 0; margin-top: 0.1rem; }
+            .sub-warning-text { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+            .sub-modal-actions { display: flex; gap: 0.75rem; }
+            .sub-modal-actions button { flex: 1; }
+            .sub-stats-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+            .sub-stat {
+                flex: 1; background: var(--bg-secondary); border-radius: var(--radius);
+                padding: 1rem; text-align: center;
+            }
+            .sub-stat-value { font-size: 1.5rem; font-weight: 800; color: var(--text); }
+            .sub-stat-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; }
+        </style>
+        <div class="sub-modal-content">
+            <div class="sub-modal-icon">
+                <i class="${pkg?.icon || 'ri-vip-crown-line'}"></i>
             </div>
-            <h3 class="subscription-modal-title">Manage Your Subscription</h3>
-            <p class="subscription-modal-subtitle">You're currently on the ${hostingConfig.packages[planName]?.name || planName} plan</p>
+            <h3 class="sub-modal-title">${pkg?.name || planName} Plan</h3>
+            <p class="sub-modal-subtitle">${isSubscribed ? 'Active Subscription' : 'One-time Purchase'}</p>
             
-            <div class="subscription-details-card">
-                <div class="subscription-detail-row">
-                    <span class="subscription-detail-label">Current Plan</span>
-                    <span class="subscription-detail-value">${hostingConfig.packages[planName]?.name || planName}</span>
+            <div class="sub-stats-row">
+                <div class="sub-stat">
+                    <div class="sub-stat-value">${daysLeft}</div>
+                    <div class="sub-stat-label">Days Left</div>
                 </div>
-                <div class="subscription-detail-row">
-                    <span class="subscription-detail-label">Status</span>
-                    <span class="subscription-detail-value"><span class="badge badge-success">Active</span></span>
-                </div>
-                <div class="subscription-detail-row">
-                    <span class="subscription-detail-label">Next Billing Date</span>
-                    <span class="subscription-detail-value">${subscriptionEnd ? subscriptionEnd.toLocaleDateString() : 'N/A'}</span>
-                </div>
-                <div class="subscription-detail-row">
-                    <span class="subscription-detail-label">Billing Amount</span>
-                    <span class="subscription-detail-value">$${lastPayment.toFixed(2)}</span>
-                </div>
-                <div class="subscription-detail-row">
-                    <span class="subscription-detail-label">Payment Method</span>
-                    <span class="subscription-detail-value">${provider.charAt(0).toUpperCase() + provider.slice(1)}</span>
+                <div class="sub-stat">
+                    <div class="sub-stat-value">$${lastPayment.toFixed(0)}</div>
+                    <div class="sub-stat-label">Last Payment</div>
                 </div>
             </div>
             
-            <div class="subscription-warning">
+            <div class="sub-details-card">
+                <div class="sub-detail-row">
+                    <span class="sub-detail-label">Status</span>
+                    <span class="sub-detail-value"><span class="badge badge-success">Active</span></span>
+                </div>
+                <div class="sub-detail-row">
+                    <span class="sub-detail-label">Plan Type</span>
+                    <span class="sub-detail-value">${isSubscribed ? 'Subscription' : 'One-time'}</span>
+                </div>
+                ${isSubscribed && subscriptionEnd ? `
+                <div class="sub-detail-row">
+                    <span class="sub-detail-label">Next Billing</span>
+                    <span class="sub-detail-value">${subscriptionEnd.toLocaleDateString()}</span>
+                </div>
+                ` : ''}
+                ${expiryDate ? `
+                <div class="sub-detail-row">
+                    <span class="sub-detail-label">Expires On</span>
+                    <span class="sub-detail-value">${expiryDate.toLocaleDateString()}</span>
+                </div>
+                ` : ''}
+                <div class="sub-detail-row">
+                    <span class="sub-detail-label">Payment Method</span>
+                    <span class="sub-detail-value">${provider.charAt(0).toUpperCase() + provider.slice(1)}</span>
+                </div>
+                <div class="sub-detail-row">
+                    <span class="sub-detail-label">Images Limit</span>
+                    <span class="sub-detail-value">${(planData.images_limit || 0).toLocaleString()}</span>
+                </div>
+                <div class="sub-detail-row">
+                    <span class="sub-detail-label">Articles Limit</span>
+                    <span class="sub-detail-value">${(planData.articles_limit || 0).toLocaleString()}</span>
+                </div>
+            </div>
+            
+            ${isSubscribed ? `
+            <div class="sub-warning">
                 <i class="ri-information-line"></i>
-                <div class="subscription-warning-text">
+                <div class="sub-warning-text">
                     If you cancel, your subscription will remain active until the end of the current billing period. 
                     You won't be charged again, and your plan will revert to Free after expiration.
                 </div>
             </div>
             
-            <div class="subscription-modal-actions">
+            <div class="sub-modal-actions">
                 <button class="btn btn-secondary" onclick="closeModal()">
                     <i class="ri-close-line"></i> Close
                 </button>
@@ -6785,10 +7182,20 @@ function showSubscriptionModal() {
                     <i class="ri-close-circle-line"></i> Cancel Subscription
                 </button>
             </div>
+            ` : `
+            <div class="sub-modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">
+                    <i class="ri-close-line"></i> Close
+                </button>
+                <button class="btn btn-primary" onclick="closeModal(); openPackagePurchaseModal();">
+                    <i class="ri-refresh-line"></i> Renew Plan
+                </button>
+            </div>
+            `}
         </div>
     `;
     
-    showModal('Subscription Management', modalContent, '500px');
+    showModal('Plan Management', modalContent, '480px');
 }
 
 // Confirm Cancel Subscription
@@ -12254,140 +12661,9 @@ function showToast(message, type = 'info') {
         toast.remove();
     }, 4000);
 }
-// New Hosting Plan & Subscription Logic (Add this before Utility Functions)
-const hostingConfig = {
-    packages: {
-        "basic": {
-            name: "Basic",
-            price: { "3month": 10, "6month": 18, "12month": 32 },
-            limits: { articles: 200, images: 1000 },
-            features: ['1,000 Images', '200 Articles', 'Email Support']
-        },
-        "professional": {
-            name: "Professional",
-            price: { "3month": 25, "6month": 45, "12month": 80 },
-            limits: { articles: 600, images: 4000 },
-            features: ['4,000 Images', '600 Articles', 'Priority Support']
-        },
-        "enterprise": {
-            name: "Enterprise",
-            price: { "3month": 50, "6month": 90, "12month": 160 },
-            limits: { articles: 2000, images: 20000 },
-            features: ['20,000 Images', '2,000 Articles', 'Dedicated Support']
-        }
-    }
-};
-let purchaseSelection = { plan: 'professional', duration: '3month' };
-function selectPlan(planKey) {
-    purchaseSelection.plan = planKey;
-    document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
-    document.getElementById(`plan-${planKey}`)?.classList.add('selected');
-    updatePriceDisplay();
-}
-function selectDuration(duration) {
-    purchaseSelection.duration = duration;
-    updatePriceDisplay();
-}
-function updatePriceDisplay() {
-    if (!purchaseSelection.plan || !purchaseSelection.duration) return;
-    const price = hostingConfig.packages[purchaseSelection.plan]?.price[purchaseSelection.duration];
-    const priceDisplay = document.getElementById('price-display');
-    if (priceDisplay) {
-        priceDisplay.textContent = `$${price.toFixed(2)}`;
-    }
-}
-async function purchasePlan() {
-    if (!purchaseSelection.plan) {
-        showToast("Please select a plan.", "error");
-        return;
-    }
-    // This is the payload for the *first* attempt
-    const payload = {
-        package: purchaseSelection.plan,
-        duration: purchaseSelection.duration,
-        provider: document.getElementById('payment-provider').value,
-        subscription: false,
-        cancel_previous: true // This is for pending payments
-    };
-    try {
-        // --- FIRST ATTEMPT ---
-        // We try to buy the plan normally.
-        const { data } = await api('/hosting/buy-package', {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        });
-        // If it works, we redirect to payment.
-        showToast("Redirecting to payment...", "success");
-        window.open(data.payment_url, '_blank');
-    } catch (error) {
-        // --- ERROR HANDLING ---
-        console.error("Failed to initiate purchase (first attempt)", error);
-        // Check for the specific error message you mentioned.
-        if (error && error.message && error.message.includes("Please set cancel_current_plan=true")) {
-            // --- SHOW CONFIRMATION POPUP ---
-            Swal.fire({
-                title: 'Active Plan Found',
-                html: `You already have an active hosting plan.<br><br>Proceeding will <strong>cancel and replace</strong> your current plan with this new one. Are you sure you want to continue?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: 'var(--primary)',
-                cancelButtonText: 'Cancel',
-                confirmButtonText: 'Yes, Proceed',
-                customClass: { popup: 'swal2-toast' } // Use our theme
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    // User clicked "Yes, Proceed"
-                    // Create the new payload with the required 'cancel_current_plan: true'
-                    const newPayload = {
-                        ...payload, // Copy all the old properties (plan, duration, etc.)
-                        cancel_current_plan: true // Add the new key
-                    };
-                    Swal.fire({
-                        title: 'Processing...',
-                        didOpen: () => Swal.showLoading(),
-                        allowOutsideClick: false,
-                        customClass: { popup: 'swal2-toast' }
-                    });
-                    try {
-                        // --- SECOND ATTEMPT ---
-                        // We send the API request again, this time with the new payload.
-                        const { data } = await api('/hosting/buy-package', {
-                            method: 'POST',
-                            body: JSON.stringify(newPayload)
-                        });
-                        Swal.close();
-                        showToast("Redirecting to payment...", "success");
-                        window.open(data.payment_url, '_blank');
-                    } catch (retryError) {
-                        // Handle an error on the *second* attempt
-                        console.error("Failed to initiate purchase (second attempt)", retryError);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Failed to start purchase: ' + retryError.message,
-                            customClass: { popup: 'swal2-toast' }
-                        });
-                    }
-                }
-            });
-        } else {
-            // It was a different error, so we show the generic toast
-            showToast('Failed to start purchase: ' + error.message, 'error');
-        }
-    }
-}
+// Subscription Management Helper
 async function cancelSubscription() {
-    // Redirect to the new subscription modal
     showSubscriptionModal();
-}
-function showUpgradePlans() {
-    const section = document.getElementById('upgradePlansSection');
-    if (section) {
-        section.style.display = section.style.display === 'none' ? 'block' : 'none';
-        if (section.style.display === 'block') {
-            section.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }
 }
 // Utility Functions
 function getCookie(name) {
