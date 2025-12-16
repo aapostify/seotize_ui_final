@@ -6509,6 +6509,7 @@ async function loadBilling(page = 1, type = 'all') {
                 display: flex; align-items: center; justify-content: center;
                 font-size: 1.25rem; margin-bottom: 0.75rem;
             }
+            .pkg-option-content { flex: 1; min-width: 0; }
             .pkg-option-name { font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
             .pkg-option-price { font-size: 0.85rem; color: var(--text-secondary); }
             .pkg-option-price strong { color: var(--text); font-size: 1.1rem; }
@@ -6657,25 +6658,33 @@ async function loadBilling(page = 1, type = 'all') {
                 .pkg-modal-title { font-size: 1.15rem; }
                 .pkg-modal-body { padding: 1rem; gap: 1.5rem; overflow-y: auto; }
                 .pkg-options-grid { 
-                    display: flex; gap: 0.75rem; overflow-x: auto; padding-bottom: 0.5rem;
-                    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+                    display: grid; grid-template-columns: 1fr; gap: 0.75rem;
                 }
-                .pkg-options-grid::-webkit-scrollbar { display: none; }
                 .pkg-option-card { 
-                    min-width: 200px; flex-shrink: 0; scroll-snap-align: start;
-                    padding: 1rem;
+                    padding: 1rem; display: flex; align-items: center; gap: 1rem;
+                    flex-direction: row;
                 }
-                .pkg-option-card.popular::before { top: -8px; font-size: 0.55rem; padding: 0.15rem 0.5rem; }
+                .pkg-option-card .pkg-option-icon { width: 48px; height: 48px; font-size: 1.25rem; flex-shrink: 0; margin-bottom: 0; }
+                .pkg-option-card .pkg-option-content { text-align: left; }
+                .pkg-option-card .pkg-option-name { font-size: 1rem; margin-bottom: 0.15rem; }
+                .pkg-option-card .pkg-option-price { font-size: 0.8rem; }
+                .pkg-option-card .pkg-option-features { display: none; }
+                .pkg-option-card.selected { border-color: var(--primary); background: rgba(99, 102, 241, 0.08); }
+                .pkg-option-card.selected::after { 
+                    content: '✓'; position: absolute; top: 50%; right: 1rem; transform: translateY(-50%);
+                    width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%;
+                    display: flex; align-items: center; justify-content: center; font-size: 0.75rem;
+                }
+                .pkg-option-card.popular::before { top: auto; bottom: -8px; font-size: 0.55rem; padding: 0.15rem 0.5rem; }
                 .pkg-duration-grid { 
-                    display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem;
-                    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+                    display: flex; gap: 0.5rem;
                 }
-                .pkg-duration-grid::-webkit-scrollbar { display: none; }
                 .pkg-duration-option { 
-                    min-width: 100px; flex-shrink: 0; scroll-snap-align: start;
-                    padding: 0.75rem 1rem;
+                    flex: 1; padding: 0.75rem 0.5rem; min-width: 0;
                 }
-                .pkg-duration-option.best-value::before { top: -8px; font-size: 0.5rem; }
+                .pkg-duration-option.best-value::before { top: -8px; font-size: 0.5rem; padding: 0.15rem 0.4rem; }
+                .pkg-duration-label { font-size: 0.75rem; }
+                .pkg-duration-discount { font-size: 0.6rem; }
                 .pkg-providers-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
                 .pkg-provider-option { padding: 0.75rem; flex-direction: column; text-align: center; gap: 0.5rem; }
                 .pkg-summary-section { padding: 1.25rem; }
@@ -6697,10 +6706,13 @@ async function loadBilling(page = 1, type = 'all') {
                 .plan-usage-percent { font-size: 0.5rem; }
                 .filter-tab { padding: 0.4rem 0.75rem; font-size: 0.75rem; }
                 .mobile-transaction-card { padding: 0.85rem; margin: 0.4rem 0.75rem; }
-                .pkg-option-card { min-width: 180px; }
-                .pkg-duration-option { min-width: 90px; padding: 0.6rem 0.75rem; }
-                .pkg-duration-label { font-size: 0.8rem; }
-                .pkg-duration-discount { font-size: 0.65rem; }
+                .pkg-option-card .pkg-option-icon { width: 40px; height: 40px; font-size: 1.1rem; }
+                .pkg-option-card .pkg-option-name { font-size: 0.9rem; }
+                .pkg-option-card .pkg-option-price { font-size: 0.75rem; }
+                .pkg-option-card.selected::after { width: 20px; height: 20px; font-size: 0.65rem; right: 0.75rem; }
+                .pkg-duration-option { padding: 0.6rem 0.35rem; }
+                .pkg-duration-label { font-size: 0.7rem; }
+                .pkg-duration-discount { font-size: 0.55rem; }
             }
         </style>
         
@@ -6724,8 +6736,10 @@ async function loadBilling(page = 1, type = 'all') {
                                     <div class="pkg-option-icon" style="background: ${pkg.gradient}; color: white;">
                                         <i class="${pkg.icon}"></i>
                                     </div>
-                                    <div class="pkg-option-name">${pkg.name}</div>
-                                    <div class="pkg-option-price">From <strong>$${pkg.price['3month']}</strong>/3mo</div>
+                                    <div class="pkg-option-content">
+                                        <div class="pkg-option-name">${pkg.name}</div>
+                                        <div class="pkg-option-price">From <strong>$${pkg.price['3month']}</strong>/3mo</div>
+                                    </div>
                                     <ul class="pkg-option-features">
                                         ${pkg.features.slice(0, 3).map(f => `<li><i class="ri-check-line"></i> ${f}</li>`).join('')}
                                     </ul>
