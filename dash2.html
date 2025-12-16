@@ -4960,24 +4960,25 @@ div#modalBody { padding-bottom: 100px; }
     white-space: nowrap;
 }
 
-/* Article Modal Actions - Separate Row */
-.article-modal-actions-row {
+/* Article Header Meta Row - Contains meta info and actions */
+.article-header-meta-row {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     gap: 0.75rem;
-    padding-top: 0.75rem;
     margin-top: 0.75rem;
+    padding-top: 0.75rem;
     border-top: 1px solid var(--border);
 }
 
-.article-modal-actions-slot {
+/* Desktop Actions */
+.article-modal-actions-desktop {
     display: flex;
     gap: 0.75rem;
     flex-shrink: 0;
 }
 
-.article-modal-actions-slot .btn {
+.article-modal-actions-desktop .btn {
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
     border-radius: var(--radius);
@@ -4987,50 +4988,40 @@ div#modalBody { padding-bottom: 100px; }
     transition: all 0.2s ease;
 }
 
-.article-modal-actions-slot .btn-edit {
+.article-modal-actions-desktop .btn-edit {
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
     color: var(--text);
 }
 
-.article-modal-actions-slot .btn-edit:hover {
+.article-modal-actions-desktop .btn-edit:hover {
     background: var(--primary);
     border-color: var(--primary);
     color: white;
 }
 
-.article-modal-actions-slot .btn-delete {
+.article-modal-actions-desktop .btn-delete {
     background: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.3);
     color: var(--danger);
 }
 
-.article-modal-actions-slot .btn-delete:hover {
+.article-modal-actions-desktop .btn-delete:hover {
     background: var(--danger);
     border-color: var(--danger);
     color: white;
 }
 
-@media (max-width: 768px) {
-    .article-modal-actions-row {
-        display: none;
-    }
-}
-
-/* Mobile actions in meta row */
-.article-header-meta-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    margin-top: 0.75rem;
-}
-
+/* Mobile Actions */
 .article-modal-actions-mobile {
     display: none;
 }
 
 @media (max-width: 768px) {
+    .article-modal-actions-desktop {
+        display: none;
+    }
+    
     .article-modal-actions-mobile {
         display: flex;
         gap: 0.35rem;
@@ -5040,11 +5031,6 @@ div#modalBody { padding-bottom: 100px; }
     .article-modal-actions-mobile .btn {
         padding: 0.3rem 0.5rem;
         font-size: 0.75rem;
-        width: auto !important;
-    }
-    
-    .article-modal-actions-mobile .btn i {
-        font-size: 0.85rem;
     }
 }
 
@@ -13224,9 +13210,7 @@ async function viewArticle(articleId) {
                             <i class="ri-delete-bin-line"></i>
                         </button>
                     </div>
-                </div>
-                <div class="article-modal-actions-row">
-                    <div class="article-modal-actions-slot">
+                    <div class="article-modal-actions-desktop">
                         <button class="btn btn-edit" onclick="Swal.close(); showArticleModal('${articleId}')" title="Edit Article">
                             <i class="ri-edit-line"></i> Edit Article
                         </button>
