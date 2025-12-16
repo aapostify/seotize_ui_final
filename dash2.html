@@ -6027,13 +6027,16 @@ async function processPackagePurchase() {
     });
     
     try {
-        const response = await api('/hosting/buy-package', 'POST', {
-            package: packagePurchaseState.selectedPackage,
-            provider: packagePurchaseState.paymentProvider,
-            duration: packagePurchaseState.duration,
-            subscription: packagePurchaseState.paymentType === 'subscription',
-            cancel_previous: true,
-            cancel_current_plan: true
+        const response = await api('/hosting/buy-package', {
+            method: 'POST',
+            body: JSON.stringify({
+                package: packagePurchaseState.selectedPackage,
+                provider: packagePurchaseState.paymentProvider,
+                duration: packagePurchaseState.duration,
+                subscription: packagePurchaseState.paymentType === 'subscription',
+                cancel_previous: true,
+                cancel_current_plan: true
+            })
         });
         
         Swal.close();
@@ -6051,15 +6054,42 @@ async function processPackagePurchase() {
             }).then(() => {
                 loadBilling();
             });
+        } else if (response.data?.message) {
+            // Handle pending payment message
+            Swal.fire({
+                icon: 'info',
+                title: 'Pending Payment',
+                html: response.data.message,
+                showCancelButton: true,
+                confirmButtonText: 'Go to Payment',
+                cancelButtonText: 'Cancel',
+                customClass: { popup: 'swal2-toast' }
+            }).then((result) => {
+                if (result.isConfirmed && response.data.payment_url) {
+                    window.open(response.data.payment_url, '_blank');
+                }
+            });
         }
     } catch (error) {
         console.error('Purchase error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Purchase Failed',
-            text: error.message || 'Failed to process purchase. Please try again.',
-            customClass: { popup: 'swal2-toast' }
-        });
+        
+        // Handle specific error cases
+        if (error.code === 409) {
+            // Active subscription or plan conflict
+            Swal.fire({
+                icon: 'warning',
+                title: 'Plan Conflict',
+                html: error.message || 'You have an active plan. Please cancel it first or enable replacement.',
+                customClass: { popup: 'swal2-toast' }
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Purchase Failed',
+                text: error.message || 'Failed to process purchase. Please try again.',
+                customClass: { popup: 'swal2-toast' }
+            });
+        }
     }
 }
 
@@ -6277,56 +6307,81 @@ async function loadBilling(page = 1, type = 'all') {
                 background: rgba(255,255,255,0.9);
             }
             
-            /* Usage Progress Section inside Plan Card */
+            /* Usage Progress Section - Card Style */
             .plan-usage-section {
                 position: relative; z-index: 1;
-                display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 1rem;
+                background: var(--card); border-radius: var(--radius-lg);
+                border: 1px solid var(--border); overflow: hidden;
+                margin-bottom: 1.5rem;
+            }
+            .plan-usage-header-bar {
+                display: flex; align-items: center; justify-content: space-between;
+                padding: 1rem 1.25rem; background: var(--bg-tertiary);
+                border-bottom: 1px solid var(--border);
+            }
+            .plan-usage-header-bar h4 {
+                margin: 0; font-size: 0.9rem; font-weight: 700; color: var(--text);
+                display: flex; align-items: center; gap: 0.5rem;
+            }
+            .plan-usage-header-bar h4 i { color: var(--primary); }
+            .plan-usage-header-bar .usage-refresh {
+                font-size: 0.75rem; color: var(--text-secondary);
+            }
+            .plan-usage-grid {
+                display: grid; grid-template-columns: repeat(3, 1fr);
+                gap: 0;
             }
             .plan-usage-item {
-                background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-                border-radius: var(--radius-lg); padding: 1rem 1.25rem;
-                border: 1px solid rgba(255,255,255,0.15);
+                padding: 1.25rem; text-align: center;
+                border-right: 1px solid var(--border);
+                transition: background 0.2s ease;
             }
-            .plan-usage-header {
-                display: flex; justify-content: space-between; align-items: center;
-                margin-bottom: 0.6rem;
+            .plan-usage-item:last-child { border-right: none; }
+            .plan-usage-item:hover { background: var(--bg-secondary); }
+            .plan-usage-icon {
+                width: 44px; height: 44px; margin: 0 auto 0.75rem;
+                border-radius: var(--radius); display: flex;
+                align-items: center; justify-content: center; font-size: 1.25rem;
             }
-            .plan-usage-title {
-                display: flex; align-items: center; gap: 0.5rem;
-                font-size: 0.85rem; font-weight: 600; color: white;
+            .plan-usage-icon.images { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+            .plan-usage-icon.articles { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+            .plan-usage-icon.time { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+            .plan-usage-content { flex: 1; }
+            .plan-usage-value {
+                font-size: 1.35rem; font-weight: 800; color: var(--text); margin-bottom: 0.15rem;
             }
-            .plan-usage-title i { font-size: 1rem; opacity: 0.8; }
-            .plan-usage-count {
-                font-size: 0.8rem; color: rgba(255,255,255,0.85);
+            .plan-usage-label {
+                font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase;
+                letter-spacing: 0.5px; margin-bottom: 0.75rem;
             }
             .plan-usage-bar {
-                height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px;
-                overflow: hidden; margin-bottom: 0.4rem;
+                height: 6px; background: var(--bg-tertiary); border-radius: 3px;
+                overflow: hidden; margin: 0 auto; max-width: 120px;
             }
             .plan-usage-fill {
                 height: 100%; border-radius: 3px; transition: width 0.5s ease;
             }
-            .plan-usage-fill.safe { background: rgba(255,255,255,0.9); }
+            .plan-usage-fill.safe { background: var(--success); }
             .plan-usage-fill.warning { background: #fbbf24; }
             .plan-usage-fill.danger { background: #ef4444; }
             .plan-usage-percent {
-                font-size: 0.7rem; color: rgba(255,255,255,0.7); text-align: right;
+                font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.4rem;
             }
             
             /* Plan Stats Row */
             .plan-stats-row {
-                display: flex; gap: 0.75rem; flex-wrap: wrap; padding: 1.25rem 1.5rem;
+                display: grid; grid-template-columns: repeat(4, 1fr);
+                gap: 0.75rem; padding: 1.25rem 1.5rem;
                 background: var(--bg-secondary); border-top: 1px solid var(--border);
             }
             .plan-stat-chip {
                 display: flex; align-items: center; gap: 0.5rem;
-                background: var(--card); padding: 0.6rem 1rem; border-radius: var(--radius);
+                background: var(--card); padding: 0.65rem 0.85rem; border-radius: var(--radius);
                 border: 1px solid var(--border); font-size: 0.8rem;
             }
-            .plan-stat-chip i { color: var(--text-secondary); }
+            .plan-stat-chip i { color: var(--primary); font-size: 1rem; }
             .plan-stat-chip-value { font-weight: 600; color: var(--text); }
-            .plan-stat-chip-label { color: var(--text-secondary); }
+            .plan-stat-chip-label { color: var(--text-secondary); display: none; }
             
             
             /* Transaction History */
@@ -6343,10 +6398,35 @@ async function loadBilling(page = 1, type = 'all') {
                 font-size: 1.1rem; font-weight: 700; color: var(--text);
                 display: flex; align-items: center; gap: 0.5rem;
             }
-            .transactions-filter select {
-                padding: 0.5rem 1rem; border-radius: var(--radius);
+            .transactions-filters {
+                display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;
+            }
+            .filter-tabs {
+                display: flex; background: var(--bg-tertiary); border-radius: var(--radius);
+                padding: 0.25rem; gap: 0.25rem;
+            }
+            .filter-tab {
+                padding: 0.45rem 0.85rem; border-radius: calc(var(--radius) - 2px);
+                font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);
+                cursor: pointer; transition: all 0.2s ease; border: none;
+                background: transparent; white-space: nowrap;
+            }
+            .filter-tab:hover { color: var(--text); }
+            .filter-tab.active {
+                background: var(--card); color: var(--text);
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+            .filter-tab .filter-count {
+                display: inline-flex; align-items: center; justify-content: center;
+                min-width: 18px; height: 18px; padding: 0 5px;
+                background: var(--bg-tertiary); border-radius: 9px;
+                font-size: 0.65rem; margin-left: 0.35rem;
+            }
+            .filter-tab.active .filter-count { background: var(--primary); color: white; }
+            .filter-select {
+                padding: 0.5rem 0.85rem; border-radius: var(--radius);
                 border: 1px solid var(--border); background: var(--bg-secondary);
-                color: var(--text); font-size: 0.875rem; cursor: pointer;
+                color: var(--text); font-size: 0.8rem; cursor: pointer;
             }
             .transactions-table {
                 width: 100%; border-collapse: collapse;
@@ -6602,30 +6682,65 @@ async function loadBilling(page = 1, type = 'all') {
             @media (max-width: 1024px) {
                 .pkg-modal-body { grid-template-columns: 1fr; }
                 .pkg-summary-section { position: static; }
-                .pkg-options-grid { grid-template-columns: 1fr; }
+                .pkg-options-grid { grid-template-columns: 1fr 1fr; }
             }
             @media (max-width: 768px) {
                 .billing-header { flex-direction: column; align-items: flex-start; }
+                .billing-header-actions { display: none; }
                 .current-plan-header { flex-direction: column; gap: 1rem; }
                 .current-plan-actions { width: 100%; justify-content: flex-start; }
-                .plan-usage-section { grid-template-columns: 1fr; }
-                .plan-stats-row { flex-wrap: wrap; }
-                .plan-stat-chip { flex: 1 1 45%; min-width: 140px; }
+                .plan-usage-grid { grid-template-columns: 1fr; }
+                .plan-usage-item { 
+                    border-right: none; border-bottom: 1px solid var(--border);
+                    text-align: left; display: flex; align-items: center; gap: 1rem;
+                    padding: 1rem 1.25rem;
+                }
+                .plan-usage-item:last-child { border-bottom: none; }
+                .plan-usage-icon { margin: 0; flex-shrink: 0; }
+                .plan-usage-content { flex: 1; }
+                .plan-usage-value { font-size: 1.1rem; }
+                .plan-usage-bar { max-width: 100%; margin: 0; }
+                .plan-usage-percent { text-align: left; }
+                .plan-stats-row { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; padding: 1rem; }
+                .plan-stat-chip { padding: 0.5rem 0.65rem; font-size: 0.75rem; }
                 .transactions-table { display: none; }
                 .mobile-transactions { display: block; }
+                .transactions-header { padding: 1rem; }
+                .transactions-filters { width: 100%; }
+                .filter-tabs { width: 100%; overflow-x: auto; }
+                .filter-tabs::-webkit-scrollbar { display: none; }
                 .pkg-modal-container {
                     width: 100vw; max-width: 100vw; height: 100vh;
                     border-radius: 0; max-height: 100vh;
                 }
-                .pkg-modal-body { padding: 1rem; gap: 1rem; }
-                .pkg-duration-grid { grid-template-columns: 1fr; }
-                .pkg-providers-grid { grid-template-columns: 1fr; }
+                .pkg-modal-header { padding: 1rem 1.25rem; }
+                .pkg-modal-title { font-size: 1.15rem; }
+                .pkg-modal-body { padding: 1rem; gap: 1.5rem; }
+                .pkg-options-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+                .pkg-option-card { padding: 1rem; }
+                .pkg-option-card.popular::before { top: -8px; font-size: 0.55rem; padding: 0.15rem 0.5rem; }
+                .pkg-duration-grid { grid-template-columns: 1fr; gap: 0.5rem; }
+                .pkg-duration-option { padding: 0.85rem; }
+                .pkg-duration-option.best-value::before { top: -8px; font-size: 0.5rem; }
+                .pkg-providers-grid { grid-template-columns: 1fr; gap: 0.5rem; }
+                .pkg-provider-option { padding: 0.85rem; }
+                .pkg-summary-section { padding: 1.25rem; }
+                .pkg-section-title { font-size: 0.9rem; margin-bottom: 0.75rem; }
             }
             @media (max-width: 480px) {
-                .current-plan-name { font-size: 1.35rem; }
-                .current-plan-name i { font-size: 1.2rem; }
-                .plan-stat-chip { flex: 1 1 100%; }
-                .plan-usage-item { padding: 0.85rem 1rem; }
+                .current-plan-gradient { padding: 1.25rem; }
+                .current-plan-name { font-size: 1.25rem; }
+                .current-plan-name i { font-size: 1.1rem; }
+                .current-plan-badge { font-size: 0.65rem; padding: 0.4rem 0.75rem; }
+                .current-plan-meta { gap: 0.5rem; }
+                .current-plan-meta-item { font-size: 0.75rem; }
+                .current-plan-actions .btn { padding: 0.5rem 0.85rem; font-size: 0.8rem; }
+                .plan-stats-row { grid-template-columns: repeat(2, 1fr); }
+                .plan-stat-chip i { font-size: 0.9rem; }
+                .plan-usage-header-bar { padding: 0.85rem 1rem; }
+                .plan-usage-header-bar h4 { font-size: 0.85rem; }
+                .filter-tab { padding: 0.4rem 0.65rem; font-size: 0.7rem; }
+                .mobile-transaction-card { padding: 0.85rem; margin: 0.4rem 0.75rem; }
             }
         </style>
         
@@ -6724,16 +6839,6 @@ async function loadBilling(page = 1, type = 'all') {
                 <h1><i class="ri-bank-card-line"></i> Billing & Plans</h1>
                 <p>Manage your subscription, view usage, and payment history</p>
             </div>
-            <div class="billing-header-actions">
-                <button class="btn btn-primary" onclick="openPackagePurchaseModal()">
-                    <i class="ri-shopping-bag-3-line"></i> ${isFree ? 'Get Started' : 'Upgrade Plan'}
-                </button>
-                ${!isFree && isSubscribed ? `
-                    <button class="btn btn-secondary" onclick="showSubscriptionModal()">
-                        <i class="ri-settings-3-line"></i> Manage
-                    </button>
-                ` : ''}
-            </div>
         </div>
         
         ${isFree ? `
@@ -6793,64 +6898,68 @@ async function loadBilling(page = 1, type = 'all') {
                     </div>
                 </div>
                 
-                <!-- Usage Progress Bars -->
-                <div class="plan-usage-section">
-                    <div class="plan-usage-item">
-                        <div class="plan-usage-header">
-                            <span class="plan-usage-title"><i class="ri-image-line"></i> Images</span>
-                            <span class="plan-usage-count">${imagesUsed.toLocaleString()} / ${imagesLimit.toLocaleString()}</span>
-                        </div>
-                        <div class="plan-usage-bar">
-                            <div class="plan-usage-fill ${imagesUsedPercent > 90 ? 'danger' : imagesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${imagesUsedPercent}%;"></div>
-                        </div>
-                        <div class="plan-usage-percent">${Math.round(imagesUsedPercent)}% used</div>
-                    </div>
-                    <div class="plan-usage-item">
-                        <div class="plan-usage-header">
-                            <span class="plan-usage-title"><i class="ri-article-line"></i> Articles</span>
-                            <span class="plan-usage-count">${articlesUsed.toLocaleString()} / ${articlesLimit.toLocaleString()}</span>
-                        </div>
-                        <div class="plan-usage-bar">
-                            <div class="plan-usage-fill ${articlesUsedPercent > 90 ? 'danger' : articlesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${articlesUsedPercent}%;"></div>
-                        </div>
-                        <div class="plan-usage-percent">${Math.round(articlesUsedPercent)}% used</div>
-                    </div>
-                    <div class="plan-usage-item">
-                        <div class="plan-usage-header">
-                            <span class="plan-usage-title"><i class="ri-timer-line"></i> Time Left</span>
-                            <span class="plan-usage-count">${daysLeft} days</span>
-                        </div>
-                        <div class="plan-usage-bar">
-                            <div class="plan-usage-fill ${daysLeft < 7 ? 'danger' : daysLeft < 14 ? 'warning' : 'safe'}" style="width: ${Math.min(daysLeft * 3.33, 100)}%;"></div>
-                        </div>
-                        <div class="plan-usage-percent">${expiryDate ? expiryDate.toLocaleDateString() : 'N/A'}</div>
-                    </div>
-                </div>
             </div>
             
             <!-- Bottom Stats Row -->
             <div class="plan-stats-row">
                 <div class="plan-stat-chip">
                     <i class="ri-shield-check-line"></i>
-                    <span class="plan-stat-chip-label">Status:</span>
                     <span class="plan-stat-chip-value">${daysLeft > 0 ? 'Active' : 'Expired'}</span>
                 </div>
                 <div class="plan-stat-chip">
                     <i class="ri-bank-card-line"></i>
-                    <span class="plan-stat-chip-label">Provider:</span>
                     <span class="plan-stat-chip-value">${planData.billing?.provider ? planData.billing.provider.charAt(0).toUpperCase() + planData.billing.provider.slice(1) : 'N/A'}</span>
                 </div>
-                ${lastPayment > 0 ? `
                 <div class="plan-stat-chip">
                     <i class="ri-money-dollar-circle-line"></i>
-                    <span class="plan-stat-chip-label">Last Payment:</span>
-                    <span class="plan-stat-chip-value">$${lastPayment.toFixed(2)}</span>
+                    <span class="plan-stat-chip-value">$${lastPayment > 0 ? lastPayment.toFixed(2) : '0.00'}</span>
                 </div>
-                ` : ''}
                 <div class="plan-stat-chip">
                     <i class="${isSubscribed ? 'ri-refresh-line' : 'ri-shopping-bag-line'}"></i>
-                    <span class="plan-stat-chip-label">Type:</span>
                     <span class="plan-stat-chip-value">${isSubscribed ? 'Subscription' : 'One-time'}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Usage Section Card -->
+        <div class="plan-usage-section">
+            <div class="plan-usage-header-bar">
+                <h4><i class="ri-pie-chart-line"></i> Usage Overview</h4>
+                <span class="usage-refresh">${expiryDate ? 'Resets ' + expiryDate.toLocaleDateString() : ''}</span>
+            </div>
+            <div class="plan-usage-grid">
+                <div class="plan-usage-item">
+                    <div class="plan-usage-icon images"><i class="ri-image-line"></i></div>
+                    <div class="plan-usage-content">
+                        <div class="plan-usage-value">${imagesUsed.toLocaleString()}</div>
+                        <div class="plan-usage-label">of ${imagesLimit.toLocaleString()} Images</div>
+                        <div class="plan-usage-bar">
+                            <div class="plan-usage-fill ${imagesUsedPercent > 90 ? 'danger' : imagesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${imagesUsedPercent}%;"></div>
+                        </div>
+                        <div class="plan-usage-percent">${Math.round(imagesUsedPercent)}% used</div>
+                    </div>
+                </div>
+                <div class="plan-usage-item">
+                    <div class="plan-usage-icon articles"><i class="ri-article-line"></i></div>
+                    <div class="plan-usage-content">
+                        <div class="plan-usage-value">${articlesUsed.toLocaleString()}</div>
+                        <div class="plan-usage-label">of ${articlesLimit.toLocaleString()} Articles</div>
+                        <div class="plan-usage-bar">
+                            <div class="plan-usage-fill ${articlesUsedPercent > 90 ? 'danger' : articlesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${articlesUsedPercent}%;"></div>
+                        </div>
+                        <div class="plan-usage-percent">${Math.round(articlesUsedPercent)}% used</div>
+                    </div>
+                </div>
+                <div class="plan-usage-item">
+                    <div class="plan-usage-icon time"><i class="ri-timer-line"></i></div>
+                    <div class="plan-usage-content">
+                        <div class="plan-usage-value">${daysLeft}</div>
+                        <div class="plan-usage-label">Days Remaining</div>
+                        <div class="plan-usage-bar">
+                            <div class="plan-usage-fill ${daysLeft < 7 ? 'danger' : daysLeft < 14 ? 'warning' : 'safe'}" style="width: ${Math.min(daysLeft * 3.33, 100)}%;"></div>
+                        </div>
+                        <div class="plan-usage-percent">${expiryDate ? expiryDate.toLocaleDateString() : 'N/A'}</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -6860,11 +6969,24 @@ async function loadBilling(page = 1, type = 'all') {
         <div class="transactions-section">
             <div class="transactions-header">
                 <h3 class="transactions-title"><i class="ri-exchange-funds-line"></i> Transaction History</h3>
-                <div class="transactions-filter">
-                    <select onchange="loadBilling(1, this.value)">
-                        <option value="all" ${type === 'all' ? 'selected' : ''}>All Transactions</option>
-                        <option value="hosting" ${type === 'hosting' ? 'selected' : ''}>Hosting Only</option>
-                        <option value="tasks" ${type === 'tasks' ? 'selected' : ''}>Tasks Only</option>
+                <div class="transactions-filters">
+                    <div class="filter-tabs">
+                        <button class="filter-tab ${type === 'all' ? 'active' : ''}" onclick="loadBilling(1, 'all')">
+                            All<span class="filter-count">${allPayments.length}</span>
+                        </button>
+                        <button class="filter-tab ${type === 'hosting' ? 'active' : ''}" onclick="loadBilling(1, 'hosting')">
+                            Hosting<span class="filter-count">${historyData.hosting?.length || 0}</span>
+                        </button>
+                        <button class="filter-tab ${type === 'tasks' ? 'active' : ''}" onclick="loadBilling(1, 'tasks')">
+                            Tasks<span class="filter-count">${historyData.tasks?.length || 0}</span>
+                        </button>
+                    </div>
+                    <select class="filter-select" id="statusFilter" onchange="filterByStatus(this.value)">
+                        <option value="all">All Status</option>
+                        <option value="paid">Paid</option>
+                        <option value="pending">Pending</option>
+                        <option value="expired">Expired</option>
+                        <option value="cancelled">Cancelled</option>
                     </select>
                 </div>
             </div>
@@ -7023,6 +7145,24 @@ async function loadBilling(page = 1, type = 'all') {
         console.error('Billing error:', error);
         showErrorState('Failed to load billing data. Please check your connection and try again.');
     }
+}
+
+// Filter transactions by status (client-side filtering)
+function filterByStatus(status) {
+    const rows = document.querySelectorAll('.transactions-table tbody tr, .mobile-transaction-card');
+    rows.forEach(row => {
+        if (status === 'all') {
+            row.style.display = '';
+        } else {
+            const badge = row.querySelector('.badge');
+            const badgeText = badge?.textContent?.toLowerCase() || '';
+            if (badgeText === status) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
 }
 
 // Show Subscription Management Modal
