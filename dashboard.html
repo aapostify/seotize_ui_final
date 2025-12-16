@@ -4684,7 +4684,7 @@ div#modalBody { padding-bottom: 100px; }
     color: var(--text-secondary);
 }
 
-/* SweetAlert2 custom class */
+/* SweetAlert2 custom class - Image Details */
 .swal2-popup.image-details-swal {
     margin: 0 !important;
     width: min(800px, 92vw) !important;
@@ -4701,25 +4701,13 @@ div#modalBody { padding-bottom: 100px; }
     padding: 0 !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
-    max-height: calc(85vh - 2rem) !important;
 }
 
-/* Desktop optimization for image details */
 @media (min-width: 769px) {
     .swal2-popup.image-details-swal {
         width: min(75vw, 850px) !important;
         max-width: 75vw !important;
         padding: 1.25rem !important;
-    }
-    
-    .swal2-popup.image-details-swal .swal2-html-container {
-        max-height: calc(80vh - 2rem) !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .swal2-popup.image-details-swal .swal2-html-container {
-        max-height: calc(85vh - 2rem) !important;
     }
 }
 
@@ -4972,24 +4960,59 @@ div#modalBody { padding-bottom: 100px; }
     white-space: nowrap;
 }
 
+/* Article Modal Actions - Separate Row */
+.article-modal-actions-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+    border-top: 1px solid var(--border);
+}
+
 .article-modal-actions-slot {
     display: flex;
-    gap: 0.4rem;
+    gap: 0.75rem;
     flex-shrink: 0;
 }
 
 .article-modal-actions-slot .btn {
-    padding: 0.4rem 0.65rem;
-    font-size: 0.75rem;
-    width: auto !important;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    border-radius: var(--radius);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+}
+
+.article-modal-actions-slot .btn-edit {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.article-modal-actions-slot .btn-edit:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.article-modal-actions-slot .btn-delete {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--danger);
+}
+
+.article-modal-actions-slot .btn-delete:hover {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: white;
 }
 
 @media (max-width: 768px) {
-    .article-modal-actions-slot {
-        display: none;
-    }
-    
-    .article-modal-actions-slot .label-desktop {
+    .article-modal-actions-row {
         display: none;
     }
 }
@@ -5467,7 +5490,7 @@ div#modalBody { padding-bottom: 100px; }
     background: var(--text-secondary);
 }
 
-/* SweetAlert2 custom class for Article details */
+/* SweetAlert2 custom class - Article Details */
 .swal2-popup.article-details-swal {
     margin: 0 !important;
     width: min(900px, 92vw) !important;
@@ -5484,32 +5507,17 @@ div#modalBody { padding-bottom: 100px; }
     padding: 0 !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
-    max-height: calc(85vh - 2rem) !important;
 }
 
-/* Desktop optimization for article details */
 @media (min-width: 769px) {
     .swal2-popup.article-details-swal {
         width: min(75vw, 950px) !important;
         max-width: 75vw !important;
         padding: 1.25rem !important;
     }
-    
-    .swal2-popup.article-details-swal .swal2-html-container {
-        max-height: calc(80vh - 2rem) !important;
-    }
 }
 
-@media (max-width: 480px) {
-    .swal2-popup.article-details-swal .swal2-html-container {
-        max-height: calc(85vh - 2rem) !important;
-    }
-}
-
-.swal2-popup.article-details-swal .swal2-title {
-    display: none !important;
-}
-
+.swal2-popup.article-details-swal .swal2-title,
 .swal2-popup.article-details-swal .swal2-actions {
     display: none !important;
 }
@@ -13201,14 +13209,6 @@ async function viewArticle(articleId) {
                             </a>
                         </h3>
                     </div>
-                    <div class="article-modal-actions-slot">
-                        <button class="btn btn-sm" onclick="Swal.close(); showArticleModal('${articleId}')" title="Edit">
-                            <i class="ri-edit-line"></i> <span class="label-desktop">Edit</span>
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="Swal.close(); deleteArticle('${articleId}')" title="Delete">
-                            <i class="ri-delete-bin-line"></i>
-                        </button>
-                    </div>
                 </div>
                 <div class="article-header-meta-row">
                     <div class="article-header-meta">
@@ -13220,8 +13220,18 @@ async function viewArticle(articleId) {
                         <button class="btn btn-sm" onclick="Swal.close(); showArticleModal('${articleId}')" title="Edit">
                             <i class="ri-edit-line"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger" onclick="Swal.close(); deleteArticle('${articleId}')" title="Delete">
+                        <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); confirmDeleteArticle('${articleId}')" title="Delete">
                             <i class="ri-delete-bin-line"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="article-modal-actions-row">
+                    <div class="article-modal-actions-slot">
+                        <button class="btn btn-edit" onclick="Swal.close(); showArticleModal('${articleId}')" title="Edit Article">
+                            <i class="ri-edit-line"></i> Edit Article
+                        </button>
+                        <button class="btn btn-delete" onclick="event.stopPropagation(); confirmDeleteArticle('${articleId}')" title="Delete Article">
+                            <i class="ri-delete-bin-line"></i> Delete
                         </button>
                     </div>
                 </div>
@@ -15079,17 +15089,52 @@ function showInstallInstructions(domain) {
         showConfirmButton: false,
     });
 }
-async function deleteArticle(articleId) {
-    if (!confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
-        return;
-    }
+// Custom delete confirmation modal
+function confirmDeleteArticle(articleId) {
+    Swal.fire({
+        title: '<i class="ri-error-warning-line" style="color: var(--danger); font-size: 2.5rem;"></i>',
+        html: `
+            <div style="text-align: center;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem; font-weight: 700; color: var(--text);">Delete Article?</h3>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">This action cannot be undone. The article and all its data will be permanently removed.</p>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '<i class="ri-delete-bin-line"></i> Delete',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: 'var(--danger)',
+        cancelButtonColor: 'var(--bg-tertiary)',
+        reverseButtons: true,
+        customClass: {
+            popup: 'swal2-toast',
+            confirmButton: 'btn btn-danger',
+            cancelButton: 'btn'
+        },
+        buttonsStyling: false,
+        focusCancel: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            deleteArticle(articleId);
+        }
+    });
+}
 
+async function deleteArticle(articleId) {
     try {
+        Swal.fire({
+            title: 'Deleting...',
+            didOpen: () => Swal.showLoading(),
+            allowOutsideClick: false,
+            customClass: { popup: 'swal2-toast' }
+        });
+        
         await api(`/delete-article/${articleId}`, { method: 'DELETE' });
+        Swal.close();
         showToast('Article deleted successfully', 'success');
         loadArticles();
     } catch (error) {
         console.error('Delete article error:', error);
+        Swal.close();
         showToast('Failed to delete article: ' + error.message, 'error');
     }
 }
