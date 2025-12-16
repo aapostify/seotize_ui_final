@@ -6119,10 +6119,7 @@ async function loadBilling(page = 1, type = 'all') {
             hasNext: historyData.pagination.page < historyData.pagination.pages
         };
         
-        // Calculate billing stats
-        const totalSpent = allPayments.filter(p => p.status === 'paid').reduce((sum, p) => sum + (p.total_payment || 0), 0);
-        const pendingPayments = allPayments.filter(p => p.status === 'pending').length;
-        const completedPayments = allPayments.filter(p => p.status === 'paid').length;
+        // Get last payment amount
         const lastPayment = planData.billing?.last_payment_amount || 0;
         
         // Get current package info
@@ -6151,7 +6148,83 @@ async function loadBilling(page = 1, type = 'all') {
             }
             .billing-header-actions { display: flex; gap: 0.75rem; }
             
-            /* Current Plan Card */
+            /* SweetAlert2 Custom Theme */
+            .swal2-popup.swal2-toast {
+                background: var(--card) !important;
+                border: 1px solid var(--border) !important;
+                border-radius: var(--radius-lg) !important;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3) !important;
+            }
+            .swal2-popup .swal2-title {
+                color: var(--text) !important;
+                font-weight: 700 !important;
+                font-size: 1.35rem !important;
+            }
+            .swal2-popup .swal2-html-container {
+                color: var(--text-secondary) !important;
+                font-size: 0.95rem !important;
+                line-height: 1.6 !important;
+            }
+            .swal2-popup .swal2-confirm {
+                background: var(--primary) !important;
+                border-radius: var(--radius) !important;
+                font-weight: 600 !important;
+                padding: 0.75rem 1.5rem !important;
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+                transition: all 0.3s ease !important;
+            }
+            .swal2-popup .swal2-confirm:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4) !important;
+            }
+            .swal2-popup .swal2-cancel {
+                background: var(--bg-tertiary) !important;
+                color: var(--text) !important;
+                border-radius: var(--radius) !important;
+                font-weight: 600 !important;
+                padding: 0.75rem 1.5rem !important;
+                border: 1px solid var(--border) !important;
+            }
+            .swal2-popup .swal2-cancel:hover {
+                background: var(--bg-secondary) !important;
+            }
+            .swal2-popup .swal2-icon {
+                border-color: transparent !important;
+                margin: 1.5rem auto !important;
+            }
+            .swal2-popup .swal2-icon.swal2-question {
+                border-color: var(--primary) !important;
+                color: var(--primary) !important;
+            }
+            .swal2-popup .swal2-icon.swal2-warning {
+                border-color: #f59e0b !important;
+                color: #f59e0b !important;
+            }
+            .swal2-popup .swal2-icon.swal2-success {
+                border-color: var(--success) !important;
+            }
+            .swal2-popup .swal2-icon.swal2-success .swal2-success-ring {
+                border-color: rgba(16, 185, 129, 0.3) !important;
+            }
+            .swal2-popup .swal2-icon.swal2-success [class^=swal2-success-line] {
+                background-color: var(--success) !important;
+            }
+            .swal2-popup .swal2-icon.swal2-error {
+                border-color: var(--error) !important;
+            }
+            .swal2-popup .swal2-icon.swal2-error .swal2-x-mark-line-left,
+            .swal2-popup .swal2-icon.swal2-error .swal2-x-mark-line-right {
+                background-color: var(--error) !important;
+            }
+            .swal2-popup .swal2-actions {
+                margin-top: 1.5rem !important;
+                gap: 0.75rem !important;
+            }
+            .swal2-popup .swal2-loader {
+                border-color: var(--primary) transparent var(--primary) transparent !important;
+            }
+            
+            /* Current Plan Card - Integrated with Usage */
             .current-plan-card {
                 background: var(--card); border-radius: var(--radius-xl);
                 border: 1px solid var(--border); overflow: hidden; margin-bottom: 1.5rem;
@@ -6164,179 +6237,97 @@ async function loadBilling(page = 1, type = 'all') {
                 background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
                 opacity: 0.5;
             }
-            .current-plan-content {
+            .current-plan-header {
                 position: relative; z-index: 1; display: flex; justify-content: space-between;
-                align-items: flex-start; flex-wrap: wrap; gap: 1.5rem;
+                align-items: flex-start; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1.5rem;
             }
-            .current-plan-info { flex: 1; min-width: 280px; }
+            .current-plan-info { flex: 1; min-width: 250px; }
             .current-plan-badge {
                 display: inline-flex; align-items: center; gap: 0.5rem;
                 background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
-                padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.75rem;
-                font-weight: 600; color: white; margin-bottom: 1rem;
+                padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.7rem;
+                font-weight: 600; color: white; margin-bottom: 0.75rem;
                 text-transform: uppercase; letter-spacing: 0.5px;
             }
             .current-plan-name {
-                font-size: 2rem; font-weight: 800; color: white; margin: 0 0 0.5rem 0;
-                display: flex; align-items: center; gap: 0.75rem;
+                font-size: 1.75rem; font-weight: 800; color: white; margin: 0 0 0.5rem 0;
+                display: flex; align-items: center; gap: 0.6rem;
             }
-            .current-plan-name i { font-size: 1.75rem; }
+            .current-plan-name i { font-size: 1.5rem; }
             .current-plan-meta {
-                display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 1rem;
+                display: flex; flex-wrap: wrap; gap: 1rem;
             }
             .current-plan-meta-item {
-                display: flex; align-items: center; gap: 0.5rem;
-                color: rgba(255,255,255,0.9); font-size: 0.875rem;
+                display: flex; align-items: center; gap: 0.4rem;
+                color: rgba(255,255,255,0.9); font-size: 0.8rem;
             }
-            .current-plan-meta-item i { font-size: 1.1rem; opacity: 0.8; }
-            .current-plan-stats {
-                display: flex; gap: 1rem; flex-wrap: wrap;
+            .current-plan-meta-item i { font-size: 1rem; opacity: 0.8; }
+            .current-plan-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+            .current-plan-actions .btn {
+                background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);
+                backdrop-filter: blur(10px); font-size: 0.85rem; padding: 0.6rem 1rem;
             }
-            .current-plan-stat {
-                background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
-                border-radius: var(--radius-lg); padding: 1.25rem 1.5rem;
-                min-width: 140px; text-align: center;
+            .current-plan-actions .btn:hover {
+                background: rgba(255,255,255,0.3); transform: translateY(-2px);
             }
-            .current-plan-stat-value {
-                font-size: 1.5rem; font-weight: 800; color: white; margin-bottom: 0.25rem;
+            .current-plan-actions .btn-upgrade {
+                background: white; color: var(--primary);
             }
-            .current-plan-stat-label {
-                font-size: 0.75rem; color: rgba(255,255,255,0.8);
-                text-transform: uppercase; letter-spacing: 0.5px;
+            .current-plan-actions .btn-upgrade:hover {
+                background: rgba(255,255,255,0.9);
             }
             
-            /* Plan Details Grid */
-            .plan-details-grid {
+            /* Usage Progress Section inside Plan Card */
+            .plan-usage-section {
+                position: relative; z-index: 1;
                 display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 1rem; padding: 1.5rem; background: var(--bg-secondary);
+                gap: 1rem;
             }
-            .plan-detail-item {
-                display: flex; align-items: center; gap: 1rem;
-                padding: 1rem; background: var(--card); border-radius: var(--radius);
-                border: 1px solid var(--border);
+            .plan-usage-item {
+                background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+                border-radius: var(--radius-lg); padding: 1rem 1.25rem;
+                border: 1px solid rgba(255,255,255,0.15);
             }
-            .plan-detail-icon {
-                width: 42px; height: 42px; border-radius: var(--radius);
-                display: flex; align-items: center; justify-content: center;
-                font-size: 1.25rem;
-            }
-            .plan-detail-content { flex: 1; }
-            .plan-detail-label {
-                font-size: 0.75rem; color: var(--text-secondary);
-                text-transform: uppercase; letter-spacing: 0.5px;
-            }
-            .plan-detail-value { font-size: 0.95rem; font-weight: 600; color: var(--text); }
-            
-            /* Usage Cards */
-            .usage-section { margin-bottom: 1.5rem; }
-            .usage-section-title {
-                font-size: 1.1rem; font-weight: 700; color: var(--text);
-                margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;
-            }
-            .usage-grid {
-                display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;
-            }
-            .usage-card {
-                background: var(--card); border-radius: var(--radius-lg);
-                border: 1px solid var(--border); padding: 1.25rem; position: relative;
-                overflow: hidden;
-            }
-            .usage-card-header {
-                display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;
-            }
-            .usage-card-icon {
-                width: 40px; height: 40px; border-radius: var(--radius);
-                display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
-            }
-            .usage-card-title { font-weight: 600; color: var(--text); }
-            .usage-card-subtitle { font-size: 0.75rem; color: var(--text-secondary); }
-            .usage-progress-container { margin-bottom: 0.75rem; }
-            .usage-progress-bar {
-                height: 8px; background: var(--bg-tertiary); border-radius: 4px; overflow: hidden;
-            }
-            .usage-progress-fill {
-                height: 100%; border-radius: 4px; transition: width 0.5s ease;
-            }
-            .usage-stats {
+            .plan-usage-header {
                 display: flex; justify-content: space-between; align-items: center;
+                margin-bottom: 0.6rem;
             }
-            .usage-stat-used { font-weight: 700; color: var(--text); }
-            .usage-stat-limit { font-size: 0.875rem; color: var(--text-secondary); }
-            
-            /* Stats Cards */
-            .stats-grid {
-                display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 1rem; margin-bottom: 1.5rem;
-            }
-            .stat-card {
-                background: var(--card); border-radius: var(--radius-lg);
-                border: 1px solid var(--border); padding: 1.25rem;
-                display: flex; align-items: center; gap: 1rem;
-            }
-            .stat-card-icon {
-                width: 48px; height: 48px; border-radius: var(--radius);
-                display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
-            }
-            .stat-card-content { flex: 1; }
-            .stat-card-value { font-size: 1.5rem; font-weight: 800; color: var(--text); }
-            .stat-card-label { font-size: 0.8rem; color: var(--text-secondary); }
-            
-            /* Upgrade Section */
-            .upgrade-section {
-                background: var(--card); border-radius: var(--radius-xl);
-                border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 1.5rem;
-            }
-            .upgrade-header {
-                display: flex; justify-content: space-between; align-items: center;
-                margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
-            }
-            .upgrade-title {
-                font-size: 1.25rem; font-weight: 700; color: var(--text);
+            .plan-usage-title {
                 display: flex; align-items: center; gap: 0.5rem;
+                font-size: 0.85rem; font-weight: 600; color: white;
             }
-            .upgrade-title i { color: var(--primary); }
-            .upgrade-subtitle { font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.25rem; }
-            .upgrade-plans-grid {
-                display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;
+            .plan-usage-title i { font-size: 1rem; opacity: 0.8; }
+            .plan-usage-count {
+                font-size: 0.8rem; color: rgba(255,255,255,0.85);
             }
-            .upgrade-plan-card {
-                background: var(--bg-secondary); border-radius: var(--radius-lg);
-                border: 2px solid var(--border); padding: 1.5rem; position: relative;
-                transition: all 0.3s ease; cursor: pointer;
+            .plan-usage-bar {
+                height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px;
+                overflow: hidden; margin-bottom: 0.4rem;
             }
-            .upgrade-plan-card:hover {
-                border-color: var(--primary); transform: translateY(-2px);
-                box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+            .plan-usage-fill {
+                height: 100%; border-radius: 3px; transition: width 0.5s ease;
             }
-            .upgrade-plan-card.popular {
-                border-color: var(--primary);
+            .plan-usage-fill.safe { background: rgba(255,255,255,0.9); }
+            .plan-usage-fill.warning { background: #fbbf24; }
+            .plan-usage-fill.danger { background: #ef4444; }
+            .plan-usage-percent {
+                font-size: 0.7rem; color: rgba(255,255,255,0.7); text-align: right;
             }
-            .upgrade-plan-card.popular::before {
-                content: 'POPULAR'; position: absolute; top: -12px; left: 50%;
-                transform: translateX(-50%); background: var(--primary);
-                color: white; padding: 0.25rem 0.75rem; border-radius: 1rem;
-                font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px;
+            
+            /* Plan Stats Row */
+            .plan-stats-row {
+                display: flex; gap: 0.75rem; flex-wrap: wrap; padding: 1.25rem 1.5rem;
+                background: var(--bg-secondary); border-top: 1px solid var(--border);
             }
-            .upgrade-plan-card.current {
-                border-color: var(--success); background: rgba(16, 185, 129, 0.05);
-            }
-            .upgrade-plan-card.current::before {
-                content: 'CURRENT'; background: var(--success);
-            }
-            .upgrade-plan-icon {
-                width: 48px; height: 48px; border-radius: var(--radius);
-                display: flex; align-items: center; justify-content: center;
-                font-size: 1.5rem; margin-bottom: 1rem;
-            }
-            .upgrade-plan-name { font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
-            .upgrade-plan-price { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem; }
-            .upgrade-plan-price strong { font-size: 1.5rem; color: var(--text); }
-            .upgrade-plan-features { list-style: none; padding: 0; margin: 0 0 1rem 0; }
-            .upgrade-plan-features li {
+            .plan-stat-chip {
                 display: flex; align-items: center; gap: 0.5rem;
-                font-size: 0.85rem; color: var(--text-secondary); padding: 0.35rem 0;
+                background: var(--card); padding: 0.6rem 1rem; border-radius: var(--radius);
+                border: 1px solid var(--border); font-size: 0.8rem;
             }
-            .upgrade-plan-features li i { color: var(--success); font-size: 1rem; }
+            .plan-stat-chip i { color: var(--text-secondary); }
+            .plan-stat-chip-value { font-weight: 600; color: var(--text); }
+            .plan-stat-chip-label { color: var(--text-secondary); }
+            
             
             /* Transaction History */
             .transactions-section {
@@ -6615,11 +6606,11 @@ async function loadBilling(page = 1, type = 'all') {
             }
             @media (max-width: 768px) {
                 .billing-header { flex-direction: column; align-items: flex-start; }
-                .current-plan-content { flex-direction: column; }
-                .current-plan-stats { width: 100%; justify-content: center; }
-                .plan-details-grid { grid-template-columns: 1fr 1fr; }
-                .stats-grid { grid-template-columns: 1fr 1fr; }
-                .upgrade-plans-grid { grid-template-columns: 1fr; }
+                .current-plan-header { flex-direction: column; gap: 1rem; }
+                .current-plan-actions { width: 100%; justify-content: flex-start; }
+                .plan-usage-section { grid-template-columns: 1fr; }
+                .plan-stats-row { flex-wrap: wrap; }
+                .plan-stat-chip { flex: 1 1 45%; min-width: 140px; }
                 .transactions-table { display: none; }
                 .mobile-transactions { display: block; }
                 .pkg-modal-container {
@@ -6631,10 +6622,10 @@ async function loadBilling(page = 1, type = 'all') {
                 .pkg-providers-grid { grid-template-columns: 1fr; }
             }
             @media (max-width: 480px) {
-                .plan-details-grid { grid-template-columns: 1fr; }
-                .stats-grid { grid-template-columns: 1fr; }
-                .current-plan-stat { min-width: 100px; padding: 1rem; }
-                .current-plan-stat-value { font-size: 1.25rem; }
+                .current-plan-name { font-size: 1.35rem; }
+                .current-plan-name i { font-size: 1.2rem; }
+                .plan-stat-chip { flex: 1 1 100%; }
+                .plan-usage-item { padding: 0.85rem 1rem; }
             }
         </style>
         
@@ -6758,10 +6749,11 @@ async function loadBilling(page = 1, type = 'all') {
             </button>
         </div>
         ` : `
-        <!-- Current Plan Card -->
+        <!-- Current Plan Card with Integrated Usage -->
         <div class="current-plan-card">
             <div class="current-plan-gradient" style="background: ${currentPkg?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};">
-                <div class="current-plan-content">
+                <!-- Header with Plan Info and Actions -->
+                <div class="current-plan-header">
                     <div class="current-plan-info">
                         <div class="current-plan-badge">
                             <i class="${isSubscribed ? 'ri-refresh-line' : 'ri-time-line'}"></i>
@@ -6772,200 +6764,97 @@ async function loadBilling(page = 1, type = 'all') {
                             ${currentPkg?.name || planName} Plan
                         </h2>
                         <div class="current-plan-meta">
-                            ${expiryDate ? `
-                                <div class="current-plan-meta-item">
-                                    <i class="ri-calendar-check-line"></i>
-                                    ${daysLeft > 0 ? `Expires ${expiryDate.toLocaleDateString()}` : 'Expired'}
-                                </div>
-                            ` : ''}
+                            <div class="current-plan-meta-item">
+                                <i class="ri-time-line"></i>
+                                ${daysLeft} days left
+                            </div>
                             ${subscriptionEnd ? `
                                 <div class="current-plan-meta-item">
                                     <i class="ri-repeat-line"></i>
-                                    Next billing: ${subscriptionEnd.toLocaleDateString()}
+                                    Renews ${subscriptionEnd.toLocaleDateString()}
                                 </div>
-                            ` : ''}
-                            ${planData.billing?.provider ? `
+                            ` : expiryDate ? `
                                 <div class="current-plan-meta-item">
-                                    <i class="ri-bank-card-line"></i>
-                                    ${planData.billing.provider.charAt(0).toUpperCase() + planData.billing.provider.slice(1)}
+                                    <i class="ri-calendar-check-line"></i>
+                                    Expires ${expiryDate.toLocaleDateString()}
                                 </div>
                             ` : ''}
                         </div>
                     </div>
-                    <div class="current-plan-stats">
-                        <div class="current-plan-stat">
-                            <div class="current-plan-stat-value">${daysLeft}</div>
-                            <div class="current-plan-stat-label">Days Left</div>
-                        </div>
-                        ${lastPayment > 0 ? `
-                            <div class="current-plan-stat">
-                                <div class="current-plan-stat-value">$${lastPayment.toFixed(0)}</div>
-                                <div class="current-plan-stat-label">Last Payment</div>
-                            </div>
+                    <div class="current-plan-actions">
+                        <button class="btn btn-upgrade" onclick="openPackagePurchaseModal()">
+                            <i class="ri-arrow-up-circle-line"></i> Upgrade
+                        </button>
+                        ${isSubscribed ? `
+                            <button class="btn" onclick="showSubscriptionModal()">
+                                <i class="ri-settings-3-line"></i> Manage
+                            </button>
                         ` : ''}
                     </div>
                 </div>
+                
+                <!-- Usage Progress Bars -->
+                <div class="plan-usage-section">
+                    <div class="plan-usage-item">
+                        <div class="plan-usage-header">
+                            <span class="plan-usage-title"><i class="ri-image-line"></i> Images</span>
+                            <span class="plan-usage-count">${imagesUsed.toLocaleString()} / ${imagesLimit.toLocaleString()}</span>
+                        </div>
+                        <div class="plan-usage-bar">
+                            <div class="plan-usage-fill ${imagesUsedPercent > 90 ? 'danger' : imagesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${imagesUsedPercent}%;"></div>
+                        </div>
+                        <div class="plan-usage-percent">${Math.round(imagesUsedPercent)}% used</div>
+                    </div>
+                    <div class="plan-usage-item">
+                        <div class="plan-usage-header">
+                            <span class="plan-usage-title"><i class="ri-article-line"></i> Articles</span>
+                            <span class="plan-usage-count">${articlesUsed.toLocaleString()} / ${articlesLimit.toLocaleString()}</span>
+                        </div>
+                        <div class="plan-usage-bar">
+                            <div class="plan-usage-fill ${articlesUsedPercent > 90 ? 'danger' : articlesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${articlesUsedPercent}%;"></div>
+                        </div>
+                        <div class="plan-usage-percent">${Math.round(articlesUsedPercent)}% used</div>
+                    </div>
+                    <div class="plan-usage-item">
+                        <div class="plan-usage-header">
+                            <span class="plan-usage-title"><i class="ri-timer-line"></i> Time Left</span>
+                            <span class="plan-usage-count">${daysLeft} days</span>
+                        </div>
+                        <div class="plan-usage-bar">
+                            <div class="plan-usage-fill ${daysLeft < 7 ? 'danger' : daysLeft < 14 ? 'warning' : 'safe'}" style="width: ${Math.min(daysLeft * 3.33, 100)}%;"></div>
+                        </div>
+                        <div class="plan-usage-percent">${expiryDate ? expiryDate.toLocaleDateString() : 'N/A'}</div>
+                    </div>
+                </div>
             </div>
-            <div class="plan-details-grid">
-                <div class="plan-detail-item">
-                    <div class="plan-detail-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
-                        <i class="ri-image-line"></i>
-                    </div>
-                    <div class="plan-detail-content">
-                        <div class="plan-detail-label">Images</div>
-                        <div class="plan-detail-value">${imagesUsed.toLocaleString()} / ${imagesLimit.toLocaleString()}</div>
-                    </div>
+            
+            <!-- Bottom Stats Row -->
+            <div class="plan-stats-row">
+                <div class="plan-stat-chip">
+                    <i class="ri-shield-check-line"></i>
+                    <span class="plan-stat-chip-label">Status:</span>
+                    <span class="plan-stat-chip-value">${daysLeft > 0 ? 'Active' : 'Expired'}</span>
                 </div>
-                <div class="plan-detail-item">
-                    <div class="plan-detail-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
-                        <i class="ri-article-line"></i>
-                    </div>
-                    <div class="plan-detail-content">
-                        <div class="plan-detail-label">Articles</div>
-                        <div class="plan-detail-value">${articlesUsed.toLocaleString()} / ${articlesLimit.toLocaleString()}</div>
-                    </div>
+                <div class="plan-stat-chip">
+                    <i class="ri-bank-card-line"></i>
+                    <span class="plan-stat-chip-label">Provider:</span>
+                    <span class="plan-stat-chip-value">${planData.billing?.provider ? planData.billing.provider.charAt(0).toUpperCase() + planData.billing.provider.slice(1) : 'N/A'}</span>
                 </div>
-                <div class="plan-detail-item">
-                    <div class="plan-detail-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
-                        <i class="ri-calendar-line"></i>
-                    </div>
-                    <div class="plan-detail-content">
-                        <div class="plan-detail-label">Status</div>
-                        <div class="plan-detail-value">${daysLeft > 0 ? 'Active' : 'Expired'}</div>
-                    </div>
+                ${lastPayment > 0 ? `
+                <div class="plan-stat-chip">
+                    <i class="ri-money-dollar-circle-line"></i>
+                    <span class="plan-stat-chip-label">Last Payment:</span>
+                    <span class="plan-stat-chip-value">$${lastPayment.toFixed(2)}</span>
                 </div>
-                <div class="plan-detail-item">
-                    <div class="plan-detail-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
-                        <i class="ri-shield-check-line"></i>
-                    </div>
-                    <div class="plan-detail-content">
-                        <div class="plan-detail-label">Type</div>
-                        <div class="plan-detail-value">${isSubscribed ? 'Subscription' : 'One-time'}</div>
-                    </div>
+                ` : ''}
+                <div class="plan-stat-chip">
+                    <i class="${isSubscribed ? 'ri-refresh-line' : 'ri-shopping-bag-line'}"></i>
+                    <span class="plan-stat-chip-label">Type:</span>
+                    <span class="plan-stat-chip-value">${isSubscribed ? 'Subscription' : 'One-time'}</span>
                 </div>
             </div>
         </div>
         `}
-        
-        <!-- Usage Section -->
-        ${!isFree ? `
-        <div class="usage-section">
-            <h3 class="usage-section-title"><i class="ri-pie-chart-line"></i> Usage Overview</h3>
-            <div class="usage-grid">
-                <div class="usage-card">
-                    <div class="usage-card-header">
-                        <div class="usage-card-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
-                            <i class="ri-image-line"></i>
-                        </div>
-                        <div>
-                            <div class="usage-card-title">Image Uploads</div>
-                            <div class="usage-card-subtitle">Monthly usage</div>
-                        </div>
-                    </div>
-                    <div class="usage-progress-container">
-                        <div class="usage-progress-bar">
-                            <div class="usage-progress-fill" style="width: ${imagesUsedPercent}%; background: ${imagesUsedPercent > 90 ? 'var(--error)' : imagesUsedPercent > 70 ? 'var(--warning)' : 'var(--primary)'};"></div>
-                        </div>
-                    </div>
-                    <div class="usage-stats">
-                        <span class="usage-stat-used">${imagesUsed.toLocaleString()} used</span>
-                        <span class="usage-stat-limit">of ${imagesLimit.toLocaleString()}</span>
-                    </div>
-                </div>
-                <div class="usage-card">
-                    <div class="usage-card-header">
-                        <div class="usage-card-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
-                            <i class="ri-article-line"></i>
-                        </div>
-                        <div>
-                            <div class="usage-card-title">Article Uploads</div>
-                            <div class="usage-card-subtitle">Monthly usage</div>
-                        </div>
-                    </div>
-                    <div class="usage-progress-container">
-                        <div class="usage-progress-bar">
-                            <div class="usage-progress-fill" style="width: ${articlesUsedPercent}%; background: ${articlesUsedPercent > 90 ? 'var(--error)' : articlesUsedPercent > 70 ? 'var(--warning)' : 'var(--success)'};"></div>
-                        </div>
-                    </div>
-                    <div class="usage-stats">
-                        <span class="usage-stat-used">${articlesUsed.toLocaleString()} used</span>
-                        <span class="usage-stat-limit">of ${articlesLimit.toLocaleString()}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        ` : ''}
-        
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-card-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
-                    <i class="ri-money-dollar-circle-line"></i>
-                </div>
-                <div class="stat-card-content">
-                    <div class="stat-card-value">$${totalSpent.toFixed(2)}</div>
-                    <div class="stat-card-label">Total Spent</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
-                    <i class="ri-checkbox-circle-line"></i>
-                </div>
-                <div class="stat-card-content">
-                    <div class="stat-card-value">${completedPayments}</div>
-                    <div class="stat-card-label">Completed</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
-                    <i class="ri-time-line"></i>
-                </div>
-                <div class="stat-card-content">
-                    <div class="stat-card-value">${pendingPayments}</div>
-                    <div class="stat-card-label">Pending</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
-                    <i class="ri-file-list-3-line"></i>
-                </div>
-                <div class="stat-card-content">
-                    <div class="stat-card-value">${allPayments.length}</div>
-                    <div class="stat-card-label">Total Transactions</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Available Plans Section -->
-        <div class="upgrade-section">
-            <div class="upgrade-header">
-                <div>
-                    <h3 class="upgrade-title"><i class="ri-rocket-line"></i> Available Plans</h3>
-                    <p class="upgrade-subtitle">Choose the plan that fits your needs</p>
-                </div>
-                <button class="btn btn-primary" onclick="openPackagePurchaseModal()">
-                    <i class="ri-shopping-bag-3-line"></i> Purchase
-                </button>
-            </div>
-            <div class="upgrade-plans-grid">
-                ${Object.entries(hostingPackages).map(([key, pkg]) => `
-                    <div class="upgrade-plan-card ${pkg.popular ? 'popular' : ''} ${planName === key ? 'current' : ''}">
-                        <div class="upgrade-plan-icon" style="background: ${pkg.gradient}; color: white;">
-                            <i class="${pkg.icon}"></i>
-                        </div>
-                        <div class="upgrade-plan-name">${pkg.name}</div>
-                        <div class="upgrade-plan-price">From <strong>$${pkg.price['3month']}</strong> /3 months</div>
-                        <ul class="upgrade-plan-features">
-                            ${pkg.features.map(f => `<li><i class="ri-check-line"></i> ${f}</li>`).join('')}
-                        </ul>
-                        <button class="btn ${planName === key ? 'btn-secondary' : 'btn-primary'} btn-sm" style="width: 100%;" 
-                                onclick="${planName === key ? 'showSubscriptionModal()' : 'openPackagePurchaseModal()'}">
-                            ${planName === key ? 'Manage' : 'Select'}
-                        </button>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
         
         <!-- Transaction History -->
         <div class="transactions-section">
