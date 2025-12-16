@@ -6650,67 +6650,192 @@ async function loadBilling(page = 1, type = 'all') {
                 .filter-tabs { padding: 0.2rem; gap: 0.15rem; }
                 .filter-tab { padding: 0.35rem 0.6rem; font-size: 0.7rem; }
                 
-                /* Mobile Modal - Improved */
+                /* ========== MOBILE MODAL - COMPLETE REWRITE ========== */
+                .package-purchase-modal {
+                    padding: 0;
+                }
                 .pkg-modal-container {
-                    width: 100%; max-width: 100%; height: 100%;
+                    width: 100%; max-width: 100%; height: 100%; max-height: 100%;
                     border-radius: 0; display: flex; flex-direction: column;
+                    background: var(--bg);
                 }
+                
+                /* Modal Header */
                 .pkg-modal-header { 
-                    padding: 0.85rem 1rem; flex-shrink: 0;
-                    background: var(--card); border-bottom: 1px solid var(--border);
+                    padding: 1rem 1.25rem; flex-shrink: 0;
+                    background: var(--card); 
+                    border-bottom: 1px solid var(--border);
+                    display: flex; justify-content: space-between; align-items: center;
                 }
-                .pkg-modal-title { font-size: 1rem; }
-                .pkg-modal-title i { font-size: 1.1rem; }
-                .pkg-modal-close { width: 36px; height: 36px; font-size: 1.25rem; }
+                .pkg-modal-title { 
+                    font-size: 1.1rem; font-weight: 700;
+                    display: flex; align-items: center; gap: 0.5rem;
+                }
+                .pkg-modal-title i { font-size: 1.2rem; color: var(--primary); }
+                .pkg-modal-close { 
+                    width: 38px; height: 38px; font-size: 1.3rem;
+                    background: var(--bg-tertiary); border-radius: 50%;
+                }
+                
+                /* Modal Body */
                 .pkg-modal-body { 
-                    padding: 1rem; gap: 1rem; overflow-y: auto; flex: 1;
-                    padding-bottom: 0;
+                    flex: 1; overflow-y: auto; padding: 0;
+                    display: flex; flex-direction: column;
+                    -webkit-overflow-scrolling: touch;
                 }
-                .pkg-options-section { display: flex; flex-direction: column; gap: 1rem; }
-                .pkg-summary-section { 
-                    position: sticky; bottom: 0; margin: 1rem -1rem 0 -1rem;
-                    padding: 1rem; border-radius: 1rem 1rem 0 0;
-                    background: var(--card); border-top: 1px solid var(--border);
-                    box-shadow: 0 -8px 30px rgba(0,0,0,0.15);
+                
+                /* Options Section - Scrollable Area */
+                .pkg-options-section { 
+                    flex: 1; padding: 1.25rem; 
+                    display: flex; flex-direction: column; gap: 1.5rem;
                 }
+                
+                /* Section Titles */
+                .pkg-section-title { 
+                    font-size: 0.85rem; font-weight: 700; margin-bottom: 0.75rem;
+                    color: var(--text); display: flex; align-items: center; gap: 0.5rem;
+                }
+                .pkg-section-title i { color: var(--primary); font-size: 1rem; }
+                
+                /* Package Options - Horizontal Cards */
                 .pkg-options-grid { 
-                    display: grid; grid-template-columns: 1fr; gap: 0.5rem;
+                    display: flex; flex-direction: column; gap: 0.65rem;
                 }
                 .pkg-option-card { 
-                    padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem;
-                    flex-direction: row; min-height: auto; border-width: 1.5px;
+                    padding: 1rem 1.25rem; 
+                    display: flex; align-items: center; gap: 1rem;
+                    flex-direction: row; min-height: auto; 
+                    border-width: 2px; border-radius: 14px;
+                    background: var(--card);
                 }
-                .pkg-option-card .pkg-option-icon { width: 40px; height: 40px; font-size: 1.1rem; flex-shrink: 0; margin-bottom: 0; border-radius: 10px; }
-                .pkg-option-card .pkg-option-content { text-align: left; flex: 1; }
-                .pkg-option-card .pkg-option-name { font-size: 0.9rem; margin-bottom: 0.1rem; }
-                .pkg-option-card .pkg-option-price { font-size: 0.7rem; }
+                .pkg-option-card .pkg-option-icon { 
+                    width: 48px; height: 48px; font-size: 1.25rem; 
+                    flex-shrink: 0; margin-bottom: 0; border-radius: 12px; 
+                }
+                .pkg-option-card .pkg-option-content { 
+                    text-align: left; flex: 1; min-width: 0;
+                }
+                .pkg-option-card .pkg-option-name { 
+                    font-size: 1rem; font-weight: 700; margin-bottom: 0.15rem; 
+                }
+                .pkg-option-card .pkg-option-price { 
+                    font-size: 0.8rem; color: var(--text-secondary);
+                }
+                .pkg-option-card .pkg-option-price strong {
+                    color: var(--text); font-size: 0.95rem;
+                }
                 .pkg-option-card .pkg-option-features { display: none; }
-                .pkg-option-card.selected { border-color: var(--primary); background: rgba(99, 102, 241, 0.06); }
-                .pkg-option-card.selected::after { 
-                    content: '✓'; position: absolute; top: 50%; right: 0.75rem; transform: translateY(-50%);
-                    width: 20px; height: 20px; background: var(--primary); color: white; border-radius: 50%;
-                    display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700;
+                .pkg-option-card.selected { 
+                    border-color: var(--primary); 
+                    background: rgba(99, 102, 241, 0.08);
+                    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
                 }
-                .pkg-option-card.popular::before { display: none; }
-                .pkg-section-title { font-size: 0.8rem; margin-bottom: 0.5rem; }
-                .pkg-section-title i { font-size: 0.9rem; }
-                .pkg-payment-type-toggle { gap: 0.4rem; }
-                .pkg-payment-type-btn { padding: 0.55rem 0.65rem; font-size: 0.75rem; border-radius: 8px; }
-                .pkg-payment-type-btn i { font-size: 0.9rem; }
-                .pkg-duration-grid { display: flex; gap: 0.35rem; }
-                .pkg-duration-option { flex: 1; padding: 0.6rem 0.35rem; min-width: 0; border-radius: 8px; }
-                .pkg-duration-option.best-value::before { display: none; }
-                .pkg-duration-label { font-size: 0.7rem; }
-                .pkg-duration-discount { font-size: 0.55rem; margin-top: 0.15rem; }
-                .pkg-providers-grid { grid-template-columns: 1fr 1fr; gap: 0.35rem; }
-                .pkg-provider-option { padding: 0.6rem 0.5rem; gap: 0.3rem; border-radius: 8px; }
-                .pkg-provider-icon { width: 28px; height: 28px; font-size: 0.95rem; }
-                .pkg-provider-name { font-size: 0.7rem; }
-                .pkg-order-summary { padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 10px; }
-                .pkg-summary-row { font-size: 0.75rem; margin-bottom: 0.4rem; }
-                .pkg-summary-total { font-size: 0.95rem; padding-top: 0.5rem; }
-                .pkg-purchase-btn { padding: 0.75rem; font-size: 0.85rem; border-radius: 10px; }
+                .pkg-option-card.selected::after { 
+                    content: '✓'; position: absolute; top: 50%; right: 1rem; 
+                    transform: translateY(-50%);
+                    width: 26px; height: 26px; background: var(--primary); 
+                    color: white; border-radius: 50%;
+                    display: flex; align-items: center; justify-content: center; 
+                    font-size: 0.75rem; font-weight: 700;
+                }
+                .pkg-option-card.popular::before { 
+                    content: 'POPULAR'; position: absolute; top: -9px; left: 1rem;
+                    transform: none; font-size: 0.6rem; padding: 0.2rem 0.6rem;
+                    background: var(--primary); border-radius: 6px;
+                }
+                
+                /* Payment Type Toggle */
+                .pkg-payment-type-toggle { 
+                    display: flex; gap: 0.5rem; padding: 0.3rem;
+                    background: var(--bg-tertiary); border-radius: 12px;
+                }
+                .pkg-payment-type-btn { 
+                    flex: 1; padding: 0.85rem 0.75rem; font-size: 0.85rem;
+                    border-radius: 10px; font-weight: 600;
+                    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+                }
+                .pkg-payment-type-btn i { font-size: 1.1rem; }
+                .pkg-payment-type-btn.active {
+                    background: var(--primary); color: white;
+                    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+                }
+                
+                /* Duration Grid - Horizontal Single Row */
+                .pkg-duration-grid { 
+                    display: flex; gap: 0.5rem;
+                }
+                .pkg-duration-option { 
+                    flex: 1; padding: 0.85rem 0.5rem; min-width: 0; 
+                    border-radius: 12px; text-align: center;
+                    border-width: 2px; background: var(--card);
+                }
+                .pkg-duration-option.selected {
+                    border-color: var(--primary);
+                    background: rgba(99, 102, 241, 0.08);
+                }
+                .pkg-duration-option.best-value::before { 
+                    content: 'BEST'; top: -8px; font-size: 0.5rem; 
+                    padding: 0.15rem 0.4rem; border-radius: 4px;
+                }
+                .pkg-duration-label { font-size: 0.8rem; font-weight: 700; }
+                .pkg-duration-discount { 
+                    font-size: 0.65rem; margin-top: 0.25rem; 
+                    color: var(--success); font-weight: 600;
+                }
+                
+                /* Payment Providers */
+                .pkg-providers-grid { 
+                    display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+                }
+                .pkg-provider-option { 
+                    padding: 0.85rem; gap: 0.5rem; border-radius: 12px;
+                    flex-direction: column; text-align: center;
+                    border-width: 2px; background: var(--card);
+                }
+                .pkg-provider-option.selected {
+                    border-color: var(--primary);
+                    background: rgba(99, 102, 241, 0.08);
+                }
+                .pkg-provider-icon { font-size: 1.5rem; line-height: 1; }
+                .pkg-provider-name { font-size: 0.8rem; font-weight: 600; }
+                .pkg-provider-desc { font-size: 0.65rem; color: var(--text-secondary); }
+                
+                /* Summary Section - Fixed at Bottom */
+                .pkg-summary-section { 
+                    flex-shrink: 0;
+                    margin: 0; padding: 1.25rem;
+                    background: var(--card); 
+                    border-top: 1px solid var(--border);
+                    border-radius: 20px 20px 0 0;
+                    box-shadow: 0 -8px 30px rgba(0,0,0,0.12);
+                }
+                .pkg-summary-title { 
+                    font-size: 1rem; margin-bottom: 0.85rem; 
+                    padding-bottom: 0.65rem;
+                }
+                #pkgPurchaseSummary {
+                    background: var(--bg-secondary); border-radius: 12px;
+                    padding: 0.85rem; margin-bottom: 1rem;
+                }
+                .pkg-summary-row { 
+                    font-size: 0.8rem; padding: 0.35rem 0;
+                }
+                .pkg-summary-row.pkg-total { 
+                    font-size: 1rem; padding-top: 0.5rem;
+                }
+                .pkg-summary-row.pkg-total .pkg-summary-value {
+                    font-size: 1.2rem;
+                }
+                .pkg-summary-row.pkg-permonth {
+                    font-size: 0.75rem;
+                }
+                .pkg-summary-divider { margin: 0.5rem 0; }
+                #pkgPurchaseBtn { 
+                    padding: 1rem; font-size: 1rem; border-radius: 14px;
+                    margin-top: 0;
+                }
             }
+            
             @media (max-width: 480px) {
                 .billing-header-left h1 { font-size: 1.25rem; }
                 .billing-header-left h1 i { font-size: 1.1rem; }
@@ -6735,28 +6860,40 @@ async function loadBilling(page = 1, type = 'all') {
                 .transactions-title i { font-size: 0.9rem; }
                 .filter-tab { padding: 0.3rem 0.5rem; font-size: 0.65rem; }
                 .mobile-transaction-card { padding: 0.65rem; margin: 0.3rem 0.5rem; }
-                .pkg-modal-header { padding: 0.75rem 0.85rem; }
-                .pkg-modal-title { font-size: 0.9rem; }
-                .pkg-modal-close { width: 32px; height: 32px; font-size: 1.1rem; }
-                .pkg-modal-body { padding: 0.85rem; gap: 0.85rem; }
-                .pkg-section-title { font-size: 0.75rem; margin-bottom: 0.4rem; }
-                .pkg-option-card { padding: 0.65rem 0.75rem; gap: 0.6rem; }
-                .pkg-option-card .pkg-option-icon { width: 34px; height: 34px; font-size: 0.95rem; }
-                .pkg-option-card .pkg-option-name { font-size: 0.8rem; }
-                .pkg-option-card .pkg-option-price { font-size: 0.65rem; }
-                .pkg-option-card.selected::after { width: 18px; height: 18px; font-size: 0.55rem; right: 0.6rem; }
-                .pkg-payment-type-btn { padding: 0.5rem 0.55rem; font-size: 0.7rem; }
-                .pkg-duration-option { padding: 0.5rem 0.25rem; }
-                .pkg-duration-label { font-size: 0.6rem; }
-                .pkg-duration-discount { font-size: 0.5rem; }
-                .pkg-provider-option { padding: 0.5rem 0.35rem; }
-                .pkg-provider-icon { width: 24px; height: 24px; font-size: 0.85rem; }
-                .pkg-provider-name { font-size: 0.6rem; }
-                .pkg-summary-section { padding: 0.85rem; margin-top: 0.85rem; }
-                .pkg-order-summary { padding: 0.65rem; margin-bottom: 0.65rem; }
-                .pkg-summary-row { font-size: 0.7rem; }
-                .pkg-summary-total { font-size: 0.85rem; }
-                .pkg-purchase-btn { padding: 0.65rem; font-size: 0.8rem; }
+                
+                /* Modal 480px adjustments */
+                .pkg-modal-header { padding: 0.85rem 1rem; }
+                .pkg-modal-title { font-size: 1rem; }
+                .pkg-modal-title i { font-size: 1.1rem; }
+                .pkg-modal-close { width: 34px; height: 34px; font-size: 1.15rem; }
+                .pkg-options-section { padding: 1rem; gap: 1.25rem; }
+                .pkg-section-title { font-size: 0.8rem; margin-bottom: 0.6rem; }
+                .pkg-section-title i { font-size: 0.9rem; }
+                .pkg-option-card { padding: 0.85rem 1rem; gap: 0.85rem; border-radius: 12px; }
+                .pkg-option-card .pkg-option-icon { width: 42px; height: 42px; font-size: 1.1rem; border-radius: 10px; }
+                .pkg-option-card .pkg-option-name { font-size: 0.9rem; }
+                .pkg-option-card .pkg-option-price { font-size: 0.75rem; }
+                .pkg-option-card .pkg-option-price strong { font-size: 0.85rem; }
+                .pkg-option-card.selected::after { width: 22px; height: 22px; font-size: 0.65rem; right: 0.85rem; }
+                .pkg-option-card.popular::before { font-size: 0.55rem; padding: 0.15rem 0.5rem; }
+                .pkg-payment-type-btn { padding: 0.75rem 0.6rem; font-size: 0.8rem; }
+                .pkg-payment-type-btn i { font-size: 1rem; }
+                .pkg-duration-option { padding: 0.75rem 0.4rem; border-radius: 10px; }
+                .pkg-duration-label { font-size: 0.75rem; }
+                .pkg-duration-discount { font-size: 0.6rem; }
+                .pkg-duration-option.best-value::before { font-size: 0.45rem; padding: 0.1rem 0.3rem; }
+                .pkg-provider-option { padding: 0.75rem 0.5rem; border-radius: 10px; }
+                .pkg-provider-icon { font-size: 1.35rem; }
+                .pkg-provider-name { font-size: 0.75rem; }
+                .pkg-provider-desc { font-size: 0.6rem; }
+                .pkg-summary-section { padding: 1rem; border-radius: 16px 16px 0 0; }
+                .pkg-summary-title { font-size: 0.9rem; margin-bottom: 0.75rem; }
+                #pkgPurchaseSummary { padding: 0.75rem; margin-bottom: 0.85rem; border-radius: 10px; }
+                .pkg-summary-row { font-size: 0.75rem; padding: 0.3rem 0; }
+                .pkg-summary-row.pkg-total { font-size: 0.9rem; }
+                .pkg-summary-row.pkg-total .pkg-summary-value { font-size: 1.1rem; }
+                .pkg-summary-row.pkg-permonth { font-size: 0.7rem; }
+                #pkgPurchaseBtn { padding: 0.9rem; font-size: 0.9rem; border-radius: 12px; }
             }
         </style>
         
