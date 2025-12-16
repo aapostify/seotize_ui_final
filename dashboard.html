@@ -6254,10 +6254,11 @@ async function loadBilling(page = 1, type = 'all') {
                 border-color: var(--primary) transparent var(--primary) transparent !important;
             }
             
-            /* Current Plan Card - Integrated with Usage */
+            /* Current Plan Card - Desktop: Gradient + Usage Side by Side */
             .current-plan-card {
                 background: var(--card); border-radius: var(--radius-xl);
                 border: 1px solid var(--border); overflow: hidden; margin-bottom: 1.5rem;
+                display: grid; grid-template-columns: 1fr 1fr;
             }
             .current-plan-gradient {
                 padding: 1.75rem; position: relative; overflow: hidden;
@@ -6268,61 +6269,63 @@ async function loadBilling(page = 1, type = 'all') {
                 opacity: 0.5;
             }
             .current-plan-header {
-                position: relative; z-index: 1; display: flex; justify-content: space-between;
-                align-items: center; flex-wrap: wrap; gap: 1rem;
+                position: relative; z-index: 1; display: flex; flex-direction: column;
+                justify-content: center; height: 100%;
             }
-            .current-plan-info { flex: 1; min-width: 200px; }
+            .current-plan-info { }
             .current-plan-badge {
                 display: inline-flex; align-items: center; gap: 0.5rem;
                 background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
                 padding: 0.4rem 0.85rem; border-radius: 2rem; font-size: 0.65rem;
-                font-weight: 600; color: white; margin-bottom: 0.5rem;
-                text-transform: uppercase; letter-spacing: 0.5px;
+                font-weight: 600; color: white; margin-bottom: 0.75rem;
+                text-transform: uppercase; letter-spacing: 0.5px; width: fit-content;
             }
             .current-plan-name {
-                font-size: 1.5rem; font-weight: 800; color: white; margin: 0 0 0.35rem 0;
+                font-size: 1.75rem; font-weight: 800; color: white; margin: 0 0 0.5rem 0;
                 display: flex; align-items: center; gap: 0.5rem;
             }
-            .current-plan-name i { font-size: 1.25rem; }
+            .current-plan-name i { font-size: 1.5rem; }
             .current-plan-meta {
-                display: flex; flex-wrap: wrap; gap: 0.75rem;
+                display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem;
             }
             .current-plan-meta-item {
-                display: flex; align-items: center; gap: 0.35rem;
-                color: rgba(255,255,255,0.9); font-size: 0.75rem;
+                display: flex; align-items: center; gap: 0.4rem;
+                color: rgba(255,255,255,0.9); font-size: 0.8rem;
             }
-            .current-plan-meta-item i { font-size: 0.9rem; opacity: 0.8; }
+            .current-plan-meta-item i { font-size: 1rem; opacity: 0.8; }
             
-            /* Usage Progress Section - Inside Plan Card with Theme Support */
+            /* Usage Progress Section - Like Article Usage Plan */
             .plan-usage-section {
-                display: grid; grid-template-columns: repeat(3, 1fr);
-                gap: 0; background: var(--bg-secondary); border-top: 1px solid var(--border);
-                position: relative; z-index: 1;
+                display: flex; flex-direction: column;
+                padding: 1.5rem; background: var(--bg-secondary);
+                border-left: 1px solid var(--border);
+                justify-content: center; gap: 1rem;
             }
             .plan-usage-item {
-                padding: 1.25rem 1rem; text-align: center;
-                border-right: 1px solid var(--border);
+                display: flex; flex-direction: column; gap: 0.5rem;
             }
-            .plan-usage-item:last-child { border-right: none; }
+            .plan-usage-header {
+                display: flex; justify-content: space-between; align-items: center;
+            }
+            .plan-usage-info {
+                display: flex; align-items: center; gap: 0.5rem;
+            }
             .plan-usage-icon {
-                width: 42px; height: 42px; margin: 0 auto 0.6rem;
-                border-radius: var(--radius); display: flex;
-                align-items: center; justify-content: center; font-size: 1.15rem;
+                width: 32px; height: 32px; border-radius: 8px; display: flex;
+                align-items: center; justify-content: center; font-size: 1rem;
             }
             .plan-usage-icon.images { background: rgba(99, 102, 241, 0.12); color: var(--primary); }
             .plan-usage-icon.articles { background: rgba(16, 185, 129, 0.12); color: var(--success); }
             .plan-usage-icon.time { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
-            .plan-usage-value {
-                font-size: 1.35rem; font-weight: 800; color: var(--text); margin-bottom: 0.15rem;
-            }
-            .plan-usage-value span { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); }
             .plan-usage-label {
-                font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase;
-                letter-spacing: 0.3px; margin-bottom: 0.6rem;
+                font-size: 0.85rem; font-weight: 600; color: var(--text);
+            }
+            .plan-usage-percent {
+                font-size: 0.85rem; font-weight: 700; color: var(--text);
             }
             .plan-usage-bar {
-                height: 5px; background: var(--border); border-radius: 3px;
-                overflow: hidden; margin: 0 auto; max-width: 100px;
+                height: 6px; background: var(--border); border-radius: 3px;
+                overflow: hidden; width: 100%;
             }
             .plan-usage-fill {
                 height: 100%; border-radius: 3px; transition: width 0.5s ease;
@@ -6330,9 +6333,11 @@ async function loadBilling(page = 1, type = 'all') {
             .plan-usage-fill.safe { background: var(--success); }
             .plan-usage-fill.warning { background: #fbbf24; }
             .plan-usage-fill.danger { background: #ef4444; }
-            .plan-usage-percent {
-                font-size: 0.65rem; color: var(--text-secondary); margin-top: 0.4rem;
+            .plan-usage-stats {
+                display: flex; justify-content: space-between;
+                font-size: 0.75rem; color: var(--text-secondary);
             }
+            .plan-usage-stats strong { color: var(--text); font-weight: 600; }
             
             
             /* Transaction History */
@@ -6628,20 +6633,26 @@ async function loadBilling(page = 1, type = 'all') {
                 .billing-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
                 .billing-header-actions { width: 100%; }
                 .billing-header-actions .btn { flex: 1; justify-content: center; }
+                
+                /* Current Plan Card - Stack on Mobile */
+                .current-plan-card { grid-template-columns: 1fr; }
                 .current-plan-gradient { padding: 1.25rem; }
-                .current-plan-header { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
-                .current-plan-name { font-size: 1.25rem; }
-                .current-plan-name i { font-size: 1.1rem; }
+                .current-plan-name { font-size: 1.35rem; }
+                .current-plan-name i { font-size: 1.15rem; }
                 .current-plan-meta { gap: 0.5rem 1rem; }
-                .current-plan-meta-item { font-size: 0.7rem; }
-                .plan-usage-section { grid-template-columns: repeat(3, 1fr); }
-                .plan-usage-item { padding: 1rem 0.5rem; }
-                .plan-usage-icon { width: 36px; height: 36px; font-size: 1rem; }
-                .plan-usage-value { font-size: 1.1rem; }
-                .plan-usage-value span { font-size: 0.65rem; }
-                .plan-usage-label { font-size: 0.55rem; }
-                .plan-usage-bar { max-width: 70px; }
-                .plan-usage-percent { font-size: 0.55rem; }
+                .current-plan-meta-item { font-size: 0.75rem; }
+                
+                /* Usage Section - Full width rows on mobile */
+                .plan-usage-section { 
+                    border-left: none; border-top: 1px solid var(--border);
+                    padding: 1.25rem; gap: 1.25rem;
+                }
+                .plan-usage-item { gap: 0.4rem; }
+                .plan-usage-icon { width: 28px; height: 28px; font-size: 0.9rem; }
+                .plan-usage-label { font-size: 0.8rem; }
+                .plan-usage-percent { font-size: 0.8rem; }
+                .plan-usage-bar { height: 5px; }
+                .plan-usage-stats { font-size: 0.7rem; }
                 .transactions-table { display: none; }
                 .mobile-transactions { display: block; }
                 .transactions-header { padding: 1rem; gap: 0.75rem; }
@@ -6697,42 +6708,63 @@ async function loadBilling(page = 1, type = 'all') {
                 }
                 .pkg-section-title i { color: var(--primary); font-size: 1rem; }
                 
-                /* Package Options - Horizontal Cards */
+                /* Package Options - Vertical Cards with Features */
                 .pkg-options-grid { 
-                    display: flex; flex-direction: column; gap: 0.65rem;
+                    display: flex; flex-direction: column; gap: 0.75rem;
                 }
                 .pkg-option-card { 
                     padding: 1rem 1.25rem; 
-                    display: flex; align-items: center; gap: 1rem;
-                    flex-direction: row; min-height: auto; 
-                    border-width: 2px; border-radius: 14px;
+                    display: flex; flex-direction: column;
+                    min-height: auto; border-width: 2px; border-radius: 14px;
                     background: var(--card);
                 }
-                .pkg-option-card .pkg-option-icon { 
-                    width: 48px; height: 48px; font-size: 1.25rem; 
-                    flex-shrink: 0; margin-bottom: 0; border-radius: 12px; 
+                .pkg-option-card > .pkg-option-icon { 
+                    display: none;
                 }
                 .pkg-option-card .pkg-option-content { 
-                    text-align: left; flex: 1; min-width: 0;
+                    display: flex; align-items: center; gap: 0.75rem;
+                    width: 100%;
+                }
+                .pkg-option-card .pkg-option-content::before {
+                    content: ''; width: 44px; height: 44px; border-radius: 10px;
+                    display: flex; align-items: center; justify-content: center;
+                    flex-shrink: 0;
+                }
+                .pkg-option-card[data-package="basic"] .pkg-option-content::before {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                }
+                .pkg-option-card[data-package="professional"] .pkg-option-content::before {
+                    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                }
+                .pkg-option-card[data-package="enterprise"] .pkg-option-content::before {
+                    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
                 }
                 .pkg-option-card .pkg-option-name { 
-                    font-size: 1rem; font-weight: 700; margin-bottom: 0.15rem; 
+                    font-size: 1rem; font-weight: 700; margin-bottom: 0.1rem; 
                 }
                 .pkg-option-card .pkg-option-price { 
                     font-size: 0.8rem; color: var(--text-secondary);
                 }
                 .pkg-option-card .pkg-option-price strong {
-                    color: var(--text); font-size: 0.95rem;
+                    color: var(--text); font-size: 0.9rem;
                 }
-                .pkg-option-card .pkg-option-features { display: none; }
+                .pkg-option-card .pkg-option-features { 
+                    display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem;
+                    margin-top: 0.5rem; padding-top: 0.5rem;
+                    border-top: 1px solid var(--border);
+                    font-size: 0.7rem;
+                }
+                .pkg-option-card .pkg-option-features li {
+                    padding: 0.15rem 0;
+                }
+                .pkg-option-card .pkg-option-features li i { font-size: 0.75rem; }
                 .pkg-option-card.selected { 
                     border-color: var(--primary); 
                     background: rgba(99, 102, 241, 0.08);
                     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
                 }
                 .pkg-option-card.selected::after { 
-                    content: '✓'; position: absolute; top: 50%; right: 1rem; 
-                    transform: translateY(-50%);
+                    content: '✓'; position: absolute; top: 1rem; right: 1rem; 
                     width: 26px; height: 26px; background: var(--primary); 
                     color: white; border-radius: 50%;
                     display: flex; align-items: center; justify-content: center; 
@@ -6841,20 +6873,19 @@ async function loadBilling(page = 1, type = 'all') {
                 .billing-header-left h1 i { font-size: 1.1rem; }
                 .billing-header-left p { font-size: 0.75rem; }
                 .billing-header-actions .btn { font-size: 0.75rem; padding: 0.55rem 0.75rem; }
-                .current-plan-gradient { padding: 0.85rem; }
+                .current-plan-gradient { padding: 1rem; }
                 .current-plan-badge { font-size: 0.55rem; padding: 0.3rem 0.6rem; }
-                .current-plan-name { font-size: 1rem; gap: 0.35rem; }
-                .current-plan-name i { font-size: 0.9rem; }
+                .current-plan-name { font-size: 1.15rem; gap: 0.4rem; }
+                .current-plan-name i { font-size: 1rem; }
                 .current-plan-meta { gap: 0.4rem 0.75rem; }
-                .current-plan-meta-item { font-size: 0.6rem; }
-                .current-plan-meta-item i { font-size: 0.75rem; }
-                .plan-usage-item { padding: 0.75rem 0.25rem; }
-                .plan-usage-icon { width: 28px; height: 28px; font-size: 0.85rem; margin-bottom: 0.35rem; }
-                .plan-usage-value { font-size: 0.9rem; }
-                .plan-usage-value span { font-size: 0.55rem; }
-                .plan-usage-label { font-size: 0.45rem; margin-bottom: 0.35rem; }
-                .plan-usage-bar { max-width: 45px; height: 3px; }
-                .plan-usage-percent { font-size: 0.45rem; }
+                .current-plan-meta-item { font-size: 0.7rem; }
+                .current-plan-meta-item i { font-size: 0.8rem; }
+                .plan-usage-section { padding: 1rem; gap: 1rem; }
+                .plan-usage-icon { width: 26px; height: 26px; font-size: 0.85rem; }
+                .plan-usage-label { font-size: 0.75rem; }
+                .plan-usage-percent { font-size: 0.75rem; }
+                .plan-usage-bar { height: 4px; }
+                .plan-usage-stats { font-size: 0.65rem; }
                 .transactions-header { padding: 0.75rem; }
                 .transactions-title { font-size: 0.85rem; }
                 .transactions-title i { font-size: 0.9rem; }
@@ -6869,13 +6900,14 @@ async function loadBilling(page = 1, type = 'all') {
                 .pkg-options-section { padding: 1rem; gap: 1.25rem; }
                 .pkg-section-title { font-size: 0.8rem; margin-bottom: 0.6rem; }
                 .pkg-section-title i { font-size: 0.9rem; }
-                .pkg-option-card { padding: 0.85rem 1rem; gap: 0.85rem; border-radius: 12px; }
-                .pkg-option-card .pkg-option-icon { width: 42px; height: 42px; font-size: 1.1rem; border-radius: 10px; }
+                .pkg-option-card { padding: 0.85rem 1rem; border-radius: 12px; }
+                .pkg-option-card .pkg-option-content::before { width: 38px; height: 38px; }
                 .pkg-option-card .pkg-option-name { font-size: 0.9rem; }
-                .pkg-option-card .pkg-option-price { font-size: 0.75rem; }
-                .pkg-option-card .pkg-option-price strong { font-size: 0.85rem; }
-                .pkg-option-card.selected::after { width: 22px; height: 22px; font-size: 0.65rem; right: 0.85rem; }
-                .pkg-option-card.popular::before { font-size: 0.55rem; padding: 0.15rem 0.5rem; }
+                .pkg-option-card .pkg-option-price { font-size: 0.7rem; }
+                .pkg-option-card .pkg-option-price strong { font-size: 0.8rem; }
+                .pkg-option-card .pkg-option-features { font-size: 0.65rem; gap: 0.2rem 0.5rem; }
+                .pkg-option-card.selected::after { width: 22px; height: 22px; font-size: 0.6rem; top: 0.85rem; right: 0.85rem; }
+                .pkg-option-card.popular::before { font-size: 0.5rem; padding: 0.15rem 0.45rem; top: -8px; }
                 .pkg-payment-type-btn { padding: 0.75rem 0.6rem; font-size: 0.8rem; }
                 .pkg-payment-type-btn i { font-size: 1rem; }
                 .pkg-duration-option { padding: 0.75rem 0.4rem; border-radius: 10px; }
@@ -7019,10 +7051,9 @@ async function loadBilling(page = 1, type = 'all') {
             </button>
         </div>
         ` : `
-        <!-- Current Plan Card with Integrated Usage -->
+        <!-- Current Plan Card with Usage Side by Side -->
         <div class="current-plan-card">
             <div class="current-plan-gradient" style="background: ${currentPkg?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};">
-                <!-- Header with Plan Info and Actions -->
                 <div class="current-plan-header">
                     <div class="current-plan-info">
                         <div class="current-plan-badge">
@@ -7058,34 +7089,55 @@ async function loadBilling(page = 1, type = 'all') {
                 </div>
             </div>
             
-            <!-- Usage Section - Inside Card -->
+            <!-- Usage Section - Like Article Usage Plan -->
             <div class="plan-usage-section">
                 <div class="plan-usage-item">
-                    <div class="plan-usage-icon images"><i class="ri-image-line"></i></div>
-                    <div class="plan-usage-value">${imagesUsed.toLocaleString()}<span>/${imagesLimit.toLocaleString()}</span></div>
-                    <div class="plan-usage-label">Images Used</div>
+                    <div class="plan-usage-header">
+                        <div class="plan-usage-info">
+                            <div class="plan-usage-icon images"><i class="ri-image-line"></i></div>
+                            <span class="plan-usage-label">Images</span>
+                        </div>
+                        <span class="plan-usage-percent">${Math.round(imagesUsedPercent)}%</span>
+                    </div>
                     <div class="plan-usage-bar">
                         <div class="plan-usage-fill ${imagesUsedPercent > 90 ? 'danger' : imagesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${imagesUsedPercent}%;"></div>
                     </div>
-                    <div class="plan-usage-percent">${Math.round(imagesUsedPercent)}% used</div>
+                    <div class="plan-usage-stats">
+                        <span><strong>${imagesUsed.toLocaleString()}</strong> used</span>
+                        <span><strong>${(imagesLimit - imagesUsed).toLocaleString()}</strong> remaining / <strong>${imagesLimit.toLocaleString()}</strong> total</span>
+                    </div>
                 </div>
                 <div class="plan-usage-item">
-                    <div class="plan-usage-icon articles"><i class="ri-article-line"></i></div>
-                    <div class="plan-usage-value">${articlesUsed.toLocaleString()}<span>/${articlesLimit.toLocaleString()}</span></div>
-                    <div class="plan-usage-label">Articles Used</div>
+                    <div class="plan-usage-header">
+                        <div class="plan-usage-info">
+                            <div class="plan-usage-icon articles"><i class="ri-article-line"></i></div>
+                            <span class="plan-usage-label">Articles</span>
+                        </div>
+                        <span class="plan-usage-percent">${Math.round(articlesUsedPercent)}%</span>
+                    </div>
                     <div class="plan-usage-bar">
                         <div class="plan-usage-fill ${articlesUsedPercent > 90 ? 'danger' : articlesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${articlesUsedPercent}%;"></div>
                     </div>
-                    <div class="plan-usage-percent">${Math.round(articlesUsedPercent)}% used</div>
+                    <div class="plan-usage-stats">
+                        <span><strong>${articlesUsed.toLocaleString()}</strong> used</span>
+                        <span><strong>${(articlesLimit - articlesUsed).toLocaleString()}</strong> remaining / <strong>${articlesLimit.toLocaleString()}</strong> total</span>
+                    </div>
                 </div>
                 <div class="plan-usage-item">
-                    <div class="plan-usage-icon time"><i class="ri-timer-line"></i></div>
-                    <div class="plan-usage-value">${daysLeft}<span> days</span></div>
-                    <div class="plan-usage-label">Time Remaining</div>
+                    <div class="plan-usage-header">
+                        <div class="plan-usage-info">
+                            <div class="plan-usage-icon time"><i class="ri-timer-line"></i></div>
+                            <span class="plan-usage-label">Time Remaining</span>
+                        </div>
+                        <span class="plan-usage-percent">${daysLeft} days</span>
+                    </div>
                     <div class="plan-usage-bar">
                         <div class="plan-usage-fill ${daysLeft < 7 ? 'danger' : daysLeft < 14 ? 'warning' : 'safe'}" style="width: ${Math.min(daysLeft * 3.33, 100)}%;"></div>
                     </div>
-                    <div class="plan-usage-percent">${expiryDate ? expiryDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : ''}</div>
+                    <div class="plan-usage-stats">
+                        <span>${expiryDate ? expiryDate.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'}) : 'N/A'}</span>
+                        <span>${subscriptionEnd ? 'Auto-renews' : 'Expires'}</span>
+                    </div>
                 </div>
             </div>
         </div>
