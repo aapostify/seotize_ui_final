@@ -6027,13 +6027,16 @@ async function processPackagePurchase() {
     });
     
     try {
-        const response = await api('/hosting/buy-package', 'POST', {
-            package: packagePurchaseState.selectedPackage,
-            provider: packagePurchaseState.paymentProvider,
-            duration: packagePurchaseState.duration,
-            subscription: packagePurchaseState.paymentType === 'subscription',
-            cancel_previous: true,
-            cancel_current_plan: true
+        const response = await api('/hosting/buy-package', {
+            method: 'POST',
+            body: JSON.stringify({
+                package: packagePurchaseState.selectedPackage,
+                provider: packagePurchaseState.paymentProvider,
+                duration: packagePurchaseState.duration,
+                subscription: packagePurchaseState.paymentType === 'subscription',
+                cancel_previous: true,
+                cancel_current_plan: true
+            })
         });
         
         Swal.close();
@@ -6051,15 +6054,42 @@ async function processPackagePurchase() {
             }).then(() => {
                 loadBilling();
             });
+        } else if (response.data?.message) {
+            // Handle pending payment message
+            Swal.fire({
+                icon: 'info',
+                title: 'Pending Payment',
+                html: response.data.message,
+                showCancelButton: true,
+                confirmButtonText: 'Go to Payment',
+                cancelButtonText: 'Cancel',
+                customClass: { popup: 'swal2-toast' }
+            }).then((result) => {
+                if (result.isConfirmed && response.data.payment_url) {
+                    window.open(response.data.payment_url, '_blank');
+                }
+            });
         }
     } catch (error) {
         console.error('Purchase error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Purchase Failed',
-            text: error.message || 'Failed to process purchase. Please try again.',
-            customClass: { popup: 'swal2-toast' }
-        });
+        
+        // Handle specific error cases
+        if (error.code === 409) {
+            // Active subscription or plan conflict
+            Swal.fire({
+                icon: 'warning',
+                title: 'Plan Conflict',
+                html: error.message || 'You have an active plan. Please cancel it first or enable replacement.',
+                customClass: { popup: 'swal2-toast' }
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Purchase Failed',
+                text: error.message || 'Failed to process purchase. Please try again.',
+                customClass: { popup: 'swal2-toast' }
+            });
+        }
     }
 }
 
