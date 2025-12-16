@@ -18,6 +18,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
+
 /* CSS Variables */
 :root {
   --primary: #6366f1;
@@ -1708,10 +1709,6 @@ from {
   transform: translateY(20px);
   opacity: 0;
 }
-to {
-  transform: translateY(0);
-  opacity: 1;
-}
 }
 @keyframes slideDown {
 from {
@@ -1857,9 +1854,6 @@ to {
   justify-content: space-between;
   align-items: start;
   gap: 0.5rem;
-}
-.session-details {
-  flex: 1;
 }
 .session-location {
   display: flex;
@@ -2015,9 +2009,6 @@ to {
 .domain-buttons-row {
   gap: 0.5rem;
 }
-.domain-verify-delete {
-  gap: 0.5rem;
-}
 /* Hide mobile delete on tablet, show desktop delete */
 .domain-status-row .domain-verify-delete {
   display: none !important;
@@ -2105,9 +2096,6 @@ to {
   background: linear-gradient(135deg, var(--card) 0%, var(--bg-secondary) 100%) !important;
   border: 1px solid var(--border) !important;
   border-radius: 1rem !important;
-}
-.swal2-title {
-  color: var(--text) !important;
 }
 /* =====================================================
 IMAGE DETAILS MODAL - Premium Design
@@ -2346,8 +2334,6 @@ IMAGE DETAILS MODAL - Premium Design
   animation: imagePanelIn 180ms ease-out;
 }
 @keyframes imagePanelIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 .image-modal-panel[hidden] {
   display: none !important;
@@ -2721,8 +2707,6 @@ ARTICLE DETAILS MODAL - Premium Design with Tabs
   animation: articlePanelIn 180ms ease-out;
 }
 @keyframes articlePanelIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 .article-modal-panel[hidden] {
   display: none !important;
@@ -3183,7 +3167,6 @@ ARTICLE DETAILS MODAL - Premium Design with Tabs
 }
 @keyframes taskPanelIn {
   from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 .task-modal-panel[hidden] {
   display: none !important;
@@ -3351,64 +3334,6 @@ ARTICLE DETAILS MODAL - Premium Design with Tabs
   border-radius: var(--radius-lg);
   padding: 1rem;
   margin: 0 0 1.25rem 0;
-}
-.task-budget-top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.65rem;
-}
-.task-budget-label {
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: var(--text);
-  letter-spacing: 0.01em;
-}
-.task-budget-meta {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  flex: 0 0 auto;
-}
-.task-budget-amount {
-  font-size: 1.15rem;
-  font-weight: 900;
-  color: var(--success);
-}
-.task-budget-percent {
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: var(--text-secondary);
-}
-.task-modal-recharge-btn {
-  margin-top: 0.85rem;
-  width: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 0.95rem;
-  border-radius: 12px;
-  border: 1px solid rgba(16, 185, 129, 0.55);
-  background: linear-gradient(180deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
-  color: #ffffff;
-  font-weight: 900;
-  letter-spacing: 0.01em;
-  cursor: pointer;
-  transition: var(--transition);
-  box-shadow: 0 18px 40px rgba(16, 185, 129, 0.18);
-}
-.task-modal-recharge-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 20px 48px rgba(16, 185, 129, 0.24);
-}
-.task-modal-recharge-btn:active {
-  transform: translateY(0);
-}
-.task-modal-recharge-btn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.22), 0 20px 48px rgba(16, 185, 129, 0.24);
 }
 /* More details (done_parts) */
 .task-done-table-wrap {
@@ -4494,15 +4419,6 @@ to {
   gap: 0.5rem;
   padding: 0.75rem;
 }
-.budget-summary-item {
-  padding: 0.5rem;
-}
-.budget-summary-label {
-  font-size: 0.625rem;
-}
-.budget-summary-value {
-  font-size: 0.875rem;
-}
 .seo-task-creator {
   padding: 0;
   align-items: stretch;
@@ -4694,9 +4610,6 @@ to {
   width: 100%;
   line-height: 1;
 }
-.step-description {
-  display: none !important;
-}
 .step-indicator {
   width: 1.5rem;
   height: 1.5rem;
@@ -4746,9 +4659,6 @@ to {
   position: sticky;
   bottom: 0;
   z-index: 10;
-}
-.footer-info {
-  display: none !important;
 }
 .footer-actions {
   width: 100%;
@@ -4946,9 +4856,6 @@ to {
   position: relative;
   gap: 0.6rem;
   transition: all 0.2s ease;
-}
-.billing-cycle-options .billing-option:active {
-  transform: scale(0.98);
 }
 .billing-cycle-options .billing-option-top {
   display: flex;
