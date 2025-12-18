@@ -12354,69 +12354,66 @@ async function viewPaymentDetails(billingId) {
         Swal.update({ title:'', html:`<style>
 *{box-sizing:border-box}
 ._p{width:100vw!important;max-width:800px!important;padding:0!important;border-radius:1.5rem!important;overflow:hidden;background:var(--bg,#fff)!important}
-._p .swal2-html-container{margin:0!important;padding:0!important;overflow:visible!important}
+._p .swal2-html-container{margin:0!important;padding:0!important;overflow:auto!important;max-height:90vh!important}
 ._p .swal2-title{display:none!important}
-._p .swal2-close{top:1.25rem;right:1.25rem;width:2.5rem;height:2.5rem;background:rgba(0,0,0,.06);color:var(--text-secondary,#64748b);border-radius:.75rem;font-size:1.5rem;transition:.2s;z-index:10}
-._p .swal2-close:hover{background:rgba(0,0,0,.1);transform:rotate(90deg)}
-._w{display:grid;grid-template-columns:1fr}
-._top{padding:2rem;background:linear-gradient(160deg,#0f172a 0%,#1e293b 100%);color:#fff;position:relative;overflow:hidden}
-._top::before{content:'';position:absolute;top:-50%;right:-20%;width:60%;height:200%;background:radial-gradient(circle,rgba(99,102,241,.15) 0%,transparent 70%);pointer-events:none}
-._top::after{content:'';position:absolute;bottom:-30%;left:-10%;width:50%;height:150%;background:radial-gradient(circle,rgba(168,85,247,.1) 0%,transparent 70%);pointer-events:none}
-._price{position:relative;z-index:1}
-._price h1{font-size:3.5rem;font-weight:800;margin:0;letter-spacing:-2px;background:linear-gradient(135deg,#fff 0%,#cbd5e1 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-._price span{font-size:1rem;color:#94a3b8;font-weight:500;margin-left:.5rem}
-._badge{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:2rem;font-weight:600;font-size:.8rem;margin-top:1rem;background:${sC};color:#fff;box-shadow:0 4px 15px ${sC}40}
-._badge i{font-size:1.1rem}
-._acts{display:flex;gap:.75rem;margin-top:1.5rem;position:relative;z-index:1}
-._act{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:.75rem;font-weight:600;font-size:.85rem;text-decoration:none;transition:.2s;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(10px)}
-._act:hover{background:rgba(255,255,255,.2);transform:translateY(-2px)}
-._act i{font-size:1.2rem}
-._main{padding:1.75rem 2rem 2rem}
-._cards{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
-._card{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:1rem;padding:1rem;text-align:center;transition:.25s;position:relative;overflow:hidden}
-._card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#6366f1,#a855f7);opacity:0;transition:.25s}
-._card:hover{border-color:#6366f1;transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,.1)}
-._card:hover::before{opacity:1}
-._card i.ico{font-size:1.75rem;margin-bottom:.5rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-._card label{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary,#64748b);font-weight:600;margin-bottom:.25rem}
-._card strong{font-size:.9rem;color:var(--text,#1e293b);display:flex;align-items:center;justify-content:center;gap:.3rem}
-._stripe{display:inline-flex;align-items:center;gap:.25rem;background:#635bff;color:#fff;padding:.2rem .6rem;border-radius:.35rem;font-size:.75rem;font-weight:600}
-._stat{display:inline-flex;align-items:center;gap:.25rem;padding:.25rem .65rem;border-radius:.4rem;font-size:.75rem;font-weight:600;background:${sC}15;color:${sC}}
-._sec{margin-top:1.5rem}
-._sec h3{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary,#64748b);font-weight:600;margin:0 0 .75rem;display:flex;align-items:center;gap:.4rem}
-._sec h3 i{font-size:1rem;opacity:.7}
-._timeline{display:flex;gap:1.5rem}
-._titem{flex:1;background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:.75rem;padding:1rem;position:relative}
-._titem::before{content:'';position:absolute;left:1rem;top:-.5rem;width:1rem;height:1rem;background:linear-gradient(135deg,#6366f1,#a855f7);border-radius:50%;border:3px solid var(--bg,#fff)}
-._titem label{font-size:.65rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;display:block;margin-bottom:.25rem}
-._titem strong{font-size:.85rem;color:var(--text,#1e293b)}
-._refs{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem}
-._ref{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:.75rem;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;transition:.2s}
+._p .swal2-close{top:1rem;right:1rem;width:2.25rem;height:2.25rem;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);color:#fff;border-radius:.6rem;font-size:1.4rem;transition:.2s;z-index:10}
+._p .swal2-close:hover{background:rgba(255,255,255,.25);transform:scale(1.05)}
+._top{padding:1.75rem 2rem;background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);color:#fff;position:relative;overflow:hidden}
+._top::before{content:'';position:absolute;top:-50%;right:-30%;width:80%;height:200%;background:radial-gradient(ellipse,rgba(99,102,241,.2) 0%,transparent 60%);pointer-events:none}
+._top::after{content:'';position:absolute;bottom:-50%;left:-20%;width:70%;height:180%;background:radial-gradient(ellipse,rgba(168,85,247,.15) 0%,transparent 60%);pointer-events:none}
+._hdr{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;position:relative;z-index:1}
+._hdr h1{font-size:3rem;font-weight:800;margin:0;letter-spacing:-1.5px;color:#fff;display:flex;align-items:baseline;gap:.4rem}
+._hdr h1 small{font-size:.9rem;font-weight:500;color:#94a3b8;letter-spacing:0}
+._badge{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .9rem;border-radius:.5rem;font-weight:600;font-size:.75rem;background:${sC};color:#fff;box-shadow:0 4px 12px ${sC}50}
+._badge i{font-size:1rem}
+._acts{display:flex;gap:.6rem;margin-top:1.25rem;position:relative;z-index:1}
+._act{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.2rem;border-radius:.6rem;font-weight:600;font-size:.8rem;text-decoration:none;transition:.2s;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(8px)}
+._act:hover{background:rgba(255,255,255,.2);transform:translateY(-2px);box-shadow:0 4px 15px rgba(0,0,0,.2)}
+._act i{font-size:1.1rem}
+._main{padding:1.5rem}
+._cards{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
+._card{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:.75rem;padding:.9rem .75rem;text-align:center;transition:.2s}
+._card:hover{border-color:#6366f1;box-shadow:0 4px 15px rgba(99,102,241,.08)}
+._card i.ico{font-size:1.5rem;margin-bottom:.4rem;color:#6366f1}
+._card label{display:block;font-size:.6rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text-secondary,#64748b);font-weight:600;margin-bottom:.2rem}
+._card b{font-size:.8rem;color:var(--text,#1e293b);display:flex;align-items:center;justify-content:center;gap:.25rem}
+._stripe{display:inline-flex;align-items:center;gap:.2rem;background:#635bff;color:#fff;padding:.15rem .5rem;border-radius:.3rem;font-size:.7rem;font-weight:600}
+._stat{display:inline-flex;align-items:center;gap:.2rem;padding:.2rem .5rem;border-radius:.3rem;font-size:.7rem;font-weight:600;background:${sC}18;color:${sC}}
+._sec{margin-top:1.25rem}
+._sec h4{font-size:.65rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text-secondary,#64748b);font-weight:600;margin:0 0 .6rem;display:flex;align-items:center;gap:.35rem}
+._sec h4 i{font-size:.9rem;opacity:.6}
+._tline{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+._titem{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:.6rem;padding:.75rem .85rem;display:flex;align-items:center;gap:.6rem}
+._titem i{font-size:1.25rem;color:#6366f1;flex-shrink:0}
+._titem div label{font-size:.55rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;display:block}
+._titem div b{font-size:.8rem;color:var(--text,#1e293b)}
+._refs{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+._ref{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:.6rem;padding:.7rem .8rem}
 ._ref:hover{border-color:#6366f1}
-._ref label{font-size:.6rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;white-space:nowrap}
-._ref>div{display:flex;align-items:center;gap:.4rem;flex:1;justify-content:flex-end;min-width:0}
-._ref code{background:var(--bg-tertiary,#f1f5f9);padding:.25rem .5rem;border-radius:.4rem;font-size:.7rem;font-family:'SF Mono',Monaco,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text,#1e293b);max-width:180px}
-._cp{cursor:pointer;padding:.3rem;border-radius:.35rem;transition:.15s;color:var(--text-secondary,#94a3b8);font-size:1rem;flex-shrink:0}
+._ref label{font-size:.55rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;display:block;margin-bottom:.35rem}
+._ref>div{display:flex;align-items:center;gap:.35rem}
+._ref code{background:var(--bg-tertiary,#f1f5f9);padding:.2rem .4rem;border-radius:.3rem;font-size:.65rem;font-family:'SF Mono',Monaco,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text,#1e293b);flex:1;min-width:0}
+._cp{cursor:pointer;padding:.25rem;border-radius:.25rem;transition:.15s;color:var(--text-secondary,#94a3b8);font-size:.9rem;flex-shrink:0}
 ._cp:hover{color:#6366f1;background:rgba(99,102,241,.1)}
-@media(min-width:768px){._w{grid-template-columns:1fr}._top{padding:2.5rem}._price h1{font-size:4rem}._main{padding:2rem 2.5rem 2.5rem}._cards{gap:1rem}._card{padding:1.25rem}._ref code{max-width:240px}._acts{gap:1rem}._act{padding:.85rem 2rem}}
-@media(max-width:600px){._p{border-radius:1.25rem 1.25rem 0 0!important;max-width:100%!important}._top{padding:1.5rem}._price h1{font-size:2.75rem;letter-spacing:-1px}._price span{font-size:.85rem}._badge{font-size:.7rem;padding:.4rem .85rem}._acts{flex-wrap:wrap}._act{flex:1;padding:.65rem 1rem;font-size:.75rem;min-width:80px}._act span{display:none}._main{padding:1.25rem}._cards{grid-template-columns:repeat(2,1fr);gap:.5rem}._card{padding:.85rem}._card i.ico{font-size:1.4rem;margin-bottom:.35rem}._card label{font-size:.55rem}._card strong{font-size:.8rem}._timeline{flex-direction:column;gap:.75rem}._titem{padding:.85rem}._titem::before{width:.75rem;height:.75rem;top:-.4rem}._refs{grid-template-columns:1fr}._ref{padding:.75rem}._ref code{max-width:140px;font-size:.65rem}}
+@media(min-width:768px){._top{padding:2.25rem 2.5rem}._hdr h1{font-size:3.5rem}._hdr h1 small{font-size:1rem}._badge{padding:.5rem 1rem;font-size:.8rem}._acts{gap:.75rem}._act{padding:.7rem 1.5rem;font-size:.85rem}._main{padding:2rem 2.5rem 2.5rem}._cards{gap:.75rem}._card{padding:1.1rem}._card i.ico{font-size:1.75rem}._card label{font-size:.65rem}._card b{font-size:.85rem}._tline{gap:.75rem}._titem{padding:.9rem 1rem}._refs{gap:.6rem}._ref{padding:.8rem 1rem}._ref code{font-size:.7rem}}
+@media(max-width:600px){._p{border-radius:1rem 1rem 0 0!important;max-width:100%!important}._p .swal2-html-container{max-height:85vh!important}._top{padding:1.25rem}._hdr{gap:.6rem}._hdr h1{font-size:2.25rem;letter-spacing:-1px}._hdr h1 small{font-size:.75rem}._badge{padding:.35rem .7rem;font-size:.65rem}._badge i{font-size:.85rem}._acts{margin-top:1rem;gap:.4rem}._act{flex:1;justify-content:center;padding:.55rem .75rem;font-size:.7rem}._act span{display:none}._main{padding:1rem}._cards{grid-template-columns:1fr 1fr;gap:.4rem}._card{padding:.7rem .5rem}._card i.ico{font-size:1.2rem;margin-bottom:.3rem}._card label{font-size:.5rem}._card b{font-size:.7rem}._sec{margin-top:1rem}._sec h4{font-size:.6rem;margin-bottom:.5rem}._tline{grid-template-columns:1fr;gap:.4rem}._titem{padding:.6rem .7rem;gap:.5rem}._titem i{font-size:1rem}._titem div label{font-size:.5rem}._titem div b{font-size:.7rem}._refs{grid-template-columns:1fr;gap:.4rem}._ref{padding:.6rem .7rem}._ref label{font-size:.5rem;margin-bottom:.25rem}._ref>div{gap:.25rem}._ref code{font-size:.6rem;padding:.15rem .3rem}._cp{font-size:.8rem;padding:.2rem}}
 </style>
-<div class="_w">
 <div class="_top">
-<div class="_price"><h1>$${(p.amount||0).toFixed(2)}</h1><span>${(p.currency||'USD').toUpperCase()}</span></div>
-<div class="_badge"><i class="${sI}"></i>${sT}</div>
+<div class="_hdr">
+<h1>$${(p.amount||0).toFixed(2)}<small>${(p.currency||'USD').toUpperCase()}</small></h1>
+<span class="_badge"><i class="${sI}"></i>${sT}</span>
+</div>
 ${(p.receipt_url||p.invoice_url||p.invoice_pdf)?`<div class="_acts">${p.receipt_url?`<a href="${p.receipt_url}" target="_blank" class="_act"><i class="ri-receipt-line"></i><span>Receipt</span></a>`:''}${p.invoice_url?`<a href="${p.invoice_url}" target="_blank" class="_act"><i class="ri-file-text-line"></i><span>Invoice</span></a>`:''}${p.invoice_pdf?`<a href="${p.invoice_pdf}" target="_blank" class="_act"><i class="ri-download-2-line"></i><span>PDF</span></a>`:''}</div>`:''}
 </div>
 <div class="_main">
 <div class="_cards">
-${p.type?`<div class="_card"><i class="ri-price-tag-3-line ico"></i><label>Type</label><strong style="text-transform:capitalize">${p.type.replace(/_/g,' ')}</strong></div>`:''}
-${p.payment_method?`<div class="_card"><i class="ri-bank-card-line ico"></i><label>Method</label><strong>${isStripe?'<span class="_stripe"><i class="ri-bank-card-2-line"></i>Stripe</span>':p.payment_method}</strong></div>`:''}
-<div class="_card"><i class="ri-checkbox-circle-line ico"></i><label>Status</label><strong><span class="_stat"><i class="${sI}"></i>${sT}</span></strong></div>
-${p.date_created?`<div class="_card"><i class="ri-calendar-line ico"></i><label>Date</label><strong>${fmtShort(p.date_created)}</strong></div>`:''}
+${p.type?`<div class="_card"><i class="ri-price-tag-3-line ico"></i><label>Type</label><b style="text-transform:capitalize">${p.type.replace(/_/g,' ')}</b></div>`:''}
+${p.payment_method?`<div class="_card"><i class="ri-bank-card-line ico"></i><label>Method</label><b>${isStripe?'<span class="_stripe"><i class="ri-bank-card-2-line"></i>Stripe</span>':p.payment_method}</b></div>`:''}
+<div class="_card"><i class="ri-checkbox-circle-line ico"></i><label>Status</label><b><span class="_stat"><i class="${sI}"></i>${sT}</span></b></div>
+${p.date_created?`<div class="_card"><i class="ri-calendar-line ico"></i><label>Date</label><b>${fmtShort(p.date_created)}</b></div>`:''}
 </div>
-${(p.date_created||p.date_updated)?`<div class="_sec"><h3><i class="ri-time-line"></i>Timeline</h3><div class="_timeline">${p.date_created?`<div class="_titem"><label>Created</label><strong>${fmt(p.date_created)}</strong></div>`:''}${p.date_updated?`<div class="_titem"><label>Last Updated</label><strong>${fmt(p.date_updated)}</strong></div>`:''}</div></div>`:''}
-${(p.invoice_number||p.invoice_number_stripe||p.transaction_id||p.task_id)?`<div class="_sec"><h3><i class="ri-key-2-line"></i>Reference IDs</h3><div class="_refs">${p.invoice_number?`<div class="_ref"><label>Invoice</label><div><code title="${p.invoice_number}">${p.invoice_number}</code>${cp(p.invoice_number)}</div></div>`:''}${p.invoice_number_stripe?`<div class="_ref"><label>Stripe #</label><div><span class="_stripe" style="font-size:.6rem;padding:.15rem .4rem"><i class="ri-bank-card-2-line"></i></span><code>${p.invoice_number_stripe}</code>${cp(p.invoice_number_stripe)}</div></div>`:''}${p.transaction_id?`<div class="_ref"><label>Transaction</label><div><code title="${p.transaction_id}">${p.transaction_id}</code>${cp(p.transaction_id)}</div></div>`:''}${p.task_id?`<div class="_ref"><label>Task ID</label><div><code>${p.task_id}</code>${cp(p.task_id)}</div></div>`:''}</div></div>`:''}</div>
-</div>`, showConfirmButton:false, showCloseButton:true, customClass:{popup:'_p'} });
+${(p.date_created||p.date_updated)?`<div class="_sec"><h4><i class="ri-time-line"></i>Timeline</h4><div class="_tline">${p.date_created?`<div class="_titem"><i class="ri-calendar-check-line"></i><div><label>Created</label><b>${fmt(p.date_created)}</b></div></div>`:''}${p.date_updated?`<div class="_titem"><i class="ri-calendar-event-line"></i><div><label>Last Updated</label><b>${fmt(p.date_updated)}</b></div></div>`:''}</div></div>`:''}
+${(p.invoice_number||p.invoice_number_stripe||p.transaction_id||p.task_id)?`<div class="_sec"><h4><i class="ri-key-2-line"></i>Reference IDs</h4><div class="_refs">${p.invoice_number?`<div class="_ref"><label>Invoice</label><div><code title="${p.invoice_number}">${p.invoice_number}</code>${cp(p.invoice_number)}</div></div>`:''}${p.invoice_number_stripe?`<div class="_ref"><label>Stripe #</label><div><span class="_stripe" style="font-size:.55rem;padding:.1rem .3rem"><i class="ri-bank-card-2-line"></i></span><code>${p.invoice_number_stripe}</code>${cp(p.invoice_number_stripe)}</div></div>`:''}${p.transaction_id?`<div class="_ref"><label>Transaction</label><div><code title="${p.transaction_id}">${p.transaction_id}</code>${cp(p.transaction_id)}</div></div>`:''}${p.task_id?`<div class="_ref"><label>Task ID</label><div><code>${p.task_id}</code>${cp(p.task_id)}</div></div>`:''}</div></div>`:''}</div>`, showConfirmButton:false, showCloseButton:true, customClass:{popup:'_p'} });
     } catch(e) { console.error('Payment error:',e); Swal.fire({icon:'error',title:'Error',text:'Failed to load payment details.',customClass:{popup:'swal2-toast'}}); }
 }
 // Charts
