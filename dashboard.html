@@ -12344,76 +12344,76 @@ async function viewPaymentDetails(billingId) {
         const { data: p } = await api(`/get-payment-status?payment_id=${billingId}`);
         if (!p) throw new Error('Payment not found');
         
-        const st = { paid:['Paid','#22c55e','ri-check-line'], succeeded:['Paid','#22c55e','ri-check-line'], pending:['Pending','#eab308','ri-time-line'], failed:['Failed','#ef4444','ri-close-line'], cancelled:['Cancelled','#ef4444','ri-close-line'], refunded:['Refunded','#a855f7','ri-refund-line'] };
-        const [sT,sC,sI] = st[(p.status||p.payment_status||'').toLowerCase()] || ['Unknown','#6b7280','ri-question-line'];
+        const st = { paid:['Paid','var(--success,#22c55e)','ri-check-line'], succeeded:['Paid','var(--success,#22c55e)','ri-check-line'], pending:['Pending','var(--warning,#eab308)','ri-time-line'], failed:['Failed','var(--error,#ef4444)','ri-close-line'], cancelled:['Cancelled','var(--error,#ef4444)','ri-close-line'], refunded:['Refunded','#a855f7','ri-refund-line'] };
+        const [sT,sC,sI] = st[(p.status||p.payment_status||'').toLowerCase()] || ['Unknown','var(--text-secondary,#6b7280)','ri-question-line'];
         const fmt = d => new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
         const fmtShort = d => new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-        const cp = id => `<i class="ri-file-copy-line _cp" onclick="copyToClipboard('${id}')" title="Copy"></i>`;
+        const cp = id => `<i class="ri-file-copy-line pcp" onclick="copyToClipboard('${id}')" title="Copy"></i>`;
         const isStripe = p.payment_method?.toLowerCase()==='stripe';
 
         Swal.update({ title:'', html:`<style>
-*{box-sizing:border-box}
-._p{width:100vw!important;max-width:800px!important;padding:0!important;border-radius:1.5rem!important;overflow:hidden;background:var(--bg,#fff)!important}
-._p .swal2-html-container{margin:0!important;padding:0!important;overflow:auto!important;max-height:90vh!important}
-._p .swal2-title{display:none!important}
-._p .swal2-close{top:1rem;right:1rem;width:2.25rem;height:2.25rem;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);color:#fff;border-radius:.6rem;font-size:1.4rem;transition:.2s;z-index:10}
-._p .swal2-close:hover{background:rgba(255,255,255,.25);transform:scale(1.05)}
-._top{padding:1.75rem 2rem;background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);color:#fff;position:relative;overflow:hidden}
-._top::before{content:'';position:absolute;top:-50%;right:-30%;width:80%;height:200%;background:radial-gradient(ellipse,rgba(99,102,241,.2) 0%,transparent 60%);pointer-events:none}
-._top::after{content:'';position:absolute;bottom:-50%;left:-20%;width:70%;height:180%;background:radial-gradient(ellipse,rgba(168,85,247,.15) 0%,transparent 60%);pointer-events:none}
-._hdr{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;position:relative;z-index:1}
-._hdr h1{font-size:3rem;font-weight:800;margin:0;letter-spacing:-1.5px;color:#fff;display:flex;align-items:baseline;gap:.4rem}
-._hdr h1 small{font-size:.9rem;font-weight:500;color:#94a3b8;letter-spacing:0}
-._badge{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .9rem;border-radius:.5rem;font-weight:600;font-size:.75rem;background:${sC};color:#fff;box-shadow:0 4px 12px ${sC}50}
-._badge i{font-size:1rem}
-._acts{display:flex;gap:.6rem;margin-top:1.25rem;position:relative;z-index:1}
-._act{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.2rem;border-radius:.6rem;font-weight:600;font-size:.8rem;text-decoration:none;transition:.2s;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(8px)}
-._act:hover{background:rgba(255,255,255,.2);transform:translateY(-2px);box-shadow:0 4px 15px rgba(0,0,0,.2)}
-._act i{font-size:1.1rem}
-._main{padding:1.5rem}
-._cards{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
-._card{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:.75rem;padding:.9rem .75rem;text-align:center;transition:.2s}
-._card:hover{border-color:#6366f1;box-shadow:0 4px 15px rgba(99,102,241,.08)}
-._card i.ico{font-size:1.5rem;margin-bottom:.4rem;color:#6366f1}
-._card label{display:block;font-size:.6rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text-secondary,#64748b);font-weight:600;margin-bottom:.2rem}
-._card b{font-size:.8rem;color:var(--text,#1e293b);display:flex;align-items:center;justify-content:center;gap:.25rem}
-._stripe{display:inline-flex;align-items:center;gap:.2rem;background:#635bff;color:#fff;padding:.15rem .5rem;border-radius:.3rem;font-size:.7rem;font-weight:600}
-._stat{display:inline-flex;align-items:center;gap:.2rem;padding:.2rem .5rem;border-radius:.3rem;font-size:.7rem;font-weight:600;background:${sC}18;color:${sC}}
-._sec{margin-top:1.25rem}
-._sec h4{font-size:.65rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text-secondary,#64748b);font-weight:600;margin:0 0 .6rem;display:flex;align-items:center;gap:.35rem}
-._sec h4 i{font-size:.9rem;opacity:.6}
-._tline{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
-._titem{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:.6rem;padding:.75rem .85rem;display:flex;align-items:center;gap:.6rem}
-._titem i{font-size:1.25rem;color:#6366f1;flex-shrink:0}
-._titem div label{font-size:.55rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;display:block}
-._titem div b{font-size:.8rem;color:var(--text,#1e293b)}
-._refs{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
-._ref{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:.6rem;padding:.7rem .8rem}
-._ref:hover{border-color:#6366f1}
-._ref label{font-size:.55rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;display:block;margin-bottom:.35rem}
-._ref>div{display:flex;align-items:center;gap:.35rem}
-._ref code{background:var(--bg-tertiary,#f1f5f9);padding:.2rem .4rem;border-radius:.3rem;font-size:.65rem;font-family:'SF Mono',Monaco,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text,#1e293b);flex:1;min-width:0}
-._cp{cursor:pointer;padding:.25rem;border-radius:.25rem;transition:.15s;color:var(--text-secondary,#94a3b8);font-size:.9rem;flex-shrink:0}
-._cp:hover{color:#6366f1;background:rgba(99,102,241,.1)}
-@media(min-width:768px){._top{padding:2.25rem 2.5rem}._hdr h1{font-size:3.5rem}._hdr h1 small{font-size:1rem}._badge{padding:.5rem 1rem;font-size:.8rem}._acts{gap:.75rem}._act{padding:.7rem 1.5rem;font-size:.85rem}._main{padding:2rem 2.5rem 2.5rem}._cards{gap:.75rem}._card{padding:1.1rem}._card i.ico{font-size:1.75rem}._card label{font-size:.65rem}._card b{font-size:.85rem}._tline{gap:.75rem}._titem{padding:.9rem 1rem}._refs{gap:.6rem}._ref{padding:.8rem 1rem}._ref code{font-size:.7rem}}
-@media(max-width:600px){._p{border-radius:1rem 1rem 0 0!important;max-width:100%!important}._p .swal2-html-container{max-height:85vh!important}._top{padding:1.25rem}._hdr{gap:.6rem}._hdr h1{font-size:2.25rem;letter-spacing:-1px}._hdr h1 small{font-size:.75rem}._badge{padding:.35rem .7rem;font-size:.65rem}._badge i{font-size:.85rem}._acts{margin-top:1rem;gap:.4rem}._act{flex:1;justify-content:center;padding:.55rem .75rem;font-size:.7rem}._act span{display:none}._main{padding:1rem}._cards{grid-template-columns:1fr 1fr;gap:.4rem}._card{padding:.7rem .5rem}._card i.ico{font-size:1.2rem;margin-bottom:.3rem}._card label{font-size:.5rem}._card b{font-size:.7rem}._sec{margin-top:1rem}._sec h4{font-size:.6rem;margin-bottom:.5rem}._tline{grid-template-columns:1fr;gap:.4rem}._titem{padding:.6rem .7rem;gap:.5rem}._titem i{font-size:1rem}._titem div label{font-size:.5rem}._titem div b{font-size:.7rem}._refs{grid-template-columns:1fr;gap:.4rem}._ref{padding:.6rem .7rem}._ref label{font-size:.5rem;margin-bottom:.25rem}._ref>div{gap:.25rem}._ref code{font-size:.6rem;padding:.15rem .3rem}._cp{font-size:.8rem;padding:.2rem}}
+.pm{box-sizing:border-box;overflow-x:hidden}
+.pm *{box-sizing:border-box}
+.pm-pop{width:95vw!important;max-width:560px!important;padding:0!important;border-radius:var(--radius-lg,1rem)!important;overflow:hidden;background:var(--bg,#fff)!important;box-shadow:0 25px 50px -12px rgba(0,0,0,.25)!important}
+.pm-pop .swal2-html-container{margin:0!important;padding:0!important;overflow-y:auto!important;overflow-x:hidden!important;max-height:85vh!important}
+.pm-pop .swal2-title{display:none!important}
+.pm-pop .swal2-close{position:absolute;top:.75rem;right:.75rem;width:2rem;height:2rem;background:var(--bg-tertiary,rgba(0,0,0,.08));color:var(--text-secondary,#64748b);border-radius:var(--radius,8px);font-size:1.25rem;transition:all .2s;z-index:10;display:flex;align-items:center;justify-content:center}
+.pm-pop .swal2-close:hover{background:var(--error,#ef4444);color:#fff;transform:scale(1.05)}
+.pm-hd{padding:1.5rem;background:var(--primary,#6366f1);color:#fff;position:relative}
+.pm-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.pm-price{font-size:2.5rem;font-weight:700;letter-spacing:-1px;display:flex;align-items:baseline;gap:.35rem}
+.pm-price small{font-size:.875rem;font-weight:500;opacity:.8}
+.pm-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .75rem;border-radius:var(--radius,8px);font-weight:600;font-size:.75rem;background:rgba(255,255,255,.2);backdrop-filter:blur(8px)}
+.pm-badge i{font-size:.9rem}
+.pm-acts{display:flex;gap:.5rem;margin-top:1rem}
+.pm-act{display:flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:var(--radius,8px);font-weight:600;font-size:.8rem;text-decoration:none;background:rgba(255,255,255,.15);color:#fff;transition:all .2s;border:1px solid rgba(255,255,255,.2)}
+.pm-act:hover{background:rgba(255,255,255,.25);transform:translateY(-1px)}
+.pm-act i{font-size:1rem}
+.pm-body{padding:1.25rem}
+.pm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+.pm-card{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:var(--radius,8px);padding:.75rem;text-align:center;transition:all .2s}
+.pm-card:hover{border-color:var(--primary,#6366f1)}
+.pm-card i{font-size:1.25rem;color:var(--primary,#6366f1);margin-bottom:.25rem;display:block}
+.pm-card span{font-size:.55rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;display:block;margin-bottom:.15rem}
+.pm-card b{font-size:.75rem;color:var(--text,#1e293b);display:block}
+.pm-stripe{background:#635bff;color:#fff;padding:.15rem .4rem;border-radius:4px;font-size:.65rem;font-weight:600}
+.pm-stat{display:inline-flex;align-items:center;gap:.15rem;padding:.15rem .4rem;border-radius:4px;font-size:.65rem;font-weight:600}
+.pm-sec{margin-top:1rem}
+.pm-sec h5{font-size:.6rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;margin:0 0 .5rem;display:flex;align-items:center;gap:.25rem}
+.pm-sec h5 i{font-size:.8rem;opacity:.6}
+.pm-tl{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.pm-ti{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:var(--radius,8px);padding:.6rem .75rem;display:flex;align-items:center;gap:.5rem}
+.pm-ti i{font-size:1rem;color:var(--primary,#6366f1)}
+.pm-ti div span{font-size:.5rem;text-transform:uppercase;letter-spacing:.2px;color:var(--text-secondary,#64748b);font-weight:600;display:block}
+.pm-ti div b{font-size:.7rem;color:var(--text,#1e293b)}
+.pm-refs{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.pm-ref{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:var(--radius,8px);padding:.5rem .65rem}
+.pm-ref:hover{border-color:var(--primary,#6366f1)}
+.pm-ref span{font-size:.5rem;text-transform:uppercase;letter-spacing:.2px;color:var(--text-secondary,#64748b);font-weight:600;display:block;margin-bottom:.2rem}
+.pm-ref div{display:flex;align-items:center;gap:.25rem}
+.pm-ref code{background:var(--bg-tertiary,#f1f5f9);padding:.15rem .3rem;border-radius:4px;font-size:.6rem;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text,#1e293b);flex:1;min-width:0}
+.pcp{cursor:pointer;padding:.15rem;border-radius:4px;transition:.15s;color:var(--text-secondary,#94a3b8);font-size:.8rem;flex-shrink:0}
+.pcp:hover{color:var(--primary,#6366f1);background:rgba(99,102,241,.1)}
+@media(max-width:560px){.pm-pop{max-width:100%!important;border-radius:var(--radius-lg,1rem) var(--radius-lg,1rem) 0 0!important}.pm-hd{padding:1.25rem}.pm-price{font-size:2rem}.pm-price small{font-size:.75rem}.pm-badge{padding:.3rem .6rem;font-size:.65rem}.pm-acts{flex-wrap:wrap}.pm-act{flex:1;flex-direction:column;align-items:center;gap:.2rem;padding:.6rem .5rem;font-size:.65rem;min-width:70px}.pm-act i{font-size:1.1rem}.pm-body{padding:1rem}.pm-grid{grid-template-columns:1fr 1fr;gap:.4rem}.pm-card{padding:.6rem .4rem}.pm-card i{font-size:1rem}.pm-card span{font-size:.5rem}.pm-card b{font-size:.65rem}.pm-tl{grid-template-columns:1fr;gap:.35rem}.pm-ti{padding:.5rem .6rem;gap:.4rem}.pm-ti i{font-size:.9rem}.pm-ti div span{font-size:.45rem}.pm-ti div b{font-size:.65rem}.pm-refs{grid-template-columns:1fr;gap:.35rem}.pm-ref{padding:.45rem .55rem}.pm-ref span{font-size:.45rem}.pm-ref code{font-size:.55rem}}
 </style>
-<div class="_top">
-<div class="_hdr">
-<h1>$${(p.amount||0).toFixed(2)}<small>${(p.currency||'USD').toUpperCase()}</small></h1>
-<span class="_badge"><i class="${sI}"></i>${sT}</span>
+<div class="pm">
+<div class="pm-hd">
+<div class="pm-row">
+<span class="pm-price">$${(p.amount||0).toFixed(2)}<small>${(p.currency||'USD').toUpperCase()}</small></span>
+<span class="pm-badge"><i class="${sI}"></i>${sT}</span>
 </div>
-${(p.receipt_url||p.invoice_url||p.invoice_pdf)?`<div class="_acts">${p.receipt_url?`<a href="${p.receipt_url}" target="_blank" class="_act"><i class="ri-receipt-line"></i><span>Receipt</span></a>`:''}${p.invoice_url?`<a href="${p.invoice_url}" target="_blank" class="_act"><i class="ri-file-text-line"></i><span>Invoice</span></a>`:''}${p.invoice_pdf?`<a href="${p.invoice_pdf}" target="_blank" class="_act"><i class="ri-download-2-line"></i><span>PDF</span></a>`:''}</div>`:''}
+${(p.receipt_url||p.invoice_url||p.invoice_pdf)?`<div class="pm-acts">${p.receipt_url?`<a href="${p.receipt_url}" target="_blank" class="pm-act"><i class="ri-receipt-line"></i>Receipt</a>`:''}${p.invoice_url?`<a href="${p.invoice_url}" target="_blank" class="pm-act"><i class="ri-file-text-line"></i>Invoice</a>`:''}${p.invoice_pdf?`<a href="${p.invoice_pdf}" target="_blank" class="pm-act"><i class="ri-download-line"></i>PDF</a>`:''}</div>`:''}
 </div>
-<div class="_main">
-<div class="_cards">
-${p.type?`<div class="_card"><i class="ri-price-tag-3-line ico"></i><label>Type</label><b style="text-transform:capitalize">${p.type.replace(/_/g,' ')}</b></div>`:''}
-${p.payment_method?`<div class="_card"><i class="ri-bank-card-line ico"></i><label>Method</label><b>${isStripe?'<span class="_stripe"><i class="ri-bank-card-2-line"></i>Stripe</span>':p.payment_method}</b></div>`:''}
-<div class="_card"><i class="ri-checkbox-circle-line ico"></i><label>Status</label><b><span class="_stat"><i class="${sI}"></i>${sT}</span></b></div>
-${p.date_created?`<div class="_card"><i class="ri-calendar-line ico"></i><label>Date</label><b>${fmtShort(p.date_created)}</b></div>`:''}
+<div class="pm-body">
+<div class="pm-grid">
+${p.type?`<div class="pm-card"><i class="ri-price-tag-3-line"></i><span>Type</span><b style="text-transform:capitalize">${p.type.replace(/_/g,' ')}</b></div>`:''}
+${p.payment_method?`<div class="pm-card"><i class="ri-bank-card-line"></i><span>Method</span><b>${isStripe?'<span class="pm-stripe">Stripe</span>':p.payment_method}</b></div>`:''}
+<div class="pm-card"><i class="ri-checkbox-circle-line"></i><span>Status</span><b><span class="pm-stat" style="background:color-mix(in srgb,${sC} 15%,transparent);color:${sC}"><i class="${sI}"></i>${sT}</span></b></div>
+${p.date_created?`<div class="pm-card"><i class="ri-calendar-line"></i><span>Date</span><b>${fmtShort(p.date_created)}</b></div>`:''}
 </div>
-${(p.date_created||p.date_updated)?`<div class="_sec"><h4><i class="ri-time-line"></i>Timeline</h4><div class="_tline">${p.date_created?`<div class="_titem"><i class="ri-calendar-check-line"></i><div><label>Created</label><b>${fmt(p.date_created)}</b></div></div>`:''}${p.date_updated?`<div class="_titem"><i class="ri-calendar-event-line"></i><div><label>Last Updated</label><b>${fmt(p.date_updated)}</b></div></div>`:''}</div></div>`:''}
-${(p.invoice_number||p.invoice_number_stripe||p.transaction_id||p.task_id)?`<div class="_sec"><h4><i class="ri-key-2-line"></i>Reference IDs</h4><div class="_refs">${p.invoice_number?`<div class="_ref"><label>Invoice</label><div><code title="${p.invoice_number}">${p.invoice_number}</code>${cp(p.invoice_number)}</div></div>`:''}${p.invoice_number_stripe?`<div class="_ref"><label>Stripe #</label><div><span class="_stripe" style="font-size:.55rem;padding:.1rem .3rem"><i class="ri-bank-card-2-line"></i></span><code>${p.invoice_number_stripe}</code>${cp(p.invoice_number_stripe)}</div></div>`:''}${p.transaction_id?`<div class="_ref"><label>Transaction</label><div><code title="${p.transaction_id}">${p.transaction_id}</code>${cp(p.transaction_id)}</div></div>`:''}${p.task_id?`<div class="_ref"><label>Task ID</label><div><code>${p.task_id}</code>${cp(p.task_id)}</div></div>`:''}</div></div>`:''}</div>`, showConfirmButton:false, showCloseButton:true, customClass:{popup:'_p'} });
+${(p.date_created||p.date_updated)?`<div class="pm-sec"><h5><i class="ri-time-line"></i>Timeline</h5><div class="pm-tl">${p.date_created?`<div class="pm-ti"><i class="ri-calendar-check-line"></i><div><span>Created</span><b>${fmt(p.date_created)}</b></div></div>`:''}${p.date_updated?`<div class="pm-ti"><i class="ri-history-line"></i><div><span>Updated</span><b>${fmt(p.date_updated)}</b></div></div>`:''}</div></div>`:''}
+${(p.invoice_number||p.invoice_number_stripe||p.transaction_id||p.task_id)?`<div class="pm-sec"><h5><i class="ri-key-2-line"></i>Reference IDs</h5><div class="pm-refs">${p.invoice_number?`<div class="pm-ref"><span>Invoice</span><div><code title="${p.invoice_number}">${p.invoice_number}</code>${cp(p.invoice_number)}</div></div>`:''}${p.invoice_number_stripe?`<div class="pm-ref"><span>Stripe #</span><div><code>${p.invoice_number_stripe}</code>${cp(p.invoice_number_stripe)}</div></div>`:''}${p.transaction_id?`<div class="pm-ref"><span>Transaction</span><div><code title="${p.transaction_id}">${p.transaction_id}</code>${cp(p.transaction_id)}</div></div>`:''}${p.task_id?`<div class="pm-ref"><span>Task ID</span><div><code>${p.task_id}</code>${cp(p.task_id)}</div></div>`:''}</div></div>`:''}</div>
+</div>`, showConfirmButton:false, showCloseButton:true, customClass:{popup:'pm-pop'} });
     } catch(e) { console.error('Payment error:',e); Swal.fire({icon:'error',title:'Error',text:'Failed to load payment details.',customClass:{popup:'swal2-toast'}}); }
 }
 // Charts
