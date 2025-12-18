@@ -12374,12 +12374,13 @@ async function viewPaymentDetails(billingId) {
 .pay-section h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary,#64748b);font-weight:700;margin:0 0 1rem;display:flex;align-items:center;gap:.5rem}
 .pay-section h3 i{font-size:1.1rem;opacity:.6}
 .pay-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
-.pay-card{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:var(--radius,12px);padding:1.25rem;transition:.2s}
+.pay-card{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:var(--radius,12px);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;transition:.2s}
 .pay-card:hover{border-color:var(--primary,#6366f1);box-shadow:0 4px 20px rgba(99,102,241,.1)}
-.pay-card-icon{width:2.5rem;height:2.5rem;background:linear-gradient(135deg,var(--primary,#6366f1),#8b5cf6);border-radius:var(--radius,8px);display:flex;align-items:center;justify-content:center;margin-bottom:.75rem}
+.pay-card-icon{width:2.75rem;height:2.75rem;background:linear-gradient(135deg,var(--primary,#6366f1),#8b5cf6);border-radius:var(--radius,8px);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .pay-card-icon i{font-size:1.25rem;color:#fff}
-.pay-card label{font-size:.7rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text-secondary,#64748b);font-weight:600;display:block;margin-bottom:.25rem}
-.pay-card strong{font-size:1rem;color:var(--text,#1e293b);display:block}
+.pay-card-info{flex:1;min-width:0}
+.pay-card label{font-size:.65rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text-secondary,#64748b);font-weight:600;display:block;margin-bottom:.15rem}
+.pay-card strong{font-size:.95rem;color:var(--text,#1e293b);display:block}
 .pay-stripe{background:#635bff;color:#fff;padding:.25rem .6rem;border-radius:6px;font-size:.85rem;font-weight:600;display:inline-block}
 .pay-stat{display:inline-flex;align-items:center;gap:.25rem;padding:.3rem .7rem;border-radius:6px;font-size:.85rem;font-weight:600;background:${sC}15;color:${sC}}
 .pay-timeline{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
@@ -12387,15 +12388,15 @@ async function viewPaymentDetails(billingId) {
 .pay-time i{font-size:1.5rem;color:var(--primary,#6366f1)}
 .pay-time div label{font-size:.65rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;display:block;margin-bottom:.15rem}
 .pay-time div strong{font-size:.95rem;color:var(--text,#1e293b)}
-.pay-refs{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
-.pay-ref{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:var(--radius,10px);padding:1rem 1.25rem;transition:.2s}
+.pay-refs{display:flex;flex-direction:column;gap:.75rem}
+.pay-ref{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:var(--radius,10px);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;transition:.2s}
 .pay-ref:hover{border-color:var(--primary,#6366f1)}
-.pay-ref label{font-size:.65rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;display:block;margin-bottom:.5rem}
-.pay-ref div{display:flex;align-items:center;gap:.5rem}
-.pay-ref code{background:var(--bg-tertiary,#f1f5f9);padding:.4rem .6rem;border-radius:6px;font-size:.8rem;font-family:'SF Mono',Monaco,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text,#1e293b);flex:1}
+.pay-ref label{font-size:.75rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;white-space:nowrap}
+.pay-ref div{display:flex;align-items:center;gap:.5rem;flex:1;min-width:0;justify-content:flex-end}
+.pay-ref code{background:var(--bg-tertiary,#f1f5f9);padding:.4rem .6rem;border-radius:6px;font-size:.8rem;font-family:'SF Mono',Monaco,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text,#1e293b)}
 .pcp{cursor:pointer;width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:.15s;color:var(--text-secondary,#94a3b8);font-size:1.1rem}
 .pcp:hover{color:var(--primary,#6366f1);background:rgba(99,102,241,.1)}
-@media(max-width:800px){.pay-modal{width:95vw!important;max-width:100%!important;border-radius:var(--radius-lg,16px) var(--radius-lg,16px) 0 0!important;max-height:90vh!important}.pay-wrap{grid-template-columns:1fr;min-height:auto}.pay-left{padding:1.5rem}.pay-amount h2{font-size:2.5rem}.pay-amount span{font-size:.85rem}.pay-status{padding:.5rem 1rem;font-size:.8rem}.pay-actions{flex-direction:row;flex-wrap:wrap;margin-top:1.25rem}.pay-btn{flex:1;min-width:90px;flex-direction:column;align-items:center;gap:.35rem;padding:.75rem .5rem;font-size:.75rem;text-align:center}.pay-btn i{font-size:1.25rem}.pay-right{padding:1.25rem;max-height:50vh}.pay-section{margin-bottom:1.25rem}.pay-section h3{font-size:.7rem;margin-bottom:.75rem}.pay-cards{grid-template-columns:1fr 1fr;gap:.6rem}.pay-card{padding:.85rem}.pay-card-icon{width:2rem;height:2rem;margin-bottom:.5rem}.pay-card-icon i{font-size:1rem}.pay-card label{font-size:.6rem}.pay-card strong{font-size:.85rem}.pay-timeline{grid-template-columns:1fr;gap:.6rem}.pay-time{padding:.75rem 1rem;gap:.75rem}.pay-time i{font-size:1.25rem}.pay-time div label{font-size:.55rem}.pay-time div strong{font-size:.85rem}.pay-refs{grid-template-columns:1fr;gap:.5rem}.pay-ref{padding:.75rem 1rem}.pay-ref label{font-size:.55rem;margin-bottom:.35rem}.pay-ref code{font-size:.7rem;padding:.3rem .5rem}}
+@media(max-width:800px){.pay-modal{width:95vw!important;max-width:100%!important;border-radius:var(--radius-lg,16px) var(--radius-lg,16px) 0 0!important;max-height:90vh!important}.pay-wrap{grid-template-columns:1fr;min-height:auto}.pay-left{padding:1.25rem;flex-direction:row;flex-wrap:wrap;align-items:center;gap:1rem}.pay-amount{margin-bottom:0}.pay-amount h2{font-size:2rem}.pay-amount span{font-size:.75rem}.pay-status{padding:.35rem .75rem;font-size:.7rem;margin-top:0}.pay-status i{font-size:.85rem}.pay-actions{margin-top:0;flex-direction:row;flex-wrap:wrap;width:100%}.pay-btn{flex:1;min-width:80px;flex-direction:column;align-items:center;gap:.25rem;padding:.6rem .4rem;font-size:.7rem;text-align:center}.pay-btn i{font-size:1.1rem}.pay-right{padding:1rem;max-height:55vh;overflow-y:auto}.pay-section{margin-bottom:1rem}.pay-section h3{font-size:.65rem;margin-bottom:.6rem}.pay-cards{grid-template-columns:1fr 1fr;gap:.5rem}.pay-card{padding:.65rem .75rem;gap:.6rem}.pay-card-icon{width:2rem;height:2rem}.pay-card-icon i{font-size:.9rem}.pay-card label{font-size:.5rem}.pay-card strong{font-size:.75rem}.pay-timeline{gap:.5rem}.pay-time{padding:.6rem .75rem;gap:.5rem}.pay-time i{font-size:1rem}.pay-time div label{font-size:.5rem}.pay-time div strong{font-size:.75rem}.pay-refs{gap:.4rem}.pay-ref{padding:.6rem .75rem}.pay-ref label{font-size:.6rem}.pay-ref code{font-size:.65rem;padding:.25rem .4rem}}
 </style>
 <div class="pay-wrap">
 <div class="pay-left">
@@ -12406,10 +12407,10 @@ ${(p.receipt_url||p.invoice_url||p.invoice_pdf)?`<div class="pay-actions">${p.re
 <div class="pay-right">
 <div class="pay-section"><h3><i class="ri-information-line"></i>Payment Details</h3>
 <div class="pay-cards">
-${p.type?`<div class="pay-card"><div class="pay-card-icon"><i class="ri-price-tag-3-line"></i></div><label>Type</label><strong style="text-transform:capitalize">${p.type.replace(/_/g,' ')}</strong></div>`:''}
-${p.payment_method?`<div class="pay-card"><div class="pay-card-icon"><i class="ri-bank-card-line"></i></div><label>Method</label><strong>${isStripe?'<span class="pay-stripe">Stripe</span>':p.payment_method}</strong></div>`:''}
-<div class="pay-card"><div class="pay-card-icon"><i class="ri-checkbox-circle-line"></i></div><label>Status</label><strong><span class="pay-stat"><i class="${sI}"></i>${sT}</span></strong></div>
-${p.date_created?`<div class="pay-card"><div class="pay-card-icon"><i class="ri-calendar-line"></i></div><label>Date</label><strong>${fmtShort(p.date_created)}</strong></div>`:''}
+${p.type?`<div class="pay-card"><div class="pay-card-icon"><i class="ri-price-tag-3-line"></i></div><div class="pay-card-info"><label>Type</label><strong style="text-transform:capitalize">${p.type.replace(/_/g,' ')}</strong></div></div>`:''}
+${p.payment_method?`<div class="pay-card"><div class="pay-card-icon"><i class="ri-bank-card-line"></i></div><div class="pay-card-info"><label>Method</label><strong>${isStripe?'<span class="pay-stripe">Stripe</span>':p.payment_method}</strong></div></div>`:''}
+<div class="pay-card"><div class="pay-card-icon"><i class="ri-checkbox-circle-line"></i></div><div class="pay-card-info"><label>Status</label><strong><span class="pay-stat"><i class="${sI}"></i>${sT}</span></strong></div></div>
+${p.date_created?`<div class="pay-card"><div class="pay-card-icon"><i class="ri-calendar-line"></i></div><div class="pay-card-info"><label>Date</label><strong>${fmtShort(p.date_created)}</strong></div></div>`:''}
 </div></div>
 ${(p.date_created||p.date_updated)?`<div class="pay-section"><h3><i class="ri-time-line"></i>Timeline</h3><div class="pay-timeline">${p.date_created?`<div class="pay-time"><i class="ri-calendar-check-line"></i><div><label>Created</label><strong>${fmt(p.date_created)}</strong></div></div>`:''}${p.date_updated?`<div class="pay-time"><i class="ri-history-line"></i><div><label>Last Updated</label><strong>${fmt(p.date_updated)}</strong></div></div>`:''}</div></div>`:''}
 ${(p.invoice_number||p.invoice_number_stripe||p.transaction_id||p.task_id)?`<div class="pay-section"><h3><i class="ri-key-2-line"></i>Reference IDs</h3><div class="pay-refs">${p.invoice_number?`<div class="pay-ref"><label>Invoice Number</label><div><code title="${p.invoice_number}">${p.invoice_number}</code>${cp(p.invoice_number)}</div></div>`:''}${p.invoice_number_stripe?`<div class="pay-ref"><label>Stripe Invoice</label><div><code>${p.invoice_number_stripe}</code>${cp(p.invoice_number_stripe)}</div></div>`:''}${p.transaction_id?`<div class="pay-ref"><label>Transaction ID</label><div><code title="${p.transaction_id}">${p.transaction_id}</code>${cp(p.transaction_id)}</div></div>`:''}${p.task_id?`<div class="pay-ref"><label>Task ID</label><div><code>${p.task_id}</code>${cp(p.task_id)}</div></div>`:''}</div></div>`:''}</div>
