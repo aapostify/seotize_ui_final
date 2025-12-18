@@ -12344,73 +12344,80 @@ async function viewPaymentDetails(billingId) {
         const { data: p } = await api(`/get-payment-status?payment_id=${billingId}`);
         if (!p) throw new Error('Payment not found');
         
-        const st = { paid: ['Paid','#10b981','ri-checkbox-circle-fill'], succeeded: ['Paid','#10b981','ri-checkbox-circle-fill'], pending: ['Pending','#f59e0b','ri-time-line'], failed: ['Failed','#ef4444','ri-close-circle-fill'], cancelled: ['Failed','#ef4444','ri-close-circle-fill'], refunded: ['Refunded','#8b5cf6','ri-refund-2-line'] };
-        const [sT, sC, sI] = st[(p.status || p.payment_status || '').toLowerCase()] || ['Unknown','#64748b','ri-question-line'];
-        const fmt = d => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : null;
-        const cp = id => `<i class="ri-file-copy-line _cp" onclick="copyToClipboard('${id}')"></i>`;
-        const isStripe = p.payment_method?.toLowerCase() === 'stripe';
-        
-        // Build sections
-        let cards = '', time = '', refs = '';
-        if (p.type) cards += `<div class="_c"><span>Type</span><b style="text-transform:capitalize">${p.type.replace(/_/g,' ')}</b></div>`;
-        if (p.payment_method) cards += `<div class="_c"><span>Method</span><b>${isStripe ? '<i class="_sb"><i class="ri-bank-card-2-line"></i>Stripe</i>' : p.payment_method}</b></div>`;
-        cards += `<div class="_c"><span>Status</span><b><i class="_st" style="--c:${sC}"><i class="${sI}"></i>${sT}</i></b></div>`;
-        if (p.customer_email) cards += `<div class="_c"><span>Customer</span><b>${p.customer_email}</b></div>`;
-        if (p.date_created) time += `<div class="_r"><span><i class="ri-calendar-line"></i>Created</span><span>${fmt(p.date_created)}</span></div>`;
-        if (p.date_updated) time += `<div class="_r"><span><i class="ri-calendar-check-line"></i>Updated</span><span>${fmt(p.date_updated)}</span></div>`;
-        if (p.invoice_number) refs += `<div class="_i"><span>Invoice</span><div><code>${p.invoice_number}</code>${cp(p.invoice_number)}</div></div>`;
-        if (p.invoice_number_stripe) refs += `<div class="_i"><span>Stripe #</span><div><i class="_sb _sm"><i class="ri-bank-card-2-line"></i></i><code>${p.invoice_number_stripe}</code>${cp(p.invoice_number_stripe)}</div></div>`;
-        if (p.transaction_id) refs += `<div class="_i"><span>Transaction</span><div><code title="${p.transaction_id}">${p.transaction_id}</code>${cp(p.transaction_id)}</div></div>`;
-        if (p.task_id) refs += `<div class="_i"><span>Task</span><div><code>${p.task_id}</code>${cp(p.task_id)}</div></div>`;
+        const st = { paid:['Paid','#22c55e','ri-check-line'], succeeded:['Paid','#22c55e','ri-check-line'], pending:['Pending','#eab308','ri-time-line'], failed:['Failed','#ef4444','ri-close-line'], cancelled:['Cancelled','#ef4444','ri-close-line'], refunded:['Refunded','#a855f7','ri-refund-line'] };
+        const [sT,sC,sI] = st[(p.status||p.payment_status||'').toLowerCase()] || ['Unknown','#6b7280','ri-question-line'];
+        const fmt = d => new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+        const fmtShort = d => new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+        const cp = id => `<i class="ri-file-copy-line _cp" onclick="copyToClipboard('${id}')" title="Copy"></i>`;
+        const isStripe = p.payment_method?.toLowerCase()==='stripe';
 
-        Swal.update({ title: '', html: `<style>
-._p{width:95vw!important;max-width:700px!important;padding:0!important;border-radius:1rem!important;overflow:hidden}
-._p .swal2-html-container{margin:0!important;padding:0!important}._p .swal2-title{display:none!important}
-._p .swal2-close{position:absolute;top:.75rem;right:.75rem;z-index:10;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:50%;width:2rem;height:2rem;color:#fff;font-size:1.25rem;transition:.2s}
-._p .swal2-close:hover{background:rgba(255,255,255,.3);transform:scale(1.1)}
-._h{background:linear-gradient(135deg,#6366f1,#8b5cf6,#a855f7);padding:1.5rem;display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap}
-._am{font-size:2.75rem;font-weight:800;color:#fff;line-height:1}
-._cu{font-size:.9rem;color:rgba(255,255,255,.8);font-weight:600;align-self:flex-end;margin-bottom:.35rem}
-._hs{display:flex;align-items:center;gap:.3rem;padding:.35rem .75rem;border-radius:2rem;font-weight:600;font-size:.7rem;background:rgba(255,255,255,.2);color:#fff;backdrop-filter:blur(8px);margin-left:.75rem}
-._a{display:flex;gap:.5rem;padding:1rem 1.25rem;justify-content:center;background:var(--bg-secondary,#f8fafc);border-bottom:1px solid var(--border,#e5e7eb)}
-._b{display:flex;flex-direction:column;align-items:center;gap:.25rem;padding:.65rem 1rem;border-radius:.6rem;font-weight:600;font-size:.7rem;text-decoration:none;transition:.2s;border:1px solid var(--border,#e2e8f0);background:var(--bg,#fff);color:var(--text,#374151);min-width:70px}
-._b:hover{border-color:#6366f1;color:#6366f1;transform:translateY(-2px);box-shadow:0 4px 12px rgba(99,102,241,.12)}
-._b._m{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;box-shadow:0 4px 12px rgba(99,102,241,.3)}
-._b._m:hover{box-shadow:0 6px 18px rgba(99,102,241,.4)}
-._b i:first-child{font-size:1.25rem}
-._d{padding:1.25rem}
-._g{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem}
-._c{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e5e7eb);border-radius:.6rem;padding:.7rem;text-align:center;transition:.2s}
-._c:hover{border-color:#6366f1}
-._c span{display:block;font-size:.6rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#6b7280);font-weight:600;margin-bottom:.2rem}
-._c b{font-size:.8rem;font-weight:600;color:var(--text,#374151);display:flex;align-items:center;justify-content:center;gap:.3rem}
-._s{margin-top:1rem}
-._s>span{display:flex;align-items:center;gap:.3rem;font-size:.6rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#6b7280);font-weight:600;margin-bottom:.5rem}
-._s>span i{font-size:.85rem}
-._r{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border,#f1f5f9);font-size:.8rem}
-._r:last-child{border:none}
-._r span:first-child{color:var(--text-secondary,#6b7280);display:flex;align-items:center;gap:.3rem}
-._r span:first-child i{opacity:.5}
-._r span:last-child{color:var(--text,#374151);font-weight:500}
-._rf{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:1rem}
-._i{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e5e7eb);border-radius:.6rem;padding:.6rem .7rem;display:flex;flex-direction:column;gap:.3rem}
-._i span{font-size:.6rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#6b7280);font-weight:600}
-._i div{display:flex;align-items:center;gap:.3rem}
-._i code{background:var(--bg-tertiary,#f1f5f9);padding:.15rem .4rem;border-radius:.3rem;font-size:.65rem;font-family:monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text,#374151)}
-._cp{cursor:pointer;padding:.15rem;border-radius:.2rem;transition:.15s;color:var(--text-secondary,#9ca3af);font-size:.85rem;flex-shrink:0}
+        Swal.update({ title:'', html:`<style>
+*{box-sizing:border-box}
+._p{width:100vw!important;max-width:800px!important;padding:0!important;border-radius:1.5rem!important;overflow:hidden;background:var(--bg,#fff)!important}
+._p .swal2-html-container{margin:0!important;padding:0!important;overflow:visible!important}
+._p .swal2-title{display:none!important}
+._p .swal2-close{top:1.25rem;right:1.25rem;width:2.5rem;height:2.5rem;background:rgba(0,0,0,.06);color:var(--text-secondary,#64748b);border-radius:.75rem;font-size:1.5rem;transition:.2s;z-index:10}
+._p .swal2-close:hover{background:rgba(0,0,0,.1);transform:rotate(90deg)}
+._w{display:grid;grid-template-columns:1fr}
+._top{padding:2rem;background:linear-gradient(160deg,#0f172a 0%,#1e293b 100%);color:#fff;position:relative;overflow:hidden}
+._top::before{content:'';position:absolute;top:-50%;right:-20%;width:60%;height:200%;background:radial-gradient(circle,rgba(99,102,241,.15) 0%,transparent 70%);pointer-events:none}
+._top::after{content:'';position:absolute;bottom:-30%;left:-10%;width:50%;height:150%;background:radial-gradient(circle,rgba(168,85,247,.1) 0%,transparent 70%);pointer-events:none}
+._price{position:relative;z-index:1}
+._price h1{font-size:3.5rem;font-weight:800;margin:0;letter-spacing:-2px;background:linear-gradient(135deg,#fff 0%,#cbd5e1 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+._price span{font-size:1rem;color:#94a3b8;font-weight:500;margin-left:.5rem}
+._badge{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:2rem;font-weight:600;font-size:.8rem;margin-top:1rem;background:${sC};color:#fff;box-shadow:0 4px 15px ${sC}40}
+._badge i{font-size:1.1rem}
+._acts{display:flex;gap:.75rem;margin-top:1.5rem;position:relative;z-index:1}
+._act{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:.75rem;font-weight:600;font-size:.85rem;text-decoration:none;transition:.2s;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(10px)}
+._act:hover{background:rgba(255,255,255,.2);transform:translateY(-2px)}
+._act i{font-size:1.2rem}
+._main{padding:1.75rem 2rem 2rem}
+._cards{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+._card{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:1rem;padding:1rem;text-align:center;transition:.25s;position:relative;overflow:hidden}
+._card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#6366f1,#a855f7);opacity:0;transition:.25s}
+._card:hover{border-color:#6366f1;transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,.1)}
+._card:hover::before{opacity:1}
+._card i.ico{font-size:1.75rem;margin-bottom:.5rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+._card label{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary,#64748b);font-weight:600;margin-bottom:.25rem}
+._card strong{font-size:.9rem;color:var(--text,#1e293b);display:flex;align-items:center;justify-content:center;gap:.3rem}
+._stripe{display:inline-flex;align-items:center;gap:.25rem;background:#635bff;color:#fff;padding:.2rem .6rem;border-radius:.35rem;font-size:.75rem;font-weight:600}
+._stat{display:inline-flex;align-items:center;gap:.25rem;padding:.25rem .65rem;border-radius:.4rem;font-size:.75rem;font-weight:600;background:${sC}15;color:${sC}}
+._sec{margin-top:1.5rem}
+._sec h3{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary,#64748b);font-weight:600;margin:0 0 .75rem;display:flex;align-items:center;gap:.4rem}
+._sec h3 i{font-size:1rem;opacity:.7}
+._timeline{display:flex;gap:1.5rem}
+._titem{flex:1;background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:.75rem;padding:1rem;position:relative}
+._titem::before{content:'';position:absolute;left:1rem;top:-.5rem;width:1rem;height:1rem;background:linear-gradient(135deg,#6366f1,#a855f7);border-radius:50%;border:3px solid var(--bg,#fff)}
+._titem label{font-size:.65rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;display:block;margin-bottom:.25rem}
+._titem strong{font-size:.85rem;color:var(--text,#1e293b)}
+._refs{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem}
+._ref{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:.75rem;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;transition:.2s}
+._ref:hover{border-color:#6366f1}
+._ref label{font-size:.6rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;white-space:nowrap}
+._ref>div{display:flex;align-items:center;gap:.4rem;flex:1;justify-content:flex-end;min-width:0}
+._ref code{background:var(--bg-tertiary,#f1f5f9);padding:.25rem .5rem;border-radius:.4rem;font-size:.7rem;font-family:'SF Mono',Monaco,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text,#1e293b);max-width:180px}
+._cp{cursor:pointer;padding:.3rem;border-radius:.35rem;transition:.15s;color:var(--text-secondary,#94a3b8);font-size:1rem;flex-shrink:0}
 ._cp:hover{color:#6366f1;background:rgba(99,102,241,.1)}
-._sb{display:inline-flex;align-items:center;gap:.2rem;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:.15rem .4rem;border-radius:.25rem;font-size:.65rem;font-weight:600;font-style:normal}
-._sb._sm{padding:.1rem .25rem;font-size:.55rem}
-._st{display:inline-flex;align-items:center;gap:.2rem;padding:.15rem .45rem;border-radius:.25rem;font-weight:600;font-size:.65rem;background:color-mix(in srgb,var(--c) 12%,transparent);color:var(--c);font-style:normal}
-@media(min-width:768px){._p{max-width:750px!important}._h{padding:2rem}._am{font-size:3.25rem}._a{gap:.75rem;padding:1.25rem 1.5rem}._b{flex-direction:row;padding:.6rem 1.25rem;min-width:auto}._b i:first-child{font-size:1.1rem}._d{padding:1.5rem}._g{grid-template-columns:repeat(4,1fr)}._c{padding:.85rem}._c span{font-size:.65rem}._c b{font-size:.85rem}._rf{grid-template-columns:repeat(2,1fr)}._i{flex-direction:row;align-items:center;justify-content:space-between}._i span{margin:0}._i code{max-width:220px;flex:none}}
-@media(max-width:400px){._am{font-size:2.25rem}._cu{font-size:.75rem}._hs{font-size:.6rem;padding:.25rem .6rem}._b{padding:.5rem .6rem;min-width:60px;font-size:.6rem}._b i:first-child{font-size:1.1rem}._d{padding:1rem}._i code{font-size:.6rem}}
+@media(min-width:768px){._w{grid-template-columns:1fr}._top{padding:2.5rem}._price h1{font-size:4rem}._main{padding:2rem 2.5rem 2.5rem}._cards{gap:1rem}._card{padding:1.25rem}._ref code{max-width:240px}._acts{gap:1rem}._act{padding:.85rem 2rem}}
+@media(max-width:600px){._p{border-radius:1.25rem 1.25rem 0 0!important;max-width:100%!important}._top{padding:1.5rem}._price h1{font-size:2.75rem;letter-spacing:-1px}._price span{font-size:.85rem}._badge{font-size:.7rem;padding:.4rem .85rem}._acts{flex-wrap:wrap}._act{flex:1;padding:.65rem 1rem;font-size:.75rem;min-width:80px}._act span{display:none}._main{padding:1.25rem}._cards{grid-template-columns:repeat(2,1fr);gap:.5rem}._card{padding:.85rem}._card i.ico{font-size:1.4rem;margin-bottom:.35rem}._card label{font-size:.55rem}._card strong{font-size:.8rem}._timeline{flex-direction:column;gap:.75rem}._titem{padding:.85rem}._titem::before{width:.75rem;height:.75rem;top:-.4rem}._refs{grid-template-columns:1fr}._ref{padding:.75rem}._ref code{max-width:140px;font-size:.65rem}}
 </style>
-<div class="_h"><span class="_am">$${(p.amount||0).toFixed(2)}</span><span class="_cu">${(p.currency||'USD').toUpperCase()}</span><span class="_hs"><i class="${sI}"></i>${sT}</span></div>
-${(p.invoice_url||p.invoice_pdf||p.receipt_url)?`<div class="_a">${p.receipt_url?`<a href="${p.receipt_url}" target="_blank" class="_b _m"><i class="ri-receipt-line"></i>Receipt</a>`:''
-}${p.invoice_url?`<a href="${p.invoice_url}" target="_blank" class="_b"><i class="ri-file-text-line"></i>Invoice</a>`:''
-}${p.invoice_pdf?`<a href="${p.invoice_pdf}" target="_blank" class="_b"><i class="ri-file-pdf-2-line"></i>PDF</a>`:''}</div>`:''}
-<div class="_d"><div class="_g">${cards}</div>${time?`<div class="_s"><span><i class="ri-time-line"></i>Timeline</span>${time}</div>`:''}${refs?`<div class="_rf">${refs}</div>`:''}</div>`, showConfirmButton: false, showCloseButton: true, customClass: { popup: '_p' } });
-    } catch (e) { console.error('Payment error:', e); Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to load payment details.', customClass: { popup: 'swal2-toast' } }); }
+<div class="_w">
+<div class="_top">
+<div class="_price"><h1>$${(p.amount||0).toFixed(2)}</h1><span>${(p.currency||'USD').toUpperCase()}</span></div>
+<div class="_badge"><i class="${sI}"></i>${sT}</div>
+${(p.receipt_url||p.invoice_url||p.invoice_pdf)?`<div class="_acts">${p.receipt_url?`<a href="${p.receipt_url}" target="_blank" class="_act"><i class="ri-receipt-line"></i><span>Receipt</span></a>`:''}${p.invoice_url?`<a href="${p.invoice_url}" target="_blank" class="_act"><i class="ri-file-text-line"></i><span>Invoice</span></a>`:''}${p.invoice_pdf?`<a href="${p.invoice_pdf}" target="_blank" class="_act"><i class="ri-download-2-line"></i><span>PDF</span></a>`:''}</div>`:''}
+</div>
+<div class="_main">
+<div class="_cards">
+${p.type?`<div class="_card"><i class="ri-price-tag-3-line ico"></i><label>Type</label><strong style="text-transform:capitalize">${p.type.replace(/_/g,' ')}</strong></div>`:''}
+${p.payment_method?`<div class="_card"><i class="ri-bank-card-line ico"></i><label>Method</label><strong>${isStripe?'<span class="_stripe"><i class="ri-bank-card-2-line"></i>Stripe</span>':p.payment_method}</strong></div>`:''}
+<div class="_card"><i class="ri-checkbox-circle-line ico"></i><label>Status</label><strong><span class="_stat"><i class="${sI}"></i>${sT}</span></strong></div>
+${p.date_created?`<div class="_card"><i class="ri-calendar-line ico"></i><label>Date</label><strong>${fmtShort(p.date_created)}</strong></div>`:''}
+</div>
+${(p.date_created||p.date_updated)?`<div class="_sec"><h3><i class="ri-time-line"></i>Timeline</h3><div class="_timeline">${p.date_created?`<div class="_titem"><label>Created</label><strong>${fmt(p.date_created)}</strong></div>`:''}${p.date_updated?`<div class="_titem"><label>Last Updated</label><strong>${fmt(p.date_updated)}</strong></div>`:''}</div></div>`:''}
+${(p.invoice_number||p.invoice_number_stripe||p.transaction_id||p.task_id)?`<div class="_sec"><h3><i class="ri-key-2-line"></i>Reference IDs</h3><div class="_refs">${p.invoice_number?`<div class="_ref"><label>Invoice</label><div><code title="${p.invoice_number}">${p.invoice_number}</code>${cp(p.invoice_number)}</div></div>`:''}${p.invoice_number_stripe?`<div class="_ref"><label>Stripe #</label><div><span class="_stripe" style="font-size:.6rem;padding:.15rem .4rem"><i class="ri-bank-card-2-line"></i></span><code>${p.invoice_number_stripe}</code>${cp(p.invoice_number_stripe)}</div></div>`:''}${p.transaction_id?`<div class="_ref"><label>Transaction</label><div><code title="${p.transaction_id}">${p.transaction_id}</code>${cp(p.transaction_id)}</div></div>`:''}${p.task_id?`<div class="_ref"><label>Task ID</label><div><code>${p.task_id}</code>${cp(p.task_id)}</div></div>`:''}</div></div>`:''}</div>
+</div>`, showConfirmButton:false, showCloseButton:true, customClass:{popup:'_p'} });
+    } catch(e) { console.error('Payment error:',e); Swal.fire({icon:'error',title:'Error',text:'Failed to load payment details.',customClass:{popup:'swal2-toast'}}); }
 }
 // Charts
 function initializeCharts(user) {
