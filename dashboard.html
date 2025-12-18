@@ -12339,536 +12339,114 @@ function deleteImageFromModal(imageId) {
 }
 // [NEW] Rebuilt Payment Details Modal using SweetAlert2
 async function viewPaymentDetails(billingId) {
-    // Show a loading indicator immediately for a better user experience
-    Swal.fire({
-        title: 'Fetching Payment Details...',
-        showConfirmButton: false,
-        customClass: { popup: 'swal2-toast' }
-    });
+    Swal.fire({ title: 'Loading...', showConfirmButton: false, customClass: { popup: 'swal2-toast' } });
     try {
-        const response = await api(`/get-payment-status?payment_id=${billingId}`);
-        const payment = response.data;
-        if (!payment) {
-            throw new Error('Payment details not found in API response.');
-        }
-        // --- 1. Prepare Data for Display ---
-        const status = (payment.status || payment.payment_status || 'unknown').toLowerCase();
-        let statusInfo = {
-            text: 'Unknown',
-            color: '#64748b',
-            bgColor: 'rgba(100, 116, 139, 0.1)',
-            icon: 'ri-question-line'
-        };
-        if (status === 'paid' || status === 'succeeded') {
-            statusInfo = { text: 'Paid', color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.1)', icon: 'ri-checkbox-circle-fill' };
-        } else if (status === 'pending') {
-            statusInfo = { text: 'Pending', color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.1)', icon: 'ri-time-line' };
-        } else if (status === 'failed' || status === 'cancelled') {
-            statusInfo = { text: 'Failed', color: '#ef4444', bgColor: 'rgba(239, 68, 68, 0.1)', icon: 'ri-close-circle-fill' };
-        } else if (status === 'refunded') {
-            statusInfo = { text: 'Refunded', color: '#8b5cf6', bgColor: 'rgba(139, 92, 246, 0.1)', icon: 'ri-refund-2-line' };
-        }
-        const type = (payment.type || 'unknown').replace(/_/g, ' ');
-        const paymentMethod = (payment.payment_method || 'N/A');
+        const { data: p } = await api(`/get-payment-status?payment_id=${billingId}`);
+        if (!p) throw new Error('Payment not found');
         
-        // Format dates nicely
-        const formatDate = (dateStr) => {
-            if (!dateStr) return 'N/A';
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+        const status = (p.status || p.payment_status || 'unknown').toLowerCase();
+        const statusMap = {
+            paid: { t: 'Paid', c: '#10b981', i: 'ri-checkbox-circle-fill' },
+            succeeded: { t: 'Paid', c: '#10b981', i: 'ri-checkbox-circle-fill' },
+            pending: { t: 'Pending', c: '#f59e0b', i: 'ri-time-line' },
+            failed: { t: 'Failed', c: '#ef4444', i: 'ri-close-circle-fill' },
+            cancelled: { t: 'Failed', c: '#ef4444', i: 'ri-close-circle-fill' },
+            refunded: { t: 'Refunded', c: '#8b5cf6', i: 'ri-refund-2-line' }
         };
+        const s = statusMap[status] || { t: 'Unknown', c: '#64748b', i: 'ri-question-line' };
+        const fmt = d => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+        const type = (p.type || 'unknown').replace(/_/g, ' ');
+        const method = p.payment_method || 'N/A';
+        const isStripe = method.toLowerCase() === 'stripe';
+        const hasActions = p.invoice_url || p.invoice_pdf || p.receipt_url;
+        const copy = id => `<i class="ri-file-copy-line pr-cp" onclick="copyToClipboard('${id}')"></i>`;
 
-        // --- 2. Construct Modal HTML with Embedded Styles ---
-        const modalHtml = `
-        <style>
-            .payment-details-custom {
-                width: 95vw !important;
-                max-width: 520px !important;
-                padding: 0 !important;
-                border-radius: 20px !important;
-                overflow: hidden;
-            }
-            .payment-details-custom .swal2-html-container {
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            .payment-details-custom .swal2-title {
-                display: none !important;
-            }
-            .payment-details-custom .swal2-close {
-                position: absolute;
-                top: 16px;
-                right: 16px;
-                z-index: 10;
-                background: rgba(255,255,255,0.2);
-                border-radius: 50%;
-                width: 36px;
-                height: 36px;
-                color: white;
-                font-size: 28px;
-                transition: all 0.2s;
-            }
-            .payment-details-custom .swal2-close:hover {
-                background: rgba(255,255,255,0.3);
-                transform: scale(1.1);
-            }
-            .pr-modal {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            }
-            .pr-header {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 2rem 1.5rem 1.5rem;
-                text-align: center;
-                position: relative;
-            }
-            .pr-header::after {
-                content: '';
-                position: absolute;
-                bottom: -20px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 40px;
-                height: 40px;
-                background: var(--bg, #fff);
-                border-radius: 50%;
-                box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            }
-            .pr-amount {
-                font-size: 3rem;
-                font-weight: 800;
-                color: white;
-                line-height: 1;
-                text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            }
-            .pr-currency {
-                font-size: 0.875rem;
-                color: rgba(255,255,255,0.8);
-                font-weight: 500;
-                margin-top: 0.25rem;
-                letter-spacing: 0.5px;
-            }
-            .pr-status {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.4rem;
-                padding: 0.4rem 1rem;
-                border-radius: 50px;
-                font-weight: 600;
-                font-size: 0.8rem;
-                margin-top: 1rem;
-                background: rgba(255,255,255,0.2);
-                color: white;
-                backdrop-filter: blur(10px);
-            }
-            .pr-status i {
-                font-size: 1rem;
-            }
-            .pr-quick-actions {
-                display: flex;
-                gap: 0.5rem;
-                padding: 1.5rem 1.5rem 0.5rem;
-                margin-top: 0.5rem;
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-            .pr-quick-btn {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.4rem;
-                padding: 0.6rem 1rem;
-                border-radius: 10px;
-                font-weight: 600;
-                font-size: 0.8rem;
-                text-decoration: none;
-                transition: all 0.2s ease;
-                border: none;
-                cursor: pointer;
-            }
-            .pr-quick-btn i {
-                font-size: 1.1rem;
-            }
-            .pr-quick-btn.primary {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            }
-            .pr-quick-btn.primary:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-            }
-            .pr-quick-btn.secondary {
-                background: var(--bg-tertiary, #f1f5f9);
-                color: var(--text, #334155);
-                border: 1px solid var(--border, #e2e8f0);
-            }
-            .pr-quick-btn.secondary:hover {
-                background: var(--bg-secondary, #e2e8f0);
-                border-color: #667eea;
-                color: #667eea;
-            }
-            .pr-body {
-                padding: 1rem 1.5rem 1.5rem;
-            }
-            .pr-info-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 0.75rem;
-                margin-bottom: 1.25rem;
-            }
-            .pr-info-card {
-                background: var(--bg-secondary, #f8fafc);
-                border: 1px solid var(--border, #e2e8f0);
-                border-radius: 12px;
-                padding: 0.875rem;
-                text-align: center;
-                transition: all 0.2s;
-            }
-            .pr-info-card:hover {
-                border-color: #667eea;
-                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
-            }
-            .pr-info-card.full-width {
-                grid-column: 1 / -1;
-            }
-            .pr-info-label {
-                font-size: 0.7rem;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                color: var(--text-secondary, #64748b);
-                font-weight: 600;
-                margin-bottom: 0.35rem;
-            }
-            .pr-info-value {
-                font-size: 0.9rem;
-                font-weight: 600;
-                color: var(--text, #1e293b);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 0.35rem;
-                flex-wrap: wrap;
-            }
-            .pr-info-value code {
-                background: var(--bg-tertiary, #e2e8f0);
-                padding: 0.2rem 0.5rem;
-                border-radius: 6px;
-                font-size: 0.75rem;
-                font-family: 'SF Mono', 'Fira Code', monospace;
-                border: 1px solid var(--border, #cbd5e1);
-                max-width: 100%;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-            .pr-copy-btn {
-                cursor: pointer;
-                padding: 0.2rem;
-                border-radius: 4px;
-                transition: all 0.2s;
-                color: var(--text-secondary, #64748b);
-                font-size: 0.9rem;
-            }
-            .pr-copy-btn:hover {
-                color: #667eea;
-                background: rgba(102, 126, 234, 0.1);
-            }
-            .pr-section {
-                margin-top: 1rem;
-            }
-            .pr-section-title {
-                font-size: 0.7rem;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                color: var(--text-secondary, #64748b);
-                font-weight: 600;
-                margin-bottom: 0.75rem;
-                display: flex;
-                align-items: center;
-                gap: 0.4rem;
-            }
-            .pr-section-title i {
-                font-size: 0.9rem;
-            }
-            .pr-detail-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0.65rem 0;
-                border-bottom: 1px solid var(--border, #f1f5f9);
-                font-size: 0.85rem;
-            }
-            .pr-detail-row:last-child {
-                border-bottom: none;
-            }
-            .pr-detail-label {
-                color: var(--text-secondary, #64748b);
-                display: flex;
-                align-items: center;
-                gap: 0.4rem;
-            }
-            .pr-detail-label i {
-                font-size: 1rem;
-                opacity: 0.6;
-            }
-            .pr-detail-value {
-                color: var(--text, #1e293b);
-                font-weight: 500;
-                text-align: right;
-                display: flex;
-                align-items: center;
-                gap: 0.35rem;
-            }
-            .pr-stripe-badge {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.3rem;
-                background: linear-gradient(135deg, #635bff 0%, #7a73ff 100%);
-                color: white;
-                padding: 0.2rem 0.5rem;
-                border-radius: 5px;
-                font-size: 0.7rem;
-                font-weight: 600;
-            }
-            .pr-status-badge {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.3rem;
-                padding: 0.25rem 0.6rem;
-                border-radius: 6px;
-                font-weight: 600;
-                font-size: 0.75rem;
-            }
-            .pr-id-section {
-                background: var(--bg-secondary, #f8fafc);
-                border: 1px solid var(--border, #e2e8f0);
-                border-radius: 12px;
-                padding: 1rem;
-                margin-top: 1rem;
-            }
-            .pr-id-item {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0.5rem 0;
-                border-bottom: 1px dashed var(--border, #e2e8f0);
-            }
-            .pr-id-item:last-child {
-                border-bottom: none;
-                padding-bottom: 0;
-            }
-            .pr-id-item:first-child {
-                padding-top: 0;
-            }
-            .pr-id-label {
-                font-size: 0.75rem;
-                color: var(--text-secondary, #64748b);
-            }
-            .pr-id-value {
-                display: flex;
-                align-items: center;
-                gap: 0.35rem;
-                font-size: 0.8rem;
-            }
-            .pr-id-value code {
-                background: var(--bg-tertiary, #e2e8f0);
-                padding: 0.15rem 0.4rem;
-                border-radius: 4px;
-                font-size: 0.7rem;
-                font-family: 'SF Mono', 'Fira Code', monospace;
-                max-width: 180px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-            @media (max-width: 480px) {
-                .pr-amount {
-                    font-size: 2.5rem;
-                }
-                .pr-info-grid {
-                    grid-template-columns: 1fr;
-                }
-                .pr-quick-actions {
-                    flex-direction: column;
-                }
-                .pr-quick-btn {
-                    justify-content: center;
-                }
-                .pr-id-value code {
-                    max-width: 120px;
-                }
-                .pr-detail-row {
-                    flex-direction: column;
-                    align-items: flex-start;
-                    gap: 0.25rem;
-                }
-                .pr-detail-value {
-                    text-align: left;
-                }
-            }
-        </style>
-        <div class="pr-modal">
-            <!-- Header with Amount -->
-            <div class="pr-header">
-                <div class="pr-amount">$${(payment.amount || 0).toFixed(2)}</div>
-                <div class="pr-currency">${(payment.currency || 'USD').toUpperCase()}</div>
-                <div class="pr-status">
-                    <i class="${statusInfo.icon}"></i>
-                    <span>${statusInfo.text}</span>
-                </div>
-            </div>
-
-            <!-- Quick Action Buttons -->
-            ${(payment.invoice_url || payment.invoice_pdf || payment.receipt_url) ? `
-            <div class="pr-quick-actions">
-                ${payment.receipt_url ? `
-                <a href="${payment.receipt_url}" target="_blank" class="pr-quick-btn primary">
-                    <i class="ri-receipt-line"></i>
-                    View Receipt
-                </a>
-                ` : ''}
-                ${payment.invoice_url ? `
-                <a href="${payment.invoice_url}" target="_blank" class="pr-quick-btn secondary">
-                    <i class="ri-file-text-line"></i>
-                    Invoice
-                </a>
-                ` : ''}
-                ${payment.invoice_pdf ? `
-                <a href="${payment.invoice_pdf}" target="_blank" class="pr-quick-btn secondary">
-                    <i class="ri-file-pdf-2-line"></i>
-                    PDF
-                </a>
-                ` : ''}
-            </div>
-            ` : ''}
-
-            <!-- Body -->
-            <div class="pr-body">
-                <!-- Info Cards Grid -->
-                <div class="pr-info-grid">
-                    <div class="pr-info-card">
-                        <div class="pr-info-label">Payment Type</div>
-                        <div class="pr-info-value" style="text-transform: capitalize;">
-                            <i class="ri-price-tag-3-line" style="color: #667eea;"></i>
-                            ${type}
-                        </div>
-                    </div>
-                    <div class="pr-info-card">
-                        <div class="pr-info-label">Payment Method</div>
-                        <div class="pr-info-value">
-                            ${paymentMethod.toLowerCase() === 'stripe' 
-                                ? '<span class="pr-stripe-badge"><i class="ri-bank-card-2-line"></i> Stripe</span>' 
-                                : `<i class="ri-bank-card-line" style="color: #667eea;"></i> ${paymentMethod}`}
-                        </div>
-                    </div>
-                    <div class="pr-info-card">
-                        <div class="pr-info-label">Status</div>
-                        <div class="pr-info-value">
-                            <span class="pr-status-badge" style="background: ${statusInfo.bgColor}; color: ${statusInfo.color};">
-                                <i class="${statusInfo.icon}"></i>
-                                ${statusInfo.text}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="pr-info-card">
-                        <div class="pr-info-label">Billed To</div>
-                        <div class="pr-info-value">
-                            <i class="ri-user-line" style="color: #667eea;"></i>
-                            ${payment.customer_email || 'N/A'}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Timestamps Section -->
-                <div class="pr-section">
-                    <div class="pr-section-title">
-                        <i class="ri-time-line"></i>
-                        Timeline
-                    </div>
-                    <div class="pr-detail-row">
-                        <span class="pr-detail-label">
-                            <i class="ri-calendar-line"></i>
-                            Created
-                        </span>
-                        <span class="pr-detail-value">${formatDate(payment.date_created)}</span>
-                    </div>
-                    <div class="pr-detail-row">
-                        <span class="pr-detail-label">
-                            <i class="ri-calendar-check-line"></i>
-                            Updated
-                        </span>
-                        <span class="pr-detail-value">${formatDate(payment.date_updated)}</span>
-                    </div>
-                </div>
-
-                <!-- IDs Section -->
-                <div class="pr-id-section">
-                    <div class="pr-section-title" style="margin-bottom: 0.5rem; margin-top: 0;">
-                        <i class="ri-fingerprint-line"></i>
-                        Reference IDs
-                    </div>
-                    <div class="pr-id-item">
-                        <span class="pr-id-label">Invoice #</span>
-                        <span class="pr-id-value">
-                            <code title="${payment.invoice_number || 'N/A'}">${payment.invoice_number || 'N/A'}</code>
-                            ${payment.invoice_number ? `<i class="ri-file-copy-line pr-copy-btn" title="Copy" onclick="copyToClipboard('${payment.invoice_number}')"></i>` : ''}
-                        </span>
-                    </div>
-                    ${payment.invoice_number_stripe ? `
-                    <div class="pr-id-item">
-                        <span class="pr-id-label">Stripe Invoice #</span>
-                        <span class="pr-id-value">
-                            <span class="pr-stripe-badge" style="font-size: 0.6rem; padding: 0.1rem 0.35rem;"><i class="ri-bank-card-2-line"></i></span>
-                            <code>${payment.invoice_number_stripe}</code>
-                            <i class="ri-file-copy-line pr-copy-btn" title="Copy" onclick="copyToClipboard('${payment.invoice_number_stripe}')"></i>
-                        </span>
-                    </div>
-                    ` : ''}
-                    <div class="pr-id-item">
-                        <span class="pr-id-label">Transaction ID</span>
-                        <span class="pr-id-value">
-                            <code title="${payment.transaction_id || 'N/A'}">${payment.transaction_id || 'N/A'}</code>
-                            ${payment.transaction_id ? `<i class="ri-file-copy-line pr-copy-btn" title="Copy" onclick="copyToClipboard('${payment.transaction_id}')"></i>` : ''}
-                        </span>
-                    </div>
-                    ${payment.task_id ? `
-                    <div class="pr-id-item">
-                        <span class="pr-id-label">Task ID</span>
-                        <span class="pr-id-value">
-                            <code>${payment.task_id}</code>
-                            <i class="ri-file-copy-line pr-copy-btn" title="Copy" onclick="copyToClipboard('${payment.task_id}')"></i>
-                        </span>
-                    </div>
-                    ` : ''}
-                </div>
-            </div>
-        </div>
-        `;
-        // --- 3. Update the Swal Modal with the Final Content ---
         Swal.update({
             title: '',
-            html: modalHtml,
-            showLoading: false,
+            html: `<style>
+.pr-pop{width:95vw!important;max-width:480px!important;padding:0!important;border-radius:1rem!important;overflow:hidden}
+.pr-pop .swal2-html-container{margin:0!important;padding:0!important}
+.pr-pop .swal2-title{display:none!important}
+.pr-pop .swal2-close{position:absolute;top:.75rem;right:.75rem;z-index:10;background:rgba(255,255,255,.15);backdrop-filter:blur(4px);border-radius:50%;width:2rem;height:2rem;color:#fff;font-size:1.25rem;transition:.2s}
+.pr-pop .swal2-close:hover{background:rgba(255,255,255,.25);transform:scale(1.1)}
+.pr-hd{background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:1.75rem 1.25rem 1.25rem;text-align:center}
+.pr-amt{font-size:2.75rem;font-weight:800;color:#fff;line-height:1}
+.pr-cur{font-size:.75rem;color:rgba(255,255,255,.7);font-weight:500;margin-top:.25rem;letter-spacing:.5px}
+.pr-st{display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .85rem;border-radius:2rem;font-weight:600;font-size:.7rem;margin-top:.75rem;background:rgba(255,255,255,.2);color:#fff;backdrop-filter:blur(8px)}
+.pr-acts{display:flex;gap:.5rem;padding:1rem 1.25rem;justify-content:center;flex-wrap:wrap;border-bottom:1px solid var(--border,#e5e7eb)}
+.pr-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem .9rem;border-radius:.5rem;font-weight:600;font-size:.75rem;text-decoration:none;transition:.2s;border:1px solid var(--border,#e5e7eb);background:var(--bg-secondary,#f9fafb);color:var(--text,#374151)}
+.pr-btn:hover{border-color:#6366f1;color:#6366f1}
+.pr-btn.main{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;box-shadow:0 2px 8px rgba(99,102,241,.3)}
+.pr-btn.main:hover{box-shadow:0 4px 12px rgba(99,102,241,.4);transform:translateY(-1px)}
+.pr-bd{padding:1rem 1.25rem 1.25rem}
+.pr-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.pr-card{background:var(--bg-secondary,#f9fafb);border:1px solid var(--border,#e5e7eb);border-radius:.625rem;padding:.65rem;text-align:center;transition:.2s}
+.pr-card:hover{border-color:#6366f1}
+.pr-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#6b7280);font-weight:600;margin-bottom:.2rem}
+.pr-val{font-size:.8rem;font-weight:600;color:var(--text,#374151);display:flex;align-items:center;justify-content:center;gap:.3rem}
+.pr-sec{margin-top:.85rem}
+.pr-sec-t{font-size:.6rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#6b7280);font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:.3rem}
+.pr-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border,#f3f4f6);font-size:.8rem}
+.pr-row:last-child{border:none}
+.pr-row span:first-child{color:var(--text-secondary,#6b7280);display:flex;align-items:center;gap:.3rem}
+.pr-row span:last-child{color:var(--text,#374151);font-weight:500}
+.pr-ids{background:var(--bg-secondary,#f9fafb);border:1px solid var(--border,#e5e7eb);border-radius:.625rem;padding:.75rem;margin-top:.75rem}
+.pr-id{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px dashed var(--border,#e5e7eb);font-size:.75rem}
+.pr-id:last-child{border:none;padding-bottom:0}
+.pr-id:first-child{padding-top:0}
+.pr-id span:first-child{color:var(--text-secondary,#6b7280)}
+.pr-id span:last-child{display:flex;align-items:center;gap:.3rem}
+.pr-id code{background:var(--bg-tertiary,#f3f4f6);padding:.15rem .4rem;border-radius:.25rem;font-size:.65rem;font-family:monospace;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pr-cp{cursor:pointer;padding:.15rem;border-radius:.2rem;transition:.2s;color:var(--text-secondary,#6b7280);font-size:.85rem}
+.pr-cp:hover{color:#6366f1;background:rgba(99,102,241,.1)}
+.pr-badge{display:inline-flex;align-items:center;gap:.2rem;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:.15rem .4rem;border-radius:.25rem;font-size:.6rem;font-weight:600}
+.pr-st-sm{display:inline-flex;align-items:center;gap:.2rem;padding:.2rem .5rem;border-radius:.3rem;font-weight:600;font-size:.65rem}
+@media(max-width:480px){
+.pr-amt{font-size:2.25rem}
+.pr-grid{grid-template-columns:1fr}
+.pr-acts{flex-direction:column}
+.pr-btn{justify-content:center}
+.pr-id code{max-width:100px}
+.pr-row{flex-direction:column;align-items:flex-start;gap:.15rem}
+}
+</style>
+<div class="pr-hd">
+<div class="pr-amt">$${(p.amount||0).toFixed(2)}</div>
+<div class="pr-cur">${(p.currency||'USD').toUpperCase()}</div>
+<div class="pr-st"><i class="${s.i}"></i>${s.t}</div>
+</div>
+${hasActions?`<div class="pr-acts">
+${p.receipt_url?`<a href="${p.receipt_url}" target="_blank" class="pr-btn main"><i class="ri-receipt-line"></i>Receipt</a>`:''}
+${p.invoice_url?`<a href="${p.invoice_url}" target="_blank" class="pr-btn"><i class="ri-file-text-line"></i>Invoice</a>`:''}
+${p.invoice_pdf?`<a href="${p.invoice_pdf}" target="_blank" class="pr-btn"><i class="ri-file-pdf-2-line"></i>PDF</a>`:''}
+</div>`:''}
+<div class="pr-bd">
+<div class="pr-grid">
+<div class="pr-card"><div class="pr-lbl">Type</div><div class="pr-val" style="text-transform:capitalize">${type}</div></div>
+<div class="pr-card"><div class="pr-lbl">Method</div><div class="pr-val">${isStripe?'<span class="pr-badge"><i class="ri-bank-card-2-line"></i>Stripe</span>':method}</div></div>
+<div class="pr-card"><div class="pr-lbl">Status</div><div class="pr-val"><span class="pr-st-sm" style="background:${s.c}15;color:${s.c}"><i class="${s.i}"></i>${s.t}</span></div></div>
+<div class="pr-card"><div class="pr-lbl">Customer</div><div class="pr-val">${p.customer_email||'N/A'}</div></div>
+</div>
+<div class="pr-sec">
+<div class="pr-sec-t"><i class="ri-time-line"></i>Timeline</div>
+<div class="pr-row"><span><i class="ri-calendar-line"></i>Created</span><span>${fmt(p.date_created)}</span></div>
+<div class="pr-row"><span><i class="ri-calendar-check-line"></i>Updated</span><span>${fmt(p.date_updated)}</span></div>
+</div>
+<div class="pr-ids">
+<div class="pr-sec-t" style="margin:0 0 .4rem"><i class="ri-fingerprint-line"></i>Reference IDs</div>
+<div class="pr-id"><span>Invoice</span><span><code title="${p.invoice_number||''}">${p.invoice_number||'N/A'}</code>${p.invoice_number?copy(p.invoice_number):''}</span></div>
+${p.invoice_number_stripe?`<div class="pr-id"><span>Stripe #</span><span><span class="pr-badge" style="font-size:.5rem;padding:.1rem .25rem"><i class="ri-bank-card-2-line"></i></span><code>${p.invoice_number_stripe}</code>${copy(p.invoice_number_stripe)}</span></div>`:''}
+<div class="pr-id"><span>Transaction</span><span><code title="${p.transaction_id||''}">${p.transaction_id||'N/A'}</code>${p.transaction_id?copy(p.transaction_id):''}</span></div>
+${p.task_id?`<div class="pr-id"><span>Task</span><span><code>${p.task_id}</code>${copy(p.task_id)}</span></div>`:''}
+</div>
+</div>`,
             showConfirmButton: false,
             showCloseButton: true,
-            customClass: {
-                popup: 'payment-details-custom',
-                closeButton: 'swal2-close'
-            },
+            customClass: { popup: 'pr-pop' }
         });
-    } catch (error) {
-        console.error('Payment details error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to load payment details. Please try again.',
-            customClass: { popup: 'swal2-toast' }
-        });
+    } catch (e) {
+        console.error('Payment error:', e);
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to load payment details.', customClass: { popup: 'swal2-toast' } });
     }
 }
 // Charts
