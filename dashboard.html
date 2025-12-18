@@ -12352,7 +12352,7 @@ async function viewPaymentDetails(billingId) {
             throw new Error('Payment details not found in API response.');
         }
         // --- 1. Prepare Data for Display ---
-        const status = (payment.payment_status || 'unknown').toLowerCase();
+        const status = (payment.status || payment.payment_status || 'unknown').toLowerCase();
         let statusInfo = {
             text: 'Unknown',
             color: 'var(--text-secondary)',
@@ -12364,14 +12364,19 @@ async function viewPaymentDetails(billingId) {
             statusInfo = { text: 'Pending', color: 'var(--warning)', icon: 'ri-time-line' };
         } else if (status === 'failed' || status === 'cancelled') {
             statusInfo = { text: 'Failed', color: 'var(--error)', icon: 'ri-close-circle-fill' };
+        } else if (status === 'refunded') {
+            statusInfo = { text: 'Refunded', color: 'var(--info)', icon: 'ri-refund-2-line' };
         }
-        const type = (payment.type || 'unknown').replace('_', ' ');
-        const paymentMethod = (payment.payment_method || 'N/A').toLowerCase();
-        // Extract Stripe link from transaction_id if it's a Stripe checkout session
-        let stripeLink = null;
-        if (payment.transaction_id && payment.transaction_id.startsWith('cs_')) {
-            // Build Stripe checkout link
-            stripeLink = `https://checkout.stripe.com/c/pay/${payment.transaction_id}`;
+        const type = (payment.type || 'unknown').replace(/_/g, ' ');
+        const paymentMethod = (payment.payment_method || 'N/A');
+        // Get payment method icon
+        let paymentMethodIcon = 'ri-bank-card-line';
+        if (paymentMethod.toLowerCase() === 'stripe') {
+            paymentMethodIcon = 'ri-bank-card-2-line';
+        } else if (paymentMethod.toLowerCase() === 'paypal') {
+            paymentMethodIcon = 'ri-paypal-line';
+        } else if (paymentMethod.toLowerCase() === 'crypto' || paymentMethod.toLowerCase() === 'bitcoin') {
+            paymentMethodIcon = 'ri-bit-coin-line';
         }
         // --- 2. Construct Modal HTML with Embedded Styles ---
         const modalHtml = `
@@ -12379,10 +12384,11 @@ async function viewPaymentDetails(billingId) {
             /* Custom styles ONLY for this modal */
             .payment-details-custom {
                 width: 95vw !important;
+                max-width: 800px !important;
             }
-            @media (min-width: 800px) {
+            @media (min-width: 850px) {
                 .payment-details-custom {
-                    width: 750px !important;
+                    width: 800px !important;
                 }
             }
             .payment-receipt {
@@ -12393,12 +12399,19 @@ async function viewPaymentDetails(billingId) {
                 padding-bottom: 1.5rem;
                 border-bottom: 2px dashed var(--border);
                 margin-bottom: 1.5rem;
+                position: relative;
             }
             .receipt-header .amount {
                 font-size: 2.5rem;
                 font-weight: 800;
                 line-height: 1;
                 color: var(--text);
+                margin-bottom: 0.25rem;
+            }
+            .receipt-header .currency-label {
+                font-size: 0.9rem;
+                color: var(--text-secondary);
+                font-weight: 500;
             }
             .receipt-header .status-badge {
                 display: inline-flex;
@@ -12409,6 +12422,25 @@ async function viewPaymentDetails(billingId) {
                 font-weight: 600;
                 margin-top: 1rem;
             }
+            .receipt-section {
+                margin-bottom: 1.5rem;
+            }
+            .receipt-section-title {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--text-secondary);
+                margin-bottom: 0.75rem;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .receipt-section-title i {
+                font-size: 1rem;
+            }
             .detail-list {
                 list-style: none;
                 padding: 0;
@@ -12418,7 +12450,7 @@ async function viewPaymentDetails(billingId) {
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-start;
-                padding: 0.85rem 0;
+                padding: 0.75rem 0;
                 border-bottom: 1px solid var(--border);
                 font-size: 0.9rem;
                 gap: 1rem;
@@ -12429,7 +12461,14 @@ async function viewPaymentDetails(billingId) {
             .detail-item .label {
                 color: var(--text-secondary);
                 white-space: nowrap;
-                min-width: 120px;
+                min-width: 140px;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .detail-item .label i {
+                font-size: 1rem;
+                opacity: 0.7;
             }
             .detail-item .value {
                 color: var(--text);
@@ -12437,93 +12476,264 @@ async function viewPaymentDetails(billingId) {
                 text-align: right;
                 word-break: break-all;
                 flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 0.5rem;
+                flex-wrap: wrap;
             }
             .detail-item .value code {
                 background: var(--bg-tertiary);
                 padding: 0.2rem 0.5rem;
                 border-radius: var(--radius-sm);
-                font-size: 0.85rem;
+                font-size: 0.8rem;
                 border: 1px solid var(--border);
+                font-family: 'SF Mono', 'Fira Code', monospace;
             }
             .detail-item .value a {
                 color: var(--primary);
                 text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
             }
             .detail-item .value a:hover {
                 text-decoration: underline;
             }
+            .copy-btn {
+                cursor: pointer;
+                padding: 0.25rem;
+                border-radius: var(--radius-sm);
+                transition: all 0.2s ease;
+                color: var(--text-secondary);
+            }
+            .copy-btn:hover {
+                background: var(--bg-tertiary);
+                color: var(--primary);
+            }
+            .receipt-actions {
+                display: flex;
+                gap: 0.75rem;
+                flex-wrap: wrap;
+                padding-top: 1.5rem;
+                border-top: 2px dashed var(--border);
+                margin-top: 1.5rem;
+                justify-content: center;
+            }
+            .receipt-action-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.75rem 1.25rem;
+                border-radius: var(--radius-md);
+                font-weight: 600;
+                font-size: 0.875rem;
+                text-decoration: none;
+                transition: all 0.2s ease;
+                cursor: pointer;
+                border: none;
+            }
+            .receipt-action-btn i {
+                font-size: 1.1rem;
+            }
+            .receipt-action-btn.primary {
+                background: var(--primary);
+                color: white;
+            }
+            .receipt-action-btn.primary:hover {
+                background: var(--primary-hover);
+                transform: translateY(-1px);
+            }
+            .receipt-action-btn.secondary {
+                background: var(--bg-tertiary);
+                color: var(--text);
+                border: 1px solid var(--border);
+            }
+            .receipt-action-btn.secondary:hover {
+                background: var(--bg-secondary);
+                border-color: var(--primary);
+                color: var(--primary);
+            }
+            .receipt-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .receipt-grid .detail-list {
+                background: var(--bg-secondary);
+                padding: 1rem;
+                border-radius: var(--radius-md);
+                border: 1px solid var(--border);
+            }
+            .stripe-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.35rem;
+                background: linear-gradient(135deg, #635bff 0%, #7a73ff 100%);
+                color: white;
+                padding: 0.25rem 0.6rem;
+                border-radius: var(--radius-sm);
+                font-size: 0.75rem;
+                font-weight: 600;
+            }
             @media (max-width: 600px) {
                 .detail-item {
                     flex-direction: column;
-                    gap: 0.25rem;
+                    gap: 0.35rem;
                 }
                 .detail-item .label {
                     min-width: auto;
                 }
                 .detail-item .value {
                     text-align: left;
+                    justify-content: flex-start;
                 }
                 .receipt-header .amount {
                     font-size: 2rem;
+                }
+                .receipt-grid {
+                    grid-template-columns: 1fr;
+                }
+                .receipt-actions {
+                    flex-direction: column;
+                }
+                .receipt-action-btn {
+                    justify-content: center;
                 }
             }
         </style>
         <div class="payment-receipt">
             <div class="receipt-header">
-                <div class="amount">$${(payment.amount || 0).toFixed(2)} ${(payment.currency || 'USD').toUpperCase()}</div>
+                <div class="amount">$${(payment.amount || 0).toFixed(2)}</div>
+                <div class="currency-label">${(payment.currency || 'USD').toUpperCase()}</div>
                 <div class="status-badge" style="background-color: ${statusInfo.color}; color: white;">
                     <i class="${statusInfo.icon}"></i>
                     <span>${statusInfo.text}</span>
                 </div>
             </div>
-            <ul class="detail-list">
-                <li class="detail-item">
-                    <span class="label">Invoice Number</span>
-                    <span class="value"><code>${payment.invoice_number || 'N/A'}</code> ${payment.invoice_number ? `<i class="ri-file-copy-line" style="cursor: pointer; margin-left: 0.5rem;" onclick="copyToClipboard('${payment.invoice_number}')"></i>` : ''}</span>
-                </li>
-                <li class="detail-item">
-                    <span class="label">Transaction ID</span>
-                    <span class="value">
-                        ${stripeLink ? `<a href="${stripeLink}" target="_blank" title="View on Stripe"><i class="ri-external-link-line"></i> ${payment.transaction_id}</a>` : `<code>${payment.transaction_id || 'N/A'}</code>`}
-                        ${payment.transaction_id ? `<i class="ri-file-copy-line" style="cursor: pointer; margin-left: 0.5rem;" onclick="copyToClipboard('${payment.transaction_id}')"></i>` : ''}
-                    </span>
-                </li>
-                ${payment.task_id ? `
-                <li class="detail-item">
-                    <span class="label">Related Task ID</span>
-                    <span class="value"><code>${payment.task_id}</code> <i class="ri-file-copy-line" style="cursor: pointer; margin-left: 0.5rem;" onclick="copyToClipboard('${payment.task_id}')"></i></span>
-                </li>
+
+            <!-- Invoice Details Section -->
+            <div class="receipt-section">
+                <div class="receipt-section-title">
+                    <i class="ri-file-text-line"></i>
+                    Invoice Details
+                </div>
+                <ul class="detail-list">
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-hashtag"></i> Invoice Number</span>
+                        <span class="value">
+                            <code>${payment.invoice_number || 'N/A'}</code>
+                            ${payment.invoice_number ? `<i class="ri-file-copy-line copy-btn" title="Copy to clipboard" onclick="copyToClipboard('${payment.invoice_number}')"></i>` : ''}
+                        </span>
+                    </li>
+                    ${payment.invoice_number_stripe ? `
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-bank-card-2-line"></i> Stripe Invoice #</span>
+                        <span class="value">
+                            <span class="stripe-badge"><i class="ri-bank-card-2-line"></i> Stripe</span>
+                            <code>${payment.invoice_number_stripe}</code>
+                            <i class="ri-file-copy-line copy-btn" title="Copy to clipboard" onclick="copyToClipboard('${payment.invoice_number_stripe}')"></i>
+                        </span>
+                    </li>
+                    ` : ''}
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-exchange-line"></i> Transaction ID</span>
+                        <span class="value">
+                            <code style="font-size: 0.7rem;">${payment.transaction_id || 'N/A'}</code>
+                            ${payment.transaction_id ? `<i class="ri-file-copy-line copy-btn" title="Copy to clipboard" onclick="copyToClipboard('${payment.transaction_id}')"></i>` : ''}
+                        </span>
+                    </li>
+                    ${payment.task_id ? `
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-task-line"></i> Related Task ID</span>
+                        <span class="value">
+                            <code>${payment.task_id}</code>
+                            <i class="ri-file-copy-line copy-btn" title="Copy to clipboard" onclick="copyToClipboard('${payment.task_id}')"></i>
+                        </span>
+                    </li>
+                    ` : ''}
+                </ul>
+            </div>
+
+            <!-- Payment Information Section -->
+            <div class="receipt-section">
+                <div class="receipt-section-title">
+                    <i class="ri-secure-payment-line"></i>
+                    Payment Information
+                </div>
+                <ul class="detail-list">
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-price-tag-3-line"></i> Payment Type</span>
+                        <span class="value" style="text-transform: capitalize;">${type}</span>
+                    </li>
+                    <li class="detail-item">
+                        <span class="label"><i class="${paymentMethodIcon}"></i> Payment Method</span>
+                        <span class="value" style="text-transform: capitalize;">
+                            ${paymentMethod.toLowerCase() === 'stripe' ? '<span class="stripe-badge"><i class="ri-bank-card-2-line"></i> Stripe</span>' : paymentMethod}
+                        </span>
+                    </li>
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-checkbox-circle-line"></i> Status</span>
+                        <span class="value">
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: var(--radius-sm); background: ${statusInfo.color}20; color: ${statusInfo.color}; font-weight: 600; font-size: 0.8rem;">
+                                <i class="${statusInfo.icon}"></i>
+                                ${statusInfo.text}
+                            </span>
+                        </span>
+                    </li>
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-user-line"></i> Billed To</span>
+                        <span class="value">${payment.customer_email || 'N/A'}</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Timestamps Section -->
+            <div class="receipt-section">
+                <div class="receipt-section-title">
+                    <i class="ri-time-line"></i>
+                    Timestamps
+                </div>
+                <ul class="detail-list">
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-calendar-line"></i> Date Created</span>
+                        <span class="value">${payment.date_created ? new Date(payment.date_created).toLocaleString() : 'N/A'}</span>
+                    </li>
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-calendar-check-line"></i> Last Updated</span>
+                        <span class="value">${payment.date_updated ? new Date(payment.date_updated).toLocaleString() : 'N/A'}</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Action Buttons -->
+            ${(payment.invoice_url || payment.invoice_pdf || payment.receipt_url) ? `
+            <div class="receipt-actions">
+                ${payment.invoice_url ? `
+                <a href="${payment.invoice_url}" target="_blank" class="receipt-action-btn primary">
+                    <i class="ri-external-link-line"></i>
+                    View Invoice
+                </a>
                 ` : ''}
-                <li class="detail-item">
-                    <span class="label">Payment Type</span>
-                    <span class="value" style="text-transform: capitalize;">${type}</span>
-                </li>
-                <li class="detail-item">
-                    <span class="label">Payment Method</span>
-                    <span class="value" style="text-transform: capitalize;">${paymentMethod}</span>
-                </li>
-                <li class="detail-item">
-                    <span class="label">Payment Status</span>
-                    <span class="value" style="text-transform: capitalize;">${payment.status || 'N/A'}</span>
-                </li>
-                <li class="detail-item">
-                    <span class="label">Billed To</span>
-                    <span class="value">${payment.customer_email || 'N/A'}</span>
-                </li>
-                <li class="detail-item">
-                    <span class="label">Date Created</span>
-                    <span class="value">${payment.date_created ? new Date(payment.date_created).toLocaleString() : 'N/A'}</span>
-                </li>
-                <li class="detail-item">
-                    <span class="label">Last Updated</span>
-                    <span class="value">${payment.date_updated ? new Date(payment.date_updated).toLocaleString() : 'N/A'}</span>
-                </li>
-            </ul>
+                ${payment.invoice_pdf ? `
+                <a href="${payment.invoice_pdf}" target="_blank" class="receipt-action-btn secondary">
+                    <i class="ri-file-pdf-2-line"></i>
+                    Download PDF
+                </a>
+                ` : ''}
+                ${payment.receipt_url ? `
+                <a href="${payment.receipt_url}" target="_blank" class="receipt-action-btn secondary">
+                    <i class="ri-receipt-line"></i>
+                    View Receipt
+                </a>
+                ` : ''}
+            </div>
+            ` : ''}
         </div>
         `;
         // --- 3. Update the Swal Modal with the Final Content ---
         Swal.update({
-            title: 'Payment Receipt',
+            title: '<i class="ri-receipt-line" style="margin-right: 0.5rem;"></i> Payment Receipt',
             html: modalHtml,
             showLoading: false,
             showConfirmButton: false,
