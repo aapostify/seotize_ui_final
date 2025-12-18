@@ -318,7 +318,7 @@ tr:hover {
   color: var(--text);
 }
 .modal-body {
-  padding: 1.5rem; max-height: calc(90vh - 140px); overflow-y: auto;
+  padding: 1.5rem; max-height: calc(90vh - 40px); overflow-y: auto;
 }
 .toast {
   position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 1.5rem; background: var(--card);
@@ -6254,13 +6254,14 @@ async function loadBilling(page = 1, type = 'all') {
                 border-color: var(--primary) transparent var(--primary) transparent !important;
             }
             
-            /* Current Plan Card - Integrated with Usage */
+            /* Current Plan Card - Desktop: Gradient + Usage Side by Side */
             .current-plan-card {
                 background: var(--card); border-radius: var(--radius-xl);
                 border: 1px solid var(--border); overflow: hidden; margin-bottom: 1.5rem;
+                display: grid; grid-template-columns: 1fr 1fr;
             }
             .current-plan-gradient {
-                padding: 2rem; position: relative; overflow: hidden;
+                padding: 1.75rem; position: relative; overflow: hidden;
             }
             .current-plan-gradient::before {
                 content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -6268,95 +6269,75 @@ async function loadBilling(page = 1, type = 'all') {
                 opacity: 0.5;
             }
             .current-plan-header {
-                position: relative; z-index: 1; display: flex; justify-content: space-between;
-                align-items: flex-start; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1.5rem;
+                position: relative; z-index: 1; display: flex; flex-direction: column;
+                justify-content: center; height: 100%;
             }
-            .current-plan-info { flex: 1; min-width: 250px; }
+            .current-plan-info { }
             .current-plan-badge {
                 display: inline-flex; align-items: center; gap: 0.5rem;
                 background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
-                padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.7rem;
+                padding: 0.4rem 0.85rem; border-radius: 2rem; font-size: 0.65rem;
                 font-weight: 600; color: white; margin-bottom: 0.75rem;
-                text-transform: uppercase; letter-spacing: 0.5px;
+                text-transform: uppercase; letter-spacing: 0.5px; width: fit-content;
             }
             .current-plan-name {
                 font-size: 1.75rem; font-weight: 800; color: white; margin: 0 0 0.5rem 0;
-                display: flex; align-items: center; gap: 0.6rem;
+                display: flex; align-items: center; gap: 0.5rem;
             }
             .current-plan-name i { font-size: 1.5rem; }
             .current-plan-meta {
-                display: flex; flex-wrap: wrap; gap: 1rem;
+                display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem;
             }
             .current-plan-meta-item {
                 display: flex; align-items: center; gap: 0.4rem;
                 color: rgba(255,255,255,0.9); font-size: 0.8rem;
             }
             .current-plan-meta-item i { font-size: 1rem; opacity: 0.8; }
-            .current-plan-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-            .current-plan-actions .btn {
-                background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);
-                backdrop-filter: blur(10px); font-size: 0.85rem; padding: 0.6rem 1rem;
-            }
-            .current-plan-actions .btn:hover {
-                background: rgba(255,255,255,0.3); transform: translateY(-2px);
-            }
-            .current-plan-actions .btn-upgrade {
-                background: white; color: var(--primary);
-            }
-            .current-plan-actions .btn-upgrade:hover {
-                background: rgba(255,255,255,0.9);
-            }
             
-            /* Usage Progress Section inside Plan Card */
+            /* Usage Progress Section - Like Article Usage Plan */
             .plan-usage-section {
-                position: relative; z-index: 1;
-                display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 1rem;
+                display: flex; flex-direction: column;
+                padding: 1.5rem; background: var(--bg-secondary);
+                border-left: 1px solid var(--border);
+                justify-content: center; gap: 1rem;
             }
             .plan-usage-item {
-                background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-                border-radius: var(--radius-lg); padding: 1rem 1.25rem;
-                border: 1px solid rgba(255,255,255,0.15);
+                display: flex; flex-direction: column; gap: 0.5rem;
             }
             .plan-usage-header {
                 display: flex; justify-content: space-between; align-items: center;
-                margin-bottom: 0.6rem;
             }
-            .plan-usage-title {
+            .plan-usage-info {
                 display: flex; align-items: center; gap: 0.5rem;
-                font-size: 0.85rem; font-weight: 600; color: white;
             }
-            .plan-usage-title i { font-size: 1rem; opacity: 0.8; }
-            .plan-usage-count {
-                font-size: 0.8rem; color: rgba(255,255,255,0.85);
+            .plan-usage-icon {
+                width: 32px; height: 32px; border-radius: 8px; display: flex;
+                align-items: center; justify-content: center; font-size: 1rem;
+            }
+            .plan-usage-icon.images { background: rgba(99, 102, 241, 0.12); color: var(--primary); }
+            .plan-usage-icon.articles { background: rgba(16, 185, 129, 0.12); color: var(--success); }
+            .plan-usage-icon.time { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+            .plan-usage-label {
+                font-size: 0.85rem; font-weight: 600; color: var(--text);
+            }
+            .plan-usage-percent {
+                font-size: 0.85rem; font-weight: 700; color: var(--text);
             }
             .plan-usage-bar {
-                height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px;
-                overflow: hidden; margin-bottom: 0.4rem;
+                height: 6px; background: var(--border); border-radius: 3px;
+                overflow: hidden; width: 100%;
             }
             .plan-usage-fill {
                 height: 100%; border-radius: 3px; transition: width 0.5s ease;
             }
-            .plan-usage-fill.safe { background: rgba(255,255,255,0.9); }
+            .plan-usage-fill.safe { background: var(--success); }
             .plan-usage-fill.warning { background: #fbbf24; }
             .plan-usage-fill.danger { background: #ef4444; }
-            .plan-usage-percent {
-                font-size: 0.7rem; color: rgba(255,255,255,0.7); text-align: right;
+            .plan-usage-stats {
+                display: flex; justify-content: space-between;
+                font-size: 0.75rem; color: var(--text-secondary);
             }
-            
-            /* Plan Stats Row */
-            .plan-stats-row {
-                display: flex; gap: 0.75rem; flex-wrap: wrap; padding: 1.25rem 1.5rem;
-                background: var(--bg-secondary); border-top: 1px solid var(--border);
-            }
-            .plan-stat-chip {
-                display: flex; align-items: center; gap: 0.5rem;
-                background: var(--card); padding: 0.6rem 1rem; border-radius: var(--radius);
-                border: 1px solid var(--border); font-size: 0.8rem;
-            }
-            .plan-stat-chip i { color: var(--text-secondary); }
-            .plan-stat-chip-value { font-weight: 600; color: var(--text); }
-            .plan-stat-chip-label { color: var(--text-secondary); }
+            .plan-usage-stats strong { color: var(--text); font-weight: 600; }
             
             
             /* Transaction History */
@@ -6373,10 +6354,23 @@ async function loadBilling(page = 1, type = 'all') {
                 font-size: 1.1rem; font-weight: 700; color: var(--text);
                 display: flex; align-items: center; gap: 0.5rem;
             }
-            .transactions-filter select {
-                padding: 0.5rem 1rem; border-radius: var(--radius);
-                border: 1px solid var(--border); background: var(--bg-secondary);
-                color: var(--text); font-size: 0.875rem; cursor: pointer;
+            .transactions-filters {
+                display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;
+            }
+            .filter-tabs {
+                display: flex; background: var(--bg-tertiary); border-radius: var(--radius);
+                padding: 0.25rem; gap: 0.25rem;
+            }
+            .filter-tab {
+                padding: 0.5rem 1rem; border-radius: calc(var(--radius) - 2px);
+                font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);
+                cursor: pointer; transition: all 0.2s ease; border: none;
+                background: transparent; white-space: nowrap;
+            }
+            .filter-tab:hover { color: var(--text); }
+            .filter-tab.active {
+                background: var(--card); color: var(--text);
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             }
             .transactions-table {
                 width: 100%; border-collapse: collapse;
@@ -6509,6 +6503,7 @@ async function loadBilling(page = 1, type = 'all') {
                 display: flex; align-items: center; justify-content: center;
                 font-size: 1.25rem; margin-bottom: 0.75rem;
             }
+            .pkg-option-content { flex: 1; min-width: 0; }
             .pkg-option-name { font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
             .pkg-option-price { font-size: 0.85rem; color: var(--text-secondary); }
             .pkg-option-price strong { color: var(--text); font-size: 1.1rem; }
@@ -6632,30 +6627,296 @@ async function loadBilling(page = 1, type = 'all') {
             @media (max-width: 1024px) {
                 .pkg-modal-body { grid-template-columns: 1fr; }
                 .pkg-summary-section { position: static; }
-                .pkg-options-grid { grid-template-columns: 1fr; }
+                .pkg-options-grid { grid-template-columns: 1fr 1fr; }
             }
             @media (max-width: 768px) {
-                .billing-header { flex-direction: column; align-items: flex-start; }
-                .current-plan-header { flex-direction: column; gap: 1rem; }
-                .current-plan-actions { width: 100%; justify-content: flex-start; }
-                .plan-usage-section { grid-template-columns: 1fr; }
-                .plan-stats-row { flex-wrap: wrap; }
-                .plan-stat-chip { flex: 1 1 45%; min-width: 140px; }
+                .billing-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+                .billing-header-actions { width: 100%; }
+                .billing-header-actions .btn { flex: 1; justify-content: center; }
+                
+                /* Current Plan Card - Stack on Mobile */
+                .current-plan-card { grid-template-columns: 1fr; }
+                .current-plan-gradient { padding: 1.25rem; }
+                .current-plan-name { font-size: 1.35rem; }
+                .current-plan-name i { font-size: 1.15rem; }
+                .current-plan-meta { gap: 0.5rem 1rem; }
+                .current-plan-meta-item { font-size: 0.75rem; }
+                
+                /* Usage Section - Full width rows on mobile */
+                .plan-usage-section { 
+                    border-left: none; border-top: 1px solid var(--border);
+                    padding: 1.25rem; gap: 1.25rem;
+                }
+                .plan-usage-item { gap: 0.4rem; }
+                .plan-usage-icon { width: 28px; height: 28px; font-size: 0.9rem; }
+                .plan-usage-label { font-size: 0.8rem; }
+                .plan-usage-percent { font-size: 0.8rem; }
+                .plan-usage-bar { height: 5px; }
+                .plan-usage-stats { font-size: 0.7rem; }
                 .transactions-table { display: none; }
                 .mobile-transactions { display: block; }
-                .pkg-modal-container {
-                    width: 100vw; max-width: 100vw; height: 100vh;
-                    border-radius: 0; max-height: 100vh;
+                .transactions-header { padding: 1rem; gap: 0.75rem; }
+                .transactions-title { font-size: 0.95rem; white-space: nowrap; }
+                .transactions-title i { font-size: 1rem; }
+                .filter-tabs { padding: 0.2rem; gap: 0.15rem; }
+                .filter-tab { padding: 0.35rem 0.6rem; font-size: 0.7rem; }
+                
+                /* ========== MOBILE MODAL - COMPLETE REWRITE ========== */
+                .package-purchase-modal {
+                    padding: 0;
                 }
-                .pkg-modal-body { padding: 1rem; gap: 1rem; }
-                .pkg-duration-grid { grid-template-columns: 1fr; }
-                .pkg-providers-grid { grid-template-columns: 1fr; }
+                .pkg-modal-container {
+                    width: 100%; max-width: 100%; height: 100%; max-height: 100%;
+                    border-radius: 0; display: flex; flex-direction: column;
+                    background: var(--bg);
+                }
+                
+                /* Modal Header */
+                .pkg-modal-header { 
+                    padding: 1rem 1.25rem; flex-shrink: 0;
+                    background: var(--card); 
+                    border-bottom: 1px solid var(--border);
+                    display: flex; justify-content: space-between; align-items: center;
+                }
+                .pkg-modal-title { 
+                    font-size: 1.1rem; font-weight: 700;
+                    display: flex; align-items: center; gap: 0.5rem;
+                }
+                .pkg-modal-title i { font-size: 1.2rem; color: var(--primary); }
+                .pkg-modal-close { 
+                    width: 38px; height: 38px; font-size: 1.3rem;
+                    background: var(--bg-tertiary); border-radius: 50%;
+                }
+                
+                /* Modal Body */
+                .pkg-modal-body { 
+                    flex: 1; overflow-y: auto; padding: 0;
+                    display: flex; flex-direction: column;
+                    -webkit-overflow-scrolling: touch;
+                }
+                
+                /* Options Section - Scrollable Area */
+                .pkg-options-section { 
+                    flex: 1; padding: 1.25rem; 
+                    display: flex; flex-direction: column; gap: 1.5rem;
+                }
+                
+                /* Section Titles */
+                .pkg-section-title { 
+                    font-size: 0.85rem; font-weight: 700; margin-bottom: 0.75rem;
+                    color: var(--text); display: flex; align-items: center; gap: 0.5rem;
+                }
+                .pkg-section-title i { color: var(--primary); font-size: 1rem; }
+                
+                /* Package Options - Cards with Features */
+                .pkg-options-grid { 
+                    display: flex; flex-direction: column; gap: 0.75rem;
+                }
+                .pkg-option-card { 
+                    padding: 1rem 1.25rem; 
+                    display: grid; grid-template-columns: auto 1fr auto;
+                    grid-template-rows: auto auto;
+                    gap: 0.5rem 0.75rem;
+                    min-height: auto; border-width: 2px; border-radius: 14px;
+                    background: var(--card); align-items: center;
+                }
+                .pkg-option-card .pkg-option-icon { 
+                    width: 44px; height: 44px; font-size: 1.2rem;
+                    border-radius: 10px; grid-row: 1; grid-column: 1;
+                }
+                .pkg-option-card .pkg-option-content { 
+                    grid-row: 1; grid-column: 2;
+                    display: flex; flex-direction: column;
+                }
+                .pkg-option-card .pkg-option-name { 
+                    font-size: 1rem; font-weight: 700; margin-bottom: 0.1rem; 
+                }
+                .pkg-option-card .pkg-option-price { 
+                    font-size: 0.8rem; color: var(--text-secondary);
+                }
+                .pkg-option-card .pkg-option-price strong {
+                    color: var(--text); font-size: 0.9rem;
+                }
+                .pkg-option-card .pkg-option-features { 
+                    display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem;
+                    margin-top: 0; padding-top: 0.5rem;
+                    border-top: 1px solid var(--border);
+                    font-size: 0.7rem;
+                    grid-row: 2; grid-column: 1 / -1;
+                }
+                .pkg-option-card .pkg-option-features li {
+                    padding: 0.15rem 0;
+                }
+                .pkg-option-card .pkg-option-features li i { font-size: 0.75rem; }
+                .pkg-option-card.selected { 
+                    border-color: var(--primary); 
+                    background: rgba(99, 102, 241, 0.08);
+                    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
+                }
+                .pkg-option-card.selected::after { 
+                    content: '✓'; grid-row: 1; grid-column: 3;
+                    width: 26px; height: 26px; background: var(--primary); 
+                    color: white; border-radius: 50%;
+                    display: flex; align-items: center; justify-content: center; 
+                    font-size: 0.75rem; font-weight: 700;
+                    position: static; transform: none;
+                }
+                .pkg-option-card.popular::before { 
+                    content: 'POPULAR'; position: absolute; top: -9px; left: 1rem;
+                    transform: none; font-size: 0.6rem; padding: 0.2rem 0.6rem;
+                    background: var(--primary); border-radius: 6px;
+                }
+                
+                /* Payment Type Toggle */
+                .pkg-payment-type-toggle { 
+                    display: flex; gap: 0.5rem; padding: 0.3rem;
+                    background: var(--bg-tertiary); border-radius: 12px;
+                }
+                .pkg-payment-type-btn { 
+                    flex: 1; padding: 0.85rem 0.75rem; font-size: 0.85rem;
+                    border-radius: 10px; font-weight: 600;
+                    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+                }
+                .pkg-payment-type-btn i { font-size: 1.1rem; }
+                .pkg-payment-type-btn.active {
+                    background: var(--primary); color: white;
+                    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+                }
+                
+                /* Duration Grid - Horizontal Single Row */
+                .pkg-duration-grid { 
+                    display: flex; gap: 0.5rem;
+                }
+                .pkg-duration-option { 
+                    flex: 1; padding: 0.85rem 0.5rem; min-width: 0; 
+                    border-radius: 12px; text-align: center;
+                    border-width: 2px; background: var(--card);
+                }
+                .pkg-duration-option.selected {
+                    border-color: var(--primary);
+                    background: rgba(99, 102, 241, 0.08);
+                }
+                .pkg-duration-option.best-value::before { 
+                    content: 'BEST'; top: -8px; font-size: 0.5rem; 
+                    padding: 0.15rem 0.4rem; border-radius: 4px;
+                }
+                .pkg-duration-label { font-size: 0.8rem; font-weight: 700; }
+                .pkg-duration-discount { 
+                    font-size: 0.65rem; margin-top: 0.25rem; 
+                    color: var(--success); font-weight: 600;
+                }
+                
+                /* Payment Providers */
+                .pkg-providers-grid { 
+                    display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+                }
+                .pkg-provider-option { 
+                    padding: 0.85rem; gap: 0.5rem; border-radius: 12px;
+                    flex-direction: column; text-align: center;
+                    border-width: 2px; background: var(--card);
+                }
+                .pkg-provider-option.selected {
+                    border-color: var(--primary);
+                    background: rgba(99, 102, 241, 0.08);
+                }
+                .pkg-provider-icon { font-size: 1.5rem; line-height: 1; }
+                .pkg-provider-name { font-size: 0.8rem; font-weight: 600; }
+                .pkg-provider-desc { font-size: 0.65rem; color: var(--text-secondary); }
+                
+                /* Summary Section - Fixed at Bottom */
+                .pkg-summary-section { 
+                    flex-shrink: 0;
+                    margin: 0; padding: 1.25rem;
+                    background: var(--card); 
+                    border-top: 1px solid var(--border);
+                    border-radius: 20px 20px 0 0;
+                    box-shadow: 0 -8px 30px rgba(0,0,0,0.12);
+                }
+                .pkg-summary-title { 
+                    font-size: 1rem; margin-bottom: 0.85rem; 
+                    padding-bottom: 0.65rem;
+                }
+                #pkgPurchaseSummary {
+                    background: var(--bg-secondary); border-radius: 12px;
+                    padding: 0.85rem; margin-bottom: 1rem;
+                }
+                .pkg-summary-row { 
+                    font-size: 0.8rem; padding: 0.35rem 0;
+                }
+                .pkg-summary-row.pkg-total { 
+                    font-size: 1rem; padding-top: 0.5rem;
+                }
+                .pkg-summary-row.pkg-total .pkg-summary-value {
+                    font-size: 1.2rem;
+                }
+                .pkg-summary-row.pkg-permonth {
+                    font-size: 0.75rem;
+                }
+                .pkg-summary-divider { margin: 0.5rem 0; }
+                #pkgPurchaseBtn { 
+                    padding: 1rem; font-size: 1rem; border-radius: 14px;
+                    margin-top: 0;
+                }
             }
+            
             @media (max-width: 480px) {
-                .current-plan-name { font-size: 1.35rem; }
-                .current-plan-name i { font-size: 1.2rem; }
-                .plan-stat-chip { flex: 1 1 100%; }
-                .plan-usage-item { padding: 0.85rem 1rem; }
+                .billing-header-left h1 { font-size: 1.25rem; }
+                .billing-header-left h1 i { font-size: 1.1rem; }
+                .billing-header-left p { font-size: 0.75rem; }
+                .billing-header-actions .btn { font-size: 0.75rem; padding: 0.55rem 0.75rem; }
+                .current-plan-gradient { padding: 1rem; }
+                .current-plan-badge { font-size: 0.55rem; padding: 0.3rem 0.6rem; }
+                .current-plan-name { font-size: 1.15rem; gap: 0.4rem; }
+                .current-plan-name i { font-size: 1rem; }
+                .current-plan-meta { gap: 0.4rem 0.75rem; }
+                .current-plan-meta-item { font-size: 0.7rem; }
+                .current-plan-meta-item i { font-size: 0.8rem; }
+                .plan-usage-section { padding: 1rem; gap: 1rem; }
+                .plan-usage-icon { width: 26px; height: 26px; font-size: 0.85rem; }
+                .plan-usage-label { font-size: 0.75rem; }
+                .plan-usage-percent { font-size: 0.75rem; }
+                .plan-usage-bar { height: 4px; }
+                .plan-usage-stats { font-size: 0.65rem; }
+                .transactions-header { padding: 0.75rem; }
+                .transactions-title { font-size: 0.85rem; }
+                .transactions-title i { font-size: 0.9rem; }
+                .filter-tab { padding: 0.3rem 0.5rem; font-size: 0.65rem; }
+                .mobile-transaction-card { padding: 0.65rem; margin: 0.3rem 0.5rem; }
+                
+                /* Modal 480px adjustments */
+                .pkg-modal-header { padding: 0.85rem 1rem; }
+                .pkg-modal-title { font-size: 1rem; }
+                .pkg-modal-title i { font-size: 1.1rem; }
+                .pkg-modal-close { width: 34px; height: 34px; font-size: 1.15rem; }
+                .pkg-options-section { padding: 1rem; gap: 1.25rem; }
+                .pkg-section-title { font-size: 0.8rem; margin-bottom: 0.6rem; }
+                .pkg-section-title i { font-size: 0.9rem; }
+                .pkg-option-card { padding: 0.85rem 1rem; border-radius: 12px; gap: 0.4rem 0.65rem; }
+                .pkg-option-card .pkg-option-icon { width: 38px; height: 38px; font-size: 1.05rem; }
+                .pkg-option-card .pkg-option-name { font-size: 0.9rem; }
+                .pkg-option-card .pkg-option-price { font-size: 0.7rem; }
+                .pkg-option-card .pkg-option-price strong { font-size: 0.8rem; }
+                .pkg-option-card .pkg-option-features { font-size: 0.65rem; gap: 0.2rem 0.5rem; padding-top: 0.4rem; }
+                .pkg-option-card.selected::after { width: 22px; height: 22px; font-size: 0.6rem; }
+                .pkg-option-card.popular::before { font-size: 0.5rem; padding: 0.15rem 0.45rem; top: -8px; }
+                .pkg-payment-type-btn { padding: 0.75rem 0.6rem; font-size: 0.8rem; }
+                .pkg-payment-type-btn i { font-size: 1rem; }
+                .pkg-duration-option { padding: 0.75rem 0.4rem; border-radius: 10px; }
+                .pkg-duration-label { font-size: 0.75rem; }
+                .pkg-duration-discount { font-size: 0.6rem; }
+                .pkg-duration-option.best-value::before { font-size: 0.45rem; padding: 0.1rem 0.3rem; }
+                .pkg-provider-option { padding: 0.75rem 0.5rem; border-radius: 10px; }
+                .pkg-provider-icon { font-size: 1.35rem; }
+                .pkg-provider-name { font-size: 0.75rem; }
+                .pkg-provider-desc { font-size: 0.6rem; }
+                .pkg-summary-section { padding: 1rem; border-radius: 16px 16px 0 0; }
+                .pkg-summary-title { font-size: 0.9rem; margin-bottom: 0.75rem; }
+                #pkgPurchaseSummary { padding: 0.75rem; margin-bottom: 0.85rem; border-radius: 10px; }
+                .pkg-summary-row { font-size: 0.75rem; padding: 0.3rem 0; }
+                .pkg-summary-row.pkg-total { font-size: 0.9rem; }
+                .pkg-summary-row.pkg-total .pkg-summary-value { font-size: 1.1rem; }
+                .pkg-summary-row.pkg-permonth { font-size: 0.7rem; }
+                #pkgPurchaseBtn { padding: 0.9rem; font-size: 0.9rem; border-radius: 12px; }
             }
         </style>
         
@@ -6679,8 +6940,10 @@ async function loadBilling(page = 1, type = 'all') {
                                     <div class="pkg-option-icon" style="background: ${pkg.gradient}; color: white;">
                                         <i class="${pkg.icon}"></i>
                                     </div>
-                                    <div class="pkg-option-name">${pkg.name}</div>
-                                    <div class="pkg-option-price">From <strong>$${pkg.price['3month']}</strong>/3mo</div>
+                                    <div class="pkg-option-content">
+                                        <div class="pkg-option-name">${pkg.name}</div>
+                                        <div class="pkg-option-price">From <strong>$${pkg.price['3month']}</strong>/3mo</div>
+                                    </div>
                                     <ul class="pkg-option-features">
                                         ${pkg.features.slice(0, 3).map(f => `<li><i class="ri-check-line"></i> ${f}</li>`).join('')}
                                     </ul>
@@ -6756,9 +7019,9 @@ async function loadBilling(page = 1, type = 'all') {
             </div>
             <div class="billing-header-actions">
                 <button class="btn btn-primary" onclick="openPackagePurchaseModal()">
-                    <i class="ri-shopping-bag-3-line"></i> ${isFree ? 'Get Started' : 'Upgrade Plan'}
+                    <i class="ri-arrow-up-circle-line"></i> Upgrade Plan
                 </button>
-                ${!isFree && isSubscribed ? `
+                ${!isFree && planData.is_subscription ? `
                     <button class="btn btn-secondary" onclick="showSubscriptionModal()">
                         <i class="ri-settings-3-line"></i> Manage
                     </button>
@@ -6779,10 +7042,9 @@ async function loadBilling(page = 1, type = 'all') {
             </button>
         </div>
         ` : `
-        <!-- Current Plan Card with Integrated Usage -->
+        <!-- Current Plan Card with Usage Side by Side -->
         <div class="current-plan-card">
             <div class="current-plan-gradient" style="background: ${currentPkg?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};">
-                <!-- Header with Plan Info and Actions -->
                 <div class="current-plan-header">
                     <div class="current-plan-info">
                         <div class="current-plan-badge">
@@ -6809,78 +7071,64 @@ async function loadBilling(page = 1, type = 'all') {
                                     Expires ${expiryDate.toLocaleDateString()}
                                 </div>
                             ` : ''}
+                            <div class="current-plan-meta-item">
+                                <i class="ri-bank-card-line"></i>
+                                ${planData.billing?.provider ? planData.billing.provider.charAt(0).toUpperCase() + planData.billing.provider.slice(1) : 'N/A'}
+                            </div>
                         </div>
-                    </div>
-                    <div class="current-plan-actions">
-                        <button class="btn btn-upgrade" onclick="openPackagePurchaseModal()">
-                            <i class="ri-arrow-up-circle-line"></i> Upgrade
-                        </button>
-                        ${isSubscribed ? `
-                            <button class="btn" onclick="showSubscriptionModal()">
-                                <i class="ri-settings-3-line"></i> Manage
-                            </button>
-                        ` : ''}
-                    </div>
-                </div>
-                
-                <!-- Usage Progress Bars -->
-                <div class="plan-usage-section">
-                    <div class="plan-usage-item">
-                        <div class="plan-usage-header">
-                            <span class="plan-usage-title"><i class="ri-image-line"></i> Images</span>
-                            <span class="plan-usage-count">${imagesUsed.toLocaleString()} / ${imagesLimit.toLocaleString()}</span>
-                        </div>
-                        <div class="plan-usage-bar">
-                            <div class="plan-usage-fill ${imagesUsedPercent > 90 ? 'danger' : imagesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${imagesUsedPercent}%;"></div>
-                        </div>
-                        <div class="plan-usage-percent">${Math.round(imagesUsedPercent)}% used</div>
-                    </div>
-                    <div class="plan-usage-item">
-                        <div class="plan-usage-header">
-                            <span class="plan-usage-title"><i class="ri-article-line"></i> Articles</span>
-                            <span class="plan-usage-count">${articlesUsed.toLocaleString()} / ${articlesLimit.toLocaleString()}</span>
-                        </div>
-                        <div class="plan-usage-bar">
-                            <div class="plan-usage-fill ${articlesUsedPercent > 90 ? 'danger' : articlesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${articlesUsedPercent}%;"></div>
-                        </div>
-                        <div class="plan-usage-percent">${Math.round(articlesUsedPercent)}% used</div>
-                    </div>
-                    <div class="plan-usage-item">
-                        <div class="plan-usage-header">
-                            <span class="plan-usage-title"><i class="ri-timer-line"></i> Time Left</span>
-                            <span class="plan-usage-count">${daysLeft} days</span>
-                        </div>
-                        <div class="plan-usage-bar">
-                            <div class="plan-usage-fill ${daysLeft < 7 ? 'danger' : daysLeft < 14 ? 'warning' : 'safe'}" style="width: ${Math.min(daysLeft * 3.33, 100)}%;"></div>
-                        </div>
-                        <div class="plan-usage-percent">${expiryDate ? expiryDate.toLocaleDateString() : 'N/A'}</div>
                     </div>
                 </div>
             </div>
             
-            <!-- Bottom Stats Row -->
-            <div class="plan-stats-row">
-                <div class="plan-stat-chip">
-                    <i class="ri-shield-check-line"></i>
-                    <span class="plan-stat-chip-label">Status:</span>
-                    <span class="plan-stat-chip-value">${daysLeft > 0 ? 'Active' : 'Expired'}</span>
+            <!-- Usage Section - Like Article Usage Plan -->
+            <div class="plan-usage-section">
+                <div class="plan-usage-item">
+                    <div class="plan-usage-header">
+                        <div class="plan-usage-info">
+                            <div class="plan-usage-icon images"><i class="ri-image-line"></i></div>
+                            <span class="plan-usage-label">Images</span>
+                        </div>
+                        <span class="plan-usage-percent">${Math.round(imagesUsedPercent)}%</span>
+                    </div>
+                    <div class="plan-usage-bar">
+                        <div class="plan-usage-fill ${imagesUsedPercent > 90 ? 'danger' : imagesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${imagesUsedPercent}%;"></div>
+                    </div>
+                    <div class="plan-usage-stats">
+                        <span><strong>${imagesUsed.toLocaleString()}</strong> used</span>
+                        <span><strong>${(imagesLimit - imagesUsed).toLocaleString()}</strong> remaining / <strong>${imagesLimit.toLocaleString()}</strong> total</span>
+                    </div>
                 </div>
-                <div class="plan-stat-chip">
-                    <i class="ri-bank-card-line"></i>
-                    <span class="plan-stat-chip-label">Provider:</span>
-                    <span class="plan-stat-chip-value">${planData.billing?.provider ? planData.billing.provider.charAt(0).toUpperCase() + planData.billing.provider.slice(1) : 'N/A'}</span>
+                <div class="plan-usage-item">
+                    <div class="plan-usage-header">
+                        <div class="plan-usage-info">
+                            <div class="plan-usage-icon articles"><i class="ri-article-line"></i></div>
+                            <span class="plan-usage-label">Articles</span>
+                        </div>
+                        <span class="plan-usage-percent">${Math.round(articlesUsedPercent)}%</span>
+                    </div>
+                    <div class="plan-usage-bar">
+                        <div class="plan-usage-fill ${articlesUsedPercent > 90 ? 'danger' : articlesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${articlesUsedPercent}%;"></div>
+                    </div>
+                    <div class="plan-usage-stats">
+                        <span><strong>${articlesUsed.toLocaleString()}</strong> used</span>
+                        <span><strong>${(articlesLimit - articlesUsed).toLocaleString()}</strong> remaining / <strong>${articlesLimit.toLocaleString()}</strong> total</span>
+                    </div>
                 </div>
-                ${lastPayment > 0 ? `
-                <div class="plan-stat-chip">
-                    <i class="ri-money-dollar-circle-line"></i>
-                    <span class="plan-stat-chip-label">Last Payment:</span>
-                    <span class="plan-stat-chip-value">$${lastPayment.toFixed(2)}</span>
-                </div>
-                ` : ''}
-                <div class="plan-stat-chip">
-                    <i class="${isSubscribed ? 'ri-refresh-line' : 'ri-shopping-bag-line'}"></i>
-                    <span class="plan-stat-chip-label">Type:</span>
-                    <span class="plan-stat-chip-value">${isSubscribed ? 'Subscription' : 'One-time'}</span>
+                <div class="plan-usage-item">
+                    <div class="plan-usage-header">
+                        <div class="plan-usage-info">
+                            <div class="plan-usage-icon time"><i class="ri-timer-line"></i></div>
+                            <span class="plan-usage-label">Time Remaining</span>
+                        </div>
+                        <span class="plan-usage-percent">${daysLeft} days</span>
+                    </div>
+                    <div class="plan-usage-bar">
+                        <div class="plan-usage-fill ${daysLeft < 7 ? 'danger' : daysLeft < 14 ? 'warning' : 'safe'}" style="width: ${Math.min(daysLeft * 3.33, 100)}%;"></div>
+                    </div>
+                    <div class="plan-usage-stats">
+                        <span>${expiryDate ? expiryDate.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'}) : 'N/A'}</span>
+                        <span>${subscriptionEnd ? 'Auto-renews' : 'Expires'}</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -6890,12 +7138,18 @@ async function loadBilling(page = 1, type = 'all') {
         <div class="transactions-section">
             <div class="transactions-header">
                 <h3 class="transactions-title"><i class="ri-exchange-funds-line"></i> Transaction History</h3>
-                <div class="transactions-filter">
-                    <select onchange="loadBilling(1, this.value)">
-                        <option value="all" ${type === 'all' ? 'selected' : ''}>All Transactions</option>
-                        <option value="hosting" ${type === 'hosting' ? 'selected' : ''}>Hosting Only</option>
-                        <option value="tasks" ${type === 'tasks' ? 'selected' : ''}>Tasks Only</option>
-                    </select>
+                <div class="transactions-filters">
+                    <div class="filter-tabs">
+                        <button class="filter-tab ${type === 'all' ? 'active' : ''}" onclick="loadBilling(1, 'all')">
+                            All
+                        </button>
+                        <button class="filter-tab ${type === 'hosting' ? 'active' : ''}" onclick="loadBilling(1, 'hosting')">
+                            Hosting
+                        </button>
+                        <button class="filter-tab ${type === 'tasks' ? 'active' : ''}" onclick="loadBilling(1, 'tasks')">
+                            Tasks
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -7075,22 +7329,28 @@ function showSubscriptionModal() {
     
     const modalContent = `
         <style>
-            .sub-modal-content { text-align: center; }
-            .sub-modal-icon {
-                width: 80px; height: 80px; margin: 0 auto 1.5rem;
-                background: ${pkg?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};
-                border-radius: 50%; display: flex; align-items: center; justify-content: center;
-                font-size: 2rem; color: white;
+            .sub-modal-content { }
+            .sub-modal-header {
+                display: flex; align-items: center; gap: 1rem;
+                margin-bottom: 1.5rem; padding-bottom: 1.25rem;
+                border-bottom: 1px solid var(--border);
             }
-            .sub-modal-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); }
-            .sub-modal-subtitle { color: var(--text-secondary); margin-bottom: 1.5rem; }
+            .sub-modal-icon {
+                width: 56px; height: 56px; flex-shrink: 0;
+                background: ${pkg?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};
+                border-radius: 14px; display: flex; align-items: center; justify-content: center;
+                font-size: 1.5rem; color: white;
+            }
+            .sub-modal-info { flex: 1; }
+            .sub-modal-title { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.25rem 0; color: var(--text); }
+            .sub-modal-subtitle { color: var(--text-secondary); font-size: 0.85rem; margin: 0; }
             .sub-details-card {
                 background: var(--bg-secondary); border-radius: var(--radius-lg);
-                padding: 1.25rem; margin-bottom: 1.5rem; text-align: left;
+                padding: 1.25rem; margin-bottom: 1.25rem; text-align: left;
             }
             .sub-detail-row {
-                display: flex; justify-content: space-between; padding: 0.6rem 0;
-                border-bottom: 1px solid var(--border); font-size: 0.9rem;
+                display: flex; justify-content: space-between; padding: 0.5rem 0;
+                border-bottom: 1px solid var(--border); font-size: 0.875rem;
             }
             .sub-detail-row:last-child { border-bottom: none; }
             .sub-detail-label { color: var(--text-secondary); }
@@ -7098,26 +7358,30 @@ function showSubscriptionModal() {
             .sub-warning {
                 display: flex; gap: 0.75rem; padding: 1rem;
                 background: rgba(245, 158, 11, 0.1); border-radius: var(--radius);
-                margin-bottom: 1.5rem; text-align: left;
+                margin-bottom: 1.25rem; text-align: left;
             }
             .sub-warning i { color: #f59e0b; font-size: 1.25rem; flex-shrink: 0; margin-top: 0.1rem; }
-            .sub-warning-text { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+            .sub-warning-text { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
             .sub-modal-actions { display: flex; gap: 0.75rem; }
             .sub-modal-actions button { flex: 1; }
-            .sub-stats-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+            .sub-stats-row { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
             .sub-stat {
                 flex: 1; background: var(--bg-secondary); border-radius: var(--radius);
-                padding: 1rem; text-align: center;
+                padding: 0.85rem; text-align: center;
             }
-            .sub-stat-value { font-size: 1.5rem; font-weight: 800; color: var(--text); }
-            .sub-stat-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; }
+            .sub-stat-value { font-size: 1.35rem; font-weight: 800; color: var(--text); }
+            .sub-stat-label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; }
         </style>
         <div class="sub-modal-content">
-            <div class="sub-modal-icon">
-                <i class="${pkg?.icon || 'ri-vip-crown-line'}"></i>
+            <div class="sub-modal-header">
+                <div class="sub-modal-icon">
+                    <i class="${pkg?.icon || 'ri-vip-crown-line'}"></i>
+                </div>
+                <div class="sub-modal-info">
+                    <h3 class="sub-modal-title">${pkg?.name || planName} Plan</h3>
+                    <p class="sub-modal-subtitle">${isSubscribed ? 'Active Subscription' : 'One-time Purchase'}</p>
+                </div>
             </div>
-            <h3 class="sub-modal-title">${pkg?.name || planName} Plan</h3>
-            <p class="sub-modal-subtitle">${isSubscribed ? 'Active Subscription' : 'One-time Purchase'}</p>
             
             <div class="sub-stats-row">
                 <div class="sub-stat">
@@ -12088,7 +12352,7 @@ async function viewPaymentDetails(billingId) {
             throw new Error('Payment details not found in API response.');
         }
         // --- 1. Prepare Data for Display ---
-        const status = (payment.payment_status || 'unknown').toLowerCase();
+        const status = (payment.status || payment.payment_status || 'unknown').toLowerCase();
         let statusInfo = {
             text: 'Unknown',
             color: 'var(--text-secondary)',
@@ -12100,14 +12364,19 @@ async function viewPaymentDetails(billingId) {
             statusInfo = { text: 'Pending', color: 'var(--warning)', icon: 'ri-time-line' };
         } else if (status === 'failed' || status === 'cancelled') {
             statusInfo = { text: 'Failed', color: 'var(--error)', icon: 'ri-close-circle-fill' };
+        } else if (status === 'refunded') {
+            statusInfo = { text: 'Refunded', color: 'var(--info)', icon: 'ri-refund-2-line' };
         }
-        const type = (payment.type || 'unknown').replace('_', ' ');
-        const paymentMethod = (payment.payment_method || 'N/A').toLowerCase();
-        // Extract Stripe link from transaction_id if it's a Stripe checkout session
-        let stripeLink = null;
-        if (payment.transaction_id && payment.transaction_id.startsWith('cs_')) {
-            // Build Stripe checkout link
-            stripeLink = `https://checkout.stripe.com/c/pay/${payment.transaction_id}`;
+        const type = (payment.type || 'unknown').replace(/_/g, ' ');
+        const paymentMethod = (payment.payment_method || 'N/A');
+        // Get payment method icon
+        let paymentMethodIcon = 'ri-bank-card-line';
+        if (paymentMethod.toLowerCase() === 'stripe') {
+            paymentMethodIcon = 'ri-bank-card-2-line';
+        } else if (paymentMethod.toLowerCase() === 'paypal') {
+            paymentMethodIcon = 'ri-paypal-line';
+        } else if (paymentMethod.toLowerCase() === 'crypto' || paymentMethod.toLowerCase() === 'bitcoin') {
+            paymentMethodIcon = 'ri-bit-coin-line';
         }
         // --- 2. Construct Modal HTML with Embedded Styles ---
         const modalHtml = `
@@ -12115,10 +12384,11 @@ async function viewPaymentDetails(billingId) {
             /* Custom styles ONLY for this modal */
             .payment-details-custom {
                 width: 95vw !important;
+                max-width: 800px !important;
             }
-            @media (min-width: 800px) {
+            @media (min-width: 850px) {
                 .payment-details-custom {
-                    width: 750px !important;
+                    width: 800px !important;
                 }
             }
             .payment-receipt {
@@ -12129,12 +12399,19 @@ async function viewPaymentDetails(billingId) {
                 padding-bottom: 1.5rem;
                 border-bottom: 2px dashed var(--border);
                 margin-bottom: 1.5rem;
+                position: relative;
             }
             .receipt-header .amount {
                 font-size: 2.5rem;
                 font-weight: 800;
                 line-height: 1;
                 color: var(--text);
+                margin-bottom: 0.25rem;
+            }
+            .receipt-header .currency-label {
+                font-size: 0.9rem;
+                color: var(--text-secondary);
+                font-weight: 500;
             }
             .receipt-header .status-badge {
                 display: inline-flex;
@@ -12145,6 +12422,25 @@ async function viewPaymentDetails(billingId) {
                 font-weight: 600;
                 margin-top: 1rem;
             }
+            .receipt-section {
+                margin-bottom: 1.5rem;
+            }
+            .receipt-section-title {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--text-secondary);
+                margin-bottom: 0.75rem;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .receipt-section-title i {
+                font-size: 1rem;
+            }
             .detail-list {
                 list-style: none;
                 padding: 0;
@@ -12154,7 +12450,7 @@ async function viewPaymentDetails(billingId) {
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-start;
-                padding: 0.85rem 0;
+                padding: 0.75rem 0;
                 border-bottom: 1px solid var(--border);
                 font-size: 0.9rem;
                 gap: 1rem;
@@ -12165,7 +12461,14 @@ async function viewPaymentDetails(billingId) {
             .detail-item .label {
                 color: var(--text-secondary);
                 white-space: nowrap;
-                min-width: 120px;
+                min-width: 140px;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .detail-item .label i {
+                font-size: 1rem;
+                opacity: 0.7;
             }
             .detail-item .value {
                 color: var(--text);
@@ -12173,93 +12476,264 @@ async function viewPaymentDetails(billingId) {
                 text-align: right;
                 word-break: break-all;
                 flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 0.5rem;
+                flex-wrap: wrap;
             }
             .detail-item .value code {
                 background: var(--bg-tertiary);
                 padding: 0.2rem 0.5rem;
                 border-radius: var(--radius-sm);
-                font-size: 0.85rem;
+                font-size: 0.8rem;
                 border: 1px solid var(--border);
+                font-family: 'SF Mono', 'Fira Code', monospace;
             }
             .detail-item .value a {
                 color: var(--primary);
                 text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
             }
             .detail-item .value a:hover {
                 text-decoration: underline;
             }
+            .copy-btn {
+                cursor: pointer;
+                padding: 0.25rem;
+                border-radius: var(--radius-sm);
+                transition: all 0.2s ease;
+                color: var(--text-secondary);
+            }
+            .copy-btn:hover {
+                background: var(--bg-tertiary);
+                color: var(--primary);
+            }
+            .receipt-actions {
+                display: flex;
+                gap: 0.75rem;
+                flex-wrap: wrap;
+                padding-top: 1.5rem;
+                border-top: 2px dashed var(--border);
+                margin-top: 1.5rem;
+                justify-content: center;
+            }
+            .receipt-action-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.75rem 1.25rem;
+                border-radius: var(--radius-md);
+                font-weight: 600;
+                font-size: 0.875rem;
+                text-decoration: none;
+                transition: all 0.2s ease;
+                cursor: pointer;
+                border: none;
+            }
+            .receipt-action-btn i {
+                font-size: 1.1rem;
+            }
+            .receipt-action-btn.primary {
+                background: var(--primary);
+                color: white;
+            }
+            .receipt-action-btn.primary:hover {
+                background: var(--primary-hover);
+                transform: translateY(-1px);
+            }
+            .receipt-action-btn.secondary {
+                background: var(--bg-tertiary);
+                color: var(--text);
+                border: 1px solid var(--border);
+            }
+            .receipt-action-btn.secondary:hover {
+                background: var(--bg-secondary);
+                border-color: var(--primary);
+                color: var(--primary);
+            }
+            .receipt-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .receipt-grid .detail-list {
+                background: var(--bg-secondary);
+                padding: 1rem;
+                border-radius: var(--radius-md);
+                border: 1px solid var(--border);
+            }
+            .stripe-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.35rem;
+                background: linear-gradient(135deg, #635bff 0%, #7a73ff 100%);
+                color: white;
+                padding: 0.25rem 0.6rem;
+                border-radius: var(--radius-sm);
+                font-size: 0.75rem;
+                font-weight: 600;
+            }
             @media (max-width: 600px) {
                 .detail-item {
                     flex-direction: column;
-                    gap: 0.25rem;
+                    gap: 0.35rem;
                 }
                 .detail-item .label {
                     min-width: auto;
                 }
                 .detail-item .value {
                     text-align: left;
+                    justify-content: flex-start;
                 }
                 .receipt-header .amount {
                     font-size: 2rem;
+                }
+                .receipt-grid {
+                    grid-template-columns: 1fr;
+                }
+                .receipt-actions {
+                    flex-direction: column;
+                }
+                .receipt-action-btn {
+                    justify-content: center;
                 }
             }
         </style>
         <div class="payment-receipt">
             <div class="receipt-header">
-                <div class="amount">$${(payment.amount || 0).toFixed(2)} ${(payment.currency || 'USD').toUpperCase()}</div>
+                <div class="amount">$${(payment.amount || 0).toFixed(2)}</div>
+                <div class="currency-label">${(payment.currency || 'USD').toUpperCase()}</div>
                 <div class="status-badge" style="background-color: ${statusInfo.color}; color: white;">
                     <i class="${statusInfo.icon}"></i>
                     <span>${statusInfo.text}</span>
                 </div>
             </div>
-            <ul class="detail-list">
-                <li class="detail-item">
-                    <span class="label">Invoice Number</span>
-                    <span class="value"><code>${payment.invoice_number || 'N/A'}</code> ${payment.invoice_number ? `<i class="ri-file-copy-line" style="cursor: pointer; margin-left: 0.5rem;" onclick="copyToClipboard('${payment.invoice_number}')"></i>` : ''}</span>
-                </li>
-                <li class="detail-item">
-                    <span class="label">Transaction ID</span>
-                    <span class="value">
-                        ${stripeLink ? `<a href="${stripeLink}" target="_blank" title="View on Stripe"><i class="ri-external-link-line"></i> ${payment.transaction_id}</a>` : `<code>${payment.transaction_id || 'N/A'}</code>`}
-                        ${payment.transaction_id ? `<i class="ri-file-copy-line" style="cursor: pointer; margin-left: 0.5rem;" onclick="copyToClipboard('${payment.transaction_id}')"></i>` : ''}
-                    </span>
-                </li>
-                ${payment.task_id ? `
-                <li class="detail-item">
-                    <span class="label">Related Task ID</span>
-                    <span class="value"><code>${payment.task_id}</code> <i class="ri-file-copy-line" style="cursor: pointer; margin-left: 0.5rem;" onclick="copyToClipboard('${payment.task_id}')"></i></span>
-                </li>
+
+            <!-- Invoice Details Section -->
+            <div class="receipt-section">
+                <div class="receipt-section-title">
+                    <i class="ri-file-text-line"></i>
+                    Invoice Details
+                </div>
+                <ul class="detail-list">
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-hashtag"></i> Invoice Number</span>
+                        <span class="value">
+                            <code>${payment.invoice_number || 'N/A'}</code>
+                            ${payment.invoice_number ? `<i class="ri-file-copy-line copy-btn" title="Copy to clipboard" onclick="copyToClipboard('${payment.invoice_number}')"></i>` : ''}
+                        </span>
+                    </li>
+                    ${payment.invoice_number_stripe ? `
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-bank-card-2-line"></i> Stripe Invoice #</span>
+                        <span class="value">
+                            <span class="stripe-badge"><i class="ri-bank-card-2-line"></i> Stripe</span>
+                            <code>${payment.invoice_number_stripe}</code>
+                            <i class="ri-file-copy-line copy-btn" title="Copy to clipboard" onclick="copyToClipboard('${payment.invoice_number_stripe}')"></i>
+                        </span>
+                    </li>
+                    ` : ''}
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-exchange-line"></i> Transaction ID</span>
+                        <span class="value">
+                            <code style="font-size: 0.7rem;">${payment.transaction_id || 'N/A'}</code>
+                            ${payment.transaction_id ? `<i class="ri-file-copy-line copy-btn" title="Copy to clipboard" onclick="copyToClipboard('${payment.transaction_id}')"></i>` : ''}
+                        </span>
+                    </li>
+                    ${payment.task_id ? `
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-task-line"></i> Related Task ID</span>
+                        <span class="value">
+                            <code>${payment.task_id}</code>
+                            <i class="ri-file-copy-line copy-btn" title="Copy to clipboard" onclick="copyToClipboard('${payment.task_id}')"></i>
+                        </span>
+                    </li>
+                    ` : ''}
+                </ul>
+            </div>
+
+            <!-- Payment Information Section -->
+            <div class="receipt-section">
+                <div class="receipt-section-title">
+                    <i class="ri-secure-payment-line"></i>
+                    Payment Information
+                </div>
+                <ul class="detail-list">
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-price-tag-3-line"></i> Payment Type</span>
+                        <span class="value" style="text-transform: capitalize;">${type}</span>
+                    </li>
+                    <li class="detail-item">
+                        <span class="label"><i class="${paymentMethodIcon}"></i> Payment Method</span>
+                        <span class="value" style="text-transform: capitalize;">
+                            ${paymentMethod.toLowerCase() === 'stripe' ? '<span class="stripe-badge"><i class="ri-bank-card-2-line"></i> Stripe</span>' : paymentMethod}
+                        </span>
+                    </li>
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-checkbox-circle-line"></i> Status</span>
+                        <span class="value">
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: var(--radius-sm); background: ${statusInfo.color}20; color: ${statusInfo.color}; font-weight: 600; font-size: 0.8rem;">
+                                <i class="${statusInfo.icon}"></i>
+                                ${statusInfo.text}
+                            </span>
+                        </span>
+                    </li>
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-user-line"></i> Billed To</span>
+                        <span class="value">${payment.customer_email || 'N/A'}</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Timestamps Section -->
+            <div class="receipt-section">
+                <div class="receipt-section-title">
+                    <i class="ri-time-line"></i>
+                    Timestamps
+                </div>
+                <ul class="detail-list">
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-calendar-line"></i> Date Created</span>
+                        <span class="value">${payment.date_created ? new Date(payment.date_created).toLocaleString() : 'N/A'}</span>
+                    </li>
+                    <li class="detail-item">
+                        <span class="label"><i class="ri-calendar-check-line"></i> Last Updated</span>
+                        <span class="value">${payment.date_updated ? new Date(payment.date_updated).toLocaleString() : 'N/A'}</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Action Buttons -->
+            ${(payment.invoice_url || payment.invoice_pdf || payment.receipt_url) ? `
+            <div class="receipt-actions">
+                ${payment.invoice_url ? `
+                <a href="${payment.invoice_url}" target="_blank" class="receipt-action-btn primary">
+                    <i class="ri-external-link-line"></i>
+                    View Invoice
+                </a>
                 ` : ''}
-                <li class="detail-item">
-                    <span class="label">Payment Type</span>
-                    <span class="value" style="text-transform: capitalize;">${type}</span>
-                </li>
-                <li class="detail-item">
-                    <span class="label">Payment Method</span>
-                    <span class="value" style="text-transform: capitalize;">${paymentMethod}</span>
-                </li>
-                <li class="detail-item">
-                    <span class="label">Payment Status</span>
-                    <span class="value" style="text-transform: capitalize;">${payment.status || 'N/A'}</span>
-                </li>
-                <li class="detail-item">
-                    <span class="label">Billed To</span>
-                    <span class="value">${payment.customer_email || 'N/A'}</span>
-                </li>
-                <li class="detail-item">
-                    <span class="label">Date Created</span>
-                    <span class="value">${payment.date_created ? new Date(payment.date_created).toLocaleString() : 'N/A'}</span>
-                </li>
-                <li class="detail-item">
-                    <span class="label">Last Updated</span>
-                    <span class="value">${payment.date_updated ? new Date(payment.date_updated).toLocaleString() : 'N/A'}</span>
-                </li>
-            </ul>
+                ${payment.invoice_pdf ? `
+                <a href="${payment.invoice_pdf}" target="_blank" class="receipt-action-btn secondary">
+                    <i class="ri-file-pdf-2-line"></i>
+                    Download PDF
+                </a>
+                ` : ''}
+                ${payment.receipt_url ? `
+                <a href="${payment.receipt_url}" target="_blank" class="receipt-action-btn secondary">
+                    <i class="ri-receipt-line"></i>
+                    View Receipt
+                </a>
+                ` : ''}
+            </div>
+            ` : ''}
         </div>
         `;
         // --- 3. Update the Swal Modal with the Final Content ---
         Swal.update({
-            title: 'Payment Receipt',
+            title: '<i class="ri-receipt-line" style="margin-right: 0.5rem;"></i> Payment Receipt',
             html: modalHtml,
             showLoading: false,
             showConfirmButton: false,
