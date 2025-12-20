@@ -7719,7 +7719,7 @@ function showSubscriptionModal() {
                 padding: 0.9rem 1rem;
                 border: 1px solid var(--border);
                 display: grid;
-                grid-template-columns: auto 1fr auto;
+                grid-template-columns: auto 1fr auto auto;
                 align-items: center;
                 gap: 0.85rem;
                 transition: all 0.2s ease;
@@ -7744,14 +7744,6 @@ function showSubscriptionModal() {
             
             .sub-task-content {
                 min-width: 0;
-                flex: 1;
-            }
-            
-            .sub-task-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 0.75rem;
             }
             
             .sub-task-content .name {
@@ -7762,23 +7754,15 @@ function showSubscriptionModal() {
                 overflow: hidden;
                 text-overflow: ellipsis;
                 max-width: 200px;
-                display: flex;
-                align-items: center;
-                gap: 0.4rem;
                 cursor: pointer;
                 transition: color 0.2s ease;
             }
             
-            .sub-task-content .name .domain-text {
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            
             .sub-task-content .name .link-icon {
-                flex-shrink: 0;
-                font-size: 0.8rem;
+                font-size: 0.75rem;
                 color: var(--text-secondary);
                 opacity: 0.6;
+                margin-left: 0.35rem;
                 transition: all 0.2s ease;
             }
             
@@ -8186,13 +8170,6 @@ function showSubscriptionModal() {
                     display: none;
                 }
                 
-                .sub-task-header {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    gap: 0.5rem;
-                }
-                
                 .sub-task-content {
                     display: flex;
                     flex-direction: column;
@@ -8202,49 +8179,55 @@ function showSubscriptionModal() {
                 
                 .sub-task-content .name {
                     max-width: none;
-                    font-size: 0.9rem;
+                    font-size: 0.95rem;
                     font-weight: 600;
-                    flex: 1;
-                    min-width: 0;
+                    display: flex;
+                    align-items: center;
+                    white-space: nowrap;
                 }
                 
-                .sub-task-content .name .domain-text {
-                    flex: 1;
-                    min-width: 0;
+                .sub-task-content .name .link-icon {
+                    margin-left: 0.3rem;
                 }
                 
                 .sub-task-content .meta {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 0.4rem;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.35rem;
                     margin-top: 0.25rem;
                 }
                 
                 .sub-task-content .meta .meta-item {
                     display: flex;
-                    flex-direction: column;
-                    gap: 0.15rem;
-                    padding: 0.5rem 0.65rem;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.45rem 0.6rem;
                     background: var(--bg);
                     border-radius: 8px;
+                    font-size: 0.8rem;
                 }
                 
                 .sub-task-content .meta .meta-item i {
-                    display: none;
+                    font-size: 0.9rem;
+                    color: var(--primary);
+                    opacity: 0.7;
+                    width: 18px;
                 }
                 
                 .sub-task-content .meta .meta-label {
-                    font-size: 0.55rem;
-                    min-width: unset;
-                    opacity: 0.6;
+                    font-size: 0.6rem;
+                    min-width: 80px;
+                    opacity: 0.7;
                 }
                 
                 .sub-task-content .meta .meta-value {
-                    font-size: 0.85rem;
-                    text-align: left;
+                    font-size: 0.8rem;
+                    flex: 1;
+                    text-align: right;
                 }
                 
                 .sub-task-status {
+                    align-self: flex-start;
                     padding: 0.3rem 0.6rem;
                     font-size: 0.65rem;
                     border-radius: 6px;
@@ -8427,25 +8410,22 @@ function showSubscriptionModal() {
                                 <div class="sub-task-card">
                                     <div class="sub-task-icon-sm"><i class="ri-rocket-line"></i></div>
                                     <div class="sub-task-content">
-                                        <div class="sub-task-header">
-                                            <div class="name" onclick="window.open('${safeTaskUrl}', '_blank')" title="Open ${safeDisplayName}">
-                                                <span class="domain-text">${safeDisplayName}</span>
-                                                <i class="ri-external-link-line link-icon"></i>
-                                            </div>
-                                            <span class="sub-task-status ${task.status === 'active' ? 'active' : 'inactive'}">${task.status || 'Unknown'}</span>
+                                        <div class="name" onclick="window.open('${safeTaskUrl}', '_blank')" title="Open ${safeDisplayName}">
+                                            ${safeDisplayName}<i class="ri-external-link-line link-icon"></i>
                                         </div>
                                         <div class="meta">
                                             <span class="meta-item"><i class="ri-money-dollar-circle-line"></i><span class="meta-label">Amount</span><span class="meta-value">${taskCurrency}${task.amount?.toFixed(2) || '0.00'}/mo</span></span>
                                             <span class="meta-item"><i class="ri-calendar-line"></i><span class="meta-label">Next Payment</span><span class="meta-value">${nextBilling ? nextBilling.toLocaleDateString() : 'N/A'}</span></span>
                                         </div>
                                     </div>
+                                    <span class="sub-task-status ${task.status === 'active' ? 'active' : 'inactive'}">${task.status || 'Unknown'}</span>
                                     ${task.status === 'active' ? `
                                     <div class="sub-task-action">
                                         <button class="btn btn-sm btn-danger" onclick="confirmCancelTaskSubscription('${safeBillingId}', '${safeDesc}')">
                                             <i class="ri-close-line"></i> Cancel
                                         </button>
                                     </div>
-                                    ` : ''}
+                                    ` : '<div class="sub-task-action"></div>'}
                                 </div>
                             `;
                         }).join('')}
