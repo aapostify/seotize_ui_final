@@ -6112,24 +6112,42 @@ async function loadBilling(page = 1, type = 'all') {
         
         // Determine current plan from hosting subscription or payments
         const hostingPayments = billingData.hosting || [];
+        const taskPayments = billingData.tasks || [];
         const latestHostingPayment = hostingPayments.find(h => h.status?.toLowerCase() === 'paid');
         
-        // Build plan data from billing response
-        const planName = hostingSubscription?.description?.toLowerCase()?.replace(' package', '') || 
-                        latestHostingPayment?.description?.toLowerCase()?.replace(' package', '') || 'free';
+        // Build plan data from billing response - check subscription first, then payments
+        let planName = 'free';
+        let planDisplayName = 'Free';
+        if (hostingSubscription?.description) {
+            planName = hostingSubscription.description.toLowerCase().replace(' package', '');
+            planDisplayName = hostingSubscription.description;
+        } else if (latestHostingPayment?.description) {
+            planName = latestHostingPayment.description.toLowerCase().replace(' package', '');
+            planDisplayName = latestHostingPayment.description;
+        }
+        
         const isSubscribed = !!hostingSubscription;
-        const isFree = !hostingSubscription && !latestHostingPayment;
+        
+        // Determine if user is on free plan - check if they have any usage limits from API
+        const hasUsageLimits = (usage.images?.limit > 0) || (usage.articles?.limit > 0) || (usage.ai?.limit > 0);
+        const hasPaidHosting = hostingPayments.some(h => h.status?.toLowerCase() === 'paid');
+        const hasPaidTasks = taskPayments.some(t => t.status?.toLowerCase() === 'paid');
+        const isFree = !hasUsageLimits && !hasPaidHosting && !isSubscribed;
         
         // Calculate days left and expiry info from subscription
         let daysLeft = 0;
         let expiryDate = null;
         let subscriptionEnd = null;
         if (hostingSubscription?.next_billing_date) {
-            subscriptionEnd = new Date(hostingSubscription.next_billing_date);
-            expiryDate = subscriptionEnd;
-            const now = new Date();
-            daysLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
-            if (daysLeft < 0) daysLeft = 0;
+            try {
+                subscriptionEnd = new Date(hostingSubscription.next_billing_date);
+                expiryDate = subscriptionEnd;
+                const now = new Date();
+                daysLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
+                if (daysLeft < 0) daysLeft = 0;
+            } catch (e) {
+                console.warn('Error parsing subscription date:', e);
+            }
         }
         
         // Usage data from API
@@ -6148,9 +6166,14 @@ async function loadBilling(page = 1, type = 'all') {
         const articlesUsedPercent = articlesLimit > 0 ? Math.min((articlesUsed / articlesLimit) * 100, 100) : 0;
         const aiUsedPercent = aiLimit > 0 ? Math.min((aiUsed / aiLimit) * 100, 100) : 0;
         
+        // Get last payment info
+        const lastPayment = hostingSubscription?.amount || latestHostingPayment?.amount || 0;
+        const lastCurrency = hostingSubscription?.currency || latestHostingPayment?.currency || 'usd';
+        
         // Store plan data for showSubscriptionModal
         window.currentPlanData = {
             current_plan: planName,
+            plan_display_name: planDisplayName,
             is_subscription: isSubscribed,
             expiry_date: expiryDate,
             subscription_period_end: subscriptionEnd,
@@ -6161,16 +6184,17 @@ async function loadBilling(page = 1, type = 'all') {
             ai_limit: aiLimit,
             ai_used: aiUsed,
             billing: {
-                last_payment_amount: hostingSubscription?.amount || latestHostingPayment?.amount || 0,
+                last_payment_amount: lastPayment,
                 provider: 'stripe',
-                currency: hostingSubscription?.currency || latestHostingPayment?.currency || 'usd'
+                currency: lastCurrency
             },
             hostingSubscription: hostingSubscription,
-            taskSubscriptions: taskSubscriptions
+            taskSubscriptions: taskSubscriptions,
+            hasPaidHosting: hasPaidHosting,
+            hasPaidTasks: hasPaidTasks
         };
         
         // --- 2. Transaction History Data ---
-        const taskPayments = billingData.tasks || [];
         const allPayments = [...hostingPayments, ...taskPayments].sort((a, b) => 
             new Date(b.date || 0) - new Date(a.date || 0)
         );
@@ -6182,11 +6206,11 @@ async function loadBilling(page = 1, type = 'all') {
             hasNext: (billingData.pagination?.page || 1) < (billingData.pagination?.pages || 1)
         };
         
-        // Get last payment amount
-        const lastPayment = hostingSubscription?.amount || latestHostingPayment?.amount || 0;
-        
         // Get current package info
         const currentPkg = hostingPackages[planName] || null;
+        
+        // Check if user has any active plan (from usage limits or payments)
+        const hasActivePlan = hasUsageLimits || hasPaidHosting || hasPaidTasks;
         
         // --- 3. Render everything together ---
         const content = document.getElementById('content');
@@ -7063,7 +7087,7 @@ async function loadBilling(page = 1, type = 'all') {
             </div>
         </div>
         
-        ${isFree ? `
+        ${!hasActivePlan ? `
         <!-- Free Plan Card -->
         <div class="free-plan-card">
             <div class="free-plan-icon">
@@ -7083,32 +7107,31 @@ async function loadBilling(page = 1, type = 'all') {
                     <div class="current-plan-info">
                         <div class="current-plan-badge">
                             <i class="${isSubscribed ? 'ri-refresh-line' : 'ri-time-line'}"></i>
-                            ${isSubscribed ? 'Active Subscription' : 'One-time Purchase'}
+                            ${isSubscribed ? 'Active Subscription' : (hasPaidHosting ? 'Active Plan' : (hasPaidTasks ? 'Task Plan' : 'Usage Plan'))}
                         </div>
                         <h2 class="current-plan-name">
-                            <i class="${currentPkg?.icon || 'ri-vip-crown-line'}"></i>
-                            ${currentPkg?.name || planName} Plan
+                            <i class="${currentPkg?.icon || (hasPaidTasks && !hasPaidHosting ? 'ri-rocket-line' : 'ri-vip-crown-line')}"></i>
+                            ${currentPkg?.name || planDisplayName || (hasPaidTasks ? 'SEO Tasks' : 'Usage')} Plan
                         </h2>
                         <div class="current-plan-meta">
+                            ${isSubscribed && daysLeft > 0 ? `
                             <div class="current-plan-meta-item">
                                 <i class="ri-time-line"></i>
                                 ${daysLeft} days left
                             </div>
+                            ` : ''}
                             ${subscriptionEnd ? `
                                 <div class="current-plan-meta-item">
                                     <i class="ri-repeat-line"></i>
                                     Renews ${subscriptionEnd.toLocaleDateString()}
                                 </div>
-                            ` : expiryDate ? `
-                                <div class="current-plan-meta-item">
-                                    <i class="ri-calendar-check-line"></i>
-                                    Expires ${expiryDate.toLocaleDateString()}
-                                </div>
                             ` : ''}
+                            ${hasPaidHosting || hasPaidTasks ? `
                             <div class="current-plan-meta-item">
                                 <i class="ri-bank-card-line"></i>
                                 Stripe
                             </div>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
@@ -7164,11 +7187,12 @@ async function loadBilling(page = 1, type = 'all') {
                         <span><strong>${aiRemaining.toLocaleString()}</strong> remaining / <strong>${aiLimit.toLocaleString()}</strong> total</span>
                     </div>
                 </div>
+                ${isSubscribed && subscriptionEnd ? `
                 <div class="plan-usage-item">
                     <div class="plan-usage-header">
                         <div class="plan-usage-info">
                             <div class="plan-usage-icon time"><i class="ri-timer-line"></i></div>
-                            <span class="plan-usage-label">Time Remaining</span>
+                            <span class="plan-usage-label">Next Billing</span>
                         </div>
                         <span class="plan-usage-percent">${daysLeft} days</span>
                     </div>
@@ -7176,10 +7200,11 @@ async function loadBilling(page = 1, type = 'all') {
                         <div class="plan-usage-fill ${daysLeft < 7 ? 'danger' : daysLeft < 14 ? 'warning' : 'safe'}" style="width: ${Math.min(daysLeft * 3.33, 100)}%;"></div>
                     </div>
                     <div class="plan-usage-stats">
-                        <span>${expiryDate ? expiryDate.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'}) : 'N/A'}</span>
-                        <span>${subscriptionEnd ? 'Auto-renews' : 'Expires'}</span>
+                        <span>${subscriptionEnd.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})}</span>
+                        <span>Auto-renews</span>
                     </div>
                 </div>
+                ` : ''}
             </div>
         </div>
         `}
@@ -7380,9 +7405,12 @@ function showSubscriptionModal() {
     const billingData = window.currentBillingData || {};
     
     const planName = planData.current_plan || 'Unknown';
+    const planDisplayName = planData.plan_display_name || planName;
     const hostingSubscription = planData.hostingSubscription;
     const taskSubscriptions = planData.taskSubscriptions || [];
     const isSubscribed = planData.is_subscription;
+    const hasPaidHosting = planData.hasPaidHosting;
+    const hasPaidTasks = planData.hasPaidTasks;
     const subscriptionEnd = planData.subscription_period_end ? new Date(planData.subscription_period_end) : null;
     const expiryDate = planData.expiry_date ? new Date(planData.expiry_date) : null;
     const lastPayment = planData.billing?.last_payment_amount || 0;
@@ -7791,11 +7819,11 @@ function showSubscriptionModal() {
                     
                     <div class="sub-plan-header">
                         <div class="sub-plan-icon">
-                            <i class="${pkg?.icon || 'ri-vip-crown-line'}"></i>
+                            <i class="${pkg?.icon || (hasPaidTasks && !hasPaidHosting ? 'ri-rocket-line' : 'ri-vip-crown-line')}"></i>
                         </div>
                         <div class="sub-plan-info">
-                            <h3 class="sub-plan-name">${pkg?.name || planName} Plan</h3>
-                            <p class="sub-plan-type">${isSubscribed ? 'Active Subscription' : 'One-time Purchase'}</p>
+                            <h3 class="sub-plan-name">${pkg?.name || planDisplayName || (hasPaidTasks ? 'SEO Tasks' : 'Usage')} Plan</h3>
+                            <p class="sub-plan-type">${isSubscribed ? 'Active Subscription' : (hasPaidHosting ? 'Active Plan' : (hasPaidTasks ? 'Task Plan' : 'Usage Plan'))}</p>
                         </div>
                     </div>
                     
@@ -7809,7 +7837,7 @@ function showSubscriptionModal() {
                             <div class="sub-stat-label">Amount</div>
                         </div>
                         <div class="sub-stat-box">
-                            <div class="sub-stat-value"><span class="badge badge-${isSubscribed ? 'success' : 'warning'}" style="font-size: 0.7rem;">${isSubscribed ? 'Active' : 'Inactive'}</span></div>
+                            <div class="sub-stat-value"><span class="badge badge-${isSubscribed || hasPaidHosting || hasPaidTasks ? 'success' : 'warning'}" style="font-size: 0.7rem;">${isSubscribed ? 'Active' : (hasPaidHosting || hasPaidTasks ? 'Paid' : 'Inactive')}</span></div>
                             <div class="sub-stat-label">Status</div>
                         </div>
                     </div>
