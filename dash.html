@@ -7746,6 +7746,17 @@ function showSubscriptionModal() {
                 min-width: 0;
             }
             
+            .sub-task-name-row {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+            
+            .sub-task-name-row .mobile-only,
+            .sub-task-content .mobile-only {
+                display: none;
+            }
+            
             .sub-task-content .name {
                 font-weight: 600;
                 color: var(--text);
@@ -8155,11 +8166,9 @@ function showSubscriptionModal() {
                     border-radius: 12px;
                 }
                 
-                /* Task Cards */
+                /* Task Cards - Mobile */
                 .sub-task-card {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.6rem;
+                    display: block;
                     padding: 1rem;
                     border-radius: 14px;
                     background: var(--bg-secondary);
@@ -8170,11 +8179,26 @@ function showSubscriptionModal() {
                     display: none;
                 }
                 
+                .sub-task-card .desktop-only {
+                    display: none !important;
+                }
+                
+                .sub-task-card .mobile-only {
+                    display: inline-flex !important;
+                }
+                
                 .sub-task-content {
                     display: flex;
                     flex-direction: column;
                     gap: 0.5rem;
                     width: 100%;
+                }
+                
+                .sub-task-name-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 0.5rem;
                 }
                 
                 .sub-task-content .name {
@@ -8184,17 +8208,22 @@ function showSubscriptionModal() {
                     display: flex;
                     align-items: center;
                     white-space: nowrap;
+                    flex: 1;
+                    min-width: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
                 
                 .sub-task-content .name .link-icon {
                     margin-left: 0.3rem;
+                    flex-shrink: 0;
                 }
                 
                 .sub-task-content .meta {
                     display: flex;
                     flex-direction: column;
                     gap: 0.35rem;
-                    margin-top: 0.25rem;
+                    margin-top: 0.15rem;
                 }
                 
                 .sub-task-content .meta .meta-item {
@@ -8227,22 +8256,21 @@ function showSubscriptionModal() {
                 }
                 
                 .sub-task-status {
-                    align-self: flex-start;
                     padding: 0.3rem 0.6rem;
                     font-size: 0.65rem;
                     border-radius: 6px;
                     font-weight: 600;
                 }
                 
-                .sub-task-action {
-                    margin-top: 0.25rem;
+                .sub-task-content .sub-task-action {
+                    margin-top: 0.35rem;
                 }
                 
-                .sub-task-action .btn {
+                .sub-task-content .sub-task-action .btn {
                     width: 100%;
-                    padding: 0.7rem;
-                    font-size: 0.85rem;
-                    border-radius: 10px;
+                    padding: 0.45rem 0.6rem;
+                    font-size: 0.8rem;
+                    border-radius: 8px;
                 }
                 
                 /* Empty State */
@@ -8410,22 +8438,32 @@ function showSubscriptionModal() {
                                 <div class="sub-task-card">
                                     <div class="sub-task-icon-sm"><i class="ri-rocket-line"></i></div>
                                     <div class="sub-task-content">
-                                        <div class="name" onclick="window.open('${safeTaskUrl}', '_blank')" title="Open ${safeDisplayName}">
-                                            ${safeDisplayName}<i class="ri-external-link-line link-icon"></i>
+                                        <div class="sub-task-name-row">
+                                            <div class="name" onclick="window.open('${safeTaskUrl}', '_blank')" title="Open ${safeDisplayName}">
+                                                ${safeDisplayName}<i class="ri-external-link-line link-icon"></i>
+                                            </div>
+                                            <span class="sub-task-status mobile-only ${task.status === 'active' ? 'active' : 'inactive'}">${task.status || 'Unknown'}</span>
                                         </div>
                                         <div class="meta">
                                             <span class="meta-item"><i class="ri-money-dollar-circle-line"></i><span class="meta-label">Amount</span><span class="meta-value">${taskCurrency}${task.amount?.toFixed(2) || '0.00'}/mo</span></span>
                                             <span class="meta-item"><i class="ri-calendar-line"></i><span class="meta-label">Next Payment</span><span class="meta-value">${nextBilling ? nextBilling.toLocaleDateString() : 'N/A'}</span></span>
                                         </div>
+                                        ${task.status === 'active' ? `
+                                        <div class="sub-task-action mobile-only">
+                                            <button class="btn btn-sm btn-danger" onclick="confirmCancelTaskSubscription('${safeBillingId}', '${safeDesc}')">
+                                                <i class="ri-close-line"></i> Cancel
+                                            </button>
+                                        </div>
+                                        ` : ''}
                                     </div>
-                                    <span class="sub-task-status ${task.status === 'active' ? 'active' : 'inactive'}">${task.status || 'Unknown'}</span>
+                                    <span class="sub-task-status desktop-only ${task.status === 'active' ? 'active' : 'inactive'}">${task.status || 'Unknown'}</span>
                                     ${task.status === 'active' ? `
-                                    <div class="sub-task-action">
+                                    <div class="sub-task-action desktop-only">
                                         <button class="btn btn-sm btn-danger" onclick="confirmCancelTaskSubscription('${safeBillingId}', '${safeDesc}')">
                                             <i class="ri-close-line"></i> Cancel
                                         </button>
                                     </div>
-                                    ` : '<div class="sub-task-action"></div>'}
+                                    ` : '<div class="sub-task-action desktop-only"></div>'}
                                 </div>
                             `;
                         }).join('')}
