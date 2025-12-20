@@ -7873,7 +7873,32 @@ function showSubscriptionModal() {
                 }
                 
                 .sub-info-grid {
-                    grid-template-columns: 1fr;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 0.4rem;
+                    margin-bottom: 0.75rem;
+                }
+                
+                .sub-info-item {
+                    background: var(--bg-secondary);
+                    border-radius: 8px;
+                    padding: 0.5rem 0.6rem;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.1rem;
+                    border: 1px solid var(--border);
+                }
+                
+                .sub-info-item .label {
+                    font-size: 0.6rem;
+                    opacity: 0.7;
+                }
+                
+                .sub-info-item .value {
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
                 
                 .sub-task-icon-sm {
