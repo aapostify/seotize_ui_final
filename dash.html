@@ -2928,9 +2928,22 @@ table {
   max-height: calc(100vh - 60px);
   background: var(--bg);
   padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 .modal-body .sub-modal-wrapper {
-  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.modal-body .sub-modal-wrapper .sub-layout {
+  flex: 1;
+  overflow: hidden;
+}
+.modal-body .sub-modal-wrapper .sub-hosting-panel.active,
+.modal-body .sub-modal-wrapper .sub-tasks-panel.active {
+  overflow-y: auto;
 }
 .domains-usage-container {
   flex-direction: column !important; gap: 1rem !important;
@@ -7434,19 +7447,12 @@ function showSubscriptionModal() {
             
             @media (max-width: 768px) {
                 .sub-modal-wrapper {
-                    min-height: calc(100vh - 60px);
-                    height: auto;
+                    min-height: 100%;
+                    height: 100%;
                     background: var(--bg);
-                    margin: -1.5rem;
-                    margin-bottom: 0;
-                    width: calc(100% + 3rem);
-                }
-            }
-            
-            @media (max-width: 600px) {
-                .sub-modal-wrapper {
                     margin: 0;
                     width: 100%;
+                    overflow: hidden;
                 }
             }
             
@@ -7487,49 +7493,27 @@ function showSubscriptionModal() {
                 font-size: 0.85rem;
             }
             
-            /* Mobile Toggle Header */
+            /* Mobile Toggle Header - Hidden on desktop */
             .sub-mobile-toggle-header {
                 display: none;
-                align-items: center;
-                justify-content: space-between;
-                padding: 1rem 1.25rem;
-                background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-                border-bottom: 1px solid var(--border);
-                gap: 0.75rem;
-            }
-            
-            .sub-mobile-toggle-header .badge-label {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                font-size: 0.8rem;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                color: var(--primary);
-            }
-            
-            .sub-mobile-toggle-header .badge-label i {
-                font-size: 1.1rem;
             }
             
             .sub-panel-switch {
                 display: flex;
-                background: var(--bg);
-                border-radius: 10px;
+                background: var(--bg-tertiary);
+                border-radius: 12px;
                 padding: 4px;
                 gap: 4px;
-                border: 1px solid var(--border);
             }
             
             .sub-panel-switch button {
-                padding: 0.6rem 0.9rem;
+                padding: 0.6rem 1rem;
                 border: none;
                 background: transparent;
                 color: var(--text-secondary);
-                font-size: 0.75rem;
+                font-size: 0.8rem;
                 font-weight: 600;
-                border-radius: 8px;
+                border-radius: 10px;
                 cursor: pointer;
                 transition: all 0.2s ease;
                 display: flex;
@@ -7545,7 +7529,7 @@ function showSubscriptionModal() {
             }
             
             .sub-panel-switch button i {
-                font-size: 0.9rem;
+                font-size: 0.95rem;
             }
             
             .sub-plan-visual {
@@ -7964,9 +7948,57 @@ function showSubscriptionModal() {
                 /* Show mobile toggle header */
                 .sub-mobile-toggle-header {
                     display: flex;
+                    align-items: center;
+                    justify-content: space-between;
                     position: sticky;
                     top: 0;
                     z-index: 10;
+                    padding: 1.25rem 1.5rem;
+                    background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+                    border-bottom: none;
+                    border-radius: 0;
+                    gap: 1rem;
+                }
+                
+                .sub-mobile-toggle-header .badge-label {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    color: white;
+                    font-size: 1rem;
+                    font-weight: 700;
+                    letter-spacing: 0;
+                    text-transform: none;
+                }
+                
+                .sub-mobile-toggle-header .badge-label i {
+                    font-size: 1.25rem;
+                    opacity: 0.9;
+                }
+                
+                .sub-panel-switch {
+                    background: rgba(255,255,255,0.2);
+                    border: none;
+                    border-radius: 25px;
+                    padding: 4px;
+                }
+                
+                .sub-panel-switch button {
+                    padding: 0.5rem 1rem;
+                    font-size: 0.8rem;
+                    border-radius: 20px;
+                    color: rgba(255,255,255,0.8);
+                    font-weight: 500;
+                }
+                
+                .sub-panel-switch button.active {
+                    background: white;
+                    color: var(--primary);
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+                }
+                
+                .sub-panel-switch button i {
+                    font-size: 0.95rem;
                 }
                 
                 .sub-hosting-badge {
@@ -7976,13 +8008,14 @@ function showSubscriptionModal() {
                 .sub-layout {
                     grid-template-columns: 1fr;
                     flex: 1;
+                    min-height: auto;
                 }
                 
                 .sub-hosting-panel,
                 .sub-tasks-panel {
                     display: none;
                     border-right: none;
-                    padding: 1rem;
+                    padding: 1.25rem;
                     flex: 1;
                     overflow-y: auto;
                     background: var(--bg);
@@ -7999,246 +8032,203 @@ function showSubscriptionModal() {
                 
                 .sub-tasks-panel {
                     max-height: none;
+                    padding-top: 1rem;
                 }
                 
                 .sub-tasks-grid {
                     flex: 1;
                     max-height: none;
+                    gap: 0.75rem;
                 }
                 
+                /* Plan Header - Centered Card Style */
                 .sub-plan-visual {
-                    gap: 0.85rem;
-                    margin-bottom: 1rem;
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                    gap: 0.75rem;
+                    margin-bottom: 1.25rem;
+                    padding: 1rem;
+                    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+                    border-radius: 16px;
+                    border: 1px solid var(--border);
                 }
                 
                 .sub-plan-icon-large {
-                    width: 50px;
-                    height: 50px;
-                    font-size: 1.35rem;
-                    border-radius: 12px;
+                    width: 60px;
+                    height: 60px;
+                    font-size: 1.5rem;
+                    border-radius: 14px;
+                    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.25);
+                }
+                
+                .sub-plan-title {
+                    text-align: center;
                 }
                 
                 .sub-plan-title h3 {
-                    font-size: 1.1rem;
+                    font-size: 1.25rem;
+                    margin-bottom: 0.35rem;
                 }
                 
                 .sub-plan-title p {
-                    font-size: 0.75rem;
+                    font-size: 0.8rem;
+                    justify-content: center;
                 }
                 
+                /* Stats Row - Horizontal Cards */
                 .sub-stats-row {
-                    gap: 0.5rem;
-                    margin-bottom: 1rem;
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 0.6rem;
+                    margin-bottom: 1.25rem;
                 }
                 
                 .sub-stat-card {
-                    padding: 0.6rem 0.5rem;
-                    border-radius: 8px;
+                    padding: 0.85rem 0.5rem;
+                    border-radius: 12px;
+                    background: var(--bg-secondary);
                 }
                 
                 .sub-stat-card .value {
-                    font-size: 1rem;
+                    font-size: 1.15rem;
+                    font-weight: 700;
                 }
                 
                 .sub-stat-card .label {
-                    font-size: 0.55rem;
+                    font-size: 0.6rem;
+                    margin-top: 0.25rem;
                 }
                 
+                /* Info Grid - Clean 2 Column */
                 .sub-info-grid {
-                    grid-template-columns: repeat(3, 1fr);
-                    gap: 0.35rem;
-                    margin-bottom: 1rem;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 0.6rem;
+                    margin-bottom: 1.25rem;
                 }
                 
                 .sub-info-item {
                     background: var(--bg-secondary);
-                    border-radius: 6px;
-                    padding: 0.4rem 0.5rem;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.1rem;
+                    border-radius: 10px;
+                    padding: 0.7rem 0.85rem;
                     border: 1px solid var(--border);
                 }
                 
                 .sub-info-item .label {
-                    font-size: 0.5rem;
-                    opacity: 0.7;
-                    text-transform: uppercase;
-                    letter-spacing: 0.2px;
+                    font-size: 0.65rem;
+                    color: var(--text-secondary);
+                    margin-bottom: 0.2rem;
+                    opacity: 1;
                 }
                 
                 .sub-info-item .value {
-                    font-size: 0.7rem;
+                    font-size: 0.9rem;
                     font-weight: 600;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
+                    color: var(--text);
                 }
                 
+                /* Action Button */
                 .sub-hosting-action {
                     margin-top: auto;
-                    padding-top: 0.75rem;
+                    padding-top: 0.5rem;
                 }
                 
                 .sub-hosting-action .btn {
-                    padding: 0.75rem 1rem;
-                    font-size: 0.85rem;
+                    padding: 0.9rem 1.25rem;
+                    font-size: 0.9rem;
+                    border-radius: 12px;
                 }
                 
+                /* Task Cards */
                 .sub-task-card {
                     grid-template-columns: auto 1fr auto;
-                    gap: 0.6rem;
-                    padding: 0.7rem;
-                    border-radius: 10px;
+                    gap: 0.85rem;
+                    padding: 1rem;
+                    border-radius: 14px;
+                    background: var(--bg-secondary);
                 }
                 
                 .sub-task-icon-sm {
-                    width: 36px;
-                    height: 36px;
-                    font-size: 0.95rem;
-                    border-radius: 8px;
+                    width: 44px;
+                    height: 44px;
+                    font-size: 1.1rem;
+                    border-radius: 12px;
+                }
+                
+                .sub-task-content {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.3rem;
                 }
                 
                 .sub-task-content .name {
                     max-width: none;
-                    font-size: 0.85rem;
+                    font-size: 0.95rem;
+                    font-weight: 600;
                 }
                 
                 .sub-task-content .meta {
-                    font-size: 0.7rem;
-                    gap: 0.5rem;
+                    font-size: 0.75rem;
+                    gap: 0.75rem;
+                    color: var(--text-secondary);
+                }
+                
+                .sub-task-status {
+                    padding: 0.35rem 0.65rem;
+                    font-size: 0.65rem;
+                    border-radius: 8px;
                 }
                 
                 .sub-task-action {
                     grid-column: 1 / -1;
-                    margin-top: 0.4rem;
+                    margin-top: 0.6rem;
                 }
                 
                 .sub-task-action .btn {
                     width: 100%;
-                    padding: 0.55rem;
-                    font-size: 0.8rem;
+                    padding: 0.7rem;
+                    font-size: 0.85rem;
+                    border-radius: 10px;
                 }
                 
-                .sub-task-status {
-                    padding: 0.25rem 0.5rem;
-                    font-size: 0.6rem;
-                }
-                
+                /* Empty State */
                 .sub-no-tasks-msg {
-                    padding: 2rem 1.25rem;
+                    padding: 3rem 2rem;
+                    background: var(--bg-secondary);
+                    border-radius: 16px;
+                    margin: 1rem 0;
                 }
                 
                 .sub-no-tasks-msg i {
-                    font-size: 2rem;
-                    margin-bottom: 0.75rem;
+                    font-size: 2.5rem;
+                    color: var(--text-secondary);
+                    opacity: 0.5;
+                    margin-bottom: 1rem;
                 }
                 
                 .sub-no-tasks-msg p {
-                    font-size: 0.85rem;
+                    font-size: 0.95rem;
+                    color: var(--text-secondary);
                 }
                 
+                /* Info Notice */
                 .sub-info-notice {
                     margin-top: auto;
-                    padding: 0.6rem 0.75rem;
+                    padding: 0.85rem 1rem;
+                    background: rgba(99, 102, 241, 0.08);
+                    border-radius: 12px;
+                    border: 1px solid rgba(99, 102, 241, 0.15);
                 }
                 
                 .sub-info-notice i {
-                    font-size: 0.9rem;
+                    font-size: 1rem;
+                    color: var(--primary);
                 }
                 
                 .sub-info-notice p {
-                    font-size: 0.65rem;
-                }
-            }
-            
-            /* Small mobile - Below 400px */
-            @media (max-width: 400px) {
-                .sub-mobile-toggle-header {
-                    padding: 0.85rem 1rem;
-                }
-                
-                .sub-mobile-toggle-header .badge-label {
-                    font-size: 0.7rem;
-                }
-                
-                .sub-mobile-toggle-header .badge-label i {
-                    font-size: 0.95rem;
-                }
-                
-                .sub-panel-switch button {
-                    padding: 0.5rem 0.7rem;
-                    font-size: 0.65rem;
-                }
-                
-                .sub-panel-switch button i {
-                    font-size: 0.8rem;
-                }
-                
-                .sub-hosting-panel,
-                .sub-tasks-panel {
-                    padding: 0.85rem;
-                }
-                
-                .sub-plan-icon-large {
-                    width: 44px;
-                    height: 44px;
-                    font-size: 1.2rem;
-                }
-                
-                .sub-plan-title h3 {
-                    font-size: 1rem;
-                }
-                
-                .sub-stats-row {
-                    gap: 0.35rem;
-                }
-                
-                .sub-stat-card {
-                    padding: 0.5rem 0.35rem;
-                }
-                
-                .sub-stat-card .value {
-                    font-size: 0.9rem;
-                }
-                
-                .sub-info-grid {
-                    grid-template-columns: 1fr 1fr;
-                    gap: 0.3rem;
-                }
-                
-                .sub-info-item {
-                    padding: 0.35rem 0.45rem;
-                }
-                
-                .sub-info-item .label {
-                    font-size: 0.45rem;
-                }
-                
-                .sub-info-item .value {
-                    font-size: 0.65rem;
-                }
-                
-                .sub-task-card {
-                    padding: 0.6rem;
-                    gap: 0.5rem;
-                }
-                
-                .sub-task-icon-sm {
-                    width: 32px;
-                    height: 32px;
-                    font-size: 0.85rem;
-                }
-                
-                .sub-task-content .name {
                     font-size: 0.75rem;
-                }
-                
-                .sub-task-content .meta {
-                    font-size: 0.6rem;
-                    flex-direction: column;
-                    align-items: flex-start;
-                    gap: 0.1rem;
+                    line-height: 1.5;
                 }
             }
         </style>
