@@ -7456,6 +7456,65 @@ function showSubscriptionModal() {
                 font-size: 0.85rem;
             }
             
+            /* Mobile Toggle Header */
+            .sub-mobile-toggle-header {
+                display: none;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.75rem 1rem;
+                background: var(--bg-secondary);
+                border-bottom: 1px solid var(--border);
+                gap: 0.5rem;
+            }
+            
+            .sub-mobile-toggle-header .badge-label {
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+                font-size: 0.7rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: var(--primary);
+            }
+            
+            .sub-mobile-toggle-header .badge-label i {
+                font-size: 0.85rem;
+            }
+            
+            .sub-panel-switch {
+                display: flex;
+                background: var(--bg-tertiary);
+                border-radius: 8px;
+                padding: 3px;
+                gap: 2px;
+            }
+            
+            .sub-panel-switch button {
+                padding: 0.4rem 0.65rem;
+                border: none;
+                background: transparent;
+                color: var(--text-secondary);
+                font-size: 0.65rem;
+                font-weight: 600;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 0.3rem;
+                white-space: nowrap;
+            }
+            
+            .sub-panel-switch button.active {
+                background: var(--primary);
+                color: white;
+            }
+            
+            .sub-panel-switch button i {
+                font-size: 0.75rem;
+            }
+            
             .sub-plan-visual {
                 display: flex;
                 align-items: center;
@@ -7677,6 +7736,34 @@ function showSubscriptionModal() {
                 overflow: hidden;
                 text-overflow: ellipsis;
                 max-width: 200px;
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+            }
+            
+            .sub-task-content .name .domain-text {
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .sub-task-content .name .link-icon {
+                flex-shrink: 0;
+                width: 18px;
+                height: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--bg-tertiary);
+                border-radius: 4px;
+                color: var(--text-secondary);
+                font-size: 0.7rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            
+            .sub-task-content .name .link-icon:hover {
+                background: var(--primary);
+                color: white;
             }
             
             .sub-task-content .meta {
@@ -7918,13 +8005,52 @@ function showSubscriptionModal() {
                     align-items: flex-start;
                     gap: 0.15rem;
                 }
+                
+                /* Mobile Toggle - Show on mobile */
+                .sub-mobile-toggle-header {
+                    display: flex;
+                }
+                
+                .sub-hosting-badge {
+                    display: none;
+                }
+                
+                .sub-hosting-panel,
+                .sub-tasks-panel {
+                    display: none;
+                }
+                
+                .sub-hosting-panel.active,
+                .sub-tasks-panel.active {
+                    display: flex;
+                }
+                
+                .sub-tasks-panel .sub-tasks-header {
+                    display: none;
+                }
             }
         </style>
         
         <div class="sub-modal-wrapper">
+            <!-- Mobile Toggle Header -->
+            <div class="sub-mobile-toggle-header">
+                <div class="badge-label">
+                    <i class="ri-settings-3-line"></i>
+                    Subscription
+                </div>
+                <div class="sub-panel-switch">
+                    <button class="active" onclick="switchSubPanel('hosting', this)">
+                        <i class="ri-cloud-line"></i> Hosting
+                    </button>
+                    <button onclick="switchSubPanel('tasks', this)">
+                        <i class="ri-rocket-line"></i> Tasks
+                    </button>
+                </div>
+            </div>
+            
             <div class="sub-layout">
                 <!-- Hosting Panel - Left -->
-                <div class="sub-hosting-panel">
+                <div class="sub-hosting-panel active" id="sub-hosting-panel">
                     <div class="sub-hosting-badge">
                         <i class="ri-cloud-line"></i>
                         Hosting Plan
@@ -8000,7 +8126,7 @@ function showSubscriptionModal() {
                 </div>
                 
                 <!-- Tasks Panel - Right -->
-                <div class="sub-tasks-panel">
+                <div class="sub-tasks-panel" id="sub-tasks-panel">
                     <div class="sub-tasks-header">
                         <h4><i class="ri-rocket-line"></i> Task Subscriptions</h4>
                         <span class="sub-tasks-count">${taskSubscriptions.length} ${taskSubscriptions.length === 1 ? 'task' : 'tasks'}</span>
@@ -8011,13 +8137,23 @@ function showSubscriptionModal() {
                         ${taskSubscriptions.map((task, idx) => {
                             const taskCurrency = getCurrencySymbol(task.currency);
                             const nextBilling = task.next_billing_date ? new Date(task.next_billing_date) : null;
-                            const safeDesc = escapeHtml(task.description || 'SEO Task');
+                            const rawDesc = task.description || 'SEO Task';
+                            const safeDesc = escapeHtml(rawDesc);
+                            const displayName = rawDesc.replace(/^https?:\/\//, '');
+                            const safeDisplayName = escapeHtml(displayName);
+                            const taskUrl = rawDesc.startsWith('http') ? rawDesc : 'https://' + rawDesc;
+                            const safeTaskUrl = escapeHtml(taskUrl);
                             const safeBillingId = escapeHtml(task.billing_id || '');
                             return `
                                 <div class="sub-task-card">
                                     <div class="sub-task-icon-sm"><i class="ri-rocket-line"></i></div>
                                     <div class="sub-task-content">
-                                        <div class="name">${safeDesc}</div>
+                                        <div class="name">
+                                            <span class="domain-text">${safeDisplayName}</span>
+                                            <span class="link-icon" onclick="window.open('${safeTaskUrl}', '_blank')" title="Open ${safeDisplayName}">
+                                                <i class="ri-external-link-line"></i>
+                                            </span>
+                                        </div>
                                         <div class="meta">
                                             <span><i class="ri-money-dollar-circle-line"></i> ${taskCurrency}${task.amount?.toFixed(2) || '0.00'}/mo</span>
                                             <span><i class="ri-calendar-line"></i> ${nextBilling ? nextBilling.toLocaleDateString() : 'N/A'}</span>
@@ -8054,6 +8190,24 @@ function showSubscriptionModal() {
     `;
     
     showModal('Subscription Management', modalContent, '950px');
+}
+
+// Switch between Hosting and Tasks panels on mobile
+function switchSubPanel(panel, btn) {
+    const hostingPanel = document.getElementById('sub-hosting-panel');
+    const tasksPanel = document.getElementById('sub-tasks-panel');
+    const buttons = btn.parentElement.querySelectorAll('button');
+    
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    if (panel === 'hosting') {
+        hostingPanel?.classList.add('active');
+        tasksPanel?.classList.remove('active');
+    } else {
+        hostingPanel?.classList.remove('active');
+        tasksPanel?.classList.add('active');
+    }
 }
 
 // Confirm Cancel Hosting Subscription
