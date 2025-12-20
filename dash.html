@@ -7408,483 +7408,627 @@ function showSubscriptionModal() {
                   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     };
     
-    const taskSubscriptionsHtml = taskSubscriptions.length > 0 ? taskSubscriptions.map((task, idx) => {
-        const taskCurrency = getCurrencySymbol(task.currency);
-        const nextBilling = task.next_billing_date ? new Date(task.next_billing_date) : null;
-        const safeDesc = escapeHtml(task.description || 'SEO Task');
-        const safeBillingId = escapeHtml(task.billing_id || '');
-        return `
-            <div class="sub-task-item" data-task-idx="${idx}">
-                <div class="sub-task-header">
-                    <div class="sub-task-info">
-                        <div class="sub-task-icon"><i class="ri-rocket-line"></i></div>
-                        <div class="sub-task-details">
-                            <div class="sub-task-name">${safeDesc}</div>
-                            <div class="sub-task-meta">${taskCurrency}${task.amount?.toFixed(2) || '0.00'}/month</div>
-                        </div>
-                    </div>
-                    <span class="badge badge-${task.status === 'active' ? 'success' : 'warning'}">${task.status || 'Unknown'}</span>
-                </div>
-                <div class="sub-task-body">
-                    <div class="sub-task-row">
-                        <span>Next Billing</span>
-                        <span>${nextBilling ? nextBilling.toLocaleDateString() : 'N/A'}</span>
-                    </div>
-                    <div class="sub-task-row">
-                        <span>Subscription ID</span>
-                        <span class="sub-task-id">${task.subscription_id?.slice(-8) || 'N/A'}</span>
-                    </div>
-                </div>
-                ${task.status === 'active' ? `
-                <button class="btn btn-sm btn-danger sub-task-cancel" onclick="confirmCancelTaskSubscription('${safeBillingId}', '${safeDesc}')">
-                    <i class="ri-close-circle-line"></i> Cancel
-                </button>
-                ` : ''}
-            </div>
-        `;
-    }).join('') : '<p class="sub-no-tasks">No active task subscriptions</p>';
+    // Task subscriptions are now rendered directly in the modal template
     
     const modalContent = `
         <style>
-            /* Subscription Modal - Responsive Design */
-            .sub-modal-content {
-                max-height: 70vh;
-                overflow-y: auto;
-            }
-            
-            /* Desktop Layout */
-            .sub-modal-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-            }
-            
-            .sub-modal-section {
-                background: var(--bg-secondary);
-                border-radius: var(--radius-lg);
-                padding: 1.25rem;
-            }
-            
-            .sub-section-title {
-                font-size: 0.9rem;
-                font-weight: 700;
-                color: var(--text);
-                margin: 0 0 1rem 0;
+            /* Subscription Modal - Premium Redesign */
+            .sub-modal-wrapper {
                 display: flex;
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            /* Desktop Layout - Wide Two Column */
+            .sub-layout {
+                display: grid;
+                grid-template-columns: minmax(320px, 1fr) minmax(400px, 1.5fr);
+                gap: 0;
+                min-height: 420px;
+            }
+            
+            /* Hosting Panel - Left Side */
+            .sub-hosting-panel {
+                background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+                padding: 2rem;
+                display: flex;
+                flex-direction: column;
+                border-right: 1px solid var(--border);
+            }
+            
+            .sub-hosting-badge {
+                display: inline-flex;
                 align-items: center;
                 gap: 0.5rem;
-                padding-bottom: 0.75rem;
-                border-bottom: 1px solid var(--border);
-            }
-            
-            .sub-section-title i {
+                padding: 0.4rem 0.75rem;
+                background: rgba(99, 102, 241, 0.15);
                 color: var(--primary);
+                border-radius: 20px;
+                font-size: 0.7rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 1.25rem;
+                width: fit-content;
             }
             
-            /* Hosting Plan Card */
-            .sub-plan-header {
+            .sub-hosting-badge i {
+                font-size: 0.85rem;
+            }
+            
+            .sub-plan-visual {
                 display: flex;
                 align-items: center;
                 gap: 1rem;
-                margin-bottom: 1rem;
+                margin-bottom: 1.5rem;
             }
             
-            .sub-plan-icon {
-                width: 48px;
-                height: 48px;
+            .sub-plan-icon-large {
+                width: 64px;
+                height: 64px;
                 flex-shrink: 0;
                 background: ${pkg?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};
-                border-radius: 12px;
+                border-radius: 16px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 1.25rem;
+                font-size: 1.75rem;
                 color: white;
+                box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
             }
             
-            .sub-plan-info {
+            .sub-plan-title {
                 flex: 1;
             }
             
-            .sub-plan-name {
-                font-size: 1.1rem;
-                font-weight: 700;
+            .sub-plan-title h3 {
+                font-size: 1.35rem;
+                font-weight: 800;
                 color: var(--text);
                 margin: 0 0 0.25rem 0;
             }
             
-            .sub-plan-type {
+            .sub-plan-title p {
                 font-size: 0.8rem;
                 color: var(--text-secondary);
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
             }
             
-            /* Stats Grid */
-            .sub-stats-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
+            .sub-plan-title p i {
+                color: ${isSubscribed ? 'var(--success)' : 'var(--warning)'};
+            }
+            
+            /* Stats Row */
+            .sub-stats-row {
+                display: flex;
                 gap: 0.75rem;
-                margin-bottom: 1rem;
+                margin-bottom: 1.5rem;
             }
             
-            .sub-stat-box {
-                background: var(--bg-tertiary);
-                border-radius: var(--radius);
-                padding: 0.75rem;
+            .sub-stat-card {
+                flex: 1;
+                background: var(--bg);
+                border-radius: 12px;
+                padding: 0.85rem 0.75rem;
                 text-align: center;
+                border: 1px solid var(--border);
             }
             
-            .sub-stat-value {
-                font-size: 1.1rem;
+            .sub-stat-card .value {
+                font-size: 1.25rem;
                 font-weight: 800;
                 color: var(--text);
+                line-height: 1.2;
             }
             
-            .sub-stat-label {
+            .sub-stat-card .label {
                 font-size: 0.65rem;
+                color: var(--text-secondary);
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                margin-top: 0.2rem;
+            }
+            
+            /* Info Grid */
+            .sub-info-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem 1rem;
+                margin-bottom: 1.5rem;
+                flex: 1;
+            }
+            
+            .sub-info-item {
+                display: flex;
+                flex-direction: column;
+                gap: 0.15rem;
+                padding: 0.5rem 0;
+            }
+            
+            .sub-info-item .label {
+                font-size: 0.7rem;
                 color: var(--text-secondary);
                 text-transform: uppercase;
                 letter-spacing: 0.3px;
             }
             
-            /* Detail Rows */
-            .sub-detail-list {
-                margin-bottom: 1rem;
-            }
-            
-            .sub-detail-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0.5rem 0;
-                border-bottom: 1px solid var(--border);
-                font-size: 0.85rem;
-            }
-            
-            .sub-detail-row:last-child {
-                border-bottom: none;
-            }
-            
-            .sub-detail-label {
-                color: var(--text-secondary);
-            }
-            
-            .sub-detail-value {
+            .sub-info-item .value {
+                font-size: 0.9rem;
                 font-weight: 600;
                 color: var(--text);
             }
             
-            /* Task Subscriptions */
-            .sub-tasks-list {
+            .sub-hosting-action {
+                margin-top: auto;
+            }
+            
+            .sub-hosting-action .btn {
+                width: 100%;
+                padding: 0.85rem 1.25rem;
+                font-weight: 600;
+            }
+            
+            /* Tasks Panel - Right Side */
+            .sub-tasks-panel {
+                background: var(--bg);
+                padding: 1.5rem 2rem;
                 display: flex;
                 flex-direction: column;
-                gap: 0.75rem;
-                max-height: 300px;
-                overflow-y: auto;
+                overflow: hidden;
             }
             
-            .sub-task-item {
-                background: var(--bg-tertiary);
-                border-radius: var(--radius);
-                padding: 1rem;
-                border: 1px solid var(--border);
-            }
-            
-            .sub-task-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                margin-bottom: 0.75rem;
-            }
-            
-            .sub-task-info {
+            .sub-tasks-header {
                 display: flex;
                 align-items: center;
-                gap: 0.75rem;
+                justify-content: space-between;
+                margin-bottom: 1rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 1px solid var(--border);
             }
             
-            .sub-task-icon {
-                width: 36px;
-                height: 36px;
-                background: rgba(99, 102, 241, 0.12);
+            .sub-tasks-header h4 {
+                font-size: 0.95rem;
+                font-weight: 700;
+                color: var(--text);
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .sub-tasks-header h4 i {
                 color: var(--primary);
-                border-radius: 8px;
+            }
+            
+            .sub-tasks-count {
+                background: var(--bg-tertiary);
+                color: var(--text-secondary);
+                padding: 0.25rem 0.6rem;
+                border-radius: 12px;
+                font-size: 0.75rem;
+                font-weight: 600;
+            }
+            
+            /* Task Cards Grid */
+            .sub-tasks-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 0.65rem;
+                overflow-y: auto;
+                flex: 1;
+                padding-right: 0.5rem;
+            }
+            
+            .sub-tasks-grid::-webkit-scrollbar {
+                width: 4px;
+            }
+            
+            .sub-tasks-grid::-webkit-scrollbar-track {
+                background: var(--bg-tertiary);
+                border-radius: 4px;
+            }
+            
+            .sub-tasks-grid::-webkit-scrollbar-thumb {
+                background: var(--border);
+                border-radius: 4px;
+            }
+            
+            .sub-task-card {
+                background: var(--bg-secondary);
+                border-radius: 10px;
+                padding: 0.9rem 1rem;
+                border: 1px solid var(--border);
+                display: grid;
+                grid-template-columns: auto 1fr auto auto;
+                align-items: center;
+                gap: 0.85rem;
+                transition: all 0.2s ease;
+            }
+            
+            .sub-task-card:hover {
+                border-color: var(--primary);
+                box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+            }
+            
+            .sub-task-icon-sm {
+                width: 38px;
+                height: 38px;
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+                color: var(--primary);
+                border-radius: 10px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 font-size: 1rem;
             }
             
-            .sub-task-details {
-                flex: 1;
+            .sub-task-content {
                 min-width: 0;
             }
             
-            .sub-task-name {
+            .sub-task-content .name {
                 font-weight: 600;
                 color: var(--text);
                 font-size: 0.85rem;
-                max-width: 180px;
+                white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                white-space: nowrap;
+                max-width: 200px;
             }
             
-            .sub-task-meta {
+            .sub-task-content .meta {
                 font-size: 0.75rem;
                 color: var(--text-secondary);
-            }
-            
-            .sub-task-body {
-                margin-bottom: 0.75rem;
-            }
-            
-            .sub-task-row {
                 display: flex;
-                justify-content: space-between;
-                font-size: 0.8rem;
-                padding: 0.35rem 0;
-                color: var(--text-secondary);
-            }
-            
-            .sub-task-row span:last-child {
-                color: var(--text);
-                font-weight: 500;
-            }
-            
-            .sub-task-id {
-                font-family: monospace;
-                font-size: 0.75rem;
-            }
-            
-            .sub-task-cancel {
-                width: 100%;
-            }
-            
-            .sub-no-tasks {
-                text-align: center;
-                color: var(--text-secondary);
-                font-size: 0.85rem;
-                padding: 2rem 1rem;
-            }
-            
-            /* Warning Box */
-            .sub-warning {
-                display: flex;
+                align-items: center;
                 gap: 0.75rem;
-                padding: 1rem;
-                background: rgba(245, 158, 11, 0.1);
-                border-radius: var(--radius);
-                margin: 1rem 0;
+                margin-top: 0.15rem;
             }
             
-            .sub-warning i {
+            .sub-task-content .meta span {
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+            }
+            
+            .sub-task-status {
+                padding: 0.3rem 0.6rem;
+                border-radius: 6px;
+                font-size: 0.7rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+            }
+            
+            .sub-task-status.active {
+                background: rgba(34, 197, 94, 0.15);
+                color: #22c55e;
+            }
+            
+            .sub-task-status.inactive {
+                background: rgba(245, 158, 11, 0.15);
                 color: #f59e0b;
-                font-size: 1.25rem;
-                flex-shrink: 0;
             }
             
-            .sub-warning-text {
-                font-size: 0.8rem;
-                color: var(--text-secondary);
-                line-height: 1.5;
+            .sub-task-action .btn {
+                padding: 0.4rem 0.65rem;
+                font-size: 0.75rem;
             }
             
-            /* Actions */
-            .sub-modal-actions {
+            .sub-no-tasks-msg {
                 display: flex;
-                gap: 0.75rem;
-                margin-top: 1rem;
-                padding-top: 1rem;
-                border-top: 1px solid var(--border);
-            }
-            
-            .sub-modal-actions button {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 3rem 2rem;
+                text-align: center;
                 flex: 1;
             }
             
+            .sub-no-tasks-msg i {
+                font-size: 2.5rem;
+                color: var(--text-secondary);
+                opacity: 0.4;
+                margin-bottom: 1rem;
+            }
+            
+            .sub-no-tasks-msg p {
+                color: var(--text-secondary);
+                font-size: 0.9rem;
+                margin: 0;
+            }
+            
+            /* Info Notice */
+            .sub-info-notice {
+                display: flex;
+                align-items: flex-start;
+                gap: 0.6rem;
+                padding: 0.85rem 1rem;
+                background: rgba(99, 102, 241, 0.08);
+                border-radius: 8px;
+                margin-top: 1rem;
+                border: 1px solid rgba(99, 102, 241, 0.15);
+            }
+            
+            .sub-info-notice i {
+                color: var(--primary);
+                font-size: 1rem;
+                flex-shrink: 0;
+                margin-top: 0.1rem;
+            }
+            
+            .sub-info-notice p {
+                font-size: 0.75rem;
+                color: var(--text-secondary);
+                line-height: 1.5;
+                margin: 0;
+            }
+            
             /* Mobile Responsive */
-            @media (max-width: 768px) {
-                .sub-modal-grid {
+            @media (max-width: 900px) {
+                .sub-layout {
                     grid-template-columns: 1fr;
-                    gap: 1rem;
+                    min-height: auto;
                 }
                 
-                .sub-modal-section {
-                    padding: 1rem;
+                .sub-hosting-panel {
+                    border-right: none;
+                    border-bottom: 1px solid var(--border);
+                    padding: 1.25rem;
                 }
                 
-                .sub-plan-header {
-                    flex-direction: column;
-                    align-items: flex-start;
-                    gap: 0.75rem;
+                .sub-plan-icon-large {
+                    width: 52px;
+                    height: 52px;
+                    font-size: 1.5rem;
+                    border-radius: 12px;
                 }
                 
-                .sub-plan-icon {
-                    width: 42px;
-                    height: 42px;
+                .sub-plan-title h3 {
+                    font-size: 1.15rem;
+                }
+                
+                .sub-stats-row {
+                    gap: 0.5rem;
+                    margin-bottom: 1rem;
+                }
+                
+                .sub-stat-card {
+                    padding: 0.65rem 0.5rem;
+                }
+                
+                .sub-stat-card .value {
                     font-size: 1.1rem;
                 }
                 
-                .sub-stats-grid {
-                    grid-template-columns: repeat(3, 1fr);
-                    gap: 0.5rem;
+                .sub-info-grid {
+                    gap: 0.35rem 0.75rem;
+                    margin-bottom: 1rem;
                 }
                 
-                .sub-stat-box {
-                    padding: 0.6rem 0.4rem;
+                .sub-info-item {
+                    padding: 0.35rem 0;
                 }
                 
-                .sub-stat-value {
-                    font-size: 1rem;
+                .sub-info-item .value {
+                    font-size: 0.85rem;
                 }
                 
-                .sub-stat-label {
-                    font-size: 0.6rem;
+                .sub-tasks-panel {
+                    padding: 1.25rem;
+                    max-height: 300px;
                 }
                 
-                .sub-task-name {
-                    max-width: 140px;
+                .sub-task-card {
+                    grid-template-columns: auto 1fr auto;
+                    gap: 0.65rem;
+                    padding: 0.75rem;
                 }
                 
-                .sub-task-info {
-                    gap: 0.5rem;
+                .sub-task-action {
+                    grid-column: 1 / -1;
+                    margin-top: 0.25rem;
                 }
                 
-                .sub-task-icon {
-                    width: 32px;
-                    height: 32px;
-                    font-size: 0.9rem;
-                }
-                
-                .sub-modal-actions {
-                    flex-direction: column;
-                }
-                
-                .sub-modal-actions button {
+                .sub-task-action .btn {
                     width: 100%;
+                }
+                
+                .sub-task-content .name {
+                    max-width: 150px;
                 }
             }
             
             @media (max-width: 480px) {
-                .sub-stats-grid {
-                    grid-template-columns: 1fr 1fr 1fr;
+                .sub-hosting-panel,
+                .sub-tasks-panel {
+                    padding: 1rem;
                 }
                 
-                .sub-detail-row {
+                .sub-plan-visual {
+                    gap: 0.75rem;
+                    margin-bottom: 1rem;
+                }
+                
+                .sub-plan-icon-large {
+                    width: 44px;
+                    height: 44px;
+                    font-size: 1.25rem;
+                }
+                
+                .sub-plan-title h3 {
+                    font-size: 1.05rem;
+                }
+                
+                .sub-stats-row {
+                    flex-wrap: wrap;
+                }
+                
+                .sub-stat-card {
+                    flex: 1 1 30%;
+                    min-width: 70px;
+                }
+                
+                .sub-info-grid {
+                    grid-template-columns: 1fr;
+                }
+                
+                .sub-task-icon-sm {
+                    width: 34px;
+                    height: 34px;
+                    font-size: 0.9rem;
+                }
+                
+                .sub-task-content .name {
+                    max-width: 120px;
+                    font-size: 0.8rem;
+                }
+                
+                .sub-task-content .meta {
+                    font-size: 0.7rem;
                     flex-direction: column;
                     align-items: flex-start;
-                    gap: 0.25rem;
-                }
-                
-                .sub-task-header {
-                    flex-direction: column;
-                    gap: 0.5rem;
+                    gap: 0.15rem;
                 }
             }
         </style>
         
-        <div class="sub-modal-content">
-            <div class="sub-modal-grid">
-                <!-- Hosting Plan Section -->
-                <div class="sub-modal-section">
-                    <h4 class="sub-section-title"><i class="ri-cloud-line"></i> Hosting Plan</h4>
+        <div class="sub-modal-wrapper">
+            <div class="sub-layout">
+                <!-- Hosting Panel - Left -->
+                <div class="sub-hosting-panel">
+                    <div class="sub-hosting-badge">
+                        <i class="ri-cloud-line"></i>
+                        Hosting Plan
+                    </div>
                     
-                    <div class="sub-plan-header">
-                        <div class="sub-plan-icon">
+                    <div class="sub-plan-visual">
+                        <div class="sub-plan-icon-large">
                             <i class="${pkg?.icon || 'ri-vip-crown-line'}"></i>
                         </div>
-                        <div class="sub-plan-info">
-                            <h3 class="sub-plan-name">${pkg?.name || planName} Plan</h3>
-                            <p class="sub-plan-type">${isSubscribed ? 'Active Subscription' : 'One-time Purchase'}</p>
+                        <div class="sub-plan-title">
+                            <h3>${pkg?.name || planName} Plan</h3>
+                            <p><i class="ri-checkbox-circle-fill"></i> ${isSubscribed ? 'Active Subscription' : 'One-time Purchase'}</p>
                         </div>
                     </div>
                     
-                    <div class="sub-stats-grid">
-                        <div class="sub-stat-box">
-                            <div class="sub-stat-value">${daysLeft}</div>
-                            <div class="sub-stat-label">Days Left</div>
+                    <div class="sub-stats-row">
+                        <div class="sub-stat-card">
+                            <div class="value">${daysLeft}</div>
+                            <div class="label">Days Left</div>
                         </div>
-                        <div class="sub-stat-box">
-                            <div class="sub-stat-value">${currencySymbol}${lastPayment.toFixed(0)}</div>
-                            <div class="sub-stat-label">Amount</div>
+                        <div class="sub-stat-card">
+                            <div class="value">${currencySymbol}${lastPayment.toFixed(0)}</div>
+                            <div class="label">Amount</div>
                         </div>
-                        <div class="sub-stat-box">
-                            <div class="sub-stat-value"><span class="badge badge-${isSubscribed ? 'success' : 'warning'}" style="font-size: 0.7rem;">${isSubscribed ? 'Active' : 'Inactive'}</span></div>
-                            <div class="sub-stat-label">Status</div>
+                        <div class="sub-stat-card">
+                            <div class="value" style="color: ${isSubscribed ? 'var(--success)' : 'var(--warning)'};">${isSubscribed ? 'Active' : 'Inactive'}</div>
+                            <div class="label">Status</div>
                         </div>
                     </div>
                     
-                    <div class="sub-detail-list">
+                    <div class="sub-info-grid">
                         ${isSubscribed && subscriptionEnd ? `
-                        <div class="sub-detail-row">
-                            <span class="sub-detail-label">Next Billing</span>
-                            <span class="sub-detail-value">${subscriptionEnd.toLocaleDateString()}</span>
+                        <div class="sub-info-item">
+                            <span class="label">Next Billing</span>
+                            <span class="value">${subscriptionEnd.toLocaleDateString()}</span>
                         </div>
                         ` : ''}
                         ${expiryDate ? `
-                        <div class="sub-detail-row">
-                            <span class="sub-detail-label">Expires On</span>
-                            <span class="sub-detail-value">${expiryDate.toLocaleDateString()}</span>
+                        <div class="sub-info-item">
+                            <span class="label">Expires On</span>
+                            <span class="value">${expiryDate.toLocaleDateString()}</span>
                         </div>
                         ` : ''}
-                        <div class="sub-detail-row">
-                            <span class="sub-detail-label">Payment Method</span>
-                            <span class="sub-detail-value">${provider.charAt(0).toUpperCase() + provider.slice(1)}</span>
+                        <div class="sub-info-item">
+                            <span class="label">Payment</span>
+                            <span class="value">${provider.charAt(0).toUpperCase() + provider.slice(1)}</span>
                         </div>
-                        <div class="sub-detail-row">
-                            <span class="sub-detail-label">Images Limit</span>
-                            <span class="sub-detail-value">${(planData.images_limit || 0).toLocaleString()}</span>
+                        <div class="sub-info-item">
+                            <span class="label">Images</span>
+                            <span class="value">${(planData.images_limit || 0).toLocaleString()}</span>
                         </div>
-                        <div class="sub-detail-row">
-                            <span class="sub-detail-label">Articles Limit</span>
-                            <span class="sub-detail-value">${(planData.articles_limit || 0).toLocaleString()}</span>
+                        <div class="sub-info-item">
+                            <span class="label">Articles</span>
+                            <span class="value">${(planData.articles_limit || 0).toLocaleString()}</span>
                         </div>
-                        <div class="sub-detail-row">
-                            <span class="sub-detail-label">AI Credits</span>
-                            <span class="sub-detail-value">${(planData.ai_limit || 0).toLocaleString()}</span>
+                        <div class="sub-info-item">
+                            <span class="label">AI Credits</span>
+                            <span class="value">${(planData.ai_limit || 0).toLocaleString()}</span>
                         </div>
                     </div>
                     
-                    ${isSubscribed ? `
-                    <button class="btn btn-danger" style="width: 100%;" onclick="confirmCancelHostingSubscription()">
-                        <i class="ri-close-circle-line"></i> Cancel Hosting Subscription
-                    </button>
-                    ` : `
-                    <button class="btn btn-primary" style="width: 100%;" onclick="closeModal(); openPackagePurchaseModal();">
-                        <i class="ri-refresh-line"></i> Upgrade Plan
-                    </button>
-                    `}
+                    <div class="sub-hosting-action">
+                        ${isSubscribed ? `
+                        <button class="btn btn-danger" onclick="confirmCancelHostingSubscription()">
+                            <i class="ri-close-circle-line"></i> Cancel Subscription
+                        </button>
+                        ` : `
+                        <button class="btn btn-primary" onclick="closeModal(); openPackagePurchaseModal();">
+                            <i class="ri-arrow-up-circle-line"></i> Upgrade Plan
+                        </button>
+                        `}
+                    </div>
                 </div>
                 
-                <!-- Task Subscriptions Section -->
-                <div class="sub-modal-section">
-                    <h4 class="sub-section-title"><i class="ri-rocket-line"></i> Task Subscriptions (${taskSubscriptions.length})</h4>
-                    
-                    <div class="sub-tasks-list">
-                        ${taskSubscriptionsHtml}
+                <!-- Tasks Panel - Right -->
+                <div class="sub-tasks-panel">
+                    <div class="sub-tasks-header">
+                        <h4><i class="ri-rocket-line"></i> Task Subscriptions</h4>
+                        <span class="sub-tasks-count">${taskSubscriptions.length} ${taskSubscriptions.length === 1 ? 'task' : 'tasks'}</span>
                     </div>
+                    
+                    ${taskSubscriptions.length > 0 ? `
+                    <div class="sub-tasks-grid">
+                        ${taskSubscriptions.map((task, idx) => {
+                            const taskCurrency = getCurrencySymbol(task.currency);
+                            const nextBilling = task.next_billing_date ? new Date(task.next_billing_date) : null;
+                            const safeDesc = escapeHtml(task.description || 'SEO Task');
+                            const safeBillingId = escapeHtml(task.billing_id || '');
+                            return `
+                                <div class="sub-task-card">
+                                    <div class="sub-task-icon-sm"><i class="ri-rocket-line"></i></div>
+                                    <div class="sub-task-content">
+                                        <div class="name">${safeDesc}</div>
+                                        <div class="meta">
+                                            <span><i class="ri-money-dollar-circle-line"></i> ${taskCurrency}${task.amount?.toFixed(2) || '0.00'}/mo</span>
+                                            <span><i class="ri-calendar-line"></i> ${nextBilling ? nextBilling.toLocaleDateString() : 'N/A'}</span>
+                                        </div>
+                                    </div>
+                                    <span class="sub-task-status ${task.status === 'active' ? 'active' : 'inactive'}">${task.status || 'Unknown'}</span>
+                                    ${task.status === 'active' ? `
+                                    <div class="sub-task-action">
+                                        <button class="btn btn-sm btn-danger" onclick="confirmCancelTaskSubscription('${safeBillingId}', '${safeDesc}')">
+                                            <i class="ri-close-line"></i> Cancel
+                                        </button>
+                                    </div>
+                                    ` : '<div class="sub-task-action"></div>'}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    ` : `
+                    <div class="sub-no-tasks-msg">
+                        <i class="ri-rocket-2-line"></i>
+                        <p>No active task subscriptions</p>
+                    </div>
+                    `}
+                    
+                    ${isSubscribed || taskSubscriptions.length > 0 ? `
+                    <div class="sub-info-notice">
+                        <i class="ri-information-line"></i>
+                        <p>Cancelling keeps your subscription active until the billing period ends. No further charges will apply.</p>
+                    </div>
+                    ` : ''}
                 </div>
-            </div>
-            
-            ${isSubscribed || taskSubscriptions.length > 0 ? `
-            <div class="sub-warning">
-                <i class="ri-information-line"></i>
-                <div class="sub-warning-text">
-                    Cancelling a subscription will keep it active until the end of the current billing period. 
-                    You won't be charged again after cancellation.
-                </div>
-            </div>
-            ` : ''}
-            
-            <div class="sub-modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal()">
-                    <i class="ri-close-line"></i> Close
-                </button>
             </div>
         </div>
     `;
     
-    showModal('Subscription Management', modalContent, '700px');
+    showModal('Subscription Management', modalContent, '950px');
 }
 
 // Confirm Cancel Hosting Subscription
