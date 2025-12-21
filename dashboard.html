@@ -6097,63 +6097,120 @@ async function processPackagePurchase() {
 async function loadBilling(page = 1, type = 'all') {
     try {
         showSpinner();
-        // We now need two API calls: one for subscription status and one for billing history.
-        const [planResponse, historyResponse] = await Promise.all([
-            api('/hosting/subscription-status'),
-            api(`/dashboard/billings?page=${page}&limit=10&type=${type}`)
-        ]);
-        const planData = planResponse.data;
-        const historyData = historyResponse.data;
+        // Single API call for all billing data
+        const billingResponse = await api(`/dashboard/billings?page=${page}&limit=10&type=${type}`);
+        const billingData = billingResponse.data;
         
-        // Store for global access
-        window.currentPlanData = planData;
+        // Store billing data for global access
+        window.currentBillingData = billingData;
         
-        // --- 1. Current Plan Data ---
-        const planName = planData.current_plan || 'free';
-        const isSubscribed = planData.is_subscription;
-        const isFree = !planName || planName === 'free';
+        // --- 1. Extract subscription and usage data ---
+        const subscriptions = billingData.subscription || [];
+        const hostingSubscription = subscriptions.find(s => s.type === 'hosting');
+        const taskSubscriptions = subscriptions.filter(s => s.type === 'task');
+        const usage = billingData.usage || {};
         
-        // Calculate days left and expiry info
-        let daysLeft = 0;
-        let expiryDate = null;
-        if (planData.expiry_date) {
-            expiryDate = new Date(planData.expiry_date);
-            const now = new Date();
-            daysLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
-            if (daysLeft < 0) daysLeft = 0;
+        // Determine current plan from hosting subscription or payments
+        const hostingPayments = billingData.hosting || [];
+        const taskPayments = billingData.tasks || [];
+        const latestHostingPayment = hostingPayments.find(h => h.status?.toLowerCase() === 'paid');
+        
+        // Build plan data from billing response - check subscription first, then payments
+        let planName = 'free';
+        let planDisplayName = 'Free';
+        if (hostingSubscription?.description) {
+            planName = hostingSubscription.description.toLowerCase().replace(' package', '');
+            planDisplayName = hostingSubscription.description;
+        } else if (latestHostingPayment?.description) {
+            planName = latestHostingPayment.description.toLowerCase().replace(' package', '');
+            planDisplayName = latestHostingPayment.description;
         }
         
-        // Usage percentages
-        const imagesUsed = planData.images_uploads || 0;
-        const imagesLimit = planData.images_limit || 0;
-        const articlesUsed = planData.article_uploads || 0;
-        const articlesLimit = planData.articles_limit || 0;
+        const isSubscribed = !!hostingSubscription;
+        
+        // Determine if user is on free plan - check if they have any usage limits from API
+        const hasUsageLimits = (usage.images?.limit > 0) || (usage.articles?.limit > 0) || (usage.ai?.limit > 0);
+        const hasPaidHosting = hostingPayments.some(h => h.status?.toLowerCase() === 'paid');
+        const hasPaidTasks = taskPayments.some(t => t.status?.toLowerCase() === 'paid');
+        const isFree = !hasUsageLimits && !hasPaidHosting && !isSubscribed;
+        
+        // Calculate days left and expiry info from subscription
+        let daysLeft = 0;
+        let expiryDate = null;
+        let subscriptionEnd = null;
+        if (hostingSubscription?.next_billing_date) {
+            try {
+                subscriptionEnd = new Date(hostingSubscription.next_billing_date);
+                expiryDate = subscriptionEnd;
+                const now = new Date();
+                daysLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
+                if (daysLeft < 0) daysLeft = 0;
+            } catch (e) {
+                console.warn('Error parsing subscription date:', e);
+            }
+        }
+        
+        // Usage data from API
+        const imagesUsed = usage.images?.used || 0;
+        const imagesLimit = usage.images?.limit || 0;
+        const imagesRemaining = usage.images?.remaining || 0;
+        const articlesUsed = usage.articles?.used || 0;
+        const articlesLimit = usage.articles?.limit || 0;
+        const articlesRemaining = usage.articles?.remaining || 0;
+        const aiUsed = usage.ai?.used || 0;
+        const aiLimit = usage.ai?.limit || 0;
+        const aiRemaining = usage.ai?.remaining || 0;
+        
+        // Calculate percentages (used percentage, not remaining)
         const imagesUsedPercent = imagesLimit > 0 ? Math.min((imagesUsed / imagesLimit) * 100, 100) : 0;
         const articlesUsedPercent = articlesLimit > 0 ? Math.min((articlesUsed / articlesLimit) * 100, 100) : 0;
+        const aiUsedPercent = aiLimit > 0 ? Math.min((aiUsed / aiLimit) * 100, 100) : 0;
         
-        // Subscription period info
-        const subscriptionStart = planData.subscription_period_start ? new Date(planData.subscription_period_start) : null;
-        const subscriptionEnd = planData.subscription_period_end ? new Date(planData.subscription_period_end) : null;
+        // Get last payment info
+        const lastPayment = hostingSubscription?.amount || latestHostingPayment?.amount || 0;
+        const lastCurrency = hostingSubscription?.currency || latestHostingPayment?.currency || 'usd';
+        
+        // Store plan data for showSubscriptionModal
+        window.currentPlanData = {
+            current_plan: planName,
+            plan_display_name: planDisplayName,
+            is_subscription: isSubscribed,
+            expiry_date: expiryDate,
+            subscription_period_end: subscriptionEnd,
+            images_limit: imagesLimit,
+            images_uploads: imagesUsed,
+            articles_limit: articlesLimit,
+            article_uploads: articlesUsed,
+            ai_limit: aiLimit,
+            ai_used: aiUsed,
+            billing: {
+                last_payment_amount: lastPayment,
+                provider: 'stripe',
+                currency: lastCurrency
+            },
+            hostingSubscription: hostingSubscription,
+            taskSubscriptions: taskSubscriptions,
+            hasPaidHosting: hasPaidHosting,
+            hasPaidTasks: hasPaidTasks
+        };
         
         // --- 2. Transaction History Data ---
-        const taskPayments = historyData.tasks || [];
-        const hostingPayments = historyData.hosting || [];
         const allPayments = [...hostingPayments, ...taskPayments].sort((a, b) => 
-            new Date(b.dates?.created || 0) - new Date(a.dates?.created || 0)
+            new Date(b.date || 0) - new Date(a.date || 0)
         );
         
         paginationState.billing = {
-            page: historyData.pagination.page,
-            pageSize: historyData.pagination.limit,
-            total: historyData.pagination.total,
-            hasNext: historyData.pagination.page < historyData.pagination.pages
+            page: billingData.pagination?.page || 1,
+            pageSize: billingData.pagination?.limit || 10,
+            total: billingData.pagination?.total || 0,
+            hasNext: (billingData.pagination?.page || 1) < (billingData.pagination?.pages || 1)
         };
-        
-        // Get last payment amount
-        const lastPayment = planData.billing?.last_payment_amount || 0;
         
         // Get current package info
         const currentPkg = hostingPackages[planName] || null;
+        
+        // Check if user has any active plan (from usage limits or payments)
+        const hasActivePlan = hasUsageLimits || hasPaidHosting || hasPaidTasks;
         
         // --- 3. Render everything together ---
         const content = document.getElementById('content');
@@ -6316,6 +6373,7 @@ async function loadBilling(page = 1, type = 'all') {
             }
             .plan-usage-icon.images { background: rgba(99, 102, 241, 0.12); color: var(--primary); }
             .plan-usage-icon.articles { background: rgba(16, 185, 129, 0.12); color: var(--success); }
+            .plan-usage-icon.ai { background: rgba(168, 85, 247, 0.12); color: #a855f7; }
             .plan-usage-icon.time { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
             .plan-usage-label {
                 font-size: 0.85rem; font-weight: 600; color: var(--text);
@@ -7021,7 +7079,7 @@ async function loadBilling(page = 1, type = 'all') {
                 <button class="btn btn-primary" onclick="openPackagePurchaseModal()">
                     <i class="ri-arrow-up-circle-line"></i> Upgrade Plan
                 </button>
-                ${!isFree && planData.is_subscription ? `
+                ${subscriptions.length > 0 ? `
                     <button class="btn btn-secondary" onclick="showSubscriptionModal()">
                         <i class="ri-settings-3-line"></i> Manage
                     </button>
@@ -7029,7 +7087,7 @@ async function loadBilling(page = 1, type = 'all') {
             </div>
         </div>
         
-        ${isFree ? `
+        ${!hasActivePlan ? `
         <!-- Free Plan Card -->
         <div class="free-plan-card">
             <div class="free-plan-icon">
@@ -7049,32 +7107,31 @@ async function loadBilling(page = 1, type = 'all') {
                     <div class="current-plan-info">
                         <div class="current-plan-badge">
                             <i class="${isSubscribed ? 'ri-refresh-line' : 'ri-time-line'}"></i>
-                            ${isSubscribed ? 'Active Subscription' : 'One-time Purchase'}
+                            ${isSubscribed ? 'Active Subscription' : (hasPaidHosting ? 'Active Plan' : (hasPaidTasks ? 'Task Plan' : 'Usage Plan'))}
                         </div>
                         <h2 class="current-plan-name">
-                            <i class="${currentPkg?.icon || 'ri-vip-crown-line'}"></i>
-                            ${currentPkg?.name || planName} Plan
+                            <i class="${currentPkg?.icon || (hasPaidTasks && !hasPaidHosting ? 'ri-rocket-line' : 'ri-vip-crown-line')}"></i>
+                            ${currentPkg?.name || planDisplayName || (hasPaidTasks ? 'SEO Tasks' : 'Usage')} Plan
                         </h2>
                         <div class="current-plan-meta">
+                            ${isSubscribed && daysLeft > 0 ? `
                             <div class="current-plan-meta-item">
                                 <i class="ri-time-line"></i>
                                 ${daysLeft} days left
                             </div>
+                            ` : ''}
                             ${subscriptionEnd ? `
                                 <div class="current-plan-meta-item">
                                     <i class="ri-repeat-line"></i>
                                     Renews ${subscriptionEnd.toLocaleDateString()}
                                 </div>
-                            ` : expiryDate ? `
-                                <div class="current-plan-meta-item">
-                                    <i class="ri-calendar-check-line"></i>
-                                    Expires ${expiryDate.toLocaleDateString()}
-                                </div>
                             ` : ''}
+                            ${hasPaidHosting || hasPaidTasks ? `
                             <div class="current-plan-meta-item">
                                 <i class="ri-bank-card-line"></i>
-                                ${planData.billing?.provider ? planData.billing.provider.charAt(0).toUpperCase() + planData.billing.provider.slice(1) : 'N/A'}
+                                Stripe
                             </div>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
@@ -7095,7 +7152,7 @@ async function loadBilling(page = 1, type = 'all') {
                     </div>
                     <div class="plan-usage-stats">
                         <span><strong>${imagesUsed.toLocaleString()}</strong> used</span>
-                        <span><strong>${(imagesLimit - imagesUsed).toLocaleString()}</strong> remaining / <strong>${imagesLimit.toLocaleString()}</strong> total</span>
+                        <span><strong>${imagesRemaining.toLocaleString()}</strong> remaining / <strong>${imagesLimit.toLocaleString()}</strong> total</span>
                     </div>
                 </div>
                 <div class="plan-usage-item">
@@ -7111,14 +7168,31 @@ async function loadBilling(page = 1, type = 'all') {
                     </div>
                     <div class="plan-usage-stats">
                         <span><strong>${articlesUsed.toLocaleString()}</strong> used</span>
-                        <span><strong>${(articlesLimit - articlesUsed).toLocaleString()}</strong> remaining / <strong>${articlesLimit.toLocaleString()}</strong> total</span>
+                        <span><strong>${articlesRemaining.toLocaleString()}</strong> remaining / <strong>${articlesLimit.toLocaleString()}</strong> total</span>
                     </div>
                 </div>
                 <div class="plan-usage-item">
                     <div class="plan-usage-header">
                         <div class="plan-usage-info">
+                            <div class="plan-usage-icon ai"><i class="ri-robot-line"></i></div>
+                            <span class="plan-usage-label">AI Credits</span>
+                        </div>
+                        <span class="plan-usage-percent">${Math.round(aiUsedPercent)}%</span>
+                    </div>
+                    <div class="plan-usage-bar">
+                        <div class="plan-usage-fill ${aiUsedPercent > 90 ? 'danger' : aiUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${aiUsedPercent}%;"></div>
+                    </div>
+                    <div class="plan-usage-stats">
+                        <span><strong>${aiUsed.toLocaleString()}</strong> used</span>
+                        <span><strong>${aiRemaining.toLocaleString()}</strong> remaining / <strong>${aiLimit.toLocaleString()}</strong> total</span>
+                    </div>
+                </div>
+                ${isSubscribed && subscriptionEnd ? `
+                <div class="plan-usage-item">
+                    <div class="plan-usage-header">
+                        <div class="plan-usage-info">
                             <div class="plan-usage-icon time"><i class="ri-timer-line"></i></div>
-                            <span class="plan-usage-label">Time Remaining</span>
+                            <span class="plan-usage-label">Next Billing</span>
                         </div>
                         <span class="plan-usage-percent">${daysLeft} days</span>
                     </div>
@@ -7126,10 +7200,11 @@ async function loadBilling(page = 1, type = 'all') {
                         <div class="plan-usage-fill ${daysLeft < 7 ? 'danger' : daysLeft < 14 ? 'warning' : 'safe'}" style="width: ${Math.min(daysLeft * 3.33, 100)}%;"></div>
                     </div>
                     <div class="plan-usage-stats">
-                        <span>${expiryDate ? expiryDate.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'}) : 'N/A'}</span>
-                        <span>${subscriptionEnd ? 'Auto-renews' : 'Expires'}</span>
+                        <span>${subscriptionEnd.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})}</span>
+                        <span>Auto-renews</span>
                     </div>
                 </div>
+                ` : ''}
             </div>
         </div>
         `}
@@ -7167,52 +7242,56 @@ async function loadBilling(page = 1, type = 'all') {
                 <tbody>
                     ${allPayments.length > 0 ? allPayments.map(payment => {
                         let paymentType = '', description = '', badgeClass = '', icon = '', iconBg = '';
-                        if (payment.method === 'create_task') {
+                        const isTask = payment.type === 'task';
+                        const isHosting = payment.type === 'hosting';
+                        
+                        if (isTask) {
                             paymentType = 'SEO Task'; badgeClass = 'primary'; 
-                            description = payment.details?.url || 'Task Creation';
+                            description = payment.description || 'Task Payment';
                             icon = 'ri-rocket-line'; iconBg = 'rgba(99, 102, 241, 0.1)';
-                        } else if (payment.method === 'recharge') {
-                            paymentType = 'Recharge'; badgeClass = 'success'; 
-                            description = 'Task Recharge';
-                            icon = 'ri-battery-charge-line'; iconBg = 'rgba(16, 185, 129, 0.1)';
-                        } else if (payment.method === 'buy_package') {
+                        } else if (isHosting) {
                             paymentType = 'Hosting'; badgeClass = 'warning'; 
-                            description = (payment.details?.package || 'Hosting') + ' Package';
+                            description = payment.description || 'Hosting Package';
                             icon = 'ri-cloud-line'; iconBg = 'rgba(245, 158, 11, 0.1)';
                         } else {
-                            paymentType = payment.method || 'Payment'; badgeClass = 'primary'; 
-                            description = 'Payment';
+                            paymentType = 'Payment'; badgeClass = 'primary'; 
+                            description = payment.description || 'Payment';
                             icon = 'ri-bank-card-line'; iconBg = 'rgba(99, 102, 241, 0.1)';
                         }
+                        
+                        // Format currency symbol
+                        const currencySymbol = payment.currency === 'eur' ? '€' : payment.currency === 'gbp' ? '£' : '$';
+                        const amount = payment.amount || 0;
+                        
                         let statusClass = 'warning'; let statusText = payment.status || 'Unknown';
                         switch (payment.status?.toLowerCase()) {
                             case 'paid': statusClass = 'success'; statusText = 'Paid'; break;
                             case 'pending': statusClass = 'warning'; statusText = 'Pending'; break;
                             case 'cancelled': statusClass = 'danger'; statusText = 'Cancelled'; break;
                             case 'expired': statusClass = 'danger'; statusText = 'Expired'; break;
+                            case 'active': statusClass = 'success'; statusText = 'Active'; break;
                         }
-                        return `
-                            <tr>
-                                <td>
-                                    <div class="transaction-type-cell">
-                                        <div class="transaction-type-icon" style="background: ${iconBg}; color: var(--${badgeClass});">
-                                            <i class="${icon}"></i>
-                                        </div>
-                                        <div class="transaction-type-info">
-                                            <span class="transaction-type-name">${paymentType}</span>
-                                            <span class="transaction-type-desc">${description.length > 30 ? description.substring(0, 30) + '...' : description}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>${new Date(payment.dates?.created || Date.now()).toLocaleDateString()}</td>
-                                <td style="font-weight: 600;">$${(payment.total_payment || 0).toFixed(2)}</td>
-                                <td><span class="badge badge-${statusClass}">${statusText}</span></td>
-                                <td>
-                                    ${payment.status?.toLowerCase() === 'paid' ? `<button class="btn btn-sm" onclick="viewPaymentDetails('${payment.billing_id}')"><i class="ri-eye-line"></i></button>` : ''}
-                                    ${payment.status?.toLowerCase() === 'pending' && payment.payment_url ? `<button class="btn btn-sm btn-primary" onclick="window.open('${payment.payment_url}', '_blank')"><i class="ri-external-link-line"></i> Pay</button>` : ''}
-                                </td>
-                            </tr>
-                        `;
+                        const descTruncated = description.length > 30 ? description.substring(0, 30) + '...' : description;
+                        return '<tr>' +
+                            '<td>' +
+                                '<div class="transaction-type-cell">' +
+                                    '<div class="transaction-type-icon" style="background: ' + iconBg + '; color: var(--' + badgeClass + ');">' +
+                                        '<i class="' + icon + '"></i>' +
+                                    '</div>' +
+                                    '<div class="transaction-type-info">' +
+                                        '<span class="transaction-type-name">' + paymentType + '</span>' +
+                                        '<span class="transaction-type-desc">' + descTruncated + '</span>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</td>' +
+                            '<td>' + (payment.date ? new Date(payment.date).toLocaleDateString() : 'N/A') + '</td>' +
+                            '<td style="font-weight: 600;">' + currencySymbol + amount.toFixed(2) + '</td>' +
+                            '<td><span class="badge badge-' + statusClass + '">' + statusText + '</span></td>' +
+                            '<td>' +
+                                (payment.status?.toLowerCase() === 'paid' ? '<button class="btn btn-sm" onclick="viewPaymentDetails(\'' + payment.billing_id + '\')"><i class="ri-eye-line"></i></button>' : '') +
+                                (payment.status?.toLowerCase() === 'pending' && payment.payment_url ? '<button class="btn btn-sm btn-primary" onclick="window.open(\'' + payment.payment_url + '\', \'_blank\')"><i class="ri-external-link-line"></i> Pay</button>' : '') +
+                            '</td>' +
+                        '</tr>';
                     }).join('') : `
                         <tr>
                             <td colspan="5" style="text-align: center; padding: 3rem;">
@@ -7231,62 +7310,73 @@ async function loadBilling(page = 1, type = 'all') {
             <div class="mobile-transactions">
                 ${allPayments.length > 0 ? allPayments.map(payment => {
                     let paymentType = '', description = '', badgeClass = '', icon = '', iconBg = '';
-                    if (payment.method === 'create_task') {
+                    const isTask = payment.type === 'task';
+                    const isHosting = payment.type === 'hosting';
+                    
+                    if (isTask) {
                         paymentType = 'SEO Task'; badgeClass = 'primary'; 
-                        description = payment.details?.url || 'Task Creation';
+                        description = payment.description || 'Task Payment';
                         icon = 'ri-rocket-line'; iconBg = 'rgba(99, 102, 241, 0.1)';
-                    } else if (payment.method === 'recharge') {
-                        paymentType = 'Recharge'; badgeClass = 'success'; 
-                        description = 'Task Recharge';
-                        icon = 'ri-battery-charge-line'; iconBg = 'rgba(16, 185, 129, 0.1)';
-                    } else if (payment.method === 'buy_package') {
+                    } else if (isHosting) {
                         paymentType = 'Hosting'; badgeClass = 'warning'; 
-                        description = (payment.details?.package || 'Hosting') + ' Package';
+                        description = payment.description || 'Hosting Package';
                         icon = 'ri-cloud-line'; iconBg = 'rgba(245, 158, 11, 0.1)';
                     } else {
-                        paymentType = payment.method || 'Payment'; badgeClass = 'primary'; 
-                        description = 'Payment';
+                        paymentType = 'Payment'; badgeClass = 'primary'; 
+                        description = payment.description || 'Payment';
                         icon = 'ri-bank-card-line'; iconBg = 'rgba(99, 102, 241, 0.1)';
                     }
+                    
+                    // Format currency symbol
+                    const currencySymbol = payment.currency === 'eur' ? '€' : payment.currency === 'gbp' ? '£' : '$';
+                    const amount = payment.amount || 0;
+                    
                     let statusClass = 'warning'; let statusText = payment.status || 'Unknown';
                     switch (payment.status?.toLowerCase()) {
                         case 'paid': statusClass = 'success'; statusText = 'Paid'; break;
                         case 'pending': statusClass = 'warning'; statusText = 'Pending'; break;
                         case 'cancelled': statusClass = 'danger'; statusText = 'Cancelled'; break;
                         case 'expired': statusClass = 'danger'; statusText = 'Expired'; break;
+                        case 'active': statusClass = 'success'; statusText = 'Active'; break;
                     }
-                    return `
-                        <div class="mobile-transaction-card">
-                            <div class="mobile-transaction-header">
-                                <div class="mobile-transaction-type">
-                                    <div class="transaction-type-icon" style="background: ${iconBg}; color: var(--${badgeClass});">
-                                        <i class="${icon}"></i>
-                                    </div>
-                                    <div>
-                                        <div style="font-weight: 600;">${paymentType}</div>
-                                        <div style="font-size: 0.75rem; color: var(--text-secondary);">${description.length > 25 ? description.substring(0, 25) + '...' : description}</div>
-                                    </div>
-                                </div>
-                                <span class="badge badge-${statusClass}">${statusText}</span>
-                            </div>
-                            <div class="mobile-transaction-body">
-                                <div class="mobile-transaction-item">
-                                    <label>Date</label>
-                                    <div>${new Date(payment.dates?.created || Date.now()).toLocaleDateString()}</div>
-                                </div>
-                                <div class="mobile-transaction-item">
-                                    <label>Amount</label>
-                                    <div style="font-weight: 600;">$${(payment.total_payment || 0).toFixed(2)}</div>
-                                </div>
-                            </div>
-                            ${payment.status?.toLowerCase() === 'paid' || (payment.status?.toLowerCase() === 'pending' && payment.payment_url) ? `
-                                <div class="mobile-transaction-actions">
-                                    ${payment.status?.toLowerCase() === 'paid' ? `<button class="btn btn-sm" style="flex: 1;" onclick="viewPaymentDetails('${payment.billing_id}')"><i class="ri-eye-line"></i> Details</button>` : ''}
-                                    ${payment.status?.toLowerCase() === 'pending' && payment.payment_url ? `<button class="btn btn-sm btn-primary" style="flex: 1;" onclick="window.open('${payment.payment_url}', '_blank')"><i class="ri-external-link-line"></i> Pay Now</button>` : ''}
-                                </div>
-                            ` : ''}
-                        </div>
-                    `;
+                    const descTruncated = description.length > 25 ? description.substring(0, 25) + '...' : description;
+                    const showActions = payment.status?.toLowerCase() === 'paid' || (payment.status?.toLowerCase() === 'pending' && payment.payment_url);
+                    let actionsHtml = '';
+                    if (showActions) {
+                        actionsHtml = '<div class="mobile-transaction-actions">';
+                        if (payment.status?.toLowerCase() === 'paid') {
+                            actionsHtml += '<button class="btn btn-sm" style="flex: 1;" onclick="viewPaymentDetails(\'' + payment.billing_id + '\')"><i class="ri-eye-line"></i> Details</button>';
+                        }
+                        if (payment.status?.toLowerCase() === 'pending' && payment.payment_url) {
+                            actionsHtml += '<button class="btn btn-sm btn-primary" style="flex: 1;" onclick="window.open(\'' + payment.payment_url + '\', \'_blank\')"><i class="ri-external-link-line"></i> Pay Now</button>';
+                        }
+                        actionsHtml += '</div>';
+                    }
+                    return '<div class="mobile-transaction-card">' +
+                        '<div class="mobile-transaction-header">' +
+                            '<div class="mobile-transaction-type">' +
+                                '<div class="transaction-type-icon" style="background: ' + iconBg + '; color: var(--' + badgeClass + ');">' +
+                                    '<i class="' + icon + '"></i>' +
+                                '</div>' +
+                                '<div>' +
+                                    '<div style="font-weight: 600;">' + paymentType + '</div>' +
+                                    '<div style="font-size: 0.75rem; color: var(--text-secondary);">' + descTruncated + '</div>' +
+                                '</div>' +
+                            '</div>' +
+                            '<span class="badge badge-' + statusClass + '">' + statusText + '</span>' +
+                        '</div>' +
+                        '<div class="mobile-transaction-body">' +
+                            '<div class="mobile-transaction-item">' +
+                                '<label>Date</label>' +
+                                '<div>' + (payment.date ? new Date(payment.date).toLocaleDateString() : 'N/A') + '</div>' +
+                            '</div>' +
+                            '<div class="mobile-transaction-item">' +
+                                '<label>Amount</label>' +
+                                '<div style="font-weight: 600;">' + currencySymbol + amount.toFixed(2) + '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        actionsHtml +
+                    '</div>';
                 }).join('') : `
                     <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                         <i class="ri-file-list-3-line" style="font-size: 2.5rem; opacity: 0.4; margin-bottom: 0.5rem; display: block;"></i>
@@ -7312,13 +7402,25 @@ async function loadBilling(page = 1, type = 'all') {
 // Show Subscription Management Modal
 function showSubscriptionModal() {
     const planData = window.currentPlanData || {};
+    const billingData = window.currentBillingData || {};
+    
     const planName = planData.current_plan || 'Unknown';
+    const planDisplayName = planData.plan_display_name || planName;
+    const hostingSubscription = planData.hostingSubscription;
+    const taskSubscriptions = planData.taskSubscriptions || [];
     const isSubscribed = planData.is_subscription;
+    const hasPaidHosting = planData.hasPaidHosting;
+    const hasPaidTasks = planData.hasPaidTasks;
     const subscriptionEnd = planData.subscription_period_end ? new Date(planData.subscription_period_end) : null;
     const expiryDate = planData.expiry_date ? new Date(planData.expiry_date) : null;
     const lastPayment = planData.billing?.last_payment_amount || 0;
-    const provider = planData.billing?.provider || 'Unknown';
+    const provider = planData.billing?.provider || 'stripe';
+    const currency = planData.billing?.currency || 'usd';
     const pkg = hostingPackages[planName];
+    
+    // Format currency
+    const getCurrencySymbol = (curr) => curr === 'eur' ? '€' : curr === 'gbp' ? '£' : '$';
+    const currencySymbol = getCurrencySymbol(currency);
     
     // Calculate days left
     let daysLeft = 0;
@@ -7327,150 +7429,501 @@ function showSubscriptionModal() {
         if (daysLeft < 0) daysLeft = 0;
     }
     
+    // Build task subscriptions HTML
+    const escapeHtml = (str) => {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                  .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    };
+    
+    const taskSubscriptionsHtml = taskSubscriptions.length > 0 ? taskSubscriptions.map((task, idx) => {
+        const taskCurrency = getCurrencySymbol(task.currency);
+        const nextBilling = task.next_billing_date ? new Date(task.next_billing_date) : null;
+        const safeDesc = escapeHtml(task.description || 'SEO Task');
+        const safeBillingId = escapeHtml(task.billing_id || '');
+        return `
+            <div class="sub-task-item" data-task-idx="${idx}">
+                <div class="sub-task-header">
+                    <div class="sub-task-info">
+                        <div class="sub-task-icon"><i class="ri-rocket-line"></i></div>
+                        <div class="sub-task-details">
+                            <div class="sub-task-name">${safeDesc}</div>
+                            <div class="sub-task-meta">${taskCurrency}${task.amount?.toFixed(2) || '0.00'}/month</div>
+                        </div>
+                    </div>
+                    <span class="badge badge-${task.status === 'active' ? 'success' : 'warning'}">${task.status || 'Unknown'}</span>
+                </div>
+                <div class="sub-task-body">
+                    <div class="sub-task-row">
+                        <span>Next Billing</span>
+                        <span>${nextBilling ? nextBilling.toLocaleDateString() : 'N/A'}</span>
+                    </div>
+                    <div class="sub-task-row">
+                        <span>Subscription ID</span>
+                        <span class="sub-task-id">${task.subscription_id?.slice(-8) || 'N/A'}</span>
+                    </div>
+                </div>
+                ${task.status === 'active' ? `
+                <button class="btn btn-sm btn-danger sub-task-cancel" onclick="confirmCancelTaskSubscription('${safeBillingId}', '${safeDesc}')">
+                    <i class="ri-close-circle-line"></i> Cancel
+                </button>
+                ` : ''}
+            </div>
+        `;
+    }).join('') : '<p class="sub-no-tasks">No active task subscriptions</p>';
+    
     const modalContent = `
         <style>
-            .sub-modal-content { }
-            .sub-modal-header {
-                display: flex; align-items: center; gap: 1rem;
-                margin-bottom: 1.5rem; padding-bottom: 1.25rem;
+            /* Subscription Modal - Responsive Design */
+            .sub-modal-content {
+                max-height: 70vh;
+                overflow-y: auto;
+            }
+            
+            /* Desktop Layout */
+            .sub-modal-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+            
+            .sub-modal-section {
+                background: var(--bg-secondary);
+                border-radius: var(--radius-lg);
+                padding: 1.25rem;
+            }
+            
+            .sub-section-title {
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--text);
+                margin: 0 0 1rem 0;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding-bottom: 0.75rem;
                 border-bottom: 1px solid var(--border);
             }
-            .sub-modal-icon {
-                width: 56px; height: 56px; flex-shrink: 0;
+            
+            .sub-section-title i {
+                color: var(--primary);
+            }
+            
+            /* Hosting Plan Card */
+            .sub-plan-header {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .sub-plan-icon {
+                width: 48px;
+                height: 48px;
+                flex-shrink: 0;
                 background: ${pkg?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};
-                border-radius: 14px; display: flex; align-items: center; justify-content: center;
-                font-size: 1.5rem; color: white;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.25rem;
+                color: white;
             }
-            .sub-modal-info { flex: 1; }
-            .sub-modal-title { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.25rem 0; color: var(--text); }
-            .sub-modal-subtitle { color: var(--text-secondary); font-size: 0.85rem; margin: 0; }
-            .sub-details-card {
-                background: var(--bg-secondary); border-radius: var(--radius-lg);
-                padding: 1.25rem; margin-bottom: 1.25rem; text-align: left;
+            
+            .sub-plan-info {
+                flex: 1;
             }
+            
+            .sub-plan-name {
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: var(--text);
+                margin: 0 0 0.25rem 0;
+            }
+            
+            .sub-plan-type {
+                font-size: 0.8rem;
+                color: var(--text-secondary);
+            }
+            
+            /* Stats Grid */
+            .sub-stats-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.75rem;
+                margin-bottom: 1rem;
+            }
+            
+            .sub-stat-box {
+                background: var(--bg-tertiary);
+                border-radius: var(--radius);
+                padding: 0.75rem;
+                text-align: center;
+            }
+            
+            .sub-stat-value {
+                font-size: 1.1rem;
+                font-weight: 800;
+                color: var(--text);
+            }
+            
+            .sub-stat-label {
+                font-size: 0.65rem;
+                color: var(--text-secondary);
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+            }
+            
+            /* Detail Rows */
+            .sub-detail-list {
+                margin-bottom: 1rem;
+            }
+            
             .sub-detail-row {
-                display: flex; justify-content: space-between; padding: 0.5rem 0;
-                border-bottom: 1px solid var(--border); font-size: 0.875rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid var(--border);
+                font-size: 0.85rem;
             }
-            .sub-detail-row:last-child { border-bottom: none; }
-            .sub-detail-label { color: var(--text-secondary); }
-            .sub-detail-value { font-weight: 600; color: var(--text); }
+            
+            .sub-detail-row:last-child {
+                border-bottom: none;
+            }
+            
+            .sub-detail-label {
+                color: var(--text-secondary);
+            }
+            
+            .sub-detail-value {
+                font-weight: 600;
+                color: var(--text);
+            }
+            
+            /* Task Subscriptions */
+            .sub-tasks-list {
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            
+            .sub-task-item {
+                background: var(--bg-tertiary);
+                border-radius: var(--radius);
+                padding: 1rem;
+                border: 1px solid var(--border);
+            }
+            
+            .sub-task-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 0.75rem;
+            }
+            
+            .sub-task-info {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+            
+            .sub-task-icon {
+                width: 36px;
+                height: 36px;
+                background: rgba(99, 102, 241, 0.12);
+                color: var(--primary);
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1rem;
+            }
+            
+            .sub-task-details {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .sub-task-name {
+                font-weight: 600;
+                color: var(--text);
+                font-size: 0.85rem;
+                max-width: 180px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            
+            .sub-task-meta {
+                font-size: 0.75rem;
+                color: var(--text-secondary);
+            }
+            
+            .sub-task-body {
+                margin-bottom: 0.75rem;
+            }
+            
+            .sub-task-row {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.8rem;
+                padding: 0.35rem 0;
+                color: var(--text-secondary);
+            }
+            
+            .sub-task-row span:last-child {
+                color: var(--text);
+                font-weight: 500;
+            }
+            
+            .sub-task-id {
+                font-family: monospace;
+                font-size: 0.75rem;
+            }
+            
+            .sub-task-cancel {
+                width: 100%;
+            }
+            
+            .sub-no-tasks {
+                text-align: center;
+                color: var(--text-secondary);
+                font-size: 0.85rem;
+                padding: 2rem 1rem;
+            }
+            
+            /* Warning Box */
             .sub-warning {
-                display: flex; gap: 0.75rem; padding: 1rem;
-                background: rgba(245, 158, 11, 0.1); border-radius: var(--radius);
-                margin-bottom: 1.25rem; text-align: left;
+                display: flex;
+                gap: 0.75rem;
+                padding: 1rem;
+                background: rgba(245, 158, 11, 0.1);
+                border-radius: var(--radius);
+                margin: 1rem 0;
             }
-            .sub-warning i { color: #f59e0b; font-size: 1.25rem; flex-shrink: 0; margin-top: 0.1rem; }
-            .sub-warning-text { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
-            .sub-modal-actions { display: flex; gap: 0.75rem; }
-            .sub-modal-actions button { flex: 1; }
-            .sub-stats-row { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
-            .sub-stat {
-                flex: 1; background: var(--bg-secondary); border-radius: var(--radius);
-                padding: 0.85rem; text-align: center;
+            
+            .sub-warning i {
+                color: #f59e0b;
+                font-size: 1.25rem;
+                flex-shrink: 0;
             }
-            .sub-stat-value { font-size: 1.35rem; font-weight: 800; color: var(--text); }
-            .sub-stat-label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; }
+            
+            .sub-warning-text {
+                font-size: 0.8rem;
+                color: var(--text-secondary);
+                line-height: 1.5;
+            }
+            
+            /* Actions */
+            .sub-modal-actions {
+                display: flex;
+                gap: 0.75rem;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid var(--border);
+            }
+            
+            .sub-modal-actions button {
+                flex: 1;
+            }
+            
+            /* Mobile Responsive */
+            @media (max-width: 768px) {
+                .sub-modal-grid {
+                    grid-template-columns: 1fr;
+                    gap: 1rem;
+                }
+                
+                .sub-modal-section {
+                    padding: 1rem;
+                }
+                
+                .sub-plan-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 0.75rem;
+                }
+                
+                .sub-plan-icon {
+                    width: 42px;
+                    height: 42px;
+                    font-size: 1.1rem;
+                }
+                
+                .sub-stats-grid {
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 0.5rem;
+                }
+                
+                .sub-stat-box {
+                    padding: 0.6rem 0.4rem;
+                }
+                
+                .sub-stat-value {
+                    font-size: 1rem;
+                }
+                
+                .sub-stat-label {
+                    font-size: 0.6rem;
+                }
+                
+                .sub-task-name {
+                    max-width: 140px;
+                }
+                
+                .sub-task-info {
+                    gap: 0.5rem;
+                }
+                
+                .sub-task-icon {
+                    width: 32px;
+                    height: 32px;
+                    font-size: 0.9rem;
+                }
+                
+                .sub-modal-actions {
+                    flex-direction: column;
+                }
+                
+                .sub-modal-actions button {
+                    width: 100%;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .sub-stats-grid {
+                    grid-template-columns: 1fr 1fr 1fr;
+                }
+                
+                .sub-detail-row {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 0.25rem;
+                }
+                
+                .sub-task-header {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+            }
         </style>
+        
         <div class="sub-modal-content">
-            <div class="sub-modal-header">
-                <div class="sub-modal-icon">
-                    <i class="${pkg?.icon || 'ri-vip-crown-line'}"></i>
+            <div class="sub-modal-grid">
+                <!-- Hosting Plan Section -->
+                <div class="sub-modal-section">
+                    <h4 class="sub-section-title"><i class="ri-cloud-line"></i> Hosting Plan</h4>
+                    
+                    <div class="sub-plan-header">
+                        <div class="sub-plan-icon">
+                            <i class="${pkg?.icon || (hasPaidTasks && !hasPaidHosting ? 'ri-rocket-line' : 'ri-vip-crown-line')}"></i>
+                        </div>
+                        <div class="sub-plan-info">
+                            <h3 class="sub-plan-name">${pkg?.name || planDisplayName || (hasPaidTasks ? 'SEO Tasks' : 'Usage')} Plan</h3>
+                            <p class="sub-plan-type">${isSubscribed ? 'Active Subscription' : (hasPaidHosting ? 'Active Plan' : (hasPaidTasks ? 'Task Plan' : 'Usage Plan'))}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="sub-stats-grid">
+                        <div class="sub-stat-box">
+                            <div class="sub-stat-value">${daysLeft}</div>
+                            <div class="sub-stat-label">Days Left</div>
+                        </div>
+                        <div class="sub-stat-box">
+                            <div class="sub-stat-value">${currencySymbol}${lastPayment.toFixed(0)}</div>
+                            <div class="sub-stat-label">Amount</div>
+                        </div>
+                        <div class="sub-stat-box">
+                            <div class="sub-stat-value"><span class="badge badge-${isSubscribed || hasPaidHosting || hasPaidTasks ? 'success' : 'warning'}" style="font-size: 0.7rem;">${isSubscribed ? 'Active' : (hasPaidHosting || hasPaidTasks ? 'Paid' : 'Inactive')}</span></div>
+                            <div class="sub-stat-label">Status</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sub-detail-list">
+                        ${isSubscribed && subscriptionEnd ? `
+                        <div class="sub-detail-row">
+                            <span class="sub-detail-label">Next Billing</span>
+                            <span class="sub-detail-value">${subscriptionEnd.toLocaleDateString()}</span>
+                        </div>
+                        ` : ''}
+                        ${expiryDate ? `
+                        <div class="sub-detail-row">
+                            <span class="sub-detail-label">Expires On</span>
+                            <span class="sub-detail-value">${expiryDate.toLocaleDateString()}</span>
+                        </div>
+                        ` : ''}
+                        <div class="sub-detail-row">
+                            <span class="sub-detail-label">Payment Method</span>
+                            <span class="sub-detail-value">${provider.charAt(0).toUpperCase() + provider.slice(1)}</span>
+                        </div>
+                        <div class="sub-detail-row">
+                            <span class="sub-detail-label">Images Limit</span>
+                            <span class="sub-detail-value">${(planData.images_limit || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="sub-detail-row">
+                            <span class="sub-detail-label">Articles Limit</span>
+                            <span class="sub-detail-value">${(planData.articles_limit || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="sub-detail-row">
+                            <span class="sub-detail-label">AI Credits</span>
+                            <span class="sub-detail-value">${(planData.ai_limit || 0).toLocaleString()}</span>
+                        </div>
+                    </div>
+                    
+                    ${isSubscribed ? `
+                    <button class="btn btn-danger" style="width: 100%;" onclick="confirmCancelHostingSubscription()">
+                        <i class="ri-close-circle-line"></i> Cancel Hosting Subscription
+                    </button>
+                    ` : `
+                    <button class="btn btn-primary" style="width: 100%;" onclick="closeModal(); openPackagePurchaseModal();">
+                        <i class="ri-refresh-line"></i> Upgrade Plan
+                    </button>
+                    `}
                 </div>
-                <div class="sub-modal-info">
-                    <h3 class="sub-modal-title">${pkg?.name || planName} Plan</h3>
-                    <p class="sub-modal-subtitle">${isSubscribed ? 'Active Subscription' : 'One-time Purchase'}</p>
+                
+                <!-- Task Subscriptions Section -->
+                <div class="sub-modal-section">
+                    <h4 class="sub-section-title"><i class="ri-rocket-line"></i> Task Subscriptions (${taskSubscriptions.length})</h4>
+                    
+                    <div class="sub-tasks-list">
+                        ${taskSubscriptionsHtml}
+                    </div>
                 </div>
             </div>
             
-            <div class="sub-stats-row">
-                <div class="sub-stat">
-                    <div class="sub-stat-value">${daysLeft}</div>
-                    <div class="sub-stat-label">Days Left</div>
-                </div>
-                <div class="sub-stat">
-                    <div class="sub-stat-value">$${lastPayment.toFixed(0)}</div>
-                    <div class="sub-stat-label">Last Payment</div>
-                </div>
-            </div>
-            
-            <div class="sub-details-card">
-                <div class="sub-detail-row">
-                    <span class="sub-detail-label">Status</span>
-                    <span class="sub-detail-value"><span class="badge badge-success">Active</span></span>
-                </div>
-                <div class="sub-detail-row">
-                    <span class="sub-detail-label">Plan Type</span>
-                    <span class="sub-detail-value">${isSubscribed ? 'Subscription' : 'One-time'}</span>
-                </div>
-                ${isSubscribed && subscriptionEnd ? `
-                <div class="sub-detail-row">
-                    <span class="sub-detail-label">Next Billing</span>
-                    <span class="sub-detail-value">${subscriptionEnd.toLocaleDateString()}</span>
-                </div>
-                ` : ''}
-                ${expiryDate ? `
-                <div class="sub-detail-row">
-                    <span class="sub-detail-label">Expires On</span>
-                    <span class="sub-detail-value">${expiryDate.toLocaleDateString()}</span>
-                </div>
-                ` : ''}
-                <div class="sub-detail-row">
-                    <span class="sub-detail-label">Payment Method</span>
-                    <span class="sub-detail-value">${provider.charAt(0).toUpperCase() + provider.slice(1)}</span>
-                </div>
-                <div class="sub-detail-row">
-                    <span class="sub-detail-label">Images Limit</span>
-                    <span class="sub-detail-value">${(planData.images_limit || 0).toLocaleString()}</span>
-                </div>
-                <div class="sub-detail-row">
-                    <span class="sub-detail-label">Articles Limit</span>
-                    <span class="sub-detail-value">${(planData.articles_limit || 0).toLocaleString()}</span>
-                </div>
-            </div>
-            
-            ${isSubscribed ? `
+            ${isSubscribed || taskSubscriptions.length > 0 ? `
             <div class="sub-warning">
                 <i class="ri-information-line"></i>
                 <div class="sub-warning-text">
-                    If you cancel, your subscription will remain active until the end of the current billing period. 
-                    You won't be charged again, and your plan will revert to Free after expiration.
+                    Cancelling a subscription will keep it active until the end of the current billing period. 
+                    You won't be charged again after cancellation.
                 </div>
             </div>
+            ` : ''}
             
             <div class="sub-modal-actions">
                 <button class="btn btn-secondary" onclick="closeModal()">
                     <i class="ri-close-line"></i> Close
                 </button>
-                <button class="btn btn-danger" onclick="confirmCancelSubscription()">
-                    <i class="ri-close-circle-line"></i> Cancel Subscription
-                </button>
             </div>
-            ` : `
-            <div class="sub-modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal()">
-                    <i class="ri-close-line"></i> Close
-                </button>
-                <button class="btn btn-primary" onclick="closeModal(); openPackagePurchaseModal();">
-                    <i class="ri-refresh-line"></i> Renew Plan
-                </button>
-            </div>
-            `}
         </div>
     `;
     
-    showModal('Plan Management', modalContent, '480px');
+    showModal('Subscription Management', modalContent, '700px');
 }
 
-// Confirm Cancel Subscription
-async function confirmCancelSubscription() {
+// Confirm Cancel Hosting Subscription
+async function confirmCancelHostingSubscription() {
     closeModal();
     
     const result = await Swal.fire({
-        title: 'Cancel Subscription?',
+        title: 'Cancel Hosting Subscription?',
         html: `
             <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                Are you sure you want to cancel your subscription?
+                Are you sure you want to cancel your hosting subscription?
             </p>
             <p style="color: var(--text-secondary); font-size: 0.875rem;">
                 Your plan will remain active until the end of the current billing period.
@@ -7498,12 +7951,12 @@ async function confirmCancelSubscription() {
             Swal.fire({
                 icon: 'success',
                 title: 'Subscription Cancelled',
-                text: 'Your subscription has been cancelled. You\'ll retain access until the end of your billing period.',
+                text: 'Your hosting subscription has been cancelled. You\'ll retain access until the end of your billing period.',
                 customClass: { popup: 'swal2-toast' }
             });
             loadBilling(); // Reload the billing page
         } catch (error) {
-            console.error('Failed to cancel subscription:', error);
+            console.error('Failed to cancel hosting subscription:', error);
             Swal.fire({
                 icon: 'error',
                 title: 'Cancellation Failed',
@@ -7512,6 +7965,69 @@ async function confirmCancelSubscription() {
             });
         }
     }
+}
+
+// Confirm Cancel Task Subscription
+async function confirmCancelTaskSubscription(taskId, taskDescription) {
+    closeModal();
+    
+    const result = await Swal.fire({
+        title: 'Cancel Task Subscription?',
+        html: `
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                Are you sure you want to cancel the subscription for:
+            </p>
+            <p style="color: var(--text); font-weight: 600; margin-bottom: 1rem;">
+                ${taskDescription}
+            </p>
+            <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                The task will remain active until the end of the current billing period.
+            </p>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: 'var(--bg-tertiary)',
+        confirmButtonText: 'Yes, Cancel Subscription',
+        cancelButtonText: 'Keep Subscription',
+        customClass: { popup: 'swal2-toast' }
+    });
+    
+    if (result.isConfirmed) {
+        Swal.fire({
+            title: 'Cancelling...',
+            didOpen: () => Swal.showLoading(),
+            allowOutsideClick: false,
+            customClass: { popup: 'swal2-toast' }
+        });
+        
+        try {
+            await api('/tasks/cancel-subscription', {
+                method: 'POST',
+                body: JSON.stringify({ task_id: taskId })
+            });
+            Swal.fire({
+                icon: 'success',
+                title: 'Task Subscription Cancelled',
+                text: 'The task subscription has been cancelled. It will remain active until the end of the billing period.',
+                customClass: { popup: 'swal2-toast' }
+            });
+            loadBilling(); // Reload the billing page
+        } catch (error) {
+            console.error('Failed to cancel task subscription:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Cancellation Failed',
+                text: error.message || 'Failed to cancel task subscription. Please try again.',
+                customClass: { popup: 'swal2-toast' }
+            });
+        }
+    }
+}
+
+// Legacy function for backward compatibility
+async function confirmCancelSubscription() {
+    await confirmCancelHostingSubscription();
 }
 // Profile Page
 function loadProfile() {
