@@ -7288,7 +7288,11 @@ async function loadBilling(page = 1, type = 'all') {
                             case 'expired': statusClass = 'danger'; statusText = 'Expired'; break;
                             case 'active': statusClass = 'success'; statusText = 'Active'; break;
                         }
-                        const descTruncated = description.length > 30 ? description.substring(0, 30) + '...' : description;
+                        // Remove https:// prefix for display
+                        const displayDesc = description.replace(/^https?:\/\//, '');
+                        const descTruncated = displayDesc.length > 30 ? displayDesc.substring(0, 30) + '...' : displayDesc;
+                        const taskId = payment.task_id || '';
+                        const hasTaskId = isTask && taskId;
                         return '<tr>' +
                             '<td>' +
                                 '<div class="transaction-type-cell">' +
@@ -7297,7 +7301,9 @@ async function loadBilling(page = 1, type = 'all') {
                                     '</div>' +
                                     '<div class="transaction-type-info">' +
                                         '<span class="transaction-type-name">' + paymentType + '</span>' +
-                                        '<span class="transaction-type-desc">' + descTruncated + '</span>' +
+                                        (hasTaskId ? 
+                                            '<span class="transaction-type-desc" style="cursor: pointer; color: var(--primary);" onclick="navigateTo(\'tasks\'); setTimeout(() => viewTaskDetails(\'' + taskId + '\'), 300);" title="View task details">' + descTruncated + ' <i class="ri-external-link-line" style="font-size: 0.65rem;"></i></span>' :
+                                            '<span class="transaction-type-desc">' + descTruncated + '</span>') +
                                     '</div>' +
                                 '</div>' +
                             '</td>' +
@@ -7356,7 +7362,11 @@ async function loadBilling(page = 1, type = 'all') {
                         case 'expired': statusClass = 'danger'; statusText = 'Expired'; break;
                         case 'active': statusClass = 'success'; statusText = 'Active'; break;
                     }
-                    const descTruncated = description.length > 25 ? description.substring(0, 25) + '...' : description;
+                    // Remove https:// prefix for display
+                    const displayDesc = description.replace(/^https?:\/\//, '');
+                    const descTruncated = displayDesc.length > 25 ? displayDesc.substring(0, 25) + '...' : displayDesc;
+                    const taskId = payment.task_id || '';
+                    const hasTaskId = isTask && taskId;
                     const showActions = ['paid', 'cancelled'].includes(payment.status?.toLowerCase()) || (payment.status?.toLowerCase() === 'pending' && payment.payment_url);
                     let actionsHtml = '';
                     if (showActions) {
@@ -7377,7 +7387,9 @@ async function loadBilling(page = 1, type = 'all') {
                                 '</div>' +
                                 '<div>' +
                                     '<div style="font-weight: 600;">' + paymentType + '</div>' +
-                                    '<div style="font-size: 0.75rem; color: var(--text-secondary);">' + descTruncated + '</div>' +
+                                    (hasTaskId ? 
+                                        '<div style="font-size: 0.75rem; color: var(--primary); cursor: pointer;" onclick="event.stopPropagation(); navigateTo(\'tasks\'); setTimeout(() => viewTaskDetails(\'' + taskId + '\'), 300);" title="View task details">' + descTruncated + ' <i class="ri-external-link-line" style="font-size: 0.65rem;"></i></div>' :
+                                        '<div style="font-size: 0.75rem; color: var(--text-secondary);">' + descTruncated + '</div>') +
                                 '</div>' +
                             '</div>' +
                             '<span class="badge badge-' + statusClass + '">' + statusText + '</span>' +
@@ -8465,16 +8477,16 @@ function showSubscriptionModal() {
                             const safeDesc = escapeHtml(rawDesc);
                             const displayName = rawDesc.replace(/^https?:\/\//, '');
                             const safeDisplayName = escapeHtml(displayName);
-                            const taskUrl = rawDesc.startsWith('http') ? rawDesc : 'https://' + rawDesc;
-                            const safeTaskUrl = escapeHtml(taskUrl);
                             const safeBillingId = escapeHtml(task.billing_id || '');
+                            const safeTaskId = escapeHtml(task.task_id || '');
+                            const hasTaskId = !!task.task_id;
                             return `
                                 <div class="sub-task-card">
                                     <div class="sub-task-icon-sm"><i class="ri-rocket-line"></i></div>
                                     <div class="sub-task-content">
                                         <div class="sub-task-name-row">
-                                            <div class="name" onclick="window.open('${safeTaskUrl}', '_blank')" title="Open ${safeDisplayName}">
-                                                ${safeDisplayName}<i class="ri-external-link-line link-icon"></i>
+                                            <div class="name" onclick="${hasTaskId ? `closeModal(); navigateTo('tasks'); setTimeout(() => viewTaskDetails('${safeTaskId}'), 300);` : ''}" title="${hasTaskId ? 'View task in SEO Tasks' : safeDisplayName}" style="${hasTaskId ? 'cursor: pointer;' : ''}">
+                                                ${safeDisplayName}${hasTaskId ? '<i class="ri-arrow-right-line link-icon"></i>' : ''}
                                             </div>
                                             <span class="sub-task-status mobile-only ${task.status === 'active' ? 'active' : 'inactive'}">${task.status || 'Unknown'}</span>
                                         </div>
