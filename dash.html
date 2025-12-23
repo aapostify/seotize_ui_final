@@ -13757,32 +13757,32 @@ function initializeCountryMap(user) {
   // ---- Theme-aware Color Palette ----
   const colors = isDark ? {
     // Dark mode colors
-    noDataFill: '#2a2a2a',      // Matches --bg-tertiary dark
-    noDataEdge: '#3a3a3a',      // Subtle border
+    noDataFill: '#374151',      // Gray-700 for countries
+    noDataEdge: '#4b5563',      // Gray-600 border
     rampMin: '#a5b4fc',         // Light indigo
     rampMax: '#6366f1',         // Primary indigo
     hoverFill: '#22c55e',       // Green accent
     hoverEdge: '#16a34a',       // Darker green
-    hoverNoData: '#3a3a3a',     // Subtle hover
-    background: '#1a1a1a',      // Matches --bg-secondary dark
+    hoverNoData: '#4b5563',     // Subtle hover
+    background: '#1f2937',      // Gray-800 for ocean
     tooltipBg: '#1f1f1f',
     tooltipText: '#ffffff',
-    controlBg: '#2a2a2a',
-    controlIcon: '#a0a0a0'
+    controlBg: '#374151',
+    controlIcon: '#9ca3af'
   } : {
     // Light mode colors
-    noDataFill: '#e5e7eb',      // Light gray
-    noDataEdge: '#d1d5db',      // Gray border
+    noDataFill: '#e5e7eb',      // Gray-200 for countries
+    noDataEdge: '#d1d5db',      // Gray-300 border
     rampMin: '#c7d2fe',         // Very light indigo
     rampMax: '#6366f1',         // Primary indigo
     hoverFill: '#10b981',       // Green accent
     hoverEdge: '#059669',       // Darker green
     hoverNoData: '#d1d5db',     // Subtle hover
-    background: '#ffffff',      // White background
+    background: '#f1f5f9',      // Slate-100 for ocean
     tooltipBg: '#ffffff',
     tooltipText: '#1f2937',
-    controlBg: '#f3f4f6',
-    controlIcon: '#6b7280'
+    controlBg: '#e2e8f0',
+    controlIcon: '#64748b'
   };
   
   // ---- Build data ONLY from task analytics ----
@@ -13848,6 +13848,12 @@ function initializeCountryMap(user) {
     // Disable amCharts logo
     root._logo?.dispose();
     
+    // Set root container background
+    root.container.set("background", am5.Rectangle.new(root, {
+      fill: am5.color(hexToNum(colors.background)),
+      fillOpacity: 1
+    }));
+    
     if (typeof am5themes_Animated !== 'undefined') {
       root.setThemes([ am5themes_Animated.new(root) ]);
     }
@@ -13857,6 +13863,12 @@ function initializeCountryMap(user) {
       panY: "translateY",
       projection: am5map.geoMercator(),
       homeGeoPoint: { longitude: 10, latitude: 30 }
+    }));
+    
+    // Set chart background (ocean/water color)
+    chart.set("background", am5.Rectangle.new(root, {
+      fill: am5.color(hexToNum(colors.background)),
+      fillOpacity: 1
     }));
     
     const polygonSeries = chart.series.push(
