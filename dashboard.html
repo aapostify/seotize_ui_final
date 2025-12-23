@@ -6187,10 +6187,10 @@ async function loadBilling(page = 1, type = 'all') {
         const aiLimit = usage.ai?.limit || 0;
         const aiRemaining = usage.ai?.remaining || 0;
         
-        // Calculate percentages (used percentage, not remaining)
-        const imagesUsedPercent = imagesLimit > 0 ? Math.min((imagesUsed / imagesLimit) * 100, 100) : 0;
-        const articlesUsedPercent = articlesLimit > 0 ? Math.min((articlesUsed / articlesLimit) * 100, 100) : 0;
-        const aiUsedPercent = aiLimit > 0 ? Math.min((aiUsed / aiLimit) * 100, 100) : 0;
+        // Calculate remaining percentages (shows available, not used)
+        const imagesRemainingPercent = imagesLimit > 0 ? Math.min((imagesRemaining / imagesLimit) * 100, 100) : 0;
+        const articlesRemainingPercent = articlesLimit > 0 ? Math.min((articlesRemaining / articlesLimit) * 100, 100) : 0;
+        const aiRemainingPercent = aiLimit > 0 ? Math.min((aiRemaining / aiLimit) * 100, 100) : 0;
         
         // Store plan data for showSubscriptionModal
         window.currentPlanData = {
@@ -7168,54 +7168,54 @@ async function loadBilling(page = 1, type = 'all') {
                 </div>
             </div>
             
-            <!-- Usage Section - Like Article Usage Plan -->
+            <!-- Usage Section - Shows Available/Remaining -->
             <div class="plan-usage-section">
                 <div class="plan-usage-item">
                     <div class="plan-usage-header">
                         <div class="plan-usage-info">
                             <div class="plan-usage-icon images"><i class="ri-image-line"></i></div>
-                            <span class="plan-usage-label">Images</span>
+                            <span class="plan-usage-label">Images Available</span>
                         </div>
-                        <span class="plan-usage-percent">${Math.round(imagesUsedPercent)}%</span>
+                        <span class="plan-usage-percent">${Math.round(imagesRemainingPercent)}%</span>
                     </div>
                     <div class="plan-usage-bar">
-                        <div class="plan-usage-fill ${imagesUsedPercent > 90 ? 'danger' : imagesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${imagesUsedPercent}%;"></div>
+                        <div class="plan-usage-fill ${imagesRemainingPercent < 10 ? 'danger' : imagesRemainingPercent < 30 ? 'warning' : 'safe'}" style="width: ${imagesRemainingPercent}%;"></div>
                     </div>
                     <div class="plan-usage-stats">
-                        <span><strong>${imagesUsed.toLocaleString()}</strong> used</span>
-                        <span><strong>${imagesRemaining.toLocaleString()}</strong> remaining / <strong>${imagesLimit.toLocaleString()}</strong> total</span>
+                        <span><strong>${imagesRemaining.toLocaleString()}</strong> available</span>
+                        <span><strong>${imagesUsed.toLocaleString()}</strong> used / <strong>${imagesLimit.toLocaleString()}</strong> total</span>
                     </div>
                 </div>
                 <div class="plan-usage-item">
                     <div class="plan-usage-header">
                         <div class="plan-usage-info">
                             <div class="plan-usage-icon articles"><i class="ri-article-line"></i></div>
-                            <span class="plan-usage-label">Articles</span>
+                            <span class="plan-usage-label">Articles Available</span>
                         </div>
-                        <span class="plan-usage-percent">${Math.round(articlesUsedPercent)}%</span>
+                        <span class="plan-usage-percent">${Math.round(articlesRemainingPercent)}%</span>
                     </div>
                     <div class="plan-usage-bar">
-                        <div class="plan-usage-fill ${articlesUsedPercent > 90 ? 'danger' : articlesUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${articlesUsedPercent}%;"></div>
+                        <div class="plan-usage-fill ${articlesRemainingPercent < 10 ? 'danger' : articlesRemainingPercent < 30 ? 'warning' : 'safe'}" style="width: ${articlesRemainingPercent}%;"></div>
                     </div>
                     <div class="plan-usage-stats">
-                        <span><strong>${articlesUsed.toLocaleString()}</strong> used</span>
-                        <span><strong>${articlesRemaining.toLocaleString()}</strong> remaining / <strong>${articlesLimit.toLocaleString()}</strong> total</span>
+                        <span><strong>${articlesRemaining.toLocaleString()}</strong> available</span>
+                        <span><strong>${articlesUsed.toLocaleString()}</strong> used / <strong>${articlesLimit.toLocaleString()}</strong> total</span>
                     </div>
                 </div>
                 <div class="plan-usage-item">
                     <div class="plan-usage-header">
                         <div class="plan-usage-info">
                             <div class="plan-usage-icon ai"><i class="ri-robot-line"></i></div>
-                            <span class="plan-usage-label">AI Credits</span>
+                            <span class="plan-usage-label">AI Credits Available</span>
                         </div>
-                        <span class="plan-usage-percent">${Math.round(aiUsedPercent)}%</span>
+                        <span class="plan-usage-percent">${Math.round(aiRemainingPercent)}%</span>
                     </div>
                     <div class="plan-usage-bar">
-                        <div class="plan-usage-fill ${aiUsedPercent > 90 ? 'danger' : aiUsedPercent > 70 ? 'warning' : 'safe'}" style="width: ${aiUsedPercent}%;"></div>
+                        <div class="plan-usage-fill ${aiRemainingPercent < 10 ? 'danger' : aiRemainingPercent < 30 ? 'warning' : 'safe'}" style="width: ${aiRemainingPercent}%;"></div>
                     </div>
                     <div class="plan-usage-stats">
-                        <span><strong>${aiUsed.toLocaleString()}</strong> used</span>
-                        <span><strong>${aiRemaining.toLocaleString()}</strong> remaining / <strong>${aiLimit.toLocaleString()}</strong> total</span>
+                        <span><strong>${aiRemaining.toLocaleString()}</strong> available</span>
+                        <span><strong>${aiUsed.toLocaleString()}</strong> used / <strong>${aiLimit.toLocaleString()}</strong> total</span>
                     </div>
                 </div>
                 <div class="plan-usage-item">
