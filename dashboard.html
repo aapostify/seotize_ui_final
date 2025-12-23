@@ -4804,9 +4804,16 @@ function toggleTheme() {
     localStorage.setItem('theme', newTheme);
     updateThemeIcon(newTheme);
     // Refresh charts and map with new theme
-    if (charts.traffic) {
-        setTimeout(updateCharts, 100);
-    }
+    setTimeout(() => {
+        if (charts.traffic) {
+            updateCharts();
+        }
+        // Always reinitialize the country map on theme change
+        const mapContainer = document.getElementById('countryMap');
+        if (mapContainer && currentData.user) {
+            initializeCountryMap(currentData.user);
+        }
+    }, 100);
 }
 function updateThemeIcon(theme) {
     document.getElementById('themeIcon').className = theme === 'light' ? 'ri-moon-line' : 'ri-sun-line';
@@ -13745,44 +13752,49 @@ function initializeCountryMap(user) {
   const container = document.getElementById('countryMap');
   if (!container) return;
   if (!container.style.height) container.style.height = '420px';
-  // Dispose previous instance
-  if (container.__am5root && !container.__am5root.isDisposed()) {
-    try { container.__am5root.dispose(); } catch (_) {}
+  
+  // Dispose previous instance completely
+  if (container.__am5root) {
+    try { 
+      if (!container.__am5root.isDisposed()) {
+        container.__am5root.dispose(); 
+      }
+    } catch (_) {}
     container.__am5root = null;
   }
   
   // ---- Detect current theme ----
   const isDark = document.body.getAttribute('data-theme') === 'dark';
   
-  // ---- Theme-aware Color Palette ----
+  // ---- Theme-aware Color Palette - Ocean is distinctly different from land ----
   const colors = isDark ? {
     // Dark mode colors
-    noDataFill: '#374151',      // Gray-700 for countries
-    noDataEdge: '#4b5563',      // Gray-600 border
-    rampMin: '#a5b4fc',         // Light indigo
-    rampMax: '#6366f1',         // Primary indigo
+    ocean: '#0f172a',           // Very dark blue (slate-900) - distinct ocean
+    noDataFill: '#475569',      // Slate-600 for countries - clearly different from ocean
+    noDataEdge: '#64748b',      // Slate-500 border
+    rampMin: '#818cf8',         // Light indigo
+    rampMax: '#4f46e5',         // Deep indigo
     hoverFill: '#22c55e',       // Green accent
     hoverEdge: '#16a34a',       // Darker green
-    hoverNoData: '#4b5563',     // Subtle hover
-    background: '#1f2937',      // Gray-800 for ocean
-    tooltipBg: '#1f1f1f',
-    tooltipText: '#ffffff',
-    controlBg: '#374151',
-    controlIcon: '#9ca3af'
+    hoverNoData: '#64748b',     // Subtle hover
+    tooltipBg: '#1e293b',
+    tooltipText: '#f1f5f9',
+    controlBg: '#334155',
+    controlIcon: '#cbd5e1'
   } : {
     // Light mode colors
-    noDataFill: '#e5e7eb',      // Gray-200 for countries
-    noDataEdge: '#d1d5db',      // Gray-300 border
-    rampMin: '#c7d2fe',         // Very light indigo
-    rampMax: '#6366f1',         // Primary indigo
+    ocean: '#dbeafe',           // Light blue (blue-100) - looks like water
+    noDataFill: '#f8fafc',      // Slate-50 for countries - white/light gray land
+    noDataEdge: '#cbd5e1',      // Slate-300 border
+    rampMin: '#a5b4fc',         // Light indigo
+    rampMax: '#4f46e5',         // Deep indigo
     hoverFill: '#10b981',       // Green accent
     hoverEdge: '#059669',       // Darker green
-    hoverNoData: '#d1d5db',     // Subtle hover
-    background: '#f1f5f9',      // Slate-100 for ocean
+    hoverNoData: '#e2e8f0',     // Subtle hover
     tooltipBg: '#ffffff',
-    tooltipText: '#1f2937',
-    controlBg: '#e2e8f0',
-    controlIcon: '#64748b'
+    tooltipText: '#1e293b',
+    controlBg: '#f1f5f9',
+    controlIcon: '#475569'
   };
   
   // ---- Build data ONLY from task analytics ----
@@ -13807,8 +13819,8 @@ function initializeCountryMap(user) {
   
   const countriesWithData = new Set(data.map(d => d.id));
   
-  // Set container background based on theme
-  container.innerHTML = `<div id="countryMapCanvas" style="width:100%;height:100%;border-radius:var(--radius);overflow:hidden;background:${colors.background};transition:background 0.3s ease;"></div>`;
+  // Set container background based on theme - ocean color
+  container.innerHTML = `<div id="countryMapCanvas" style="width:100%;height:100%;border-radius:var(--radius);overflow:hidden;background:${colors.ocean};"></div>`;
   
   // ---- Helpers ----
   const ready = () =>
@@ -13848,9 +13860,9 @@ function initializeCountryMap(user) {
     // Disable amCharts logo
     root._logo?.dispose();
     
-    // Set root container background
+    // Set root container background - ocean color
     root.container.set("background", am5.Rectangle.new(root, {
-      fill: am5.color(hexToNum(colors.background)),
+      fill: am5.color(hexToNum(colors.ocean)),
       fillOpacity: 1
     }));
     
@@ -13867,7 +13879,7 @@ function initializeCountryMap(user) {
     
     // Set chart background (ocean/water color)
     chart.set("background", am5.Rectangle.new(root, {
-      fill: am5.color(hexToNum(colors.background)),
+      fill: am5.color(hexToNum(colors.ocean)),
       fillOpacity: 1
     }));
     
