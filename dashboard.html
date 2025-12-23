@@ -7292,7 +7292,8 @@ async function loadBilling(page = 1, type = 'all') {
                         const displayDesc = description.replace(/^https?:\/\//, '');
                         const descTruncated = displayDesc.length > 30 ? displayDesc.substring(0, 30) + '...' : displayDesc;
                         const taskId = payment.task_id || '';
-                        const hasTaskId = isTask && taskId;
+                        const isCancelled = payment.status?.toLowerCase() === 'cancelled';
+                        const hasTaskId = isTask && taskId && !isCancelled;
                         return '<tr>' +
                             '<td>' +
                                 '<div class="transaction-type-cell">' +
@@ -7366,7 +7367,8 @@ async function loadBilling(page = 1, type = 'all') {
                     const displayDesc = description.replace(/^https?:\/\//, '');
                     const descTruncated = displayDesc.length > 25 ? displayDesc.substring(0, 25) + '...' : displayDesc;
                     const taskId = payment.task_id || '';
-                    const hasTaskId = isTask && taskId;
+                    const isCancelled = payment.status?.toLowerCase() === 'cancelled';
+                    const hasTaskId = isTask && taskId && !isCancelled;
                     const showActions = ['paid', 'cancelled'].includes(payment.status?.toLowerCase()) || (payment.status?.toLowerCase() === 'pending' && payment.payment_url);
                     let actionsHtml = '';
                     if (showActions) {
