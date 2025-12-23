@@ -8496,7 +8496,7 @@ function showSubscriptionModal() {
                                         </div>
                                         ${task.status === 'active' ? `
                                         <div class="sub-task-action mobile-only">
-                                            <button class="btn btn-sm btn-danger" onclick="confirmCancelTaskSubscription('${safeBillingId}', '${safeDesc}')">
+                                            <button class="btn btn-sm btn-danger" onclick="confirmCancelTaskSubscription('${safeBillingId}', '${safeDisplayName}')">
                                                 <i class="ri-close-line"></i> Cancel
                                             </button>
                                         </div>
@@ -8505,7 +8505,7 @@ function showSubscriptionModal() {
                                     <span class="sub-task-status desktop-only ${task.status === 'active' ? 'active' : 'inactive'}">${task.status || 'Unknown'}</span>
                                     ${task.status === 'active' ? `
                                     <div class="sub-task-action desktop-only">
-                                        <button class="btn btn-sm btn-danger" onclick="confirmCancelTaskSubscription('${safeBillingId}', '${safeDesc}')">
+                                        <button class="btn btn-sm btn-danger" onclick="confirmCancelTaskSubscription('${safeBillingId}', '${safeDisplayName}')">
                                             <i class="ri-close-line"></i> Cancel
                                         </button>
                                     </div>
