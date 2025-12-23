@@ -4803,15 +4803,20 @@ function toggleTheme() {
     document.body.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
     updateThemeIcon(newTheme);
-    // Refresh charts and map with new theme
+    // Refresh all charts and map with new theme
     setTimeout(() => {
-        if (charts.traffic) {
-            updateCharts();
-        }
-        // Always reinitialize the country map on theme change
-        const mapContainer = document.getElementById('countryMap');
-        if (mapContainer && currentData.user) {
-            initializeCountryMap(currentData.user);
+        if (currentData.user) {
+            // Reinitialize all charts (Task Performance, Traffic, etc.)
+            const taskChart = document.getElementById('taskChart');
+            const trafficChart = document.getElementById('trafficChart');
+            if (taskChart || trafficChart) {
+                initializeCharts(currentData.user);
+            }
+            // Reinitialize the country map
+            const mapContainer = document.getElementById('countryMap');
+            if (mapContainer) {
+                initializeCountryMap(currentData.user);
+            }
         }
     }, 100);
 }
