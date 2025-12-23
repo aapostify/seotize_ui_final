@@ -13740,7 +13740,7 @@ function generateTaskChartData(user) {
         tasks: [user.usage_summary?.active_tasks || 0]
     };
 }
-// amCharts v5 World Map ? Indigo ramp, hover = green
+// amCharts v5 World Map - Modern design, only shows task data
 function initializeCountryMap(user) {
   const container = document.getElementById('countryMap');
   if (!container) return;
@@ -13750,13 +13750,15 @@ function initializeCountryMap(user) {
     try { container.__am5root.dispose(); } catch (_) {}
     container.__am5root = null;
   }
-  // ---- Colors ----
-  const RAMP_MIN   = '#a5b4fc'; // light indigo
-  const RAMP_MAX   = '#4338ca'; // deep indigo
-  const HOVER_FILL = '#10b981'; // green on hover
-  const HOVER_EDGE = '#065f46'; // darker green stroke
-  const BASE_EDGE  = '#374151'; // indigo border
-  // ---- Build data ----
+  // ---- Modern Color Palette ----
+  const NO_DATA_FILL = '#1e293b';    // Dark slate for countries without data
+  const NO_DATA_EDGE = '#334155';    // Slightly lighter edge
+  const RAMP_MIN     = '#818cf8';    // Light indigo for low values
+  const RAMP_MAX     = '#4f46e5';    // Deep indigo for high values
+  const HOVER_FILL   = '#22c55e';    // Green on hover (only for countries with data)
+  const HOVER_EDGE   = '#16a34a';    // Darker green stroke
+  const HOVER_NO_DATA = '#334155';   // Subtle hover for no-data countries
+  // ---- Build data ONLY from task analytics ----
   const src = user?.data?.data?.user ?? user?.data?.user ?? user?.user ?? user;
   const counts = {};
   const monthly = src?.analytics?.monthly_stats || {};
@@ -13764,20 +13766,22 @@ function initializeCountryMap(user) {
     const cc = m?.country || {};
     for (const [iso2, v] of Object.entries(cc)) {
       const k = String(iso2).toUpperCase();
-      counts[k] = (counts[k] || 0) + (Number(v) || 0);
+      const val = Number(v) || 0;
+      if (val > 0) { // Only add countries with actual data
+        counts[k] = (counts[k] || 0) + val;
+      }
     }
   });
-  if (Object.keys(counts).length === 0 && Array.isArray(src?.sessions)) {
-    src.sessions.forEach(s => {
-      const k = (s.country_code || s.country || '').toUpperCase();
-      if (k) counts[k] = (counts[k] || 0) + 1;
-    });
-  }
+  // Create data array with country IDs that have values
   const data = Object.entries(counts).map(([id, value]) => ({
     id,
     value: Number(value) || 0
-  }));
-  container.innerHTML = `<div id="countryMapCanvas" style="width:100%;height:100%;"></div>`;
+  })).filter(d => d.value > 0); // Only include countries with data
+  
+  // Create a Set of country IDs that have data for quick lookup
+  const countriesWithData = new Set(data.map(d => d.id));
+  
+  container.innerHTML = `<div id="countryMapCanvas" style="width:100%;height:100%;border-radius:12px;overflow:hidden;background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);"></div>`;
   // ---- Helpers ----
   const ready = () =>
     typeof window.am5 !== 'undefined' &&
@@ -13811,10 +13815,22 @@ function initializeCountryMap(user) {
   function boot() {
     const root = am5.Root.new("countryMapCanvas");
     container.__am5root = root;
+    // Disable amCharts logo
+    root._logo?.dispose();
     if (typeof am5themes_Animated !== 'undefined') {
       root.setThemes([ am5themes_Animated.new(root) ]);
     }
-    const chart = root.container.children.push(am5map.MapChart.new(root, {}));
+    const chart = root.container.children.push(am5map.MapChart.new(root, {
+      panX: "rotateX",
+      panY: "translateY",
+      projection: am5map.geoMercator(),
+      homeGeoPoint: { longitude: 10, latitude: 30 }
+    }));
+    // Add subtle background
+    chart.set("background", am5.Rectangle.new(root, {
+      fill: am5.color(0x0f172a),
+      fillOpacity: 0
+    }));
     const polygonSeries = chart.series.push(
       am5map.MapPolygonSeries.new(root, {
         geoJSON: am5geodata_worldLow,
@@ -13823,35 +13839,93 @@ function initializeCountryMap(user) {
         calculateAggregates: true
       })
     );
-    const maxVal = Math.max(...data.map(d => d.value), 1);
-    const minVal = Math.min(...data.map(d => d.value), 0);
+    const maxVal = data.length > 0 ? Math.max(...data.map(d => d.value), 1) : 1;
+    const minVal = data.length > 0 ? Math.min(...data.map(d => d.value), 0) : 0;
     const range  = Math.max(1, maxVal - minVal);
     const polyTpl = polygonSeries.mapPolygons.template;
     polyTpl.setAll({
-      tooltipText: "{name}: [bold]{value}[/]",
-      strokeOpacity: 0.7,
-      stroke: am5.color(hexToNum(BASE_EDGE)),
+      strokeOpacity: 0.4,
+      stroke: am5.color(hexToNum(NO_DATA_EDGE)),
+      strokeWidth: 0.5,
       fillOpacity: 1,
-      interactive: true,
-      cursorOverStyle: "pointer"
+      interactive: true
     });
-    // Hover turns country fill GREEN
-    polyTpl.states.create("hover", {
-      fill: am5.color(hexToNum(HOVER_FILL)),
-      stroke: am5.color(hexToNum(HOVER_EDGE)),
-      strokeWidth: 1.2
-    });
-    // Adapter: indigo ramp for normal state
-    polyTpl.adapters.add("fill", (current, target) => {
+    // Dynamic tooltip - only show for countries with data
+    polyTpl.adapters.add("tooltipText", (text, target) => {
+      const id = target?.dataItem?.get("id");
       const v = target?.dataItem?.get("value");
-      if (v == null || isNaN(v)) return am5.color(hexToNum(RAMP_MIN));
+      if (countriesWithData.has(id) && v > 0) {
+        return "{name}: [bold]{value}[/] visits";
+      }
+      return ""; // No tooltip for countries without data
+    });
+    // Dynamic cursor style
+    polyTpl.adapters.add("cursorOverStyle", (style, target) => {
+      const id = target?.dataItem?.get("id");
+      return countriesWithData.has(id) ? "pointer" : "default";
+    });
+    // Hover state - different for data vs no-data countries
+    polyTpl.states.create("hover", {
+      strokeWidth: 1.5,
+      strokeOpacity: 0.8
+    });
+    polyTpl.adapters.add("fill", (current, target) => {
+      const id = target?.dataItem?.get("id");
+      const v = target?.dataItem?.get("value");
+      const isHover = target?.isHover?.();
+      // Countries without data
+      if (!countriesWithData.has(id) || v == null || v === 0) {
+        return am5.color(hexToNum(isHover ? HOVER_NO_DATA : NO_DATA_FILL));
+      }
+      // Countries with data - apply gradient based on value
+      if (isHover) {
+        return am5.color(hexToNum(HOVER_FILL));
+      }
       const t = (v - minVal) / range;
       return am5.color(gradient(RAMP_MIN, RAMP_MAX, t));
     });
+    // Hover stroke color
+    polyTpl.adapters.add("stroke", (current, target) => {
+      const id = target?.dataItem?.get("id");
+      const isHover = target?.isHover?.();
+      if (isHover && countriesWithData.has(id)) {
+        return am5.color(hexToNum(HOVER_EDGE));
+      }
+      return am5.color(hexToNum(NO_DATA_EDGE));
+    });
     if (data.length > 0) polygonSeries.data.setAll(data);
     polyTpl.events.on("pointerover", ev => ev.target.toFront());
+    // Enable zooming
     chart.set("wheelY", "zoom");
     chart.set("wheelX", "zoom");
+    chart.set("maxZoomLevel", 8);
+    chart.set("minZoomLevel", 1);
+    // Add zoom controls
+    chart.set("zoomControl", am5map.ZoomControl.new(root, {
+      x: am5.p100,
+      centerX: am5.p100,
+      y: am5.p100,
+      centerY: am5.p100,
+      paddingRight: 15,
+      paddingBottom: 15
+    }));
+    // Home button to reset zoom
+    const homeButton = chart.children.push(am5.Button.new(root, {
+      paddingTop: 8,
+      paddingBottom: 8,
+      paddingLeft: 10,
+      paddingRight: 10,
+      x: am5.p100,
+      centerX: am5.p100,
+      y: 10,
+      opacity: 0.7,
+      marginRight: 15,
+      icon: am5.Graphics.new(root, {
+        svgPath: "M16,8 L14,8 L14,16 L10,16 L10,10 L6,10 L6,16 L2,16 L2,8 L0,8 L8,0 L16,8 Z M16,8",
+        fill: am5.color(0xffffff)
+      })
+    }));
+    homeButton.events.on("click", () => chart.goHome());
     const ro = new ResizeObserver(() => root.resize());
     ro.observe(container);
     root.__ro = ro;
