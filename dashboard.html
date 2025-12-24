@@ -13505,19 +13505,83 @@ function deleteImageFromModal(imageId) {
     closeModal();
     setTimeout(() => deleteImage(imageId), 100);
 }
-// [NEW] Payment Details Modal
-async function viewPaymentDetails(billingId) {
-    Swal.fire({ title: 'Loading...', showConfirmButton: false, customClass: { popup: 'swal2-toast' } });
+// [NEW] Payment Details Modal with auto-retry for pending status
+let paymentCheckInterval = null;
+let paymentCheckAttempts = 0;
+const MAX_PAYMENT_CHECK_ATTEMPTS = 60; // Max 5 minutes (60 * 5 seconds)
+
+async function viewPaymentDetails(billingId, isAutoCheck = false) {
+    // Clear any existing interval when manually opening
+    if (!isAutoCheck && paymentCheckInterval) {
+        clearInterval(paymentCheckInterval);
+        paymentCheckInterval = null;
+        paymentCheckAttempts = 0;
+    }
+    
+    if (!isAutoCheck) {
+        Swal.fire({ title: 'Loading...', showConfirmButton: false, customClass: { popup: 'swal2-toast' } });
+    }
+    
     try {
         const { data: p } = await api(`/get-payment-status?payment_id=${billingId}`);
         if (!p) throw new Error('Payment not found');
         
+        const statusLower = (p.status||p.payment_status||'').toLowerCase();
+        const isPending = statusLower === 'pending';
+        
         const st = { paid:['Paid','#10b981','ri-check-line'], succeeded:['Paid','#10b981','ri-check-line'], pending:['Pending','#f59e0b','ri-time-line'], failed:['Failed','#ef4444','ri-close-line'], cancelled:['Cancelled','#ef4444','ri-close-line'], refunded:['Refunded','#8b5cf6','ri-refund-line'] };
-        const [sT,sC,sI] = st[(p.status||p.payment_status||'').toLowerCase()] || ['Unknown','#64748b','ri-question-line'];
+        const [sT,sC,sI] = st[statusLower] || ['Unknown','#64748b','ri-question-line'];
         const fmt = d => new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
         const fmtShort = d => new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
         const cp = id => `<i class="ri-file-copy-line pcp" onclick="copyToClipboard('${id}')" title="Copy"></i>`;
         const isStripe = p.payment_method?.toLowerCase()==='stripe';
+        
+        // If pending and not already checking, start auto-check
+        if (isPending && !paymentCheckInterval) {
+            paymentCheckAttempts = 0;
+            paymentCheckInterval = setInterval(async () => {
+                paymentCheckAttempts++;
+                if (paymentCheckAttempts >= MAX_PAYMENT_CHECK_ATTEMPTS) {
+                    clearInterval(paymentCheckInterval);
+                    paymentCheckInterval = null;
+                    return;
+                }
+                // Update the countdown timer
+                const timerEl = document.getElementById('pendingCheckTimer');
+                if (timerEl) {
+                    timerEl.textContent = '5';
+                    let countdown = 5;
+                    const countdownInterval = setInterval(() => {
+                        countdown--;
+                        if (timerEl) timerEl.textContent = countdown;
+                        if (countdown <= 0) clearInterval(countdownInterval);
+                    }, 1000);
+                }
+                // Re-fetch payment status
+                try {
+                    const { data: newP } = await api(`/get-payment-status?payment_id=${billingId}`);
+                    const newStatus = (newP?.status || newP?.payment_status || '').toLowerCase();
+                    if (newStatus !== 'pending') {
+                        // Status changed! Clear interval and refresh modal
+                        clearInterval(paymentCheckInterval);
+                        paymentCheckInterval = null;
+                        paymentCheckAttempts = 0;
+                        viewPaymentDetails(billingId, false);
+                        // Also refresh billing data
+                        loadBilling();
+                    }
+                } catch (e) {
+                    console.error('Auto-check payment status error:', e);
+                }
+            }, 5000);
+        }
+        
+        // If status changed from pending, stop checking
+        if (!isPending && paymentCheckInterval) {
+            clearInterval(paymentCheckInterval);
+            paymentCheckInterval = null;
+            paymentCheckAttempts = 0;
+        }
 
         Swal.update({ title:'', html:`<style>
 .pay-modal{width:85vw!important;max-width:950px!important;padding:0!important;border-radius:var(--radius-lg,16px)!important;background:var(--bg,#fff)!important;box-shadow:0 25px 60px rgba(0,0,0,.3)!important;overflow:hidden}
@@ -13532,6 +13596,21 @@ async function viewPaymentDetails(billingId) {
 .pay-amount span{font-size:1rem;opacity:.7;font-weight:500;margin-left:.25rem}
 .pay-status{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.25rem;border-radius:50px;font-weight:600;font-size:.9rem;background:${sC};color:#fff;box-shadow:0 4px 15px ${sC}60;margin-top:.5rem}
 .pay-status i{font-size:1.1rem}
+.pay-status.pending i{animation:pendingSpin 1.5s linear infinite}
+@keyframes pendingSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.pay-pending-check{margin-top:1.5rem;padding:1rem;background:rgba(255,255,255,.1);border-radius:12px;text-align:center}
+.pay-pending-check .check-title{font-size:.9rem;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;justify-content:center;gap:.5rem}
+.pay-pending-check .check-title i{animation:pendingPulse 1.5s ease-in-out infinite}
+@keyframes pendingPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.pay-pending-check .check-desc{font-size:.75rem;opacity:.8;margin-bottom:.75rem}
+.pay-pending-check .check-timer{display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .8rem;background:rgba(255,255,255,.15);border-radius:20px;font-size:.8rem}
+.pay-pending-check .check-timer i{font-size:.9rem}
+.pay-pending-loader{display:flex;justify-content:center;gap:6px;margin-top:.75rem}
+.pay-pending-loader span{width:8px;height:8px;background:rgba(255,255,255,.8);border-radius:50%;animation:pendingBounce 1.4s ease-in-out infinite}
+.pay-pending-loader span:nth-child(1){animation-delay:-0.32s}
+.pay-pending-loader span:nth-child(2){animation-delay:-0.16s}
+.pay-pending-loader span:nth-child(3){animation-delay:0s}
+@keyframes pendingBounce{0%,80%,100%{transform:scale(0);opacity:.5}40%{transform:scale(1);opacity:1}}
 .pay-actions{margin-top:auto;display:flex;flex-direction:column;gap:.75rem}
 .pay-btn{display:flex;align-items:center;gap:.75rem;padding:.9rem 1.25rem;border-radius:var(--radius,10px);font-weight:600;font-size:.95rem;text-decoration:none;background:rgba(255,255,255,.15);color:#fff;transition:.2s;border:1px solid rgba(255,255,255,.2)}
 .pay-btn:hover{background:rgba(255,255,255,.25);transform:translateX(5px)}
@@ -13564,12 +13643,18 @@ async function viewPaymentDetails(billingId) {
 .pay-ref code{background:var(--bg-tertiary,#f1f5f9);padding:.4rem .6rem;border-radius:6px;font-size:.8rem;font-family:'SF Mono',Monaco,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text,#1e293b)}
 .pcp{cursor:pointer;width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:.15s;color:var(--text-secondary,#94a3b8);font-size:1.1rem}
 .pcp:hover{color:var(--primary,#6366f1);background:rgba(99,102,241,.1)}
-@media(max-width:800px){.pay-modal{width:calc(100vw - 1.5rem)!important;max-width:100%!important;border-radius:1.25rem!important;margin:.75rem!important;max-height:calc(100vh - 1.5rem)!important}.pay-wrap{grid-template-columns:1fr;display:flex;flex-direction:column}.pay-left{padding:1.25rem 1rem;flex-direction:column;align-items:center;text-align:center;gap:.5rem;flex-shrink:0}.pay-amount{margin-bottom:0}.pay-amount h2{font-size:2.25rem;letter-spacing:-1px}.pay-amount span{font-size:.85rem;opacity:.8}.pay-status{padding:.45rem 1rem;font-size:.8rem;margin-top:.25rem;border-radius:2rem}.pay-status i{font-size:.9rem}.pay-actions{margin-top:.6rem;flex-direction:row;width:100%;gap:.35rem}.pay-btn{flex:1;flex-direction:column;align-items:center;gap:.2rem;padding:.5rem .35rem;font-size:.65rem;text-align:center;border-radius:.6rem}.pay-btn i{font-size:1.1rem}.pay-right{padding:.85rem;flex:1;overflow-y:auto}.pay-section{margin-bottom:.85rem}.pay-section:last-child{margin-bottom:0}.pay-section h3{font-size:.65rem;margin-bottom:.5rem}.pay-cards{grid-template-columns:1fr 1fr;gap:.4rem}.pay-card{padding:.55rem .6rem;gap:.4rem}.pay-card-icon{width:1.85rem;height:1.85rem}.pay-card-icon i{font-size:.85rem}.pay-card label{font-size:.5rem}.pay-card strong{font-size:.7rem}.pay-timeline{grid-template-columns:1fr;gap:.4rem}.pay-time{padding:.55rem .6rem;gap:.4rem}.pay-time i{font-size:.95rem}.pay-time div label{font-size:.5rem}.pay-time div strong{font-size:.7rem}.pay-refs{gap:.35rem}.pay-ref{padding:.5rem .6rem;flex-direction:column;align-items:flex-start;gap:.3rem}.pay-ref label{font-size:.55rem}.pay-ref div{width:100%;justify-content:space-between}.pay-ref code{font-size:.6rem;padding:.2rem .35rem;max-width:calc(100% - 2.5rem)}}
+@media(max-width:800px){.pay-modal{width:calc(100vw - 1.5rem)!important;max-width:100%!important;border-radius:1.25rem!important;margin:.75rem!important;max-height:calc(100vh - 1.5rem)!important}.pay-wrap{grid-template-columns:1fr;display:flex;flex-direction:column}.pay-left{padding:1.25rem 1rem;flex-direction:column;align-items:center;text-align:center;gap:.5rem;flex-shrink:0}.pay-amount{margin-bottom:0}.pay-amount h2{font-size:2.25rem;letter-spacing:-1px}.pay-amount span{font-size:.85rem;opacity:.8}.pay-status{padding:.45rem 1rem;font-size:.8rem;margin-top:.25rem;border-radius:2rem}.pay-status i{font-size:.9rem}.pay-pending-check{margin-top:.75rem;padding:.75rem;border-radius:10px}.pay-pending-check .check-title{font-size:.75rem}.pay-pending-check .check-desc{font-size:.65rem;margin-bottom:.5rem}.pay-pending-check .check-timer{font-size:.7rem;padding:.3rem .6rem}.pay-pending-loader span{width:6px;height:6px}.pay-actions{margin-top:.6rem;flex-direction:row;width:100%;gap:.35rem}.pay-btn{flex:1;flex-direction:column;align-items:center;gap:.2rem;padding:.5rem .35rem;font-size:.65rem;text-align:center;border-radius:.6rem}.pay-btn i{font-size:1.1rem}.pay-right{padding:.85rem;flex:1;overflow-y:auto}.pay-section{margin-bottom:.85rem}.pay-section:last-child{margin-bottom:0}.pay-section h3{font-size:.65rem;margin-bottom:.5rem}.pay-cards{grid-template-columns:1fr 1fr;gap:.4rem}.pay-card{padding:.55rem .6rem;gap:.4rem}.pay-card-icon{width:1.85rem;height:1.85rem}.pay-card-icon i{font-size:.85rem}.pay-card label{font-size:.5rem}.pay-card strong{font-size:.7rem}.pay-timeline{grid-template-columns:1fr;gap:.4rem}.pay-time{padding:.55rem .6rem;gap:.4rem}.pay-time i{font-size:.95rem}.pay-time div label{font-size:.5rem}.pay-time div strong{font-size:.7rem}.pay-refs{gap:.35rem}.pay-ref{padding:.5rem .6rem;flex-direction:column;align-items:flex-start;gap:.3rem}.pay-ref label{font-size:.55rem}.pay-ref div{width:100%;justify-content:space-between}.pay-ref code{font-size:.6rem;padding:.2rem .35rem;max-width:calc(100% - 2.5rem)}}
 </style>
 <div class="pay-wrap">
 <div class="pay-left">
 <div class="pay-amount"><h2>$${(p.amount||0).toFixed(2)}<span>${(p.currency||'USD').toUpperCase()}</span></h2></div>
-<div class="pay-status"><i class="${sI}"></i>${sT}</div>
+<div class="pay-status${isPending?' pending':''}"><i class="${sI}"></i>${sT}</div>
+${isPending?`<div class="pay-pending-check">
+<div class="check-title"><i class="ri-search-eye-line"></i>Verifying Payment</div>
+<div class="check-desc">We're checking your payment status with the payment provider</div>
+<div class="check-timer"><i class="ri-refresh-line"></i>Next check in <span id="pendingCheckTimer">5</span>s</div>
+<div class="pay-pending-loader"><span></span><span></span><span></span></div>
+</div>`:''}
 ${(p.receipt_url||p.invoice_url||p.invoice_pdf)?`<div class="pay-actions">${p.receipt_url?`<a href="${p.receipt_url}" target="_blank" class="pay-btn"><i class="ri-receipt-line"></i>View Receipt</a>`:''}${p.invoice_url?`<a href="${p.invoice_url}" target="_blank" class="pay-btn"><i class="ri-file-text-line"></i>View Invoice</a>`:''}${p.invoice_pdf?`<a href="${p.invoice_pdf}" target="_blank" class="pay-btn"><i class="ri-download-line"></i>Download PDF</a>`:''}</div>`:''}
 </div>
 <div class="pay-right">
@@ -13583,8 +13668,24 @@ ${p.date_created?`<div class="pay-card"><div class="pay-card-icon"><i class="ri-
 ${(p.date_created||p.date_updated||p.cancelled_at||p.date_of_payment)?`<div class="pay-section"><h3><i class="ri-time-line"></i>Timeline</h3><div class="pay-timeline">${p.date_created?`<div class="pay-time"><i class="ri-calendar-check-line"></i><div><label>Created</label><strong>${fmt(p.date_created)}</strong></div></div>`:''}${p.date_of_payment?`<div class="pay-time"><i class="ri-money-dollar-circle-line"></i><div><label>Paid</label><strong>${fmt(p.date_of_payment)}</strong></div></div>`:''}${p.cancelled_at?`<div class="pay-time" style="border-color:#ef4444;background:rgba(239,68,68,0.05)"><i class="ri-close-circle-line" style="color:#ef4444"></i><div><label style="color:#ef4444">Cancelled by User</label><strong>${fmt(p.cancelled_at)}</strong></div></div>`:''}${p.date_updated&&!p.cancelled_at?`<div class="pay-time"><i class="ri-history-line"></i><div><label>Last Updated</label><strong>${fmt(p.date_updated)}</strong></div></div>`:''}</div></div>`:''}
 ${(p.package||p.duration||p.current_period_start||p.current_period_end||p.subscription_status)?`<div class="pay-section"><h3><i class="ri-vip-crown-line"></i>Subscription Details</h3><div class="pay-cards">${p.package?`<div class="pay-card"><div class="pay-card-icon"><i class="ri-stack-line"></i></div><div class="pay-card-info"><label>Package</label><strong style="text-transform:capitalize">${p.package}</strong></div></div>`:''}${p.duration?`<div class="pay-card"><div class="pay-card-icon"><i class="ri-calendar-line"></i></div><div class="pay-card-info"><label>Duration</label><strong>${p.duration.replace('month',' Months')}</strong></div></div>`:''}${p.current_period_start?`<div class="pay-card"><div class="pay-card-icon"><i class="ri-play-circle-line"></i></div><div class="pay-card-info"><label>Period Start</label><strong>${fmtShort(p.current_period_start)}</strong></div></div>`:''}${p.current_period_end?`<div class="pay-card"><div class="pay-card-icon"><i class="ri-stop-circle-line"></i></div><div class="pay-card-info"><label>Period End</label><strong>${fmtShort(p.current_period_end)}</strong></div></div>`:''}${p.subscription_status?`<div class="pay-card"><div class="pay-card-icon" style="background:${p.subscription_status==='cancelled'?'linear-gradient(135deg,#ef4444,#dc2626)':'linear-gradient(135deg,#10b981,#059669)'}"><i class="${p.subscription_status==='cancelled'?'ri-close-circle-line':'ri-checkbox-circle-line'}"></i></div><div class="pay-card-info"><label>Subscription Status</label><strong style="color:${p.subscription_status==='cancelled'?'#ef4444':'#10b981'};text-transform:capitalize">${p.subscription_status}</strong></div></div>`:''}${p.subscription_payments?`<div class="pay-card"><div class="pay-card-icon"><i class="ri-repeat-line"></i></div><div class="pay-card-info"><label>Payments Made</label><strong>${p.subscription_payments}</strong></div></div>`:''}</div></div>`:''}
 ${(p.invoice_number||p.invoice_number_stripe||p.transaction_id||p.task_id||p.subscription_id||p.invoice_id)?`<div class="pay-section"><h3><i class="ri-key-2-line"></i>Reference IDs</h3><div class="pay-refs">${p.invoice_number?`<div class="pay-ref"><label>Invoice Number</label><div><code title="${p.invoice_number}">${p.invoice_number}</code>${cp(p.invoice_number)}</div></div>`:''}${p.invoice_number_stripe?`<div class="pay-ref"><label>Stripe Invoice</label><div><code>${p.invoice_number_stripe}</code>${cp(p.invoice_number_stripe)}</div></div>`:''}${p.invoice_id?`<div class="pay-ref"><label>Invoice ID</label><div><code>${p.invoice_id}</code>${cp(p.invoice_id)}</div></div>`:''}${p.subscription_id?`<div class="pay-ref"><label>Subscription ID</label><div><code>${p.subscription_id}</code>${cp(p.subscription_id)}</div></div>`:''}${p.transaction_id?`<div class="pay-ref"><label>Transaction ID</label><div><code title="${p.transaction_id}">${p.transaction_id}</code>${cp(p.transaction_id)}</div></div>`:''}${p.task_id?`<div class="pay-ref"><label>Task ID</label><div><code>${p.task_id}</code>${cp(p.task_id)}</div></div>`:''}</div></div>`:''}</div>
-</div>`, showConfirmButton:false, showCloseButton:true, customClass:{popup:'pay-modal'} });
-    } catch(e) { console.error('Payment error:',e); Swal.fire({icon:'error',title:'Error',text:'Failed to load payment details.',customClass:{popup:'swal2-toast'}}); }
+</div>`, showConfirmButton:false, showCloseButton:true, customClass:{popup:'pay-modal'}, didClose: () => {
+            // Clear interval when modal is closed
+            if (paymentCheckInterval) {
+                clearInterval(paymentCheckInterval);
+                paymentCheckInterval = null;
+                paymentCheckAttempts = 0;
+            }
+        } });
+    } catch(e) { 
+        console.error('Payment error:',e); 
+        // Clear interval on error
+        if (paymentCheckInterval) {
+            clearInterval(paymentCheckInterval);
+            paymentCheckInterval = null;
+            paymentCheckAttempts = 0;
+        }
+        Swal.fire({icon:'error',title:'Error',text:'Failed to load payment details.',customClass:{popup:'swal2-toast'}}); 
+    }
 }
 // Charts
 function initializeCharts(user) {
