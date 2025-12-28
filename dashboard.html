@@ -2122,7 +2122,6 @@ from { opacity: 0; transform: translateY(6px); };
 .swal2-popup.recharge-swal {
   width: min(680px, 94vw) !important;
   max-width: 94vw !important;
-  padding: 0 !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
 }
@@ -2147,12 +2146,17 @@ from { opacity: 0; transform: translateY(6px); };
   color: white !important;
 }
 .swal2-popup.recharge-swal .swal2-title {
-  padding: 1rem 1.25rem !important;
-  padding-right: 3.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  padding: 1.25rem 1.5rem !important;
+  padding-right: 4rem !important;
   margin: 0 !important;
-  font-size: 1rem !important;
-  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
   text-align: left !important;
+  color: var(--text) !important;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--card)) !important;
   border-bottom: 1px solid var(--border) !important;
 }
 .swal2-popup.recharge-swal .swal2-html-container {
@@ -2160,57 +2164,57 @@ from { opacity: 0; transform: translateY(6px); };
   margin: 0 !important;
   overflow: hidden !important;
 }
-.recharge-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+.recharge-grid { display: flex; flex-direction: column; gap: 1.25rem; }
 .recharge-col { display: flex; flex-direction: column; gap: 1rem; }
+.recharge-section { width: 100%; }
 .recharge-label { font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
-.recharge-amounts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; }
-.recharge-amt { padding: 0.6rem 0.4rem; font-size: 0.85rem; font-weight: 700; border: 2px solid var(--border); background: var(--card); color: var(--text); border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+.recharge-amounts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+.recharge-amt { padding: 0.75rem 0.5rem; font-size: 0.9rem; font-weight: 700; border: 2px solid var(--border); background: var(--card); color: var(--text); border-radius: 8px; cursor: pointer; transition: all 0.15s; text-align: center; }
 .recharge-amt:hover { border-color: var(--primary); color: var(--primary); }
 .recharge-amt.active { background: var(--primary); color: white; border-color: var(--primary); }
-.recharge-input { display: flex; align-items: center; background: var(--bg-tertiary); border-radius: 8px; height: 44px; margin-top: 0.5rem; }
-.recharge-input button { width: 44px; height: 44px; border: none; background: transparent; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
+.recharge-input { display: flex; align-items: center; background: var(--bg-tertiary); border-radius: 8px; height: 48px; margin-top: 0.5rem; }
+.recharge-input button { width: 48px; height: 48px; border: none; background: transparent; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
 .recharge-input button:hover { background: var(--primary); color: white; border-radius: 8px; }
-.recharge-input input { flex: 1; min-width: 50px; border: none; background: transparent; text-align: center; font-size: 1.15rem; font-weight: 700; color: var(--text); padding: 0; outline: none; -moz-appearance: textfield; }
+.recharge-input input { flex: 1; min-width: 60px; border: none; background: transparent; text-align: center; font-size: 1.25rem; font-weight: 700; color: var(--text); padding: 0; outline: none; -moz-appearance: textfield; }
 .recharge-input input::-webkit-outer-spin-button, .recharge-input input::-webkit-inner-spin-button { -webkit-appearance: none; }
-.recharge-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
-.recharge-method { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.75rem; background: var(--bg-tertiary); border: 2px solid transparent; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+.recharge-methods { display: flex; flex-direction: column; gap: 0.5rem; }
+.recharge-method { display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1rem; background: var(--bg-tertiary); border: 2px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.15s; width: 100%; box-sizing: border-box; }
 .recharge-method:hover { border-color: var(--border); }
 .recharge-method.active { border-color: var(--primary); background: rgba(99, 102, 241, 0.06); }
-.recharge-method i { font-size: 1.1rem; color: var(--text-secondary); flex-shrink: 0; }
+.recharge-method i { font-size: 1.35rem; color: var(--text-secondary); flex-shrink: 0; }
 .recharge-method.active i { color: var(--primary); }
-.recharge-method-text { font-size: 0.8rem; font-weight: 600; color: var(--text); }
-.recharge-method-fee { font-size: 0.7rem; color: var(--text-secondary); margin-left: auto; flex-shrink: 0; }
-.recharge-summary { background: var(--bg-tertiary); border-radius: 10px; padding: 1rem 1.25rem; }
-.recharge-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; gap: 2rem; }
+.recharge-method-text { font-size: 0.9rem; font-weight: 600; color: var(--text); white-space: nowrap; }
+.recharge-method-fee { font-size: 0.8rem; color: var(--text-secondary); margin-left: auto; white-space: nowrap; flex-shrink: 0; }
+.recharge-summary { background: var(--bg-tertiary); border-radius: 12px; padding: 1.25rem 1.5rem; }
+.recharge-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; }
 .recharge-row-label { font-size: 0.9rem; color: var(--text-secondary); white-space: nowrap; }
-.recharge-row-value { font-size: 0.95rem; font-weight: 600; color: var(--text); white-space: nowrap; }
+.recharge-row-value { font-size: 1rem; font-weight: 600; color: var(--text); white-space: nowrap; }
 .recharge-row.total { border-top: 2px dashed var(--border); margin-top: 0.5rem; padding-top: 0.75rem; }
-.recharge-row.total .recharge-row-label { font-size: 0.95rem; font-weight: 700; color: var(--text); }
-.recharge-row.total .recharge-row-value { font-size: 1.35rem; font-weight: 800; color: var(--success); }
-.recharge-pay-btn { width: 100%; padding: 0.9rem 1rem; margin-top: 1rem; border: none; border-radius: 10px; background: var(--gradient-primary); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+.recharge-row.total .recharge-row-label { font-size: 1rem; font-weight: 700; color: var(--text); }
+.recharge-row.total .recharge-row-value { font-size: 1.5rem; font-weight: 800; color: var(--success); }
+.recharge-pay-btn { width: 100%; padding: 1rem; margin-top: 1rem; border: none; border-radius: 10px; background: var(--gradient-primary); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
 .recharge-pay-btn:hover { box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4); transform: translateY(-1px); }
 .recharge-pay-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 @media (min-width: 600px) {
   .swal2-popup.recharge-swal .swal2-html-container { padding: 1.5rem !important; }
-  .recharge-grid { grid-template-columns: 45% 55%; gap: 1.5rem; }
-  .recharge-col:first-child { padding-right: 1.5rem; border-right: 1px solid var(--border); }
-  .recharge-amounts { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
-  .recharge-amt { padding: 0.75rem 0.5rem; font-size: 0.95rem; }
-  .recharge-input { height: 48px; }
-  .recharge-input button { width: 48px; height: 48px; }
-  .recharge-input input { font-size: 1.35rem; }
-  .recharge-methods { grid-template-columns: 1fr; gap: 0.5rem; }
-  .recharge-method { padding: 0.75rem 1rem; }
-  .recharge-method i { font-size: 1.25rem; }
-  .recharge-method-text { font-size: 0.9rem; }
-  .recharge-method-fee { font-size: 0.75rem; }
-  .recharge-summary { padding: 1.25rem 1.5rem; }
-  .recharge-row { padding: 0.6rem 0; }
+  .recharge-grid { flex-direction: row; gap: 1.5rem; }
+  .recharge-col { flex: 1; }
+  .recharge-col:first-child { flex: 0.9; padding-right: 1.5rem; border-right: 1px solid var(--border); }
+  .recharge-col:last-child { flex: 1.1; }
+  .recharge-amounts { grid-template-columns: repeat(2, 1fr); }
+  .recharge-amt { padding: 0.85rem 0.6rem; font-size: 1rem; }
+  .recharge-input { height: 52px; }
+  .recharge-input button { width: 52px; height: 52px; font-size: 1.5rem; }
+  .recharge-input input { font-size: 1.5rem; }
+  .recharge-method { padding: 0.9rem 1.1rem; }
+  .recharge-method i { font-size: 1.5rem; }
+  .recharge-method-text { font-size: 0.95rem; }
+  .recharge-method-fee { font-size: 0.85rem; }
   .recharge-row-label { font-size: 0.95rem; }
-  .recharge-row-value { font-size: 1rem; }
-  .recharge-row.total .recharge-row-label { font-size: 1rem; }
-  .recharge-row.total .recharge-row-value { font-size: 1.5rem; }
-  .recharge-pay-btn { padding: 1rem 1.25rem; font-size: 1.05rem; }
+  .recharge-row-value { font-size: 1.05rem; }
+  .recharge-row.total .recharge-row-label { font-size: 1.05rem; }
+  .recharge-row.total .recharge-row-value { font-size: 1.6rem; }
+  .recharge-pay-btn { padding: 1.1rem; font-size: 1.1rem; }
 }
 .mobile-profile-menu {
   display: none; padding: 0; border-radius: 50%; background: transparent; border: none;
@@ -11080,7 +11084,7 @@ async function rechargeTask(taskId) {
     `;
     
     Swal.fire({
-        title: 'Recharge: ' + displayUrl,
+        title: '<i class="ri-wallet-3-line" style="color: var(--primary);"></i> Recharge: ' + displayUrl,
         html: modalHtml,
         showConfirmButton: false,
         showCloseButton: true,
