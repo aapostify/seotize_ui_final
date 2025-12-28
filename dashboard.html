@@ -2118,37 +2118,253 @@ from { opacity: 0; transform: translateY(6px); };
 .task-modal-breakdown-item .value {
   font-size: 1.05rem; font-weight: 900; color: var(--text);
 }
-/* Recharge Modal - Clean Minimal Design */
-.recharge-grid { display: grid; gap: 1.25rem; text-align: left; }
-.recharge-col { display: flex; flex-direction: column; gap: 1rem; }
-.recharge-label { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
-.recharge-amounts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
-.recharge-amt { padding: 0.6rem; font-size: 0.875rem; font-weight: 600; border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: var(--radius); cursor: pointer; transition: all 0.15s; }
-.recharge-amt:hover { border-color: var(--primary); color: var(--primary); }
-.recharge-amt.active { background: var(--primary); color: white; border-color: var(--primary); }
-.recharge-input { display: flex; align-items: center; background: var(--bg-tertiary); border-radius: var(--radius); overflow: hidden; margin-top: 0.75rem; }
-.recharge-input button { width: 44px; height: 44px; border: none; background: transparent; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-.recharge-input button:hover { background: var(--primary); color: white; }
-.recharge-input input { flex: 1; border: none; background: transparent; text-align: center; font-size: 1.25rem; font-weight: 700; color: var(--text); padding: 0.5rem; outline: none; -moz-appearance: textfield; }
-.recharge-input input::-webkit-outer-spin-button, .recharge-input input::-webkit-inner-spin-button { -webkit-appearance: none; }
-.recharge-methods { display: flex; flex-direction: column; gap: 0.5rem; }
-.recharge-method { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: var(--bg-tertiary); border: 2px solid transparent; border-radius: var(--radius); cursor: pointer; transition: all 0.15s; }
-.recharge-method:hover { background: var(--card); }
-.recharge-method.active { border-color: var(--primary); background: rgba(99, 102, 241, 0.08); }
-.recharge-method i { font-size: 1.5rem; color: var(--text-secondary); }
-.recharge-method.active i { color: var(--primary); }
-.recharge-method span { font-size: 0.875rem; font-weight: 500; color: var(--text); }
-.recharge-method small { font-size: 0.75rem; color: var(--text-secondary); margin-left: auto; }
-.recharge-summary { background: var(--bg-tertiary); border-radius: var(--radius); padding: 1rem; margin-top: auto; }
-.recharge-row { display: flex; justify-content: space-between; padding: 0.35rem 0; font-size: 0.8rem; color: var(--text-secondary); }
-.recharge-row span:last-child { font-weight: 600; color: var(--text); }
-.recharge-row.total { border-top: 1px dashed var(--border); margin-top: 0.5rem; padding-top: 0.6rem; font-size: 0.9rem; }
-.recharge-row.total span:first-child { font-weight: 600; color: var(--text); }
-.recharge-row.total span:last-child { font-size: 1.1rem; font-weight: 700; color: var(--success); }
-.recharge-pay-btn { width: 100%; padding: 0.875rem; margin-top: 1rem; border: none; border-radius: var(--radius); background: var(--gradient-primary); color: white; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
-.recharge-pay-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4); }
-.recharge-pay-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-@media (min-width: 580px) { .recharge-grid { grid-template-columns: 1fr 1fr; } .recharge-amounts { grid-template-columns: repeat(2, 1fr); } }
+/* Recharge Modal */
+.recharge-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+}
+.recharge-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  min-width: 0;
+}
+.recharge-section {
+  width: 100%;
+}
+.recharge-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+}
+.recharge-amounts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+}
+.recharge-amt {
+  padding: 0.75rem 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: 2px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+.recharge-amt:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.recharge-amt.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+.recharge-input {
+  display: flex;
+  align-items: center;
+  background: var(--bg-tertiary);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 0.75rem;
+  height: 52px;
+}
+.recharge-input button {
+  width: 52px;
+  height: 100%;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+.recharge-input button:hover {
+  background: var(--primary);
+  color: white;
+}
+.recharge-input input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  padding: 0;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.recharge-input input::-webkit-outer-spin-button,
+.recharge-input input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.recharge-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+.recharge-method {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: var(--bg-tertiary);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+.recharge-method:hover {
+  background: var(--card);
+  border-color: var(--border);
+}
+.recharge-method.active {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.08);
+}
+.recharge-method i {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+.recharge-method.active i {
+  color: var(--primary);
+}
+.recharge-method-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+.recharge-method-fee {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.recharge-summary {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+.recharge-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  gap: 1rem;
+  width: 100%;
+}
+.recharge-row-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.recharge-row-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  text-align: right;
+}
+.recharge-row.total {
+  border-top: 2px dashed var(--border);
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+}
+.recharge-row.total .recharge-row-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.recharge-row.total .recharge-row-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--success);
+}
+.recharge-pay-btn {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1rem;
+  border: none;
+  border-radius: 12px;
+  background: var(--gradient-primary);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+}
+.recharge-pay-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.45);
+}
+.recharge-pay-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+@media (min-width: 640px) {
+  .recharge-grid {
+    flex-direction: row;
+    gap: 2rem;
+  }
+  .recharge-col {
+    flex: 1;
+  }
+  .recharge-col:first-child {
+    padding-right: 2rem;
+    border-right: 1px solid var(--border);
+  }
+  .recharge-amounts {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.625rem;
+  }
+  .recharge-amt {
+    padding: 0.875rem 0.75rem;
+    font-size: 1rem;
+  }
+}
 .mobile-profile-menu {
   display: none; padding: 0; border-radius: 50%; background: transparent; border: none;
   color: var(--text); cursor: pointer; font-size: 1.25rem; transition: var(--transition); position: relative;
@@ -10957,8 +11173,8 @@ async function rechargeTask(taskId) {
     const modalHtml = `
     <div class="recharge-grid">
         <div class="recharge-col">
-            <div>
-                <div class="recharge-label">Amount</div>
+            <div class="recharge-section">
+                <div class="recharge-label">Select Amount</div>
                 <div class="recharge-amounts">
                     <button type="button" class="recharge-amt" data-amount="25">$25</button>
                     <button type="button" class="recharge-amt active" data-amount="50">$50</button>
@@ -10971,29 +11187,43 @@ async function rechargeTask(taskId) {
                     <button type="button" id="rechargeIncrement"><i class="ri-add-line"></i></button>
                 </div>
             </div>
-            <div>
+            <div class="recharge-section">
                 <div class="recharge-label">Payment Method</div>
                 <div class="recharge-methods">
                     <div class="recharge-method active" data-provider="stripe">
                         <i class="ri-bank-card-line"></i>
-                        <span>Credit Card</span>
-                        <small>2.9% + $0.30</small>
+                        <span class="recharge-method-text">Credit Card</span>
+                        <span class="recharge-method-fee">2.9% + $0.30</span>
                     </div>
                     <div class="recharge-method" data-provider="oxapay">
                         <i class="ri-bit-coin-line"></i>
-                        <span>Crypto</span>
-                        <small>1.5%</small>
+                        <span class="recharge-method-text">Crypto</span>
+                        <span class="recharge-method-fee">1.5%</span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="recharge-col">
-            <div class="recharge-label">Summary</div>
-            <div class="recharge-summary">
-                <div class="recharge-row"><span>Amount</span><span id="rechargeAmountDisplay">$50.00</span></div>
-                <div class="recharge-row"><span>Provider Fee</span><span id="rechargeProviderFee">-$1.75</span></div>
-                <div class="recharge-row"><span>Platform Fee (5%)</span><span id="rechargePlatformFee">-$2.50</span></div>
-                <div class="recharge-row total"><span>To Budget</span><span id="rechargeFinalAmount">$45.75</span></div>
+            <div class="recharge-section">
+                <div class="recharge-label">Payment Summary</div>
+                <div class="recharge-summary">
+                    <div class="recharge-row">
+                        <span class="recharge-row-label">Amount</span>
+                        <span class="recharge-row-value" id="rechargeAmountDisplay">$50.00</span>
+                    </div>
+                    <div class="recharge-row">
+                        <span class="recharge-row-label">Provider Fee</span>
+                        <span class="recharge-row-value" id="rechargeProviderFee">-$1.75</span>
+                    </div>
+                    <div class="recharge-row">
+                        <span class="recharge-row-label">Platform Fee (5%)</span>
+                        <span class="recharge-row-value" id="rechargePlatformFee">-$2.50</span>
+                    </div>
+                    <div class="recharge-row total">
+                        <span class="recharge-row-label">Added to Budget</span>
+                        <span class="recharge-row-value" id="rechargeFinalAmount">$45.75</span>
+                    </div>
+                </div>
             </div>
             <button type="button" class="recharge-pay-btn" id="rechargePayBtn">
                 <i class="ri-secure-payment-line"></i> Pay Now
@@ -11008,7 +11238,7 @@ async function rechargeTask(taskId) {
         showConfirmButton: false,
         showCloseButton: true,
         customClass: { popup: 'swal2-toast' },
-        width: 'min(580px, 95vw)',
+        width: 'min(720px, 95vw)',
         didOpen: () => {
             const amountInput = document.getElementById('rechargeAmount');
             const amountDisplay = document.getElementById('rechargeAmountDisplay');
