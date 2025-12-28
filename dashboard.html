@@ -2119,56 +2119,140 @@ from { opacity: 0; transform: translateY(6px); };
   font-size: 1.05rem; font-weight: 900; color: var(--text);
 }
 .recharge-modal-container {
-  text-align: left; padding-top: 1rem;
+  text-align: left; padding: 0.5rem 0;
 }
 .recharge-modal-section {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 .recharge-modal-label {
-  display: block; margin-bottom: 0.75rem; font-weight: 600; color: var(--text); font-size: 1rem;
+  display: block; margin-bottom: 0.75rem; font-weight: 600; color: var(--text); font-size: 0.95rem;
 }
 .recharge-preset-amounts {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 0.75rem; margin-bottom: 1rem;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1rem;
 }
 .recharge-preset-btn {
-  padding: 0.75rem; font-size: 1rem; font-weight: 700; border: 2px solid var(--border);
-  background: var(--card); color: var(--primary); border-radius: var(--radius); cursor: pointer;
-  transition: var(--transition);
+  padding: 0.7rem 0.5rem; font-size: 0.95rem; font-weight: 700; border: 2px solid var(--border);
+  background: var(--card); color: var(--text-secondary); border-radius: var(--radius); cursor: pointer;
+  transition: all 0.2s ease; position: relative; overflow: hidden;
 }
 .recharge-preset-btn:hover {
-  border-color: var(--primary); background: rgba(99, 102, 241, 0.1);
+  border-color: var(--primary); color: var(--primary); transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+.recharge-preset-btn.active {
+  border-color: var(--primary); background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05));
+  color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+.recharge-preset-btn.active::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--gradient-primary);
+}
+.recharge-custom-amount {
+  position: relative; margin-top: 0.5rem;
+}
+.recharge-custom-amount input {
+  width: 100%; padding: 0.85rem 1rem 0.85rem 2.5rem; border: 2px solid var(--border);
+  border-radius: var(--radius); font-size: 1rem; font-weight: 600; background: var(--card);
+  color: var(--text); transition: all 0.2s ease;
+}
+.recharge-custom-amount input:focus {
+  outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+.recharge-custom-amount .currency-icon {
+  position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+  color: var(--text-secondary); font-weight: 700; font-size: 1rem;
 }
 .recharge-payment-options {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
 }
 .recharge-payment-option {
-  padding: 1rem; border: 2px solid var(--border); border-radius: var(--radius); cursor: pointer;
-  transition: var(--transition); text-align: center;
+  padding: 1rem 0.75rem; border: 2px solid var(--border); border-radius: var(--radius-lg); cursor: pointer;
+  transition: all 0.2s ease; text-align: center; background: var(--card); position: relative;
 }
 .recharge-payment-option:hover {
-  transform: translateY(-2px); box-shadow: var(--shadow);
+  transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: var(--border-hover);
 }
 .recharge-payment-option.selected {
-  border-color: var(--primary); background: rgba(99, 102, 241, 0.1);
+  border-color: var(--primary); background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(99, 102, 241, 0.02));
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+.recharge-payment-option.selected::after {
+  content: '\eb7b'; font-family: 'remixicon'; position: absolute; top: 0.5rem; right: 0.5rem;
+  background: var(--primary); color: white; width: 18px; height: 18px; border-radius: 50%;
+  font-size: 0.7rem; display: flex; align-items: center; justify-content: center;
 }
 .recharge-payment-option i {
-  font-size: 2rem; margin-bottom: 0.5rem; color: var(--primary);
+  font-size: 1.75rem; margin-bottom: 0.4rem; color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+.recharge-payment-option.selected i {
+  color: var(--primary);
 }
 .recharge-payment-option .provider-name {
+  font-weight: 600; color: var(--text); font-size: 0.85rem;
+}
+.recharge-payment-option .provider-fee {
+  font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.2rem;
+}
+.recharge-fee-breakdown {
+  background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 1rem; margin-top: 1rem;
+}
+.recharge-fee-item {
+  display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;
+  font-size: 0.875rem; color: var(--text-secondary);
+}
+.recharge-fee-item.total {
+  border-top: 2px dashed var(--border); margin-top: 0.5rem; padding-top: 0.75rem;
+}
+.recharge-fee-item .label {
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.recharge-fee-item .label i {
+  font-size: 1rem; opacity: 0.7;
+}
+.recharge-fee-item .value {
   font-weight: 600; color: var(--text);
 }
-.recharge-summary {
-  background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: var(--radius-lg);
-  padding: 1rem; margin-top: 1.5rem;
+.recharge-fee-item.total .label {
+  font-weight: 700; color: var(--text); font-size: 0.95rem;
 }
-.recharge-summary-item {
-  display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 0.9rem;
+.recharge-fee-item.total .value {
+  font-size: 1.25rem; font-weight: 800; color: var(--success);
+}
+.recharge-task-info {
+  display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1rem;
+  background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: var(--radius);
+  margin-bottom: 1.25rem;
+}
+.recharge-task-info i {
+  font-size: 1.25rem; color: var(--primary);
+}
+.recharge-task-info .task-url {
+  flex: 1; font-weight: 500; color: var(--text); font-size: 0.875rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .swal2-popup.recharge-modal-custom {
-  width: 95vw !important; ;
+  width: 95vw !important; max-width: 480px !important; padding: 1.5rem !important;
+}
+.recharge-modal-custom .swal2-title {
+  font-size: 1.35rem !important; font-weight: 700 !important;
+}
+.recharge-modal-custom .swal2-html-container {
+  margin: 0.75rem 0 0 0 !important;
+}
+.recharge-modal-custom > .swal2-actions {
+  margin-top: 1rem !important; gap: 0.75rem;
+}
+.recharge-modal-custom > .swal2-actions > .swal2-confirm {
+  padding: 0.85rem 1.5rem !important; font-weight: 600 !important;
+  background: var(--gradient-primary) !important; border: none !important;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3) !important;
 }
 .recharge-modal-custom > .swal2-actions > .swal2-cancel {
-  background: #df0e0e;
+  background: var(--bg-tertiary) !important; color: var(--text) !important;
+  border: 1px solid var(--border) !important; padding: 0.85rem 1.5rem !important;
 }
 .mobile-profile-menu {
   display: none; padding: 0; border-radius: 50%; background: transparent; border: none;
@@ -10951,84 +11035,161 @@ async function deleteTask(taskId) {
         });
     }
 }
-// Recharge Task
+// Recharge Task - Fee calculation helper
+function calculateRechargeFees(amount, provider) {
+    // Fee rates based on provider
+    const feeConfig = {
+        stripe: { providerPercentage: 2.9, providerFixed: 0.30, platformPercentage: 5 },
+        oxapay: { providerPercentage: 1.5, providerFixed: 0, platformPercentage: 5 }
+    };
+    const config = feeConfig[provider] || feeConfig.stripe;
+    const providerFee = (amount * (config.providerPercentage / 100)) + config.providerFixed;
+    const platformFee = amount * (config.platformPercentage / 100);
+    const finalAmount = amount - providerFee - platformFee;
+    return {
+        providerFee: Math.round(providerFee * 100) / 100,
+        platformFee: Math.round(platformFee * 100) / 100,
+        finalAmount: Math.round(finalAmount * 100) / 100,
+        providerPercentage: config.providerPercentage,
+        providerFixed: config.providerFixed
+    };
+}
+
+// Recharge Task Modal
 async function rechargeTask(taskId) {
     // Find the task to show its URL in the modal
     const task = currentData.tasks.find(t => t._id === taskId);
     const taskUrl = task ? task.url : `Task ID: ${taskId}`;
+    const displayUrl = taskUrl.replace(/^https?:\/\//, '').substring(0, 40) + (taskUrl.length > 40 ? '...' : '');
+    
     const modalHtml = `
     <div class="recharge-modal-container">
+        <div class="recharge-task-info">
+            <i class="ri-links-line"></i>
+            <span class="task-url" title="${taskUrl}">${displayUrl}</span>
+        </div>
+        
         <div class="recharge-modal-section">
-            <label class="recharge-modal-label">Choose an amount to add:</label>
+            <label class="recharge-modal-label">Select Amount</label>
             <div class="recharge-preset-amounts">
                 <button class="recharge-preset-btn" data-amount="25">$25</button>
-                <button class="recharge-preset-btn" data-amount="50">$50</button>
+                <button class="recharge-preset-btn active" data-amount="50">$50</button>
                 <button class="recharge-preset-btn" data-amount="100">$100</button>
                 <button class="recharge-preset-btn" data-amount="200">$200</button>
             </div>
-            <label class="recharge-modal-label">Or enter a custom amount (min $10):</label>
-            <input type="number" id="rechargeAmount" class="form-input" min="10" value="50" placeholder="">
+            <div class="recharge-custom-amount">
+                <span class="currency-icon">$</span>
+                <input type="number" id="rechargeAmount" min="10" value="50" placeholder="Custom amount (min $10)">
+            </div>
         </div>
+        
         <div class="recharge-modal-section">
-            <label class="recharge-modal-label">Select payment method:</label>
+            <label class="recharge-modal-label">Payment Method</label>
             <div class="recharge-payment-options">
-                <div class="recharge-payment-option selected" id="payment-stripe" data-provider="stripe">
+                <div class="recharge-payment-option selected" data-provider="stripe">
                     <i class="ri-bank-card-line"></i>
                     <div class="provider-name">Card (Stripe)</div>
+                    <div class="provider-fee">2.9% + $0.30</div>
                 </div>
-                <div class="recharge-payment-option" id="payment-oxapay" data-provider="oxapay">
+                <div class="recharge-payment-option" data-provider="oxapay">
                     <i class="ri-bit-coin-line"></i>
                     <div class="provider-name">Crypto (OxaPay)</div>
+                    <div class="provider-fee">1.5% fee</div>
                 </div>
             </div>
         </div>
-        <div class="recharge-summary">
-            <div class="recharge-summary-item">
-                <span>Recharging Task:</span>
-                <strong style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${taskUrl}">${taskUrl}</strong>
+        
+        <div class="recharge-fee-breakdown">
+            <div class="recharge-fee-item">
+                <span class="label"><i class="ri-money-dollar-circle-line"></i> Recharge Amount</span>
+                <span class="value" id="rechargeAmountDisplay">$50.00</span>
             </div>
-            <div class="recharge-summary-item" style="border-top: 1px solid var(--border); margin-top: 0.5rem; padding-top: 0.5rem;">
-                <strong style="font-size: 1.1rem;">Total to Add:</strong>
-                <strong id="rechargeTotal" style="font-size: 1.2rem; color: var(--primary);">$50.00</strong>
+            <div class="recharge-fee-item">
+                <span class="label"><i class="ri-bank-card-line"></i> Provider Fee</span>
+                <span class="value" id="rechargeProviderFee">-$1.75</span>
+            </div>
+            <div class="recharge-fee-item">
+                <span class="label"><i class="ri-shield-check-line"></i> Platform Fee (5%)</span>
+                <span class="value" id="rechargePlatformFee">-$2.50</span>
+            </div>
+            <div class="recharge-fee-item total">
+                <span class="label"><i class="ri-wallet-3-line"></i> Added to Budget</span>
+                <span class="value" id="rechargeFinalAmount">$45.75</span>
             </div>
         </div>
     </div>
     `;
+    
     Swal.fire({
-        title: 'Recharge Task Budget',
+        title: '<i class="ri-wallet-3-line" style="margin-right: 0.5rem; color: var(--primary);"></i> Recharge Task',
         html: modalHtml,
         showCancelButton: true,
         cancelButtonText: 'Cancel',
-        confirmButtonText: '<i class="ri-wallet-3-line"></i> Proceed to Payment',
-        confirmButtonColor: 'var(--primary)',
-        // REMOVED width and maxWidth properties from here
+        confirmButtonText: '<i class="ri-secure-payment-line"></i> Proceed to Payment',
         customClass: {
-            popup: 'recharge-modal-custom' // ADDED our new class here
+            popup: 'recharge-modal-custom'
         },
         didOpen: () => {
-            // --- Logic for the interactive modal ---
             const amountInput = document.getElementById('rechargeAmount');
-            const totalDisplay = document.getElementById('rechargeTotal');
-            const updateTotal = () => {
+            const amountDisplay = document.getElementById('rechargeAmountDisplay');
+            const providerFeeDisplay = document.getElementById('rechargeProviderFee');
+            const platformFeeDisplay = document.getElementById('rechargePlatformFee');
+            const finalAmountDisplay = document.getElementById('rechargeFinalAmount');
+            const presetBtns = document.querySelectorAll('.recharge-preset-btn');
+            const paymentOptions = document.querySelectorAll('.recharge-payment-option');
+            
+            // Update fee display function
+            const updateFeeDisplay = () => {
                 const amount = parseFloat(amountInput.value) || 0;
-                totalDisplay.textContent = `$${amount.toFixed(2)}`;
+                const provider = document.querySelector('.recharge-payment-option.selected')?.dataset.provider || 'stripe';
+                const fees = calculateRechargeFees(amount, provider);
+                
+                amountDisplay.textContent = `$${amount.toFixed(2)}`;
+                providerFeeDisplay.textContent = `-$${fees.providerFee.toFixed(2)}`;
+                platformFeeDisplay.textContent = `-$${fees.platformFee.toFixed(2)}`;
+                finalAmountDisplay.textContent = `$${fees.finalAmount.toFixed(2)}`;
+                
+                // Update color based on amount validity
+                if (amount >= 10) {
+                    finalAmountDisplay.style.color = 'var(--success)';
+                } else {
+                    finalAmountDisplay.style.color = 'var(--danger)';
+                }
             };
-            amountInput.addEventListener('input', updateTotal);
-            document.querySelectorAll('.recharge-preset-btn').forEach(btn => {
+            
+            // Amount input change handler
+            amountInput.addEventListener('input', () => {
+                const value = parseFloat(amountInput.value);
+                // Update preset button active states
+                presetBtns.forEach(btn => {
+                    btn.classList.toggle('active', parseFloat(btn.dataset.amount) === value);
+                });
+                updateFeeDisplay();
+            });
+            
+            // Preset button click handlers
+            presetBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
+                    presetBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
                     amountInput.value = btn.dataset.amount;
-                    updateTotal();
+                    updateFeeDisplay();
                 });
             });
-            document.querySelectorAll('.recharge-payment-option').forEach(option => {
+            
+            // Payment option click handlers
+            paymentOptions.forEach(option => {
                 option.addEventListener('click', () => {
-                    document.querySelectorAll('.recharge-payment-option').forEach(o => o.classList.remove('selected'));
+                    paymentOptions.forEach(o => o.classList.remove('selected'));
                     option.classList.add('selected');
+                    updateFeeDisplay();
                 });
             });
+            
+            // Initial fee display
+            updateFeeDisplay();
         },
         preConfirm: () => {
-            // --- Gather data before confirming ---
             const amount = parseFloat(document.getElementById('rechargeAmount').value);
             const provider = document.querySelector('.recharge-payment-option.selected').dataset.provider;
             if (!amount || amount < 10) {
@@ -11041,96 +11202,110 @@ async function rechargeTask(taskId) {
         if (result.isConfirmed) {
             const { amount, provider, taskId } = result.value;
             try {
-                // This is the first attempt
+                // API call with correct parameters (task_id, not task_ids)
                 const response = await api('/recharge', {
                     method: 'POST',
                     body: JSON.stringify({
-                        task_ids: [taskId],
+                        task_id: taskId,
                         amount: amount,
                         payment_method: provider
                     })
                 });
-                if (response.data.payment_url) {
+                
+                if (response.data?.payment_url) {
                     Swal.fire({
-                        title: 'Redirecting...',
-                        text: 'Redirecting you to the payment page to complete your recharge.',
+                        title: 'Redirecting to Payment',
+                        html: '<p style="color: var(--text-secondary);">Opening secure payment page...</p>',
                         icon: 'success',
-                        timer: 2000,
+                        timer: 2500,
                         showConfirmButton: false,
                         customClass: { popup: 'swal2-toast' }
                     });
                     window.open(response.data.payment_url, '_blank');
                 } else {
-                    showToast('Task recharged successfully!', 'success');
+                    showToast('Recharge initiated successfully!', 'success');
                 }
-                // Refresh the list to show the new budget
-                if (document.querySelector('.nav-item[data-page="tasks"]').classList.contains('active')) {
+                
+                // Refresh the task list
+                if (document.querySelector('.nav-item[data-page="tasks"]')?.classList.contains('active')) {
                     loadTasks();
                 } else {
                     loadDashboard();
                 }
             } catch (error) {
-                // START OF MODIFIED SECTION
-                // Check for the specific 409 error
-                if (error.message === 'A pending recharge exists') {
+                // Check for the specific 409 conflict error (pending recharge exists)
+                if (error.message === 'A pending recharge exists for this task') {
                     Swal.fire({
-                        title: 'Pending Recharge Exists',
-                        html: "You already have a pending recharge. If you proceed, the previous pending recharge will be cancelled.",
+                        title: 'Pending Recharge Found',
+                        html: `<p style="color: var(--text-secondary); margin-bottom: 0.5rem;">You already have a pending recharge for this task.</p>
+                               <p style="color: var(--text-secondary);">Would you like to cancel it and create a new one?</p>`,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: 'var(--primary)',
-                        confirmButtonText: 'Proceed & Cancel Previous',
-                        cancelButtonText: 'Cancel',
+                        confirmButtonText: '<i class="ri-refresh-line"></i> Replace & Continue',
+                        cancelButtonText: 'Keep Existing',
                         customClass: { popup: 'swal2-toast' }
                     }).then(async (proceedResult) => {
                         if (proceedResult.isConfirmed) {
-                            // User wants to proceed, send the request again with cancel_previous: true
                             try {
                                 Swal.fire({
-                                    title: 'Cancelling and Recharging...',
+                                    title: 'Processing...',
+                                    html: '<p style="color: var(--text-secondary);">Cancelling previous and creating new recharge</p>',
                                     didOpen: () => Swal.showLoading(),
                                     allowOutsideClick: false,
                                     customClass: { popup: 'swal2-toast' }
                                 });
+                                
+                                // Retry with cancel_previous flag
                                 const response = await api('/recharge', {
                                     method: 'POST',
                                     body: JSON.stringify({
-                                        task_ids: [taskId],
+                                        task_id: taskId,
                                         amount: amount,
                                         payment_method: provider,
-                                        cancel_previous: true // The new key to override
+                                        cancel_previous: true
                                     })
                                 });
-                                if (response.data.payment_url) {
+                                
+                                if (response.data?.payment_url) {
                                     Swal.fire({
-                                        title: 'Redirecting...',
-                                        text: 'Redirecting you to the new payment page.',
+                                        title: 'Redirecting to Payment',
+                                        html: '<p style="color: var(--text-secondary);">Opening secure payment page...</p>',
                                         icon: 'success',
-                                        timer: 2000,
+                                        timer: 2500,
                                         showConfirmButton: false,
                                         customClass: { popup: 'swal2-toast' }
                                     });
                                     window.open(response.data.payment_url, '_blank');
                                 } else {
-                                    showToast('Task recharged successfully!', 'success');
+                                    showToast('Recharge initiated successfully!', 'success');
                                 }
-                                // Refresh the list
-                                if (document.querySelector('.nav-item[data-page="tasks"]').classList.contains('active')) {
+                                
+                                // Refresh the task list
+                                if (document.querySelector('.nav-item[data-page="tasks"]')?.classList.contains('active')) {
                                     loadTasks();
                                 } else {
                                     loadDashboard();
                                 }
                             } catch (retryError) {
-                                // Handle error on the *second* attempt
-                                Swal.fire('Error!', 'Failed to initiate recharge: ' + retryError.message, 'error');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Recharge Failed',
+                                    text: retryError.message || 'Failed to process recharge. Please try again.',
+                                    confirmButtonColor: 'var(--primary)'
+                                });
                             }
                         }
                     });
                 } else {
-                    // It was a different error, show the generic message
-                    Swal.fire('Error!', 'Failed to initiate recharge: ' + error.message, 'error');
+                    // Generic error handling
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Recharge Failed',
+                        text: error.message || 'Failed to initiate recharge. Please try again.',
+                        confirmButtonColor: 'var(--primary)'
+                    });
                 }
-                // END OF MODIFIED SECTION
             }
         }
     });
