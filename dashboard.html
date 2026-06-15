@@ -1102,6 +1102,23 @@ to {
   font-size: 0.85rem; padding: 0.4rem 0.8rem;
 }
 }
+@media (min-width: 769px) {
+.domain-actions-row {
+  flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 0.75rem;
+}
+.domain-status-row {
+  width: auto; flex-shrink: 0; gap: 0.5rem;
+}
+.domain-buttons-row {
+  width: auto; flex: 1; gap: 0.5rem;
+}
+.domain-status-row .domain-verify-delete {
+  display: none !important;
+}
+.domain-verify-delete-desktop {
+  display: flex !important; flex-shrink: 0;
+}
+}
 @keyframes fadeIn {
 from { opacity: 0; }; to { opacity: 1; };
 }
