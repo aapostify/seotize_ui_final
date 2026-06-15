@@ -1082,41 +1082,25 @@ to {
 .btn-delete-domain i {
   font-size: 1rem; margin-right: 0.25rem;
 }
-@media (min-width: 581px) and (max-width: 768px) {
-.domain-status-row {
-  gap: 0.5rem;
+@media (min-width: 581px) {
+.domain-actions-row {
+  flex-direction: column; gap: 0.5rem;
 }
-.domain-buttons-row {
-  gap: 0.5rem;
+.domain-status-row {
+  display: flex; flex-direction: row; align-items: center;
+  justify-content: space-between; width: 100%; gap: 0.5rem;
 }
 .domain-status-row .domain-verify-delete {
-  display: none !important;
-}
-.domain-verify-delete-desktop {
   display: flex !important;
 }
-.domain-actions-row {
-  flex-direction: row; flex-wrap: wrap;
+.domain-verify-delete-desktop {
+  display: none !important;
+}
+.domain-buttons-row {
+  width: 100%; display: flex; flex-direction: row; flex-wrap: wrap; gap: 0.5rem;
 }
 .domain-actions-row .btn {
   font-size: 0.85rem; padding: 0.4rem 0.8rem;
-}
-}
-@media (min-width: 769px) {
-.domain-actions-row {
-  flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 0.75rem;
-}
-.domain-status-row {
-  width: auto; flex-shrink: 0; gap: 0.5rem;
-}
-.domain-buttons-row {
-  width: auto; flex: 1; gap: 0.5rem;
-}
-.domain-status-row .domain-verify-delete {
-  display: none !important;
-}
-.domain-verify-delete-desktop {
-  display: flex !important; flex-shrink: 0;
 }
 }
 @keyframes fadeIn {
