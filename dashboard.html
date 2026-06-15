@@ -12248,14 +12248,8 @@ async function showArticleModal(articleId = null) {
             .article-sidebar {
                 border-left: none;
                 border-top: 2px solid var(--border);
-                border-bottom: 2px solid var(--border);
                 padding-left: 0;
                 padding-top: 1rem;
-                padding-bottom: 1rem;
-                order: -1;
-            }
-            .article-main-content {
-                order: 0;
             }
             .image-gallery {
                 grid-template-columns: repeat(3, 1fr);
@@ -12408,6 +12402,15 @@ async function showArticleModal(articleId = null) {
         <div class="article-main-content">
             <form id="articleForm">
                 <div class="article-section">
+                    <label class="form-label"><i class="ri-global-line"></i> Domain</label>
+                    <select class="form-select" id="article-url" name="url" required>
+                        <option value="">Select domain...</option>
+                        ${currentData.domains.filter(d => d.verified).map(d => `
+                            <option value="${d.domain}" ${articleData && articleData.url === d.domain ? 'selected' : ''}>${d.domain}</option>
+                        `).join('')}
+                    </select>
+                </div>
+                <div class="article-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                         <label class="form-label" style="margin-bottom: 0;"><i class="ri-text"></i> Title</label>
                         <button type="button" class="ai-btn" id="ai-generate-all-btn">
@@ -12457,15 +12460,6 @@ async function showArticleModal(articleId = null) {
             </form>
         </div>
         <div class="article-sidebar">
-            <div class="article-section">
-                <label class="form-label"><i class="ri-global-line"></i> Domain</label>
-                <select class="form-select" id="article-url" name="url" required>
-                    <option value="">Select domain...</option>
-                    ${currentData.domains.filter(d => d.verified).map(d => `
-                        <option value="${d.domain}" ${articleData && articleData.url === d.domain ? 'selected' : ''}>${d.domain}</option>
-                    `).join('')}
-                </select>
-            </div>
             ${isEdit && articleData && articleData.images && articleData.images.length > 0 ? `
             <div class="article-section">
                 <div class="section-header">
