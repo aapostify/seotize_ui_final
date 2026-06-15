@@ -323,7 +323,7 @@ tr:hover {
 .toast {
   position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 1.5rem; background: var(--card);
   border-radius: var(--radius); box-shadow: var(--shadow-xl); display: flex; align-items: center;
-  gap: 0.75rem; animation: slideInRight 0.3s; z-index: 2000;
+  gap: 0.75rem; animation: slideInRight 0.3s; z-index: 99999;
 }
 .toast.success {
   border-left: 4px solid var(--success);
@@ -12248,8 +12248,14 @@ async function showArticleModal(articleId = null) {
             .article-sidebar {
                 border-left: none;
                 border-top: 2px solid var(--border);
+                border-bottom: 2px solid var(--border);
                 padding-left: 0;
                 padding-top: 1rem;
+                padding-bottom: 1rem;
+                order: -1;
+            }
+            .article-main-content {
+                order: 0;
             }
             .image-gallery {
                 grid-template-columns: repeat(3, 1fr);
