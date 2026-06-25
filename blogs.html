@@ -5,6 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog - SEOTIZE | SEO Insights & Strategies</title>
     <meta name="description" content="Discover the latest SEO strategies, AI content tips, and digital marketing insights from SEOTIZE experts. Stay ahead with cutting-edge SEO knowledge.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://seotize.net/blogs">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="SEOTIZE">
+    <meta property="og:title" content="Blog - SEOTIZE | SEO Insights & Strategies">
+    <meta property="og:description" content="Discover the latest SEO strategies, AI content tips, and digital marketing insights from SEOTIZE experts. Stay ahead with cutting-edge SEO knowledge.">
+    <meta property="og:url" content="https://seotize.net/blogs">
+    <meta property="og:image" content="https://seotize.net/og-blog.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@seotize">
+    <meta name="twitter:title" content="Blog - SEOTIZE | SEO Insights & Strategies">
+    <meta name="twitter:description" content="Discover the latest SEO strategies, AI content tips, and digital marketing insights from SEOTIZE experts.">
+    <meta name="twitter:image" content="https://seotize.net/og-blog.png">
+    <!-- JSON-LD: Blog listing -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "SEOTIZE Blog",
+      "description": "SEO insights, strategies, and digital marketing tips from SEOTIZE experts.",
+      "url": "https://seotize.net/blogs",
+      "publisher": {
+        "@type": "Organization",
+        "name": "SEOTIZE",
+        "url": "https://seotize.net",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://seotize.net/logo.png"
+        }
+      }
+    }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -386,6 +422,9 @@
         }
 
         .blog-card {
+            display: block;
+            text-decoration: none;
+            color: inherit;
             background: var(--bg-secondary);
             border-radius: 16px;
             border: 1px solid var(--border);
@@ -792,6 +831,9 @@
         }
 
         .related-blog-card {
+            display: flex;
+            text-decoration: none;
+            color: inherit;
             background: var(--bg);
             border-radius: 12px;
             overflow: hidden;
@@ -2089,8 +2131,8 @@
             noRes.style.display = 'none';
             grid.style.display = 'grid';
             grid.innerHTML = blogs.map(b => `
-                <div class="blog-card" onclick="openBlog('${b._id}')">
-                    <div class="blog-card-img"><img src="${b.image_url}" alt="${b.subject}" loading="lazy"></div>
+                <a class="blog-card" href="blogs.html?id=${b._id}" onclick="event.preventDefault(); openBlog('${b._id}')" aria-label="${b.subject}">
+                    <div class="blog-card-img"><img src="${b.image_url}" alt="${b.subject}" loading="lazy" width="400" height="220"></div>
                     <div class="blog-content">
                         <div class="blog-meta">
                             <span class="blog-category">${getCategoryFromSubject(b.subject)}</span>
@@ -2099,14 +2141,14 @@
                         <h3 class="blog-title">${b.subject}</h3>
                         <p class="blog-excerpt">${b.title}</p>
                         <div class="blog-footer">
-                            <a href="#" class="read-more">Read More <i class="ri-arrow-right-line"></i></a>
+                            <span class="read-more">Read More <i class="ri-arrow-right-line"></i></span>
                             <div class="blog-author">
                                 <div class="author-avatar">ST</div>
                                 <span>${formatApiTime(b.creation_date)}</span>
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
             `).join('');
             
             gsap.fromTo('.blog-card', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 });
@@ -2201,21 +2243,56 @@
                 window.history.pushState({}, '', newUrl);
                 return;
             }
-            
+
             document.getElementById('loadingSpinner').style.display = 'flex';
-            
+
             try {
                 const res = await fetch(`${API}/blog/${id}`);
                 const data = await res.json();
                 showModal(data.subject, data.image_url, getCategoryFromSubject(data.subject), data.creation_date, data.body, id);
-                
+
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.set('id', id);
                 window.history.pushState({}, '', newUrl);
+
+                // Update page title and meta for this article so Googlebot sees them
+                document.title = `${data.subject} - SEOTIZE Blog`;
+                document.querySelector('meta[name="description"]').setAttribute('content', data.title || data.subject);
+                document.querySelector('meta[property="og:title"]').setAttribute('content', data.subject);
+                document.querySelector('meta[property="og:description"]').setAttribute('content', data.title || data.subject);
+                document.querySelector('meta[property="og:url"]').setAttribute('content', newUrl.toString());
+                if (data.image_url) document.querySelector('meta[property="og:image"]').setAttribute('content', data.image_url);
+                document.querySelector('link[rel="canonical"]').setAttribute('href', newUrl.toString());
+
+                // Inject per-article JSON-LD
+                const existing = document.getElementById('article-jsonld');
+                if (existing) existing.remove();
+                const ld = document.createElement('script');
+                ld.id = 'article-jsonld';
+                ld.type = 'application/ld+json';
+                ld.textContent = JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "BlogPosting",
+                    "headline": data.subject,
+                    "description": data.title || data.subject,
+                    "image": data.image_url,
+                    "datePublished": data.creation_date,
+                    "dateModified": data.creation_date,
+                    "url": newUrl.toString(),
+                    "author": { "@type": "Organization", "name": "SEOTIZE", "url": "https://seotize.net" },
+                    "publisher": {
+                        "@type": "Organization",
+                        "name": "SEOTIZE",
+                        "url": "https://seotize.net",
+                        "logo": { "@type": "ImageObject", "url": "https://seotize.net/logo.png" }
+                    },
+                    "mainEntityOfPage": { "@type": "WebPage", "@id": newUrl.toString() }
+                });
+                document.head.appendChild(ld);
             } catch (e) {
                 showModal('Error', '', 'Error', new Date().toUTCString(), '<p>Unable to load article. Please try again later.</p>', 'error');
             }
-            
+
             document.getElementById('loadingSpinner').style.display = 'none';
         }
 
@@ -2244,8 +2321,8 @@
                         Related Articles
                     </h3>
                     ${relatedBlogs.map(blog => `
-                        <div class="related-blog-card" onclick="openBlog('${blog._id}')">
-                            <img src="${blog.image_url}" alt="${blog.subject}" loading="lazy">
+                        <a class="related-blog-card" href="blogs.html?id=${blog._id}" onclick="event.preventDefault(); openBlog('${blog._id}')">
+                            <img src="${blog.image_url}" alt="${blog.subject}" loading="lazy" width="80" height="80">
                             <div class="related-blog-content">
                                 <span class="related-blog-category">${getCategoryFromSubject(blog.subject)}</span>
                                 <h4 class="related-blog-title">${blog.subject}</h4>
@@ -2254,7 +2331,7 @@
                                     ${formatApiDate(blog.creation_date)}
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     `).join('')}
                 </div>
             ` : '';
