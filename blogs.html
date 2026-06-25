@@ -462,6 +462,8 @@
         .blog-card-img {
             overflow: hidden;
             border-radius: 16px 16px 0 0;
+            width: 100%;
+            line-height: 0;
         }
 
         .blog-card img {
@@ -831,7 +833,7 @@
         }
 
         .related-blog-card {
-            display: flex;
+            display: block;
             text-decoration: none;
             color: inherit;
             background: var(--bg);
@@ -853,6 +855,7 @@
             width: 100%;
             height: 120px;
             object-fit: cover;
+            display: block;
         }
 
         .related-blog-content {
@@ -2322,7 +2325,7 @@
                     </h3>
                     ${relatedBlogs.map(blog => `
                         <a class="related-blog-card" href="blogs.html?id=${blog._id}" onclick="event.preventDefault(); openBlog('${blog._id}')">
-                            <img src="${blog.image_url}" alt="${blog.subject}" loading="lazy" width="80" height="80">
+                            <img src="${blog.image_url}" alt="${blog.subject}" loading="lazy">
                             <div class="related-blog-content">
                                 <span class="related-blog-category">${getCategoryFromSubject(blog.subject)}</span>
                                 <h4 class="related-blog-title">${blog.subject}</h4>
