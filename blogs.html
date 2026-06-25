@@ -657,19 +657,22 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(10px);
-            z-index: 1000;
+            z-index: -1;
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
+            pointer-events: none;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
             padding: 0;
         }
 
         .blog-modal.active {
+            z-index: 1000;
             opacity: 1;
             visibility: visible;
+            pointer-events: auto;
         }
 
         .blog-modal-content {
