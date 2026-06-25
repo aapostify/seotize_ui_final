@@ -427,6 +427,7 @@
             color: inherit;
             background: var(--bg-secondary);
             border-radius: 16px;
+            overflow: hidden;
             border: 1px solid var(--border);
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             cursor: pointer;
@@ -459,23 +460,15 @@
             border-color: var(--primary);
         }
 
-        .blog-card-img {
-            overflow: hidden;
-            border-radius: 16px 16px 0 0;
-            width: 100%;
-            line-height: 0;
-        }
-
-        .blog-card img {
+        .blog-card > img {
             width: 100%;
             height: 220px;
             object-fit: cover;
             display: block;
-            border-radius: 16px 16px 0 0;
             transition: transform 0.4s ease;
         }
 
-        .blog-card:hover img {
+        .blog-card:hover > img {
             transform: scale(1.05);
         }
 
@@ -2135,7 +2128,7 @@
             grid.style.display = 'grid';
             grid.innerHTML = blogs.map(b => `
                 <a class="blog-card" href="blogs.html?id=${b._id}" onclick="event.preventDefault(); openBlog('${b._id}')" aria-label="${b.subject}">
-                    <div class="blog-card-img"><img src="${b.image_url}" alt="${b.subject}" loading="lazy" width="400" height="220"></div>
+                    <img src="${b.image_url}" alt="${b.subject}" loading="lazy">
                     <div class="blog-content">
                         <div class="blog-meta">
                             <span class="blog-category">${getCategoryFromSubject(b.subject)}</span>
@@ -2325,7 +2318,7 @@
                     </h3>
                     ${relatedBlogs.map(blog => `
                         <a class="related-blog-card" href="blogs.html?id=${blog._id}" onclick="event.preventDefault(); openBlog('${blog._id}')">
-                            <img src="${blog.image_url}" alt="${blog.subject}" loading="lazy">
+                            <img src="${blog.image_url}" alt="${blog.subject}">
                             <div class="related-blog-content">
                                 <span class="related-blog-category">${getCategoryFromSubject(blog.subject)}</span>
                                 <h4 class="related-blog-title">${blog.subject}</h4>
