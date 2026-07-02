@@ -278,28 +278,13 @@
             margin-bottom: 0.5rem;
             line-height: 1.4;
             height: 4.6rem; /* fixed: reserves space for 2 lines so title never shifts */
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-start;
             text-align: left;
-            flex-wrap: wrap;
+            overflow: hidden;
         }
 
         .cursor {
-            display: inline-block;
-            width: 3px;
-            height: 1.15em;
-            background: var(--primary);
-            margin-left: 4px;
-            border-radius: 2px;
-            vertical-align: text-bottom;
-            box-shadow: 0 0 8px var(--primary-glow);
-            animation: cursorPulse 1s ease-in-out infinite;
-        }
-
-        @keyframes cursorPulse {
-            0%, 100% { opacity: 1; transform: scaleY(1); }
-            50% { opacity: 0.25; transform: scaleY(0.85); }
+            color: var(--primary);
+            font-weight: 800;
         }
 
         /* --- TITLE: small, minimal brand tag. Fixed slot, left-aligned, never shifts --- */
@@ -825,7 +810,7 @@
                 <div class="hero-image-wrap">
                     <img class="hero-image" id="showcaseImage" src="" alt="SEOTIZE Platform">
                 </div>
-                <div class="hero-subtitle" id="typeText">Transform your SEO today<span class="cursor"></span></div>
+                <div class="hero-subtitle" id="typeText">Transform your SEO today<span class="cursor">.</span></div>
                 <div class="hero-title-slot">
                     <div>
                         <h1 class="hero-title" id="heroTitle"></h1>
@@ -961,13 +946,13 @@
             if (!e) return;
 
             const text = showcaseData[currentIndex].text;
-            e.innerHTML = '<span class="cursor"></span>';
+            e.innerHTML = '<span class="cursor">.</span>';
 
             gsap.to(e, {
                 duration: text.length * 0.04,
                 text: { value: text },
                 onUpdate: () => {
-                    if (!e.innerHTML.includes('cursor')) e.innerHTML += '<span class="cursor"></span>';
+                    if (!e.innerHTML.includes('cursor')) e.innerHTML += '<span class="cursor">.</span>';
                 }
             });
         }
