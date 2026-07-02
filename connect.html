@@ -275,7 +275,7 @@
             color: var(--text-light);
             margin-bottom: 0.75rem;
             line-height: 1.6;
-            min-height: 34px;
+            height: 3.2rem; /* fixed: reserves space for 2 lines so title never shifts */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -295,13 +295,20 @@
             50% { opacity: 0; }
         }
 
-        /* --- TITLE: redesigned, sits under subtitle, bar-style GSAP motion --- */
+        /* --- TITLE: simple, minimal, modern. Fixed slot under subtitle, never shifts --- */
+        .hero-title-slot {
+            height: 4.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .hero-title {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.85rem;
-            font-weight: 700;
-            letter-spacing: 3px;
-            margin-top: 0.5rem;
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--text);
             display: flex;
             justify-content: center;
             gap: 1px;
@@ -309,7 +316,6 @@
 
         .hero-title .letter {
             display: inline-block;
-            color: var(--text);
             transform-origin: bottom;
             will-change: transform;
         }
@@ -319,11 +325,11 @@
         }
 
         .title-accent {
-            width: 42px;
+            width: 28px;
             height: 3px;
             background: var(--primary);
             border-radius: 2px;
-            margin: 0.65rem auto 0;
+            margin: 0.5rem auto 0;
             transform-origin: center;
         }
 
@@ -540,7 +546,11 @@
             }
             
             .hero-title {
-                font-size: 1.5rem;
+                font-size: 2.25rem;
+            }
+
+            .hero-title-slot {
+                height: 3.75rem;
             }
         }
 
@@ -806,8 +816,12 @@
                     <img class="hero-image" id="showcaseImage" src="" alt="SEOTIZE Platform">
                 </div>
                 <div class="hero-subtitle" id="typeText">Transform your SEO today<span class="cursor"></span></div>
-                <h1 class="hero-title" id="heroTitle"></h1>
-                <div class="title-accent"></div>
+                <div class="hero-title-slot">
+                    <div>
+                        <h1 class="hero-title" id="heroTitle"></h1>
+                        <div class="title-accent"></div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -888,21 +902,22 @@
                 { scaleY: 1, duration: 0.4, stagger: 0.1, ease: "back.out(1.7)", overwrite: true }
             );
             gsap.fromTo(".hero-title .letter",
-                { scaleY: 0.2, opacity: 0 },
-                { scaleY: 1, opacity: 1, duration: 0.5, stagger: 0.06, ease: "back.out(2)", overwrite: true }
+                { scaleY: 0.3, opacity: 0, y: 10 },
+                { scaleY: 1, opacity: 1, y: 0, duration: 0.55, stagger: 0.05, ease: "power3.out", overwrite: true }
             );
             gsap.fromTo(".title-accent",
                 { scaleX: 0 },
-                { scaleX: 1, duration: 0.5, delay: 0.35, ease: "power3.out", overwrite: true }
+                { scaleX: 1, duration: 0.5, delay: 0.4, ease: "power3.out", overwrite: true }
             );
         }
 
         function buildTitle() {
             const el = document.getElementById('heroTitle');
             const word = "SEOTIZE";
+            const last = word.length - 1;
             el.innerHTML = word
                 .split('')
-                .map((l, i) => `<span class="letter${i % 2 === 0 ? ' accent' : ''}">${l}</span>`)
+                .map((l, i) => `<span class="letter${i === last ? ' accent' : ''}">${l}</span>`)
                 .join('');
         }
 
