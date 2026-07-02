@@ -283,8 +283,29 @@
         }
 
         .cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1.05em;
+            background: var(--primary);
+            margin-left: 3px;
+            border-radius: 2px;
+            vertical-align: text-bottom;
+            animation: cursorPulse 0.9s ease-in-out infinite;
+        }
+
+        @keyframes cursorPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        .cursor.done {
+            width: auto;
+            height: auto;
+            background: none;
             color: var(--primary);
             font-weight: 800;
+            animation: none;
+            opacity: 1;
         }
 
         /* --- TITLE: small, minimal brand tag. Fixed slot, left-aligned, never shifts --- */
@@ -810,7 +831,7 @@
                 <div class="hero-image-wrap">
                     <img class="hero-image" id="showcaseImage" src="" alt="SEOTIZE Platform">
                 </div>
-                <div class="hero-subtitle" id="typeText">Transform your SEO today<span class="cursor">.</span></div>
+                <div class="hero-subtitle" id="typeText">Transform your SEO today<span class="cursor"></span></div>
                 <div class="hero-title-slot">
                     <div>
                         <h1 class="hero-title" id="heroTitle"></h1>
@@ -946,13 +967,19 @@
             if (!e) return;
 
             const text = showcaseData[currentIndex].text;
-            e.innerHTML = '<span class="cursor">.</span>';
+            e.innerHTML = '<span class="cursor"></span>';
 
             gsap.to(e, {
                 duration: text.length * 0.04,
                 text: { value: text },
                 onUpdate: () => {
-                    if (!e.innerHTML.includes('cursor')) e.innerHTML += '<span class="cursor">.</span>';
+                    if (!e.innerHTML.includes('cursor')) e.innerHTML += '<span class="cursor"></span>';
+                },
+                onComplete: () => {
+                    e.innerHTML = e.innerHTML.replace(
+                        /<span class="cursor"><\/span>/,
+                        '<span class="cursor done">.</span>'
+                    );
                 }
             });
         }
