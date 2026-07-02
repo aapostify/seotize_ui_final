@@ -1018,8 +1018,8 @@
 
         function init() {
             const image = document.getElementById('showcaseImage');
+            image.addEventListener('load', () => image.classList.add('is-loaded'), { once: true });
             image.src = showcaseData[currentIndex].image;
-            image.classList.add('is-loaded');
 
             const tl = gsap.timeline();
 
@@ -1080,7 +1080,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadTheme();
             buildTitle();
-            preloadImages(showcaseData.map(d => d.image)).then(init);
+            init();
+            // preload the remaining images quietly in the background for smooth later swaps
+            preloadImages(showcaseData.slice(1).map(d => d.image));
         });
     </script>
 </body>
