@@ -167,7 +167,7 @@
         .pricing-toggle { display: flex; justify-content: center; align-items: center; gap: 0.875rem; margin-bottom: 1.5rem; max-width: 900px; margin-left: auto; margin-right: auto; }
         .pricing-toggle button { flex: 1; padding: 0.75rem 1.25rem; border: 2px solid var(--border); background: var(--bg); color: var(--text-light); font-weight: 700; border-radius: 14px; cursor: pointer; transition: all 0.4s; font-size: 1.1rem; position: relative; }
         .pricing-toggle button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-color: var(--primary); box-shadow: 0 6px 16px var(--primary-glow); transform: translateY(-2px); }
-        .pricing-toggle .save-badge { position: absolute; top: -6px; right: -6px; background: var(--success); color: white; padding: 0.2rem 0.4rem; border-radius: 6px; font-size: 0.6rem; font-weight: 700; }
+        .pricing-toggle .save-badge { position: absolute; top: -6px; right: -6px; background: #047857; color: white; padding: 0.2rem 0.4rem; border-radius: 6px; font-size: 0.6rem; font-weight: 700; }
         .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; max-width: 1400px; margin: 0 auto; }
         .pricing-grid.task-pricing-grid { grid-template-columns: repeat(3, 1fr); }
         .pricing-card { background: var(--bg); border: 2px solid var(--border); border-radius: 18px; padding: 1.5rem; transition: all 0.4s; position: relative; display: flex; flex-direction: column; }
@@ -540,7 +540,7 @@
                     <div class="partner-image-wrapper">
                         <img src="https://image-api.seotize.net/image-cdn/beb81ed7-3860-4fc6-8330-0e44b5f5809a?w=700&h=700&fit=cover"
                              srcset="https://image-api.seotize.net/image-cdn/beb81ed7-3860-4fc6-8330-0e44b5f5809a?w=700&h=700&fit=cover 1x,
-                                     https://image-api.seotize.net/image-cdn/beb81ed7-3860-4fc6-8330-0e44b5f5809a?w=1024&h=1024&fit=cover 2x"
+                                     https://image-api.seotize.net/image-cdn/beb81ed7-3860-4fc6-8330-0e44b5f5809a?w=1400&h=1400&fit=cover 2x"
                              width="700" height="700" alt="Partner Dashboard" class="partner-image" loading="lazy">
                         <div class="partner-overlay-stats">
                             <div class="overlay-stat">
@@ -935,7 +935,7 @@
                     appData.blogs = data.data.blogs.map(blog => ({
                         id: blog._id,
                         // Resize + compress at the CDN so the carousel never ships full-resolution originals.
-                        image: `${blog.image_url}${blog.image_url.includes('?') ? '&' : '?'}w=600&h=327&fit=cover`,
+                        image: `${blog.image_url}${blog.image_url.includes('?') ? '&' : '?'}w=750&h=409&fit=cover`,
                         title: blog.title,
                         date: new Date(blog.creation_date).toLocaleDateString('en-US', { 
                             year: 'numeric', 
