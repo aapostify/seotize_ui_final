@@ -215,7 +215,7 @@
         .blog-item.prev { opacity: 0.5; transform: scale(0.85) translateX(-350px); z-index: 1; }
         .blog-item.active { opacity: 1; transform: scale(1) translateX(0); z-index: 2; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); }
         .blog-item.next { opacity: 0.5; transform: scale(0.85) translateX(350px); z-index: 1; }
-        .blog-item img { width: 100%; aspect-ratio: 300 / 200; object-fit: cover; background: var(--bg); display: block; }
+        .blog-item img { width: 100%; aspect-ratio: 1408 / 768; object-fit: cover; background: var(--bg); display: block; }
         .blog-info { padding: 1.5rem; }
         .blog-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 0.75rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         .blog-date { font-size: 0.875rem; color: var(--text-muted); }
@@ -929,7 +929,7 @@
                     appData.blogs = data.data.blogs.map(blog => ({
                         id: blog._id,
                         // Resize + compress at the CDN so the carousel never ships full-resolution originals.
-                        image: `${blog.image_url}${blog.image_url.includes('?') ? '&' : '?'}w=300&h=200&fit=cover`,
+                        image: `${blog.image_url}${blog.image_url.includes('?') ? '&' : '?'}w=600&h=327&fit=cover`,
                         title: blog.title,
                         date: new Date(blog.creation_date).toLocaleDateString('en-US', { 
                             year: 'numeric', 
@@ -951,7 +951,7 @@
             appData.blogs.forEach((blog, i) => {
                 const div = document.createElement('div');
                 div.className = `blog-item ${i === 0 ? 'active' : i === 1 ? 'next' : 'hidden'}`;
-                div.innerHTML = `<img src="${blog.image}" width="300" height="200" alt="${blog.title}" loading="lazy"><div class="blog-info"><div class="blog-title">${blog.title}</div><div class="blog-date">${blog.date}</div></div>`;
+                div.innerHTML = `<img src="${blog.image}" width="300" height="164" alt="${blog.title}" loading="lazy"><div class="blog-info"><div class="blog-title">${blog.title}</div><div class="blog-date">${blog.date}</div></div>`;
                 div.onclick = () => window.location.href = `https://seotize.net/blogs?id=${blog.id}`;
                 carousel.appendChild(div);
             });
