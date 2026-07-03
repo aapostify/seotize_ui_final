@@ -6,12 +6,13 @@
     <title>SEOTIZE - AI-Powered SEO Platform | Boost Your Rankings</title>
     <meta name="description" content="Transform your SEO with AI-powered tools, real user engagement, lightning-fast CDN, and automated content generation.">
 
-    <!-- Preconnects: warm up the connections before we actually need them -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <!-- Preconnects kept to the two origins on the critical path to first paint -->
     <link rel="preconnect" href="https://image-api.seotize.net">
-    <link rel="preconnect" href="https://api.seotize.net">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Lower-priority origins get a cheaper dns-prefetch instead -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://api.seotize.net">
 
     <!-- Non-render-blocking font + icon CSS: load async via media swap trick, fallback in <noscript> -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;700;800;900&display=swap"
@@ -459,7 +460,24 @@
         </div>
     </nav>
 
-    <section id="home" class="section hero"></section>
+    <section id="home" class="section hero">
+        <!-- First slide rendered statically so the browser can paint the LCP image
+             immediately, without waiting for deferred JS to build the DOM. -->
+        <div class="hero-slide active" data-slide="0">
+            <div class="hero-container">
+                <div>
+                    <h1>Boost Rankings with Real User Traffic</h1>
+                    <p>Stop using bots . We send real people to search for your keywords and visit your site. This brings real visitors and tells Google your site matters.</p>
+                    <a href="connect.html" class="cta"><span>Get Real Visitors</span><i class="ri-arrow-right-line"></i></a>
+                </div>
+                <div>
+                    <img src="https://image-api.seotize.net/image-cdn/e380574d-86ba-45f4-877f-c8a384ea637c?w=900&h=630&fit=cover"
+                         width="900" height="630" alt="Boost Rankings with Real User Traffic"
+                         loading="eager" fetchpriority="high">
+                </div>
+            </div>
+        </div>
+    </section>
 
     <section id="features" class="section features">
         <div style="max-width: 1400px; width: 100%; margin: 0 auto;">
@@ -725,14 +743,12 @@
 
         function initializeHero() {
             const hero = document.getElementById('home');
+            // Slide 0 already exists in static HTML (for fastest LCP paint) — only append the rest.
             appData.heroSlides.forEach((slide, i) => {
+                if (i === 0) return;
                 const div = document.createElement('div');
-                div.className = `hero-slide ${i === 0 ? 'active' : ''}`;
-                // First slide is the LCP element: eager + high priority + explicit dimensions.
-                // Remaining slides are off-screen until swapped in, so they can lazy-load.
-                const loadingAttr = i === 0 ? 'eager' : 'lazy';
-                const fetchPriorityAttr = i === 0 ? 'fetchpriority="high"' : '';
-                div.innerHTML = `<div class="hero-container"><div><h1>${slide.title}</h1><p>${slide.description}</p><a href="connect.html" class="cta"><span>${slide.cta}</span><i class="ri-arrow-right-line"></i></a></div><div><img src="${slide.image}" width="900" height="630" alt="${slide.title}" loading="${loadingAttr}" ${fetchPriorityAttr}></div></div>`;
+                div.className = 'hero-slide';
+                div.innerHTML = `<div class="hero-container"><div><h1>${slide.title}</h1><p>${slide.description}</p><a href="connect.html" class="cta"><span>${slide.cta}</span><i class="ri-arrow-right-line"></i></a></div><div><img src="${slide.image}" width="900" height="630" alt="${slide.title}" loading="lazy"></div></div>`;
                 hero.appendChild(div);
             });
             const controls = document.createElement('div');
