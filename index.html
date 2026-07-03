@@ -678,10 +678,17 @@
     </div>
 
     <script>
-        gsap.registerPlugin(ScrollTrigger);
+        // GSAP/ScrollTrigger load with `defer`, so they may not be ready yet when this
+        // script runs. Never call gsap.* directly at the top level — always go through
+        // withGsap(), which waits for both to exist before running.
+        function withGsap(fn) {
+            if (window.gsap && window.ScrollTrigger) { fn(); }
+            else { window.addEventListener('load', () => { if (window.gsap && window.ScrollTrigger) { gsap.registerPlugin(ScrollTrigger); fn(); } }); }
+        }
 
         // --- NEW LOGO ANIMATION FUNCTION ---
         function animLogo() {
+            if (!window.gsap) return;
              gsap.fromTo(".logo-bar", 
                 { scaleY: 0.3 },
                 { scaleY: 1, duration: 0.4, stagger: 0.1, ease: "back.out(1.7)", overwrite: true }
@@ -725,7 +732,10 @@
             initializePricing();
             initializeBlogs();
             startAutoSliders();
-            setTimeout(animLogo, 500); // Animate logo on load
+            withGsap(() => {
+                gsap.fromTo('.feature-card', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, scrollTrigger: { trigger: '.features-container', start: 'top 80%' } });
+                setTimeout(animLogo, 200);
+            });
         });
 
         function initializeHero() {
@@ -767,7 +777,6 @@
             const container = document.getElementById('featuresContainer');
             if (!container) return;
             container.innerHTML = appData.features.map((f, i) => `<div class="feature-card" onclick="openFeatureModal(${i})"><div class="feature-card-badge">Click for Details</div><div class="feature-card-icon">${f.icon}</div><h3 class="feature-card-title">${f.title}</h3><p class="feature-card-description">${f.subtitle}</p></div>`).join('');
-            gsap.fromTo('.feature-card', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, scrollTrigger: { trigger: '.features-container', start: 'top 80%' } });
         }
 
         function openFeatureModal(index) {
