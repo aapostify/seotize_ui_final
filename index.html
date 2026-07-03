@@ -42,7 +42,7 @@
         
         :root {
             --bg: #fafbfc; --bg-secondary: #ffffff; --text: #0f172a; --text-light: #64748b;
-            --text-muted: #94a3b8; --border: #e2e8f0; --primary: #2563eb; --primary-dark: #1e40af;
+            --text-muted: #64748b; --border: #e2e8f0; --primary: #2563eb; --primary-dark: #1e40af;
             --primary-glow: rgba(37, 99, 235, 0.2); --success: #10b981; --nav-bg: rgba(255, 255, 255, 0.85);
             --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.06); --bg-dark: #1a1f2e;
             --top-nav-height: 65px;
@@ -419,7 +419,7 @@
             .mobile-items { gap: 0.25rem; }
             .mobile-item { font-size: 0.65rem; gap: 0.15rem; padding: 0.25rem; }
             .mobile-item i { font-size: 1.2rem; }
-            .blog-item { width: 260px; }
+            /* .blog-item { width: 260px; } */
             .blog-item.prev, .blog-item.next { opacity: 0; pointer-events: none; }
             .carousel { min-height: 300px; }
             .carousel-container { padding: 0.75rem 0; }
@@ -454,14 +454,14 @@
                     <span>Get Started</span>
                     <i class="ri-arrow-right-line"></i>
                 </a>
-                <button class="theme-btn" onclick="toggleTheme()">
+                <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle dark mode">
                     <span id="themeIcon">🌙</span>
                 </button>
             </div>
         </div>
     </nav>
 
-    <section id="home" class="section hero">
+    <main>
         <!-- First slide rendered statically so the browser can paint the LCP image
              immediately, without waiting for deferred JS to build the DOM. -->
         <div class="hero-slide active" data-slide="0">
@@ -521,8 +521,8 @@
             <p class="section-subtitle">Stay ahead with the latest SEO trends and insights</p>
             <div class="carousel-container">
                 <div class="carousel" id="carousel"></div>
-                <button class="nav-btn prev-btn" onclick="prevBlog()">‹</button>
-                <button class="nav-btn next-btn" onclick="nextBlog()">›</button>
+                <button class="nav-btn prev-btn" onclick="prevBlog()" aria-label="Previous article">‹</button>
+                <button class="nav-btn next-btn" onclick="nextBlog()" aria-label="Next article">›</button>
             </div>
             <div class="blog-cta">
                 <a href="blogs.html" class="cta">View All Articles</a>
@@ -599,6 +599,8 @@
         </div>
     </section>
 
+    </main>
+
     <footer class="footer">
         <div class="footer-grid">
             <div>
@@ -672,14 +674,14 @@
 
     <div class="feature-modal" id="featureModal">
         <div class="feature-modal-content">
-            <button class="feature-modal-close" onclick="closeFeatureModal()">×</button>
+            <button class="feature-modal-close" onclick="closeFeatureModal()" aria-label="Close dialog">×</button>
             <div id="featureModalBody"></div>
         </div>
     </div>
 
     <div class="blog-modal" id="blogModal">
         <div class="blog-modal-content">
-            <button class="blog-modal-close" onclick="closeBlogModal()">×</button>
+            <button class="blog-modal-close" onclick="closeBlogModal()" aria-label="Close dialog">×</button>
             <div id="blogModalBody"></div>
         </div>
     </div>
@@ -754,13 +756,17 @@
             });
             const controls = document.createElement('div');
             controls.className = 'hero-controls';
-            controls.innerHTML = `<button class="hero-arrow" onclick="prevHero()"><i class="ri-arrow-left-s-line"></i></button><div id="hero-dots"></div><button class="hero-arrow" onclick="nextHero()"><i class="ri-arrow-right-s-line"></i></button>`;
+            controls.innerHTML = `<button class="hero-arrow" onclick="prevHero()" aria-label="Previous slide"><i class="ri-arrow-left-s-line"></i></button><div id="hero-dots"></div><button class="hero-arrow" onclick="nextHero()" aria-label="Next slide"><i class="ri-arrow-right-s-line"></i></button>`;
             hero.appendChild(controls);
             const dots = document.getElementById('hero-dots');
             appData.heroSlides.forEach((_, i) => {
                 const dot = document.createElement('div');
                 dot.className = `hero-dot ${i === 0 ? 'active' : ''}`;
+                dot.setAttribute('role', 'button');
+                dot.setAttribute('tabindex', '0');
+                dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
                 dot.onclick = () => { currentHero = i; updateHero(); };
+                dot.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); currentHero = i; updateHero(); } };
                 dots.appendChild(dot);
             });
         }
