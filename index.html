@@ -6,10 +6,11 @@
     <title>SEOTIZE - AI-Powered SEO Platform | Boost Your Rankings</title>
     <meta name="description" content="Transform your SEO with AI-powered tools, real user engagement, lightning-fast CDN, and automated content generation.">
 
-    <!-- Preconnects kept to the two origins on the critical path to first paint -->
+    <!-- Only 2 preconnects: the two origins directly on the LCP critical path
+         (hero image + the font file it's rendered next to). Fewer simultaneous
+         handshakes = less contention for bandwidth on throttled connections. -->
     <link rel="preconnect" href="https://image-api.seotize.net">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Lower-priority origins get a cheaper dns-prefetch instead -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://api.seotize.net">
