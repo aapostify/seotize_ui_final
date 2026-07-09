@@ -75,7 +75,9 @@
 
         /* Content */
         .content { max-width: 1100px; margin: 0 auto; padding: 4rem 2rem; }
-        .content-section { margin-bottom: 4rem; }
+        .content-section { margin-bottom: 4.5rem; }
+        .section-eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--primary); font-weight: 800; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.85rem; }
+        .section-eyebrow i { font-size: 1rem; }
         .content-section h2 { font-size: 1.9rem; font-weight: 800; margin-bottom: 1rem; color: var(--text); }
         .content-section > p { color: var(--text-light); font-size: 1.05rem; max-width: 800px; }
 
@@ -86,15 +88,16 @@
         .pillar-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; }
         .pillar-card p { color: var(--text-light); font-size: 0.92rem; }
 
-        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 2rem; }
-        .info-card { background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 20px; padding: 1.75rem; }
-        .info-icon { width: 48px; height: 48px; border-radius: 14px; background: var(--primary-glow); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; margin-bottom: 1rem; }
-        .info-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
-        .info-card p { color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5; }
-        .info-card a.info-link { color: var(--primary); font-weight: 700; font-size: 0.87rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; }
-        .info-card a.info-link:hover { text-decoration: underline; }
-        .map-embed { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 1rem; background: var(--bg); }
-        .map-embed iframe { width: 100%; height: 160px; border: 0; display: block; }
+        .behind-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 1.5rem; margin-top: 2rem; align-items: stretch; }
+        .behind-info { background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 20px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; }
+        .behind-block .info-icon { width: 48px; height: 48px; border-radius: 14px; background: var(--primary-glow); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; margin-bottom: 1rem; }
+        .behind-block h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .behind-block p { color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.6; }
+        .behind-block a.info-link { color: var(--primary); font-weight: 700; font-size: 0.87rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; }
+        .behind-block a.info-link:hover { text-decoration: underline; }
+        .behind-divider { height: 1px; background: var(--border); margin: 1.75rem 0; }
+        .behind-map { border-radius: 20px; overflow: hidden; border: 2px solid var(--border); min-height: 380px; }
+        .behind-map iframe { width: 100%; height: 100%; min-height: 380px; border: 0; display: block; }
 
         .cta-band { text-align: center; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 24px; padding: 3rem 2rem; color: white; }
         .cta-band h2 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.75rem; background: none; -webkit-text-fill-color: white; }
@@ -143,7 +146,8 @@
             .hero-stats { gap: 1.25rem; margin-top: 1.75rem; }
             .hero-stats .stat-divider { display: none; }
             .content { padding: 3rem 1.5rem; }
-            .info-grid { grid-template-columns: 1fr; }
+            .behind-grid { grid-template-columns: 1fr; }
+            .behind-map, .behind-map iframe { min-height: 280px; }
             .mobile-nav { display: block; }
             .footer { padding-bottom: calc(var(--mobile-nav-height) + 2rem); }
             .footer-bottom { flex-direction: column; text-align: center; }
@@ -207,11 +211,13 @@
 
     <main class="content">
         <div class="content-section">
+            <div class="section-eyebrow"><i class="ri-compass-3-line"></i><span>Our Story</span></div>
             <h2>Our Mission</h2>
             <p>Search engines reward sites that real people actually visit and engage with. SEOTIZE connects website owners with a global network of real people who search for target keywords and visit real sites, while our AI tools make it fast and affordable to keep publishing great content &mdash; SEO growth that's authentic and built to last.</p>
         </div>
 
         <div class="content-section">
+            <div class="section-eyebrow"><i class="ri-stack-line"></i><span>The Platform</span></div>
             <h2>What We Do</h2>
             <p>SEOTIZE brings together four core services that work together to grow your search visibility.</p>
             <div class="pillar-grid">
@@ -239,29 +245,33 @@
         </div>
 
         <div class="content-section">
+            <div class="section-eyebrow"><i class="ri-lock-2-line"></i><span>Trust &amp; Infrastructure</span></div>
             <h2>Behind SEOTIZE</h2>
-            <p>The infrastructure and people that keep SEOTIZE running.</p>
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="info-icon"><i class="ri-shield-star-fill"></i></div>
-                    <h3>Powered by Cranko Secure Cloud</h3>
-                    <p>SEOTIZE is a product of Cranko Secure Cloud, which powers our secure hosting and infrastructure.</p>
-                    <a class="info-link" href="https://cranko.org/" target="_blank" rel="noopener">
-                        <span>Visit cranko.org</span>
-                        <i class="ri-external-link-line"></i>
-                    </a>
-                </div>
-                <div class="info-card">
-                    <div class="info-icon"><i class="ri-map-pin-2-fill"></i></div>
-                    <h3>Our Office</h3>
-                    <p>18 Elbe Street<br>London, England<br>United Kingdom</p>
-                    <div class="map-embed">
-                        <iframe src="https://www.google.com/maps?q=18+Elbe+Street,+London,+England,+United+Kingdom&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="SEOTIZE office location map"></iframe>
+            <p>The secure infrastructure and real office behind every ranking we help you earn.</p>
+            <div class="behind-grid">
+                <div class="behind-info">
+                    <div class="behind-block">
+                        <div class="info-icon"><i class="ri-shield-star-fill"></i></div>
+                        <h3>Powered by Cranko Secure Cloud</h3>
+                        <p>SEOTIZE runs on Cranko Secure Cloud infrastructure &mdash; enterprise-grade uptime and speed that translate directly into stronger Core Web Vitals and better search rankings for every site we power.</p>
+                        <a class="info-link" href="https://cranko.org/" target="_blank" rel="noopener">
+                            <span>Visit cranko.org</span>
+                            <i class="ri-external-link-line"></i>
+                        </a>
                     </div>
-                    <a class="info-link" href="https://www.google.com/maps/search/?api=1&query=18+Elbe+Street,+London,+England,+United+Kingdom" target="_blank" rel="noopener">
-                        <span>Get Directions</span>
-                        <i class="ri-arrow-right-line"></i>
-                    </a>
+                    <div class="behind-divider"></div>
+                    <div class="behind-block">
+                        <div class="info-icon"><i class="ri-map-pin-2-fill"></i></div>
+                        <h3>Our Office</h3>
+                        <p>18 Elbe Street<br>London, England<br>United Kingdom</p>
+                        <a class="info-link" href="https://www.google.com/maps/search/?api=1&query=18+Elbe+Street,+London,+England,+United+Kingdom" target="_blank" rel="noopener">
+                            <span>Get Directions</span>
+                            <i class="ri-arrow-right-line"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="behind-map">
+                    <iframe src="https://www.google.com/maps?q=18+Elbe+Street,+London,+England,+United+Kingdom&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="SEOTIZE office location map"></iframe>
                 </div>
             </div>
         </div>
