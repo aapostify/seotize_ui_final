@@ -442,6 +442,58 @@
             margin: 0 auto !important;
         }
 
+        .consent {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            cursor: pointer;
+            user-select: none;
+            margin-bottom: 1.25rem;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .consent .check {
+            margin-top: 0.1rem;
+        }
+
+        .consent a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .consent a:hover {
+            text-decoration: underline;
+        }
+
+        .check {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border);
+            border-radius: 5px;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .check.checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .check.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
         .password-requirements {
             margin-top: 0.5rem;
             font-size: 0.75rem;
@@ -1075,6 +1127,10 @@
                                  data-theme="auto"
                                  data-size="flexible"></div>
                         </div>
+                        <label class="consent" onclick="toggleConsent()">
+                            <div class="check" id="consentCheck"></div>
+                            <span>I agree to the <a href="terms-of-service.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Terms of Service</a> and <a href="terms-of-service.html#privacy" target="_blank" rel="noopener" onclick="event.stopPropagation()">Privacy Policy</a></span>
+                        </label>
                         <button type="submit" class="submit-btn" id="emailBtn" disabled>Send Verification Code</button>
                         <div class="divider"><span>or continue with</span></div>
                         <a href="https://api.seotize.net/login/google" class="social-btn">
@@ -1193,7 +1249,13 @@
             'Real user engagement tools'
         ];
         let idx = 0, captchaToken = '', timerInterval, currentStep = 1, userEmail = '', notificationTimeout;
-        let turnstileWidgetId = null;
+        let turnstileWidgetId = null, consentAccepted = false;
+
+        function toggleConsent() {
+            consentAccepted = !consentAccepted;
+            document.getElementById('consentCheck').classList.toggle('checked', consentAccepted);
+            validateEmail();
+        }
 
         function setCookie(name, value, days) {
             let expires = "";
@@ -1219,14 +1281,14 @@
         function toggleTheme() {
             document.body.classList.toggle('dark');
             const isDark = document.body.classList.contains('dark');
-            document.getElementById('themeIcon').textContent = isDark ? '☀' : '🌙';
+            document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         }
 
         function loadTheme() {
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark');
-                document.getElementById('themeIcon').textContent = '☀';
+                document.getElementById('themeIcon').textContent = '☀️';
             }
         }
 
@@ -1264,7 +1326,7 @@
 
             if (email && emailRegex.test(email)) {
                 setFieldState(document.getElementById('email'), icon, 'success');
-                emailBtn.disabled = !captchaToken;
+                emailBtn.disabled = !captchaToken || !consentAccepted;
                 return true;
             } else if (email) {
                 setFieldState(document.getElementById('email'), icon, 'error');
@@ -1411,6 +1473,11 @@
 
             if (!captchaToken) {
                 showToast('Please complete the captcha', 'error');
+                return;
+            }
+
+            if (!consentAccepted) {
+                showToast('Please accept the Terms of Service and Privacy Policy', 'error');
                 return;
             }
 

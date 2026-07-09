@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - SEOTIZE</title>
+    <meta name="description" content="Read the SEOTIZE Terms of Service, including rules for uploaded content, AI-generated articles and images, partner payouts, and account use.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://seotize.net/terms-of-service.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="SEOTIZE">
+    <meta property="og:title" content="Terms of Service - SEOTIZE">
+    <meta property="og:description" content="Read the SEOTIZE Terms of Service, including rules for uploaded content, AI-generated articles and images, and partner payouts.">
+    <meta property="og:url" content="https://seotize.net/terms-of-service.html">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        :root {
+            --bg: #fafbfc; --bg-secondary: #ffffff; --text: #0f172a; --text-light: #64748b;
+            --text-muted: #94a3b8; --border: #e2e8f0; --primary: #2563eb; --primary-dark: #1e40af;
+            --primary-glow: rgba(37, 99, 235, 0.2); --success: #10b981; --warning: #f59e0b; --nav-bg: rgba(255, 255, 255, 0.85);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.06); --bg-dark: #1a1f2e;
+            --mobile-nav-height: 68px;
+        }
+
+        body.dark {
+            --bg: #0a0e1a; --bg-secondary: #1a1f2e; --text: #f1f5f9; --text-light: #cbd5e1;
+            --text-muted: #94a3b8; --border: #2d3748; --primary: #3b82f6; --primary-dark: #2563eb;
+            --primary-glow: rgba(59, 130, 246, 0.25); --nav-bg: rgba(26, 31, 46, 0.85);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); --bg-dark: #000000;
+        }
+
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; transition: background 0.3s, color 0.3s; -webkit-font-smoothing: antialiased; }
+
+        /* Navigation */
+        nav { position: fixed; top: 0; left: 0; right: 0; height: 65px; background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; display: flex; align-items: center; }
+        .nav-container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); letter-spacing: -0.5px; cursor: pointer; user-select: none; }
+        .logo-icon { display: flex; align-items: flex-end; gap: 4px; height: 24px; }
+        .logo-bar { width: 6px; background: var(--primary); border-radius: 2px; transform-origin: bottom; }
+        .logo-b1 { height: 40%; opacity: 0.6; } .logo-b2 { height: 70%; opacity: 0.8; } .logo-b3 { height: 100%; opacity: 1; }
+        .nav-menu { display: flex; align-items: center; gap: 1.75rem; list-style: none; }
+        .nav-menu a { color: var(--text-light); text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: all 0.2s; }
+        .nav-menu a:hover { color: var(--primary); }
+        .nav-actions { display: flex; align-items: center; gap: 0.875rem; }
+        .get-started-btn { padding: 0.5rem 1.125rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 10px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .get-started-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--primary-glow); }
+        .theme-btn { width: 40px; height: 40px; border-radius: 10px; background: var(--bg-secondary); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; font-size: 1.2rem; color: var(--text); }
+        .theme-btn:hover { transform: translateY(-2px); box-shadow: var(--card-shadow); border-color: var(--primary); }
+
+        /* Hero */
+        .hero { padding: 9.5rem 2rem 2.5rem; background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%); text-align: center; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%); top: -150px; right: -150px; }
+        .hero h1 { font-size: clamp(2.25rem, 5vw, 3rem); font-weight: 800; margin-bottom: 0.75rem; background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; z-index: 2; }
+        .hero p { font-size: 1rem; color: var(--text-muted); position: relative; z-index: 2; }
+
+        /* Layout */
+        .legal-wrap { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem 4rem; display: grid; grid-template-columns: 280px 1fr; gap: 3rem; align-items: start; }
+        .toc { display: block; position: sticky; top: 90px; max-height: calc(100vh - 110px); overflow-y: auto; background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 18px; padding: 1.5rem; }
+        .toc h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.75rem; }
+        .toc ol { list-style: none; counter-reset: toc; display: flex; flex-direction: column; gap: 0.4rem; }
+        .toc li { counter-increment: toc; }
+        .toc a { display: block; color: var(--text-light); text-decoration: none; font-size: 0.87rem; padding: 0.3rem 0; border-radius: 8px; }
+        .toc a::before { content: counter(toc) ". "; color: var(--primary); font-weight: 700; }
+        .toc a:hover { color: var(--primary); }
+
+        .legal-content { background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 20px; padding: 2.5rem; }
+        .legal-content .callout { display: flex; gap: 0.75rem; align-items: flex-start; background: rgba(37, 99, 235, 0.08); border: 1px solid var(--primary-glow); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 2rem; }
+        .legal-content .callout i { color: var(--primary); font-size: 1.3rem; margin-top: 0.1rem; flex-shrink: 0; }
+        .legal-content .callout p { margin: 0; font-size: 0.9rem; color: var(--text-light); }
+        .legal-section { margin-bottom: 2.25rem; scroll-margin-top: 90px; }
+        .legal-section:last-child { margin-bottom: 0; }
+        .legal-section h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.6rem; }
+        .legal-section h2 .num { color: var(--primary); font-family: 'Outfit', sans-serif; }
+        .legal-section p { color: var(--text-light); margin-bottom: 0.85rem; font-size: 0.95rem; }
+        .legal-section ul { margin: 0 0 0.85rem 1.25rem; color: var(--text-light); font-size: 0.95rem; }
+        .legal-section li { margin-bottom: 0.4rem; }
+        .legal-section strong { color: var(--text); }
+        .highlight-box { background: var(--bg); border-left: 4px solid var(--warning); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 0.85rem; }
+        .highlight-box p { margin-bottom: 0; color: var(--text); font-size: 0.92rem; }
+
+        /* Footer */
+        .footer { padding: 4rem 2rem 2rem; background: #1a1f2e; color: #f1f5f9; }
+        body.dark .footer { background: #000000; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 3rem; margin-bottom: 3rem; max-width: 1400px; margin-left: auto; margin-right: auto; }
+        .footer h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; color: #ffffff; }
+        .footer ul { list-style: none; }
+        .footer li { margin: 0.5rem 0; }
+        .footer a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; transition: color 0.3s ease; }
+        .footer a:hover { color: #ffffff; }
+        .footer-bottom { padding-top: 2rem; border-top: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; flex-wrap: wrap; gap: 1rem; }
+        .footer-bottom p { color: #94a3b8; font-size: 0.85rem; }
+        .social-links { display: flex; gap: 1.1rem; align-items: center; }
+        .social-links a { color: #f1f5f9; display: flex; align-items: center; justify-content: center; transition: transform 0.25s ease, opacity 0.25s ease; }
+        .social-links a:hover { transform: translateY(-3px); opacity: 0.8; }
+        .social-links a svg { display: block; }
+
+        /* Mobile Navigation */
+        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--mobile-nav-height); background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); z-index: 100; padding: 0.625rem 0.875rem; box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05); }
+        .mobile-items { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; max-width: 600px; height: 100%; margin: 0 auto; }
+        .mobile-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.375rem; color: var(--text-light); text-decoration: none; font-size: 0.75rem; font-weight: 500; border-radius: 8px; transition: all 0.3s ease; }
+        .mobile-item:active { transform: scale(0.95); }
+        .mobile-item.active { color: var(--primary); background: var(--primary-glow); }
+        .mobile-item i { font-size: 1.375rem; }
+
+        @media (max-width: 1024px) {
+            .nav-menu { display: none; }
+            .legal-wrap { grid-template-columns: 1fr; }
+            .toc { position: static; }
+            .footer-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .hero { padding: 8rem 1.5rem 2rem; }
+            .legal-wrap { padding: 2rem 1.5rem 3rem; }
+            .legal-content { padding: 1.5rem; }
+            .mobile-nav { display: block; }
+            .footer { padding-bottom: calc(var(--mobile-nav-height) + 2rem); }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+        @media (max-width: 480px) {
+            .footer-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+            .footer h3 { font-size: 1rem; }
+            .footer a { font-size: 0.85rem; }
+            .mobile-items { gap: 0.25rem; }
+            .mobile-item { font-size: 0.65rem; gap: 0.15rem; padding: 0.25rem; }
+            .mobile-item i { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo" onmouseenter="animLogo()" onclick="animLogo()">
+                <div class="logo-icon">
+                    <div class="logo-bar logo-b1"></div>
+                    <div class="logo-bar logo-b2"></div>
+                    <div class="logo-bar logo-b3"></div>
+                </div>
+                SEOTIZE
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#features">Features</a></li>
+                <li><a href="index.html#pricing">Pricing</a></li>
+                <li><a href="blogs.html">Blog</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="connect.html" class="get-started-btn">
+                    <span>Get Started</span>
+                    <i class="ri-arrow-right-line"></i>
+                </a>
+                <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                    <span id="themeIcon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Terms of Service</h1>
+        <p>Last updated: July 8, 2026</p>
+    </section>
+
+    <div class="legal-wrap">
+        <aside class="toc" aria-label="Table of contents">
+            <h4>On This Page</h4>
+            <ol>
+                <li><a href="#acceptance">Acceptance of Terms</a></li>
+                <li><a href="#description">Description of Service</a></li>
+                <li><a href="#accounts">Accounts &amp; Eligibility</a></li>
+                <li><a href="#content-responsibility">Your Content &amp; Uploads</a></li>
+                <li><a href="#ai-content">AI-Generated Content</a></li>
+                <li><a href="#partners">Partner Program &amp; Tasks</a></li>
+                <li><a href="#billing">Fees &amp; Billing</a></li>
+                <li><a href="#acceptable-use">Acceptable Use</a></li>
+                <li><a href="#ip">Intellectual Property</a></li>
+                <li><a href="#third-party">Third-Party Links</a></li>
+                <li><a href="#privacy">Privacy &amp; Data</a></li>
+                <li><a href="#disclaimers">Disclaimers</a></li>
+                <li><a href="#liability">Limitation of Liability</a></li>
+                <li><a href="#indemnification">Indemnification</a></li>
+                <li><a href="#termination">Termination</a></li>
+                <li><a href="#changes">Changes to These Terms</a></li>
+                <li><a href="#law">Governing Law</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+            </ol>
+        </aside>
+
+        <div class="legal-content">
+            <div class="callout">
+                <i class="ri-information-line"></i>
+                <p>These Terms of Service ("Terms") govern your access to and use of SEOTIZE's website, dashboard, AI content tools, image and article hosting/CDN services, and partner program (collectively, the "Service"). By creating an account or using the Service, you agree to be bound by these Terms.</p>
+            </div>
+
+            <div class="legal-section" id="acceptance">
+                <h2><span class="num">1.</span> Acceptance of Terms</h2>
+                <p>By accessing or using any part of the Service, you confirm that you have read, understood, and agree to be bound by these Terms and our handling of data as described in the Privacy &amp; Data section below. If you do not agree, you must not use the Service.</p>
+                <p>If you are using the Service on behalf of a company or other organization, you represent that you have the authority to bind that organization to these Terms.</p>
+            </div>
+
+            <div class="legal-section" id="description">
+                <h2><span class="num">2.</span> Description of Service</h2>
+                <p>SEOTIZE provides a set of tools designed to help websites grow through search engine optimization, including:</p>
+                <ul>
+                    <li>A real user engagement network that connects website owners with partners who search for and visit target websites;</li>
+                    <li>AI-assisted generation of SEO-optimized articles and images;</li>
+                    <li>Hosting and global CDN delivery for articles and images uploaded or generated through the Service;</li>
+                    <li>Analytics, keyword tracking, and reporting tools;</li>
+                    <li>A partner marketplace through which individuals can complete tasks in exchange for payment.</li>
+                </ul>
+                <p>We may add, change, or remove features of the Service at any time, and we may offer certain features as paid plans or task-based pricing as described on our Pricing page.</p>
+            </div>
+
+            <div class="legal-section" id="accounts">
+                <h2><span class="num">3.</span> Accounts &amp; Eligibility</h2>
+                <p>You must be at least 18 years old, or the age of legal majority in your jurisdiction, to create an account. You agree to provide accurate information when registering and to keep it up to date.</p>
+                <p>You are responsible for maintaining the confidentiality of your account credentials and for all activity that occurs under your account. Notify us immediately at <a href="mailto:support@seotize.net">support@seotize.net</a> if you suspect unauthorized use of your account.</p>
+            </div>
+
+            <div class="legal-section" id="content-responsibility">
+                <h2><span class="num">4.</span> Your Content &amp; Uploads</h2>
+                <div class="highlight-box">
+                    <p><strong>You are solely and fully responsible for all articles, text, images, and other content that you upload, publish, generate, or otherwise submit through the Service ("User Content").</strong></p>
+                </div>
+                <p>SEOTIZE acts as a hosting, CDN, and distribution platform for User Content. We do not pre-screen, verify, edit, or endorse User Content before it is stored or delivered through our infrastructure. By submitting User Content, you represent and warrant that:</p>
+                <ul>
+                    <li>You own all rights to the content, or you have obtained all necessary licenses, permissions, and consents to upload, publish, and distribute it through SEOTIZE;</li>
+                    <li>Your content does not infringe any copyright, trademark, trade secret, privacy, publicity, or other intellectual property or legal right of any third party;</li>
+                    <li>Your content is not illegal, defamatory, obscene, fraudulent, deceptive, hateful, or otherwise harmful, and does not contain malware or malicious code;</li>
+                    <li>Your content complies with all applicable laws and regulations in the jurisdictions where you operate and where your content is accessed;</li>
+                    <li>You will not upload images or articles depicting or promoting violence, exploitation of minors, or any other content prohibited by law.</li>
+                </ul>
+                <p>You retain ownership of your User Content. By uploading it, you grant SEOTIZE a worldwide, non-exclusive, royalty-free license to host, store, cache, reproduce, and distribute that content solely for the purpose of operating, delivering, and improving the Service (for example, serving it through our image CDN).</p>
+                <p>We reserve the right, but do not assume any obligation, to remove or disable access to any User Content that we believe, in our sole discretion, violates these Terms or applicable law, or to respond to a valid copyright or legal takedown request. If you believe content hosted on SEOTIZE infringes your rights, contact us at <a href="mailto:support@seotize.net">support@seotize.net</a> with a description of the content and your rights in it, and we will investigate.</p>
+                <p>SEOTIZE is not liable for User Content uploaded by you or by any other user of the Service, and you agree to indemnify SEOTIZE against claims arising from your User Content as described in the Indemnification section below.</p>
+            </div>
+
+            <div class="legal-section" id="ai-content">
+                <h2><span class="num">5.</span> AI-Generated Content</h2>
+                <p>SEOTIZE's AI tools can generate articles, text, and images based on prompts and inputs you provide. AI-generated output is provided "as is" and may contain inaccuracies, outdated information, or content that resembles existing works.</p>
+                <ul>
+                    <li>You are responsible for reviewing, fact-checking, and editing any AI-generated content before publishing or relying on it;</li>
+                    <li>Once you publish, save, or export AI-generated content, it is treated as your User Content and you accept the same responsibilities described in Section 4 above;</li>
+                    <li>SEOTIZE makes no guarantee that AI-generated content is free of errors, unique, or non-infringing, and you use these tools at your own risk.</li>
+                </ul>
+            </div>
+
+            <div class="legal-section" id="partners">
+                <h2><span class="num">6.</span> Partner Program &amp; Tasks</h2>
+                <p>Individuals may join the SEOTIZE partner program to complete engagement tasks (such as searching for and visiting a website) in exchange for payment, as described on our Partners page.</p>
+                <ul>
+                    <li>Partners must complete tasks genuinely and honestly; use of automated scripts, bots, VPN abuse, click farms, or any method to falsify task completion is strictly prohibited and may result in forfeiture of earnings and account termination;</li>
+                    <li>Payouts are processed as described in your dashboard, typically via USDT (BEP20) or other supported methods, and may be subject to minimum withdrawal thresholds, processing times, and applicable fees;</li>
+                    <li>We reserve the right to withhold, reverse, or deny payment for tasks we determine, in good faith, to be fraudulent, abusive, or in violation of these Terms;</li>
+                    <li>Task rates, availability, and program terms may change at any time; continued participation constitutes acceptance of updated terms.</li>
+                </ul>
+            </div>
+
+            <div class="legal-section" id="billing">
+                <h2><span class="num">7.</span> Fees &amp; Billing</h2>
+                <p>Certain features of the Service require payment, including hosting subscription plans and task-based pricing for engagement campaigns, as described on our Pricing page.</p>
+                <ul>
+                    <li>Subscription fees are billed in advance for the selected billing period (e.g., 3, 6, or 12 months) and, unless stated otherwise, are non-refundable once the billing period has started;</li>
+                    <li>Task-based charges are billed based on completed, verified tasks at the rate applicable to your selected plan;</li>
+                    <li>You are responsible for any taxes associated with your use of the Service;</li>
+                    <li>We may suspend or downgrade access to paid features if payment is not received or a payment method fails.</li>
+                </ul>
+            </div>
+
+            <div class="legal-section" id="acceptable-use">
+                <h2><span class="num">8.</span> Acceptable Use</h2>
+                <p>In addition to the content rules in Section 4, you agree not to:</p>
+                <ul>
+                    <li>Use the Service to violate any law or the rights of any third party;</li>
+                    <li>Attempt to gain unauthorized access to any part of the Service, other accounts, or our systems;</li>
+                    <li>Interfere with or disrupt the integrity or performance of the Service, including through malware, scraping, or excessive automated requests;</li>
+                    <li>Resell, sublicense, or provide unauthorized access to the Service without our written consent;</li>
+                    <li>Use the partner network or engagement tools to target websites without authorization to do so.</li>
+                </ul>
+            </div>
+
+            <div class="legal-section" id="ip">
+                <h2><span class="num">9.</span> Intellectual Property</h2>
+                <p>The Service, including its software, design, branding, logos, and underlying technology, is owned by SEOTIZE and protected by intellectual property laws. These Terms do not grant you any rights to SEOTIZE's trademarks, logos, or proprietary technology beyond what is necessary to use the Service as intended.</p>
+                <p>As set out in Section 4, you retain ownership of your User Content; SEOTIZE claims no ownership over content you upload or generate.</p>
+            </div>
+
+            <div class="legal-section" id="third-party">
+                <h2><span class="num">10.</span> Third-Party Links &amp; Services</h2>
+                <p>The Service may contain links to third-party websites or integrate with third-party services (such as payment processors). SEOTIZE does not control and is not responsible for the content, policies, or practices of any third party. Your use of third-party services is subject to their own terms.</p>
+            </div>
+
+            <div class="legal-section" id="privacy">
+                <h2><span class="num">11.</span> Privacy &amp; Data Protection</h2>
+                <p>We take the security of your data seriously. The Service uses SSL/TLS encryption for data in transit, undergoes regular security review, and maintains automatic backups to help protect your account and content.</p>
+                <p>We collect and process the information necessary to operate your account, deliver hosted content, process partner payouts, and improve the Service, in a manner consistent with applicable data protection laws, including the GDPR where applicable. We do not sell your personal data to third parties.</p>
+                <p>For questions about how your data is handled, or to request access to or deletion of your data, contact us at <a href="mailto:support@seotize.net">support@seotize.net</a>.</p>
+            </div>
+
+            <div class="legal-section" id="disclaimers">
+                <h2><span class="num">12.</span> Disclaimers</h2>
+                <p>The Service is provided "as is" and "as available," without warranties of any kind, whether express or implied, including implied warranties of merchantability, fitness for a particular purpose, or non-infringement. SEOTIZE does not guarantee specific search ranking results, traffic volumes, or business outcomes from use of the Service, as SEO performance depends on factors outside our control, including search engine algorithms.</p>
+            </div>
+
+            <div class="legal-section" id="liability">
+                <h2><span class="num">13.</span> Limitation of Liability</h2>
+                <p>To the maximum extent permitted by law, SEOTIZE and its officers, employees, and partners will not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits, revenue, data, or goodwill, arising from your use of the Service or any User Content, even if advised of the possibility of such damages. Our total liability for any claim arising from these Terms or the Service will not exceed the amount you paid to SEOTIZE in the 3 months preceding the claim.</p>
+            </div>
+
+            <div class="legal-section" id="indemnification">
+                <h2><span class="num">14.</span> Indemnification</h2>
+                <p>You agree to indemnify, defend, and hold harmless SEOTIZE and its officers, employees, and partners from any claims, damages, losses, and expenses (including reasonable legal fees) arising from: (a) your User Content; (b) your use or misuse of the Service; (c) your violation of these Terms; or (d) your violation of any law or the rights of a third party.</p>
+            </div>
+
+            <div class="legal-section" id="termination">
+                <h2><span class="num">15.</span> Termination</h2>
+                <p>You may stop using the Service and close your account at any time. We may suspend or terminate your access to the Service, with or without notice, if we believe you have violated these Terms, engaged in fraudulent or abusive behavior, or for any other reason at our discretion. Upon termination, your right to use the Service ends immediately; sections of these Terms that by their nature should survive termination (including Sections 4, 5, 13, and 14) will continue to apply.</p>
+            </div>
+
+            <div class="legal-section" id="changes">
+                <h2><span class="num">16.</span> Changes to These Terms</h2>
+                <p>We may update these Terms from time to time to reflect changes to the Service or for legal or operational reasons. If we make material changes, we will update the "Last updated" date at the top of this page. Continued use of the Service after changes take effect constitutes acceptance of the revised Terms.</p>
+            </div>
+
+            <div class="legal-section" id="law">
+                <h2><span class="num">17.</span> Governing Law</h2>
+                <p>These Terms are governed by applicable law without regard to conflict-of-law principles. Any disputes arising from these Terms or the Service will be handled through good-faith negotiation in the first instance, and, failing resolution, through the courts or arbitration forums applicable to your agreement with SEOTIZE.</p>
+            </div>
+
+            <div class="legal-section" id="contact">
+                <h2><span class="num">18.</span> Contact Us</h2>
+                <p>If you have any questions about these Terms, please reach out through our <a href="contact-us.html">Contact Us</a> page or email us directly at <a href="mailto:support@seotize.net">support@seotize.net</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <h3>Product</h3>
+                <ul>
+                    <li><a href="index.html#features">Features</a></li>
+                    <li><a href="index.html#pricing">Pricing</a></li>
+                    <li><a href="connect.html">Get Started</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="about-us.html">About Us</a></li>
+                    <li><a href="contact-us.html">Contact Us</a></li>
+                    <li><a href="partner/">Become a Partner</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="blogs.html">Blog</a></li>
+                    <li><a href="terms-of-service.html">Terms of Service</a></li>
+                    <li><a href="terms-of-service.html#privacy">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 SEOTIZE. All rights reserved.</p>
+            <div class="social-links">
+                <a href="mailto:support@seotize.net" aria-label="Email">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="#2563EB" d="M12 12.713.015 3h23.97L12 12.713ZM6.575 10.89.001 5.562V18.06l6.574-7.17Zm10.85 0 6.575 7.17V5.561l-6.575 5.329Zm-1.557 1.262L12 15.29l-3.868-3.138L0 21h24l-8.11-8.847Z"/></svg>
+                </a>
+                <a href="https://t.me/seotize" aria-label="Telegram" target="_blank" rel="noopener">
+                    <svg width="27" height="27" viewBox="0 0 24 24" aria-hidden="true"><path fill="#29B6F6" d="M19,24l-14,0c-2.761,0 -5,-2.239 -5,-5l0,-14c0,-2.761 2.239,-5 5,-5l14,0c2.762,0 5,2.239 5,5l0,14c0,2.761 -2.238,5 -5,5Zm-2.744,-5.148c0.215,0.153 0.491,0.191 0.738,0.097c0.246,-0.093 0.428,-0.304 0.483,-0.56c0.579,-2.722 1.985,-9.614 2.512,-12.09c0.039,-0.187 -0.027,-0.381 -0.173,-0.506c-0.147,-0.124 -0.351,-0.16 -0.532,-0.093c-2.795,1.034 -11.404,4.264 -14.923,5.567c-0.223,0.082 -0.368,0.297 -0.361,0.533c0.008,0.235 0.167,0.44 0.395,0.509c1.578,0.471 3.65,1.128 3.65,1.128c0,0 0.967,2.924 1.472,4.41c0.063,0.187 0.21,0.334 0.402,0.384c0.193,0.05 0.397,-0.002 0.541,-0.138c0.811,-0.765 2.064,-1.948 2.064,-1.948c0,0 2.381,1.746 3.732,2.707Zm-7.34,-5.784l1.119,3.692l0.249,-2.338c0,0 4.324,-3.9 6.79,-6.124c0.072,-0.065 0.082,-0.174 0.022,-0.251c-0.06,-0.077 -0.169,-0.095 -0.251,-0.043c-2.857,1.825 -7.929,5.064 -7.929,5.064Z"/></svg>
+                </a>
+                <a href="https://instagram.com/seotize" aria-label="Instagram" target="_blank" rel="noopener">
+                    <svg width="23" height="23" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="igGradFooter" x1="0" y1="24" x2="24" y2="0"><stop offset="0" stop-color="#FEE411"/><stop offset=".3" stop-color="#FB5133"/><stop offset=".65" stop-color="#C6229D"/><stop offset="1" stop-color="#5E22B7"/></linearGradient></defs><path fill="url(#igGradFooter)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+                <a href="https://x.com/seotize" aria-label="X (Twitter)" target="_blank" rel="noopener">
+                    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.3 10.9 19 4.5h-1.9l-4.9 5.6-4-5.6H3l6 8.6-6 6.9h1.9l5.2-6 4.3 6H21l-6.2-8.7Zm-1.8 2.1-.6-.8-4.8-6.8h2.1l3.9 5.5.6.8 5.1 7.2h-2.1l-4.2-5.9Z"/></svg>
+                </a>
+                <a href="https://signal.me/#u/seotize" aria-label="Signal" target="_blank" rel="noopener">
+                    <svg width="23" height="23" viewBox="0 0 24 24" aria-hidden="true"><path fill="#3A76F0" d="M12 2a10 10 0 0 0-8.7 15.03L2 22l5.17-1.3A10 10 0 1 0 12 2Z"/></svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="mobile-nav">
+        <div class="mobile-items">
+            <a href="index.html" class="mobile-item">
+                <i class="ri-home-5-line"></i>
+                <span>Home</span>
+            </a>
+            <a href="index.html#features" class="mobile-item">
+                <i class="ri-flashlight-line"></i>
+                <span>Features</span>
+            </a>
+            <a href="index.html#pricing" class="mobile-item">
+                <i class="ri-price-tag-3-line"></i>
+                <span>Pricing</span>
+            </a>
+            <a href="blogs.html" class="mobile-item">
+                <i class="ri-article-line"></i>
+                <span>Blog</span>
+            </a>
+            <a href="connect.html" class="mobile-item">
+                <i class="ri-user-star-line"></i>
+                <span>Connect</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function animLogo() {
+            if (!window.gsap) return;
+            gsap.fromTo(".logo-bar", { scaleY: 0.3 }, { scaleY: 1, duration: 0.4, stagger: 0.1, ease: "back.out(1.7)", overwrite: true });
+        }
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+        function loadTheme() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark');
+                document.getElementById('themeIcon').textContent = '☀️';
+            }
+        }
+        loadTheme();
+        window.addEventListener('load', () => setTimeout(animLogo, 200));
+    </script>
+</body>
+</html>
