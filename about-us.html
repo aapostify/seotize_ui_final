@@ -84,14 +84,16 @@
         .pillar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 2rem; }
         .pillar-card { background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 20px; padding: 1.75rem; transition: all 0.3s; }
         .pillar-card:hover { transform: translateY(-6px); border-color: var(--primary); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .pillar-icon { font-size: 2.25rem; margin-bottom: 0.75rem; }
-        .pillar-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .pillar-card-header { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.75rem; }
+        .pillar-icon { width: 48px; height: 48px; border-radius: 14px; background: var(--primary-glow); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0; }
+        .pillar-card h3 { font-size: 1.1rem; font-weight: 700; margin: 0; }
         .pillar-card p { color: var(--text-light); font-size: 0.92rem; }
 
         .behind-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 1.5rem; margin-top: 2rem; align-items: stretch; }
         .behind-info { background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 20px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; }
-        .behind-block .info-icon { width: 48px; height: 48px; border-radius: 14px; background: var(--primary-glow); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; margin-bottom: 1rem; }
-        .behind-block h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .behind-block-header { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.75rem; }
+        .behind-block .info-icon { width: 48px; height: 48px; border-radius: 14px; background: var(--primary-glow); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0; }
+        .behind-block h3 { font-size: 1.05rem; font-weight: 700; margin: 0; }
         .behind-block p { color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.6; }
         .behind-block a.info-link { color: var(--primary); font-weight: 700; font-size: 0.87rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; }
         .behind-block a.info-link:hover { text-decoration: underline; }
@@ -222,23 +224,31 @@
             <p>SEOTIZE brings together four core services that work together to grow your search visibility.</p>
             <div class="pillar-grid">
                 <div class="pillar-card">
-                    <div class="pillar-icon">🚀</div>
-                    <h3>Real User Engagement</h3>
+                    <div class="pillar-card-header">
+                        <div class="pillar-icon"><i class="ri-footprint-fill"></i></div>
+                        <h3>Real User Engagement</h3>
+                    </div>
                     <p>Real people search your keywords and visit your website from 150+ countries, driving authentic traffic and signals search engines trust.</p>
                 </div>
                 <div class="pillar-card">
-                    <div class="pillar-icon">📊</div>
-                    <h3>AI Content &amp; Image Generation</h3>
+                    <div class="pillar-card-header">
+                        <div class="pillar-icon"><i class="ri-sparkling-2-fill"></i></div>
+                        <h3>AI Content &amp; Image Generation</h3>
+                    </div>
                     <p>Generate fully SEO-optimized articles and images in seconds, so you can publish consistently without a full content team.</p>
                 </div>
                 <div class="pillar-card">
-                    <div class="pillar-icon">🌍</div>
-                    <h3>Global CDN &amp; Hosting</h3>
+                    <div class="pillar-card-header">
+                        <div class="pillar-icon"><i class="ri-global-line"></i></div>
+                        <h3>Global CDN &amp; Hosting</h3>
+                    </div>
                     <p>Your articles and images load fast anywhere in the world thanks to our optimized, globally distributed CDN infrastructure.</p>
                 </div>
                 <div class="pillar-card">
-                    <div class="pillar-icon">🤝</div>
-                    <h3>Global Partner Network</h3>
+                    <div class="pillar-card-header">
+                        <div class="pillar-icon"><i class="ri-team-fill"></i></div>
+                        <h3>Global Partner Network</h3>
+                    </div>
                     <p>Thousands of partners complete real engagement tasks and get paid quickly via USDT, powering the network that grows your traffic.</p>
                 </div>
             </div>
@@ -251,8 +261,10 @@
             <div class="behind-grid">
                 <div class="behind-info">
                     <div class="behind-block">
-                        <div class="info-icon"><i class="ri-shield-star-fill"></i></div>
-                        <h3>Powered by Cranko Secure Cloud</h3>
+                        <div class="behind-block-header">
+                            <div class="info-icon"><i class="ri-shield-star-fill"></i></div>
+                            <h3>Powered by Cranko Secure Cloud</h3>
+                        </div>
                         <p>SEOTIZE runs on Cranko Secure Cloud infrastructure &mdash; enterprise-grade uptime and speed that translate directly into stronger Core Web Vitals and better search rankings for every site we power.</p>
                         <a class="info-link" href="https://cranko.org/" target="_blank" rel="noopener">
                             <span>Visit cranko.org</span>
@@ -261,8 +273,10 @@
                     </div>
                     <div class="behind-divider"></div>
                     <div class="behind-block">
-                        <div class="info-icon"><i class="ri-map-pin-2-fill"></i></div>
-                        <h3>Our Office</h3>
+                        <div class="behind-block-header">
+                            <div class="info-icon"><i class="ri-map-pin-2-fill"></i></div>
+                            <h3>Our Office</h3>
+                        </div>
                         <p>18 Elbe Street<br>London, England<br>United Kingdom</p>
                         <a class="info-link" href="https://www.google.com/maps/search/?api=1&query=18+Elbe+Street,+London,+England,+United+Kingdom" target="_blank" rel="noopener">
                             <span>Get Directions</span>
