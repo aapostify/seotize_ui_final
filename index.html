@@ -255,6 +255,7 @@
         .social-links { display: flex; gap: 1rem; }
         .social-links a { width: 36px; height: 36px; background: #334155; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s ease; font-size: 1.125rem; color: #f1f5f9; }
         .social-links a:hover { background: var(--primary); transform: translateY(-2px); }
+        .social-links a svg { width: 18px; height: 18px; }
         
         /* Mobile Navigation */
         .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: var(--mobile-nav-height); background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); z-index: 100; padding: 0.625rem 0.875rem; box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05); }
@@ -623,9 +624,10 @@
             <p>© 2026 SEOTIZE. All rights reserved.</p>
             <div class="social-links">
                 <a href="mailto:support@seotize.net" aria-label="Email"><i class="ri-mail-line"></i></a>
-                <a href="#" aria-label="Twitter"><i class="ri-twitter-x-line"></i></a>
-                <a href="#" aria-label="LinkedIn"><i class="ri-linkedin-line"></i></a>
-                <a href="#" aria-label="Discord"><i class="ri-discord-line"></i></a>
+                <a href="https://t.me/seotize" aria-label="Telegram" target="_blank" rel="noopener"><i class="ri-telegram-line"></i></a>
+                <a href="https://instagram.com/seotize" aria-label="Instagram" target="_blank" rel="noopener"><i class="ri-instagram-line"></i></a>
+                <a href="https://x.com/seotize" aria-label="X (Twitter)" target="_blank" rel="noopener"><i class="ri-twitter-x-line"></i></a>
+                <a href="https://signal.me/#u/seotize" aria-label="Signal" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2 22l4.93-1.38C8.42 21.5 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Zm0 18c-1.64 0-3.16-.46-4.45-1.26l-.32-.19-2.93.82.82-2.93-.19-.32C4.46 15.16 4 13.64 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8Z" fill="currentColor"/></svg></a>
             </div>
         </div>
     </footer>

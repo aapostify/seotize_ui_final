@@ -951,14 +951,14 @@
         function toggleTheme() {
             document.body.classList.toggle('dark');
             const isDark = document.body.classList.contains('dark');
-            document.getElementById('themeIcon').textContent = isDark ? '☀' : '🌙';
+            document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         }
 
         function loadTheme() {
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark');
-                document.getElementById('themeIcon').textContent = '☀';
+                document.getElementById('themeIcon').textContent = '☀️';
             }
         }
 
