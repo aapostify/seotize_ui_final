@@ -1014,28 +1014,28 @@ body.dark .footer {
 
 .social-links {
     display: flex;
-    gap: 1.25rem;
+    gap: 0.75rem;
     align-items: center;
 }
 
 .social-links a {
-    color: #94a3b8;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    overflow: hidden;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    font-size: 1.4rem;
-    transition: all 0.25s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .social-links a:hover {
-    color: #ffffff;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
 }
 
 .social-links a svg {
-    width: 20px;
-    height: 20px;
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 /* ===========================
@@ -1611,11 +1611,21 @@ body.dark .footer {
             <div class="footer-bottom">
                 <p>© 2026 Seotize Partners. All rights reserved.</p>
                 <div class="social-links">
-                    <a href="mailto:partners@seotize.net" aria-label="Email"><i class="ri-mail-line"></i></a>
-                    <a href="https://t.me/seotize" aria-label="Telegram" target="_blank" rel="noopener"><i class="ri-telegram-line"></i></a>
-                    <a href="https://instagram.com/seotize" aria-label="Instagram" target="_blank" rel="noopener"><i class="ri-instagram-line"></i></a>
-                    <a href="https://x.com/seotize" aria-label="X (Twitter)" target="_blank" rel="noopener"><i class="ri-twitter-x-line"></i></a>
-                    <a href="https://signal.me/#u/seotize" aria-label="Signal" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2 22l4.93-1.38C8.42 21.5 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Zm0 18c-1.64 0-3.16-.46-4.45-1.26l-.32-.19-2.93.82.82-2.93-.19-.32C4.46 15.16 4 13.64 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8Z" fill="currentColor"/></svg></a>
+                    <a href="mailto:partners@seotize.net" aria-label="Email">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#2563EB"/><path d="M6.5 8h11a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" stroke="#fff" stroke-width="1.3" fill="none"/><path d="m6.2 8.3 5.8 4.4 5.8-4.4" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+                    </a>
+                    <a href="https://t.me/seotize" aria-label="Telegram" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#26A5E4"/><path fill="#fff" d="M17.72 7.31c.1 0 .32.02.47.14a.5.5 0 0 1 .17.32c.02.1.04.31.02.47-.18 1.9-.96 6.5-1.36 8.63-.17.9-.5 1.2-.82 1.23-.7.06-1.22-.46-1.9-.9-1.06-.7-1.65-1.13-2.68-1.8-1.18-.78-.42-1.21.26-1.91.18-.18 3.25-2.98 3.31-3.23a.24.24 0 0 0-.06-.21c-.07-.06-.17-.04-.25-.02-.1.02-1.79 1.14-5.06 3.34-.48.33-.91.49-1.3.48-.43-.01-1.25-.24-1.86-.44-.75-.24-1.35-.37-1.3-.79.03-.21.33-.44.9-.66 3.5-1.53 5.83-2.53 7-3.02 3.33-1.38 4.02-1.62 4.47-1.63Z"/></svg>
+                    </a>
+                    <a href="https://instagram.com/seotize" aria-label="Instagram" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="igGradFooter" x1="0" y1="24" x2="24" y2="0"><stop offset="0" stop-color="#FEE411"/><stop offset=".3" stop-color="#FB5133"/><stop offset=".65" stop-color="#C6229D"/><stop offset="1" stop-color="#5E22B7"/></linearGradient></defs><circle cx="12" cy="12" r="12" fill="url(#igGradFooter)"/><path fill="#fff" d="M12 7.2a4.8 4.8 0 1 0 0 9.6 4.8 4.8 0 0 0 0-9.6Zm0 7.92a3.12 3.12 0 1 1 0-6.24 3.12 3.12 0 0 1 0 6.24Zm4.98-8.1a1.12 1.12 0 1 1-2.24 0 1.12 1.12 0 0 1 2.24 0Z"/></svg>
+                    </a>
+                    <a href="https://x.com/seotize" aria-label="X (Twitter)" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11.5" fill="#fff" stroke="#334155"/><path fill="#000" d="M13.3 10.9 19 4.5h-1.9l-4.9 5.6-4-5.6H3l6 8.6-6 6.9h1.9l5.2-6 4.3 6H21l-6.2-8.7Zm-1.8 2.1-.6-.8-4.8-6.8h2.1l3.9 5.5.6.8 5.1 7.2h-2.1l-4.2-5.9Z"/></svg>
+                    </a>
+                    <a href="https://signal.me/#u/seotize" aria-label="Signal" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#3A76F0"/><path fill="#fff" d="M12 6a6 6 0 0 0-5.2 9.02L6 18l3.1-.78A6 6 0 1 0 12 6Z"/></svg>
+                    </a>
                 </div>
             </div>
         </div>
