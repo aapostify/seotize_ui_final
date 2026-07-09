@@ -57,10 +57,16 @@
         .theme-btn:hover { transform: translateY(-2px); box-shadow: var(--card-shadow); border-color: var(--primary); }
 
         /* Hero */
-        .hero { padding: 10rem 2rem 4rem; background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%); text-align: center; position: relative; overflow: hidden; }
+        .hero { padding: 9.5rem 2rem 3rem; background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg) 100%); text-align: center; position: relative; overflow: hidden; }
         .hero::before { content: ''; position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%); top: -150px; right: -150px; }
         .hero h1 { font-size: clamp(2.25rem, 5vw, 3.25rem); font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; z-index: 2; }
         .hero p { font-size: 1.15rem; color: var(--text-light); max-width: 680px; margin: 0 auto; position: relative; z-index: 2; }
+
+        .hero-stats { display: flex; justify-content: center; align-items: center; gap: 2.5rem; margin-top: 2.25rem; flex-wrap: wrap; position: relative; z-index: 2; }
+        .hero-stats .stat { text-align: center; }
+        .hero-stats .stat .value { font-size: 1.6rem; font-weight: 900; color: var(--primary); line-height: 1; }
+        .hero-stats .stat .label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin-top: 0.35rem; }
+        .hero-stats .stat-divider { width: 1px; height: 32px; background: var(--border); }
 
         /* Content */
         .content { max-width: 1100px; margin: 0 auto; padding: 4rem 2rem; }
@@ -75,15 +81,19 @@
         .pillar-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; }
         .pillar-card p { color: var(--text-light); font-size: 0.92rem; }
 
-        .stat-band { background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 24px; padding: 2.5rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; text-align: center; }
-        .stat-band-item .value { font-size: 2rem; font-weight: 900; color: var(--primary); }
-        .stat-band-item .label { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; margin-top: 0.25rem; }
-
         .values-list { list-style: none; margin-top: 1.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
         .values-list li { display: flex; align-items: flex-start; gap: 0.75rem; background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; }
         .values-list li i { color: var(--success); font-size: 1.3rem; flex-shrink: 0; margin-top: 0.1rem; }
         .values-list li strong { display: block; margin-bottom: 0.15rem; }
         .values-list li span.desc { color: var(--text-light); font-size: 0.9rem; }
+
+        .office-strip { display: flex; align-items: center; gap: 1.25rem; background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 20px; padding: 1.5rem 2rem; flex-wrap: wrap; }
+        .office-icon { width: 52px; height: 52px; border-radius: 14px; background: var(--primary-glow); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+        .office-text { flex: 1; min-width: 200px; }
+        .office-text h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.15rem; }
+        .office-text p { color: var(--text-light); font-size: 0.9rem; margin: 0; }
+        .office-link { color: var(--primary); font-weight: 700; font-size: 0.9rem; text-decoration: none; display: flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
+        .office-link:hover { text-decoration: underline; }
 
         .cta-band { text-align: center; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 24px; padding: 3rem 2rem; color: white; }
         .cta-band h2 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.75rem; background: none; -webkit-text-fill-color: white; }
@@ -125,13 +135,16 @@
         @media (max-width: 1024px) {
             .nav-menu { display: none; }
             .pillar-grid { grid-template-columns: 1fr; }
-            .stat-band { grid-template-columns: repeat(2, 1fr); }
             .footer-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 768px) {
-            .hero { padding: 8rem 1.5rem 3rem; }
+            .hero { padding: 8rem 1.5rem 2.5rem; }
+            .hero-stats { gap: 1.25rem; margin-top: 1.75rem; }
+            .hero-stats .stat-divider { display: none; }
             .content { padding: 3rem 1.5rem; }
             .values-list { grid-template-columns: 1fr; }
+            .office-strip { text-align: center; justify-content: center; }
+            .office-link { margin: 0 auto; }
             .mobile-nav { display: block; }
             .footer { padding-bottom: calc(var(--mobile-nav-height) + 2rem); }
             .footer-bottom { flex-direction: column; text-align: center; }
@@ -178,12 +191,21 @@
     <section class="hero">
         <h1>About SEOTIZE</h1>
         <p>Real people. Real rankings. We help websites grow in 2026 with genuine user engagement, AI-powered content, and a worldwide partner network &mdash; no bots, no shortcuts.</p>
+        <div class="hero-stats">
+            <div class="stat"><div class="value">150+</div><div class="label">Countries Reached</div></div>
+            <div class="stat-divider"></div>
+            <div class="stat"><div class="value">24/7</div><div class="label">Platform Availability</div></div>
+            <div class="stat-divider"></div>
+            <div class="stat"><div class="value">Instant</div><div class="label">Partner Payouts</div></div>
+            <div class="stat-divider"></div>
+            <div class="stat"><div class="value">100%</div><div class="label">Real Human Traffic</div></div>
+        </div>
     </section>
 
     <main class="content">
         <div class="content-section">
             <h2>Our Mission</h2>
-            <p>Search engines reward sites that real people actually visit, search for, and engage with. SEOTIZE was built around that simple truth. Instead of relying on bots or fake metrics, we connect website owners with a global network of real people who search for target keywords and visit real sites, while our AI tools make it fast and affordable to keep publishing great content. The result is SEO growth that's authentic, sustainable, and built to last well beyond 2026.</p>
+            <p>Search engines reward sites that real people actually visit and engage with. SEOTIZE connects website owners with a global network of real people who search for target keywords and visit real sites, while our AI tools make it fast and affordable to keep publishing great content &mdash; SEO growth that's authentic and built to last.</p>
         </div>
 
         <div class="content-section">
@@ -214,16 +236,6 @@
         </div>
 
         <div class="content-section">
-            <h2>SEOTIZE by the Numbers</h2>
-            <div class="stat-band">
-                <div class="stat-band-item"><div class="value">150+</div><div class="label">Countries Reached</div></div>
-                <div class="stat-band-item"><div class="value">24/7</div><div class="label">Platform Availability</div></div>
-                <div class="stat-band-item"><div class="value">Instant</div><div class="label">Partner Payouts</div></div>
-                <div class="stat-band-item"><div class="value">100%</div><div class="label">Real Human Traffic</div></div>
-            </div>
-        </div>
-
-        <div class="content-section">
             <h2>What We Value</h2>
             <ul class="values-list">
                 <li>
@@ -243,6 +255,20 @@
                     <div><strong>Accessible to Everyone</strong><span class="desc">A free tier and low-cost plans so small businesses can compete too.</span></div>
                 </li>
             </ul>
+        </div>
+
+        <div class="content-section">
+            <div class="office-strip">
+                <div class="office-icon"><i class="ri-map-pin-2-fill"></i></div>
+                <div class="office-text">
+                    <h3>Our Office</h3>
+                    <p>18 Elbe Street, London, England, United Kingdom</p>
+                </div>
+                <a class="office-link" href="https://www.google.com/maps/search/?api=1&query=18+Elbe+Street,+London,+England,+United+Kingdom" target="_blank" rel="noopener">
+                    <span>Get Directions</span>
+                    <i class="ri-arrow-right-line"></i>
+                </a>
+            </div>
         </div>
 
         <div class="content-section" style="margin-bottom: 0;">

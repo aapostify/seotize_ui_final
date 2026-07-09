@@ -97,24 +97,30 @@
 
         /* Sidebar (right / secondary) */
         .contact-sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
-        .contact-card { background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 18px; padding: 1.25rem; display: flex; gap: 0.9rem; align-items: flex-start; transition: all 0.3s; }
-        .contact-card:hover { border-color: var(--primary); box-shadow: 0 10px 24px rgba(0,0,0,0.08); transform: translateY(-3px); }
-        .contact-card-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--primary-glow); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
-        .contact-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.25rem; }
-        .contact-card p { color: var(--text-light); font-size: 0.82rem; margin-bottom: 0.45rem; line-height: 1.45; }
-        .contact-card a.contact-link { color: var(--primary); font-weight: 600; font-size: 0.85rem; text-decoration: none; word-break: break-word; }
-        .contact-card a.contact-link:hover { text-decoration: underline; }
+        .side-card { background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 18px; padding: 1.5rem; transition: border-color 0.3s; }
+        .side-card:hover { border-color: var(--primary); }
+        .side-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .side-card > p.side-sub { color: var(--text-light); font-size: 0.82rem; margin-bottom: 1.1rem; }
 
-        .social-card { background: var(--bg-secondary); border: 2px solid var(--border); border-radius: 18px; padding: 1.25rem; }
-        .social-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.25rem; }
-        .social-card p { color: var(--text-light); font-size: 0.82rem; margin-bottom: 1rem; }
+        .contact-row { display: flex; gap: 0.85rem; align-items: flex-start; padding: 0.75rem 0; border-top: 1px solid var(--border); }
+        .contact-row:first-of-type { border-top: none; padding-top: 0; }
+        .contact-row-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--primary-glow); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.05rem; flex-shrink: 0; }
+        .contact-row strong { display: block; font-size: 0.88rem; margin-bottom: 0.2rem; }
+        .contact-row a { color: var(--primary); font-weight: 600; font-size: 0.85rem; text-decoration: none; word-break: break-word; }
+        .contact-row a:hover { text-decoration: underline; }
+
+        .office-address { display: flex; gap: 0.7rem; align-items: flex-start; margin-bottom: 1rem; }
+        .office-address i { color: var(--primary); font-size: 1.3rem; margin-top: 0.1rem; flex-shrink: 0; }
+        .office-address span { font-size: 0.88rem; color: var(--text-light); line-height: 1.5; }
+        .map-embed { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 1rem; background: var(--bg); }
+        .map-embed iframe { width: 100%; height: 170px; border: 0; display: block; }
+        .directions-link { color: var(--primary); font-weight: 700; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; }
+        .directions-link:hover { text-decoration: underline; }
+
         .social-row { display: flex; gap: 0.6rem; }
         .social-row a { width: 40px; height: 40px; border-radius: 12px; background: var(--bg); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text); font-size: 1.15rem; transition: all 0.3s; }
         .social-row a:hover { background: var(--primary); color: #fff; border-color: var(--primary); transform: translateY(-2px); }
         .social-row a svg { width: 17px; height: 17px; }
-
-        .response-note { display: flex; align-items: center; gap: 0.6rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 0.9rem 1.1rem; font-size: 0.85rem; color: var(--text); }
-        .response-note i { color: var(--success); font-size: 1.2rem; flex-shrink: 0; }
 
         /* Footer */
         .footer { padding: 4rem 2rem 2rem; background: #1a1f2e; color: #f1f5f9; }
@@ -245,33 +251,50 @@
             </div>
 
             <aside class="contact-sidebar">
-                <div class="contact-card">
-                    <div class="contact-card-icon"><i class="ri-customer-service-2-line"></i></div>
-                    <div>
-                        <h3>General &amp; Support</h3>
-                        <p>Account help, billing questions, or anything else on your mind.</p>
-                        <a class="contact-link" href="mailto:support@seotize.net">support@seotize.net</a>
+                <div class="side-card">
+                    <h3>Get in Touch</h3>
+                    <p class="side-sub">We typically reply within 1-2 business days.</p>
+                    <div class="contact-row">
+                        <div class="contact-row-icon"><i class="ri-customer-service-2-line"></i></div>
+                        <div>
+                            <strong>General &amp; Support</strong>
+                            <a href="mailto:support@seotize.net">support@seotize.net</a>
+                        </div>
+                    </div>
+                    <div class="contact-row">
+                        <div class="contact-row-icon"><i class="ri-briefcase-4-line"></i></div>
+                        <div>
+                            <strong>Sales &amp; Enterprise</strong>
+                            <a href="mailto:sales@seotize.net">sales@seotize.net</a>
+                        </div>
+                    </div>
+                    <div class="contact-row">
+                        <div class="contact-row-icon"><i class="ri-team-line"></i></div>
+                        <div>
+                            <strong>Partner Program</strong>
+                            <a href="mailto:partners@seotize.net">partners@seotize.net</a>
+                        </div>
                     </div>
                 </div>
-                <div class="contact-card">
-                    <div class="contact-card-icon"><i class="ri-briefcase-4-line"></i></div>
-                    <div>
-                        <h3>Sales &amp; Enterprise</h3>
-                        <p>Enterprise plans, volume pricing, or custom needs.</p>
-                        <a class="contact-link" href="mailto:sales@seotize.net">sales@seotize.net</a>
+
+                <div class="side-card">
+                    <h3>Our Office</h3>
+                    <div class="office-address">
+                        <i class="ri-map-pin-2-fill"></i>
+                        <span>18 Elbe Street<br>London, England<br>United Kingdom</span>
                     </div>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-card-icon"><i class="ri-team-line"></i></div>
-                    <div>
-                        <h3>Partner Program</h3>
-                        <p>Questions about earning as a partner or getting paid.</p>
-                        <a class="contact-link" href="mailto:partners@seotize.net">partners@seotize.net</a>
+                    <div class="map-embed">
+                        <iframe src="https://www.google.com/maps?q=18+Elbe+Street,+London,+England,+United+Kingdom&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="SEOTIZE office location map"></iframe>
                     </div>
+                    <a class="directions-link" href="https://www.google.com/maps/search/?api=1&query=18+Elbe+Street,+London,+England,+United+Kingdom" target="_blank" rel="noopener">
+                        <span>Get Directions</span>
+                        <i class="ri-arrow-right-line"></i>
+                    </a>
                 </div>
-                <div class="social-card">
+
+                <div class="side-card">
                     <h3>Message Us Directly</h3>
-                    <p>Prefer chat? Reach us on any of these.</p>
+                    <p class="side-sub">Prefer chat? Reach us on any of these.</p>
                     <div class="social-row">
                         <a href="mailto:support@seotize.net" aria-label="Email"><i class="ri-mail-line"></i></a>
                         <a href="https://t.me/seotize" aria-label="Telegram" target="_blank" rel="noopener"><i class="ri-telegram-line"></i></a>
@@ -279,10 +302,6 @@
                         <a href="https://x.com/seotize" aria-label="X (Twitter)" target="_blank" rel="noopener"><i class="ri-twitter-x-line"></i></a>
                         <a href="https://signal.me/#u/seotize" aria-label="Signal" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2 22l4.93-1.38C8.42 21.5 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Zm0 18c-1.64 0-3.16-.46-4.45-1.26l-.32-.19-2.93.82.82-2.93-.19-.32C4.46 15.16 4 13.64 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8Z" fill="currentColor"/></svg></a>
                     </div>
-                </div>
-                <div class="response-note">
-                    <i class="ri-time-line"></i>
-                    <span>Typical reply time: 1-2 business days</span>
                 </div>
             </aside>
         </div>
