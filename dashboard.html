@@ -5085,6 +5085,9 @@ async function loadImageDocs() {
         if (!window.gsap) return;
         if (content.querySelector('.docs')) return; // docs animate themselves
         if (content.children.length === 1 && content.querySelector(':scope > div > .spinner')) return; // loading state
+        // Re-renders of the same page (filters, pagination, refresh after an action) shouldn't replay the entrance
+        if (content.dataset.animatedPage === currentPage) return;
+        content.dataset.animatedPage = currentPage;
         const kids = Array.from(content.children).filter(el => !el.classList.contains('spinner') && !el.classList.contains('loading-spinner')).slice(0, 8);
         if (kids.length) gsap.fromTo(kids, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .5, stagger: .06, ease: 'power3.out', clearProps: 'opacity,transform' });
         gsap.fromTo(content.querySelectorAll('.stat-card, .task-card, .media-card'), { opacity: 0, y: 14, scale: .98 }, { opacity: 1, y: 0, scale: 1, duration: .45, stagger: .035, ease: 'power2.out', delay: .1, clearProps: 'opacity,transform' });
@@ -5132,8 +5135,12 @@ function updateUserInfo() {
 }
 // API Helper
 async function api(endpoint, options = {}) {
+    // A request that never answers would leave the page on its loading spinner forever
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 30000);
     try {
         const response = await fetch(`${API_BASE}${endpoint}`, {
+            signal: controller.signal,
             ...options,
             headers: {
                 'Session-Token': sessionToken,
@@ -5157,12 +5164,15 @@ async function api(endpoint, options = {}) {
         }
         return data;
     } catch (error) {
+        if (error.name === 'AbortError') error = new Error('The server took too long to respond. Please try again.');
         console.error('API Error:', error);
         // Only show toast if it's not a 409 error (pending task)
         if (error.code !== 409) {
             showToast(error.message, 'error');
         }
         throw error;
+    } finally {
+        clearTimeout(timer);
     }
 }
 // Helper function to format numbers with K/M abbreviations
@@ -5748,6 +5758,10 @@ function articleCover(article) {
     if (!img) return '';
     return typeof img === 'string' ? img : (img.url || '');
 }
+// Article URLs can come back as "domain.com/" or with a protocol; compare and show the bare host
+function normDomain(url) {
+    return String(url || '').trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '').toLowerCase();
+}
 function escapeHtml(str) {
     return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -5757,8 +5771,8 @@ function renderArticleList() {
     if (!list) return;
     const articles = currentData.articles || [];
     const counts = {};
-    articles.forEach(a => { counts[a.url] = (counts[a.url] || 0) + 1; });
-    const domains = [...new Set([...currentData.domains.map(d => d.domain), ...Object.keys(counts)])];
+    articles.forEach(a => { const d = normDomain(a.url); counts[d] = (counts[d] || 0) + 1; });
+    const domains = [...new Set([...currentData.domains.map(d => normDomain(d.domain)), ...Object.keys(counts)])].filter(Boolean);
     if (articleListState.domain !== 'all' && !domains.includes(articleListState.domain)) articleListState.domain = 'all';
     if (filters) {
         filters.hidden = articles.length === 0;
@@ -5774,7 +5788,7 @@ function renderArticleList() {
     }
     const q = articleListState.search.trim().toLowerCase();
     let shown = articles.filter(a =>
-        (articleListState.domain === 'all' || a.url === articleListState.domain) &&
+        (articleListState.domain === 'all' || normDomain(a.url) === articleListState.domain) &&
         (!q || String(a.subject || '').toLowerCase().includes(q) || String(a.url || '').toLowerCase().includes(q))
     );
     const time = a => new Date(a.creation_date || 0).getTime();
@@ -5795,7 +5809,7 @@ function renderArticleList() {
             <div class="pa-cover">
                 ${cover ? `<img src="${escapeHtml(cover)}" alt="" loading="lazy" onerror="this.remove()">` : ''}
                 <i class="ri-article-line"></i>
-                <span class="pa-domain"><span class="pa-fav">${escapeHtml((article.url || '?')[0]).toUpperCase()}</span>${escapeHtml(article.url)}</span>
+                <span class="pa-domain"><span class="pa-fav">${escapeHtml((normDomain(article.url) || '?')[0]).toUpperCase()}</span>${escapeHtml(normDomain(article.url))}</span>
             </div>
             <div class="pa-body">
                 <h4 title="${escapeHtml(article.subject)}">${escapeHtml(article.subject)}</h4>
@@ -5821,7 +5835,7 @@ function renderArticleList() {
             const act = btn ? btn.dataset.act : 'view';
             if (act === 'view') viewArticle(id);
             else if (act === 'edit') showArticleModal(id);
-            else if (act === 'live') window.open(`https://${article?.url}`, '_blank', 'noopener');
+            else if (act === 'live') window.open(`https://${normDomain(article?.url)}`, '_blank', 'noopener');
             else if (act === 'delete') confirmDeleteArticle(id);
         });
         card.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target === card) viewArticle(id); });
@@ -6334,10 +6348,14 @@ async function processPackagePurchase() {
 }
 
 // Upgraded Billing Function with Modern Design
-async function loadBilling(page = 1, type = 'all') {
+async function loadBilling(page = 1, type = 'all', soft = false) {
     const seq = ++pageLoadSeq;
     try {
-        showSpinner();
+        // Tabs and pagination refresh in place: no full-page spinner, no jump to the top
+        const softSection = soft && document.querySelector('.transactions-section');
+        const keepScroll = window.scrollY;
+        if (softSection) softSection.classList.add('is-refreshing');
+        else showSpinner();
         // Single API call for all billing data
         const billingResponse = await api(`/dashboard/billings?page=${page}&limit=10&type=${type}`);
         if (seq !== pageLoadSeq) return;
@@ -6489,7 +6507,6 @@ async function loadBilling(page = 1, type = 'all') {
                 font-weight: 600 !important;
                 padding: 0.75rem 1.5rem !important;
                 box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
-                transition: all 0.3s ease !important;
             }
             .swal2-popup .swal2-confirm:hover {
                 transform: translateY(-2px) !important;
@@ -7451,13 +7468,13 @@ async function loadBilling(page = 1, type = 'all') {
                 <h3 class="transactions-title"><i class="ri-exchange-funds-line"></i> Transaction History</h3>
                 <div class="transactions-filters">
                     <div class="filter-tabs">
-                        <button class="filter-tab ${type === 'all' ? 'active' : ''}" onclick="loadBilling(1, 'all')">
+                        <button class="filter-tab ${type === 'all' ? 'active' : ''}" onclick="loadBilling(1, 'all', true)">
                             All
                         </button>
-                        <button class="filter-tab ${type === 'hosting' ? 'active' : ''}" onclick="loadBilling(1, 'hosting')">
+                        <button class="filter-tab ${type === 'hosting' ? 'active' : ''}" onclick="loadBilling(1, 'hosting', true)">
                             Hosting
                         </button>
-                        <button class="filter-tab ${type === 'tasks' ? 'active' : ''}" onclick="loadBilling(1, 'tasks')">
+                        <button class="filter-tab ${type === 'tasks' ? 'active' : ''}" onclick="loadBilling(1, 'tasks', true)">
                             Tasks
                         </button>
                     </div>
@@ -7637,11 +7654,12 @@ async function loadBilling(page = 1, type = 'all') {
             </div>
         </div>
         
-        ${paginationState.billing.total > paginationState.billing.pageSize ? generatePagination('billing', (page) => loadBilling(page, type)) : ''}
+        ${paginationState.billing.total > paginationState.billing.pageSize ? generatePagination('billing', (page) => loadBilling(page, type, true)) : ''}
         `;
         
         // Initialize purchase modal UI
         updatePackagePurchaseUI();
+        if (softSection) window.scrollTo({ top: keepScroll });
         
     } catch (error) {
         console.error('Billing error:', error);
@@ -11527,11 +11545,14 @@ async function viewArticle(articleId) {
         const hasImages = article.images && article.images.length > 0;
         // Format dates nicely
         const creationDate = new Date(article.creation_date);
-        const formattedDate = creationDate.toLocaleDateString('en-US', {
+        const formattedDate = isNaN(creationDate) ? '—' : creationDate.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
         });
+        const cleanDomain = normDomain(article.url);
+        const firstImage = (article.images || [])[0];
+        const coverUrl = !firstImage ? '' : typeof firstImage === 'string' ? firstImage : (firstImage.url || '');
         // Calculate content stats
         const wordCount = article.body ? article.body.replace(/<[^>]*>/g, '').split(/\s+/).filter(w => w.length > 0).length : 0;
         const readingTime = Math.max(1, Math.ceil(wordCount / 200));
@@ -11545,39 +11566,33 @@ async function viewArticle(articleId) {
         const modalHtml = `
         <div class="article-details-modal-container">
             <!-- Header Section -->
-            <div class="article-modal-header">
-                <div class="article-modal-header-row">
-                    <div class="article-modal-title">
-                        <h3>
-                            <a class="article-modal-url-pill" href="https://${article.url}" target="_blank" rel="noopener noreferrer">
-                                <span>${article.url}</span>
-                                <i class="ri-external-link-line"></i>
-                            </a>
-                        </h3>
+            <div class="ad-head">
+                <div class="ad-cover">
+                    ${coverUrl ? `<img src="${escapeHtml(coverUrl)}" alt="" onerror="this.remove()">` : ''}
+                    <i class="ri-article-line"></i>
+                </div>
+                <div class="ad-main">
+                    <h3 class="ad-title" title="${escapeHtml(article.subject)}">${escapeHtml(article.subject || 'Untitled article')}</h3>
+                    <div class="ad-meta">
+                        <a class="ad-domain article-modal-url-pill" href="https://${escapeHtml(cleanDomain)}" target="_blank" rel="noopener noreferrer" title="Open ${escapeHtml(cleanDomain)}">
+                            <span class="pa-fav">${escapeHtml((cleanDomain[0] || '?').toUpperCase())}</span>
+                            <span>${escapeHtml(cleanDomain)}</span>
+                            <i class="ri-external-link-line"></i>
+                        </a>
+                        <div class="article-header-meta">
+                            <span><i class="ri-calendar-line"></i> ${formattedDate}</span>
+                            <span><i class="ri-text"></i> ${wordCount.toLocaleString('en-US')} ${wordCount === 1 ? 'word' : 'words'}</span>
+                            <span><i class="ri-time-line"></i> ${readingTime} min read</span>
+                        </div>
                     </div>
                 </div>
-                <div class="article-header-meta-row">
-                    <div class="article-header-meta">
-                        <span><i class="ri-calendar-line"></i> ${formattedDate}</span>
-                        <span><i class="ri-text"></i> ${formatNumber(wordCount)} words</span>
-                        <span><i class="ri-time-line"></i> ${readingTime} min</span>
-                    </div>
-                    <div class="article-modal-actions-mobile">
-                        <button class="btn btn-sm" onclick="Swal.close(); showArticleModal('${articleId}')" title="Edit">
-                            <i class="ri-edit-line"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); confirmDeleteArticle('${articleId}')" title="Delete">
-                            <i class="ri-delete-bin-line"></i>
-                        </button>
-                    </div>
-                    <div class="article-modal-actions-desktop">
-                        <button class="btn btn-edit" onclick="Swal.close(); showArticleModal('${articleId}')" title="Edit Article">
-                            <i class="ri-edit-line"></i> Edit Article
-                        </button>
-                        <button class="btn btn-delete" onclick="event.stopPropagation(); confirmDeleteArticle('${articleId}')" title="Delete Article">
-                            <i class="ri-delete-bin-line"></i> Delete
-                        </button>
-                    </div>
+                <div class="ad-actions">
+                    <button type="button" class="ad-btn" onclick="Swal.close(); showArticleModal('${articleId}')" title="Edit article">
+                        <i class="ri-edit-line"></i><span>Edit</span>
+                    </button>
+                    <button type="button" class="ad-btn danger" onclick="event.stopPropagation(); confirmDeleteArticle('${articleId}')" title="Delete article">
+                        <i class="ri-delete-bin-line"></i><span>Delete</span>
+                    </button>
                 </div>
             </div>
             <!-- Stats Grid -->
@@ -11959,15 +11974,16 @@ async function showArticleModal(articleId = null) {
     }
     const verifiedDomains = currentData.domains.filter(d => d.verified);
     const modalHtml = `
-    <div class="am">
+    <div class="am am-split">
+        <div class="am-main">
         <form id="articleForm" class="am-form" onsubmit="return false">
-            <div class="am-row am-row-top">
+            <div class="am-stack">
                 <div class="am-field am-domain">
                     <label class="am-label" for="article-url"><i class="ri-global-line"></i> Domain</label>
                     <div class="am-select-wrap">
                         <select class="am-input" id="article-url" name="url" required>
                             <option value="">${verifiedDomains.length ? 'Select a domain…' : 'No verified domains yet'}</option>
-                            ${verifiedDomains.map(d => `<option value="${d.domain}" ${articleData && articleData.url === d.domain ? 'selected' : ''}>${d.domain}</option>`).join('')}
+                            ${verifiedDomains.map(d => `<option value="${d.domain}" ${articleData && normDomain(articleData.url) === normDomain(d.domain) ? 'selected' : ''}>${d.domain}</option>`).join('')}
                         </select>
                         <i class="ri-arrow-down-s-line"></i>
                     </div>
@@ -12008,7 +12024,8 @@ async function showArticleModal(articleId = null) {
             <input type="hidden" id="delete-images" name="delete_image_ids" value="">
             <input type="hidden" id="image-urls" name="image_urls" value="">
         </form>
-        <div class="am-row am-row-bottom">
+        </div>
+        <aside class="am-side">
             <div class="am-field am-images">
                 <label class="am-label"><i class="ri-image-line"></i> Images ${isEdit ? '' : '<span class="am-req">at least one</span>'}</label>
                 ${isEdit && articleData && articleData.images && articleData.images.length > 0 ? `
@@ -12058,19 +12075,19 @@ async function showArticleModal(articleId = null) {
                     <div class="am-usage-foot"><span><strong id="usage-used">0</strong> used</span><span><strong id="usage-limit">0</strong> total</span></div>
                 </div>
             </div>
-        </div>
         <div class="am-actions">
             <button type="button" class="btn-cancel" id="article-cancel-btn">Cancel</button>
             <button type="button" class="btn-save" id="article-save-btn">
                 <i class="ri-${isEdit ? 'save' : 'send-plane'}-line"></i> ${isEdit ? 'Update Article' : 'Publish Article'}
             </button>
         </div>
+        </aside>
     </div>
     `;
     Swal.fire({
         title: `<div class="am-head"><span class="am-head-ico"><i class="ri-${isEdit ? 'edit' : 'quill-pen'}-line"></i></span><span>${isEdit ? 'Edit Article' : 'Create Article'}<small>${isEdit ? 'Update the content and images of this article' : 'Publish an SEO article to one of your verified domains'}</small></span></div>`,
         html: modalHtml,
-        width: 'min(1080px, 96vw)',
+        width: 'min(1180px, 96vw)',
         showCloseButton: true,
         showCancelButton: true,
         confirmButtonText: `<i class="ri-save-line"></i> ${isEdit ? 'Update' : 'Create'}`,
@@ -13006,7 +13023,7 @@ function deleteImageFromModal(imageId) {
 // [NEW] Payment Details Modal with auto-retry for pending status
 let paymentCheckInterval = null;
 let paymentCheckAttempts = 0;
-const MAX_PAYMENT_CHECK_ATTEMPTS = 60; // Max 5 minutes (60 * 5 seconds)
+const MAX_PAYMENT_CHECK_ATTEMPTS = 24; // Max 2 minutes (24 * 5 seconds), then offer a manual check
 
 async function viewPaymentDetails(billingId, isAutoCheck = false, noPoll = false) {
     // Clear any existing interval when manually opening
@@ -13043,6 +13060,9 @@ async function viewPaymentDetails(billingId, isAutoCheck = false, noPoll = false
                 if (paymentCheckAttempts >= MAX_PAYMENT_CHECK_ATTEMPTS || !document.getElementById('pendingCheckTimer')) {
                     clearInterval(paymentCheckInterval);
                     paymentCheckInterval = null;
+                    // Stop the "verifying" animation and let the user re-check by hand
+                    const box = document.querySelector('.pay-pending-check');
+                    if (box) box.innerHTML = `<div class="check-title"><i class="ri-time-line"></i>Still pending</div><div class="check-desc">The provider hasn't confirmed this payment yet. It can take a few minutes.</div><button type="button" class="pay-btn" onclick="viewPaymentDetails('${billingId}')"><i class="ri-refresh-line"></i>Check again</button>`;
                     return;
                 }
                 // Update the countdown timer
@@ -14239,9 +14259,12 @@ tbody tr:hover{background:var(--card-hover)}
 .am-head small{display:block;font:500 .8rem 'Inter',sans-serif;color:var(--text-secondary);letter-spacing:0;margin-top:.15rem}
 .am{display:flex;flex-direction:column;gap:1.1rem;text-align:left;max-height:calc(100dvh - 190px);overflow-y:auto;overflow-x:hidden;padding:0 .2rem .1rem}
 .am-form{display:flex;flex-direction:column;gap:1.1rem;margin:0}
-.am-row{display:grid;gap:1rem;align-items:start}
-.am-row-top{grid-template-columns:minmax(200px,260px) minmax(0,1fr)}
-.am-row-bottom{grid-template-columns:minmax(0,1fr) 260px}
+.am-split{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:1.25rem;align-items:start}
+.am-main{min-width:0}
+.am-stack{display:flex;flex-direction:column;gap:1.1rem}
+.am-side{display:flex;flex-direction:column;gap:1.1rem;min-width:0;padding-left:1.25rem;border-left:1px solid var(--border);align-self:stretch}
+.am-side .am-upload{flex-direction:column}
+.am-side .upload-area{flex:none}
 .am-field{display:flex;flex-direction:column;gap:.45rem;min-width:0}
 .am-label{display:flex;align-items:center;gap:.4rem;margin:0;font-size:.82rem;font-weight:600;color:var(--text)}
 .am-label i{color:var(--primary);font-size:1rem}
@@ -14306,7 +14329,8 @@ tbody tr:hover{background:var(--card-hover)}
 .am-usage-track{height:6px;border-radius:99px;background:var(--border);overflow:hidden;margin:.55rem 0 .45rem}
 .am-usage-track #usage-progress-bar{height:100%;width:0;border-radius:99px;transition:width .4s var(--ease),background-color .3s}
 .am-usage-foot{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-secondary)}
-.am-actions{display:flex;justify-content:flex-end;gap:.6rem;padding-top:1rem;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--card);z-index:2}
+.am-actions{display:flex;flex-direction:column-reverse;gap:.6rem;margin-top:auto;padding-top:1rem;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--card);z-index:2}
+.am-actions button{width:100%}
 .am-actions button{height:44px;display:inline-flex;align-items:center;justify-content:center;gap:.45rem;padding:0 1.25rem;border-radius:12px;font:600 .9rem 'Inter',sans-serif;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
 .am-actions .btn-cancel{background:transparent;border:1px solid var(--border);color:var(--text)}
 .am-actions .btn-cancel:hover{border-color:var(--text-tertiary)}
@@ -14316,7 +14340,9 @@ tbody tr:hover{background:var(--card-hover)}
 @media (max-width:820px){
   .article-modal-swal{padding:1rem!important}
   .am{max-height:calc(100dvh - 150px)}
-  .am-row-top,.am-row-bottom{grid-template-columns:minmax(0,1fr)}
+  .am-split{grid-template-columns:minmax(0,1fr)}
+  .am-side{padding-left:0;border-left:0;padding-top:1.1rem;border-top:1px solid var(--border)}
+  .am-actions{flex-direction:row-reverse}
   .am-head small{display:none}
 }
 @media (max-width:520px){
@@ -14325,6 +14351,38 @@ tbody tr:hover{background:var(--card-hover)}
   .am-ai-btn{justify-content:center}
   .am-actions button{flex:1}
   .am-editor .form-textarea-enhanced{min-height:220px}
+}
+
+/* ---------- Billing: in-place refresh for tabs & pagination ---------- */
+.transactions-section{transition:opacity .2s}
+.transactions-section.is-refreshing{opacity:.55;pointer-events:none}
+.pay-pending-check .pay-btn{margin-top:.75rem;border:0;cursor:pointer;font:inherit}
+
+/* ---------- Article details header ---------- */
+.ad-head{display:flex;align-items:center;gap:1rem;padding:0 0 1rem;margin:0 0 1rem;border-bottom:1px solid var(--border);text-align:left}
+.ad-cover{position:relative;width:96px;height:72px;flex-shrink:0;border-radius:14px;overflow:hidden;display:grid;place-items:center;background:radial-gradient(120% 140% at 0% 0%,#2563eb 0%,#1e3a8a 55%,#0b1222 100%)}
+.ad-cover>i{font-size:1.6rem;color:rgba(255,255,255,.4)}
+.ad-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ad-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:.5rem}
+.ad-title{margin:0;font:700 1.15rem/1.35 var(--font-display);letter-spacing:-.015em;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ad-meta{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem .9rem}
+.ad-meta .article-header-meta{flex:0 1 auto;gap:.35rem .9rem;font-size:.78rem}
+.ad-domain.article-modal-url-pill{gap:.4rem;padding:.2rem .65rem .2rem .25rem;font-size:.78rem;max-width:100%}
+.ad-domain .pa-fav{width:22px;height:22px}
+.ad-domain>i{font-size:.85rem;opacity:.8}
+.ad-actions{display:flex;gap:.5rem;flex-shrink:0}
+.ad-btn{height:38px;display:inline-flex;align-items:center;gap:.35rem;padding:0 .9rem;border:1px solid var(--border);border-radius:11px;background:var(--bg-tertiary);color:var(--text);font:600 .8rem 'Inter',sans-serif;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.ad-btn:hover{border-color:var(--primary);color:var(--primary)}
+.ad-btn.danger{color:var(--error);background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3)}
+.ad-btn.danger:hover{background:var(--error);border-color:var(--error);color:#fff}
+.ad-btn i{font-size:1rem}
+@media (max-width:640px){
+  .ad-head{flex-wrap:wrap;align-items:flex-start;gap:.75rem}
+  .ad-cover{width:64px;height:52px;border-radius:12px}
+  .ad-main{flex:1 1 calc(100% - 80px)}
+  .ad-title{font-size:1rem}
+  .ad-actions{width:100%}
+  .ad-btn{flex:1;justify-content:center}
 }
 
 /* ---------- Image upload modal ---------- */
