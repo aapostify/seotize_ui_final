@@ -12036,6 +12036,31 @@ async function showArticleModal(articleId = null) {
     }
     const modalHtml = `
     <style>
+        /* One-line section headers: icon + text never wrap apart */
+        .article-modal-wrapper .section-label-row {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            min-height: 32px;
+            margin-bottom: 0.5rem;
+        }
+        .article-modal-wrapper .form-label,
+        .article-modal-wrapper .section-title {
+            display: inline-flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            gap: 0.4rem !important;
+            white-space: nowrap !important;
+            margin: 0 !important;
+            line-height: 1.2 !important;
+            min-width: 0;
+        }
+        .article-modal-wrapper .form-label i,
+        .article-modal-wrapper .section-title i { flex: none; }
+        .article-modal-wrapper .section-label-row .ai-btn { flex: none; }
         .article-modal-wrapper {
             display: grid;
             grid-template-columns: 1fr 320px;
@@ -12635,7 +12660,9 @@ async function showArticleModal(articleId = null) {
         <div class="article-main-content">
             <form id="articleForm">
                 <div class="article-section">
-                    <label class="form-label"><i class="ri-global-line"></i> Domain</label>
+                    <div class="section-label-row">
+                        <label class="form-label" for="article-url" style="margin-bottom: 0;"><i class="ri-global-line"></i> Domain</label>
+                    </div>
                     <select class="form-select" id="article-url" name="url" required>
                         <option value="">Select domain...</option>
                         ${currentData.domains.filter(d => d.verified).map(d => `
@@ -12644,8 +12671,8 @@ async function showArticleModal(articleId = null) {
                     </select>
                 </div>
                 <div class="article-section">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <label class="form-label" style="margin-bottom: 0;"><i class="ri-text"></i> Title</label>
+                    <div class="section-label-row">
+                        <label class="form-label" for="article-subject" style="margin-bottom: 0;"><i class="ri-text"></i> Title</label>
                         <button type="button" class="ai-btn" id="ai-generate-all-btn">
                             <i class="ri-magic-line"></i> <span>Generate by AI</span>
                         </button>
@@ -12658,8 +12685,8 @@ async function showArticleModal(articleId = null) {
                     </div>
                 </div>
                 <div class="article-section">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <label class="form-label" style="margin-bottom: 0;"><i class="ri-file-text-line"></i> Content</label>
+                    <div class="section-label-row">
+                        <label class="form-label" for="article-body" style="margin-bottom: 0;"><i class="ri-file-text-line"></i> Content</label>
                     </div>
                     <div class="body-editor-container">
                         <div class="editor-toolbar">
@@ -14975,6 +15002,44 @@ tbody tr:hover{background:var(--card-hover)}
 .img-tabs button:hover{color:var(--text)}
 .img-tabs button.active{background:var(--gradient-primary);color:#fff;box-shadow:0 8px 18px -10px var(--glow-strong)}
 @media (max-width:768px){.img-tabs{display:flex;width:100%}.img-tabs button{flex:1;justify-content:center;padding:.6rem .5rem;font-size:.82rem}}
+
+/* ---------- One-line labels & titles everywhere ---------- */
+.form-label{display:flex;align-items:center;gap:.4rem;flex-wrap:nowrap;white-space:nowrap;min-width:0}
+.form-label i,.card-title i,.section-title i,.content h2 i{flex:none}
+.card-title,.section-title{display:flex;align-items:center;gap:.5rem;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}
+.card-header{gap:.75rem}
+.content h2{display:flex;align-items:center;gap:.5rem;min-width:0;line-height:1.25}
+.swal2-html-container{white-space:normal!important}
+
+/* ---------- Task details: header meta + top countries ---------- */
+.task-modal-header .header-meta-left{display:flex;flex-wrap:wrap;gap:.45rem!important;flex-direction:row!important}
+.tm-meta{display:inline-flex!important;align-items:center;gap:.35rem;max-width:100%;padding:.32rem .65rem;border-radius:99px;border:1px solid var(--border);background:var(--bg-tertiary);font-size:.76rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-wrap:nowrap!important}
+.tm-meta i{color:var(--primary);font-size:.9rem;flex-shrink:0}
+.tm-meta em{font-style:normal;color:var(--text-secondary);font-weight:500}
+.tm-meta code{font-family:var(--font-mono);font-size:.72rem;background:none!important;border:0!important;padding:0!important;overflow:hidden;text-overflow:ellipsis}
+.tm-id{cursor:pointer}.tm-id:hover{border-color:var(--primary)}
+.tm-status .badge{display:inline-flex!important;align-items:center;gap:.25rem;white-space:nowrap!important;margin:0}
+.tm-status .task-verify-inline-btn{padding:.2rem .6rem!important;font-size:.72rem!important;margin-left:.15rem}
+.badge{white-space:nowrap}
+.tc-wrap{display:flex!important;flex-direction:column;gap:.75rem;margin-top:.75rem}
+.tc-summary{display:grid!important;grid-template-columns:1fr 1fr!important;gap:.5rem!important}
+.tc-summary>div{padding:.6rem .8rem;border-radius:12px;border:1px solid var(--border);background:var(--bg-tertiary)}
+.tc-summary b{display:block;font:800 1.15rem var(--font-display);color:var(--text)}
+.tc-summary span{font-size:.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em}
+.tc-list{display:flex!important;flex-direction:column;gap:.4rem}
+.tc-row{display:grid!important;grid-template-columns:22px 3.2rem minmax(0,1fr) auto!important;align-items:center;gap:.6rem!important;padding:.35rem .2rem}
+.tc-flag{font-size:1.05rem;line-height:1}
+.tc-code{font-weight:700;font-size:.8rem;color:var(--text);white-space:nowrap}
+.tc-bar{height:8px;border-radius:99px;background:var(--bg-tertiary);overflow:hidden}
+.tc-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#10b981,#06b6d4)}
+.tc-val{font-weight:700;font-size:.82rem;color:var(--text);white-space:nowrap;text-align:right}
+.tc-val small{margin-left:.35rem;font-weight:500;color:var(--text-secondary);font-size:.7rem}
+.tc-empty{padding:1rem;text-align:center;color:var(--text-secondary);font-size:.85rem;border:1px dashed var(--border);border-radius:12px}
+
+/* ---------- Billing: in-place refresh for tabs & pagination ---------- */
+.transactions-section{transition:opacity .2s}
+.transactions-section.is-refreshing{opacity:.55;pointer-events:none}
+.pay-pending-check .pay-btn{margin-top:.75rem;border:0;cursor:pointer;font:inherit}
 
 /* ---------- Article details header ---------- */
 .ad-head{display:flex;align-items:center;gap:1rem;padding:0 0 1rem;margin:0 0 1rem;border-bottom:1px solid var(--border);text-align:left}
