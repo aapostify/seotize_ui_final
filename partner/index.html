@@ -49,60 +49,72 @@
   @media (max-width:980px){.steps,.payouts{grid-template-columns:1fr}.split{grid-template-columns:1fr}.grow{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
-<body class="theme-green">
+<body class="theme-green" data-spy="home,how-it-works,earning,payouts,faq">
 <script>try{localStorage.getItem('theme')==='dark'&&document.body.classList.add('dark')}catch(e){}</script>
-<header class="topnav" id="topnav">
+<header class="topnav partner-nav" id="topnav">
   <div class="nav-inner">
-    <a href="/" class="logo" onmouseenter="animLogo()" aria-label="SEOTIZE home">
-      <span class="logo-icon"><span class="logo-bar logo-b1"></span><span class="logo-bar logo-b2"></span><span class="logo-bar logo-b3"></span></span>
-      SEOTIZE
+    <a href="#" class="logo-v1" id="navLogo" aria-label="SEOTIZE Partners home">
+      <div class="logo-v1-icon-wrapper">
+        <div class="logo-v1-icon">₮</div>
+        <div class="logo-v1-ring"></div>
+      </div>
+      <div class="logo-v1-text">
+        <div class="logo-v1-main">SEOTIZE</div>
+        <div class="logo-v1-tagline">Partners</div>
+      </div>
     </a>
-    <nav aria-label="Main"><ul class="nav-links">
-      <li><a href="/" data-key="home">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs.html" data-key="blog">Blog</a></li>
-    </ul></nav>
+    <nav aria-label="Partners">
+      <ul class="nav-menu">
+        <li><a href="#" class="nav-link active" data-section="home">Home</a></li>
+        <li><a href="#how-it-works" class="nav-link" data-section="how-it-works">How It Works</a></li>
+        <li><a href="#earning" class="nav-link" data-section="earning">Earning</a></li>
+        <li><a href="#payouts" class="nav-link" data-section="payouts">Payouts</a></li>
+        <li><a href="#faq" class="nav-link" data-section="faq">FAQ</a></li>
+      </ul>
+    </nav>
     <div class="nav-actions">
       <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle dark mode"><i id="themeIcon" class="ri-moon-line"></i></button>
-      <a href="/connect.html" class="btn btn-primary nav-cta"><span>Get Started</span><i class="ri-arrow-right-line"></i></a>
+      <a href="/partner/login.html" class="btn btn-primary nav-cta"><span>Partner Login</span><i class="ri-arrow-right-line"></i></a>
     </div>
   </div>
 </header>
 
 <main>
-  <div class="hero-wrap" id="top">
+  <div class="hero-wrap" id="home">
     <section class="hero-slider" id="heroSlider" aria-roledescription="carousel" aria-label="SEOTIZE Partners" tabindex="0">
       <div class="blur-orb" style="background:#10b981;width:440px;height:440px;top:-140px;right:-120px"></div>
       <div class="blur-orb" style="background:#14b8a6;width:360px;height:360px;bottom:-120px;left:-100px"></div>
 
-      <a href="/partner/login.html" class="apple-slide" data-slide aria-label="1 of 3">
+      <a href="/partner/login.html" class="apple-slide" style="--ac:#059669;--ac-d:#34d399" data-slide aria-label="1 of 3">
         <div class="slide-inner">
-          <p class="slide-eyebrow" data-anim style="color:#34d399"><span class="dot" style="background:#34d399"></span>01/03 — Earn</p>
-          <div class="scan-frame bracket slide-frame scene-dark" data-scene="earn" data-label="Partner wallet balance growing"></div>
+          <p class="slide-eyebrow" data-anim><span class="dot"></span>01/03 — Earn</p>
+          <div class="scan-frame bracket slide-frame photo-frame"><img src="https://image-api.seotize.net/image-cdn/e7cf9262-9c4b-4b3a-a700-8d8d7f834588" alt="Partner dashboard" loading="eager"><div class="float-chip tl" data-chip><span class="chip-ico">💎</span><b>+$0.15</b><small>Task completed</small></div><div class="float-chip br" data-chip><span class="chip-ico">₮</span><b>$15.15</b><small>Balance · USDT</small></div></div>
           <div class="slide-copy">
             <h1 data-anim>Earn Money with SEOTIZE Partners</h1>
             <p data-anim>Work from anywhere, complete simple SEO tasks, and earn on your own schedule.</p>
-            <span class="slide-link" data-anim style="color:#34d399;border-color:rgba(52,211,153,.45)">Start Earning Now <i class="ri-arrow-right-line"></i></span>
+            <span class="slide-link" data-anim>Start Earning Now <i class="ri-arrow-right-line"></i></span>
           </div>
         </div>
       </a>
-      <a href="/partner/login.html" class="apple-slide" data-slide aria-label="2 of 3">
+      <a href="/partner/login.html" class="apple-slide" style="--ac:#2563eb;--ac-d:#60a5fa" data-slide aria-label="2 of 3">
         <div class="slide-inner">
-          <p class="slide-eyebrow" data-anim style="color:#60a5fa"><span class="dot" style="background:#60a5fa"></span>02/03 — The Work</p>
-          <div class="scan-frame bracket slide-frame scene-dark" data-scene="serp" data-label="Searching a keyword and visiting the target site"></div>
+          <p class="slide-eyebrow" data-anim><span class="dot"></span>02/03 — The Work</p>
+          <div class="scan-frame bracket slide-frame photo-frame"><img src="https://image-api.seotize.net/image-cdn/a14131ce-2694-4408-ad66-48426c471a4d" alt="Task completion" loading="lazy"><div class="float-chip tl" data-chip><span class="chip-ico">🔍</span><b>“indoor plant care”</b><small>Search on Google</small></div><div class="float-chip br" data-chip><span class="chip-ico">✓</span><b>Visit verified</b><small>3m 42s on site</small></div></div>
           <div class="slide-copy">
             <h2 data-anim>What You'll Be Doing</h2>
             <p data-anim>Search keywords on Google, visit target websites naturally and help them rank. Simple tasks, real earnings.</p>
-            <span class="slide-link" data-anim style="color:#60a5fa;border-color:rgba(96,165,250,.45)">Join Now <i class="ri-arrow-right-line"></i></span>
+            <span class="slide-link" data-anim>Join Now <i class="ri-arrow-right-line"></i></span>
           </div>
         </div>
       </a>
-      <a href="/partner/login.html" class="apple-slide" data-slide aria-label="3 of 3">
+      <a href="/partner/login.html" class="apple-slide" style="--ac:#d97706;--ac-d:#fbbf24" data-slide aria-label="3 of 3">
         <div class="slide-inner">
-          <p class="slide-eyebrow" data-anim style="color:#fbbf24"><span class="dot" style="background:#fbbf24"></span>03/03 — Payouts</p>
-          <div class="scan-frame bracket slide-frame scene-dark" data-scene="engage" data-label="Live log of completed sessions"></div>
+          <p class="slide-eyebrow" data-anim><span class="dot"></span>03/03 — Payouts</p>
+          <div class="scan-frame bracket slide-frame photo-frame"><img src="https://image-api.seotize.net/image-cdn/2362ef13-9201-4a8f-be87-d9b7076a61d8" alt="Secure payments" loading="lazy"><div class="float-chip tl" data-chip><span class="chip-ico">⚡</span><b>$8.40 sent</b><small>USDT · BEP20</small></div><div class="float-chip br" data-chip><span class="chip-ico">🔒</span><b>No minimum</b><small>Paid in 24–48h</small></div></div>
           <div class="slide-copy">
             <h2 data-anim>Fast &amp; Secure Payouts</h2>
             <p data-anim>Get paid via USDT (BEP20) with no minimum withdrawal, processed within 24&ndash;48 hours.</p>
-            <span class="slide-link" data-anim style="color:#fbbf24;border-color:rgba(251,191,36,.45)">Get Started <i class="ri-arrow-right-line"></i></span>
+            <span class="slide-link" data-anim>Get Started <i class="ri-arrow-right-line"></i></span>
           </div>
         </div>
       </a>
@@ -231,21 +243,24 @@
   <div class="container">
     <div class="footer-top">
       <div class="footer-brand">
-        <a href="/" class="logo"><span class="logo-icon"><span class="logo-bar logo-b1"></span><span class="logo-bar logo-b2"></span><span class="logo-bar logo-b3"></span></span>SEOTIZE</a>
-        <p>Real people, real rankings. Human engagement, AI content and a global CDN &mdash; in one platform.</p>
+        <a href="/partner/" class="logo-v1" aria-label="SEOTIZE Partners home">
+          <div class="logo-v1-icon-wrapper"><div class="logo-v1-icon">₮</div><div class="logo-v1-ring"></div></div>
+          <div class="logo-v1-text"><div class="logo-v1-main">SEOTIZE</div><div class="logo-v1-tagline">Partners</div></div>
+        </a>
+        <p>Earn USDT by completing simple, real SEO tasks &mdash; from anywhere, on your own schedule.</p>
       </div>
-      <div><h4>Product</h4><ul>
-        <li><a href="/#features">Features</a></li><li><a href="/#pricing">Pricing</a></li><li><a href="/tools">Free Tools</a></li><li><a href="/connect.html">Get Started</a></li>
+      <div><h4>Partners</h4><ul>
+        <li><a href="/partner/#how-it-works">How It Works</a></li><li><a href="/partner/#earning">Earning</a></li><li><a href="/partner/#payouts">Payouts</a></li><li><a href="/partner/#faq">FAQ</a></li>
       </ul></div>
-      <div><h4>Company</h4><ul>
-        <li><a href="/about-us.html">About Us</a></li><li><a href="/contact-us.html">Contact Us</a></li><li><a href="/partner/">Become a Partner</a></li>
+      <div><h4>Account</h4><ul>
+        <li><a href="/partner/login.html">Partner Login</a></li><li><a href="/partner/dashboard">Partner Dashboard</a></li><li><a href="/contact-us.html">Partner Support</a></li>
       </ul></div>
-      <div><h4>Resources</h4><ul>
-        <li><a href="/blogs.html">Blog</a></li><li><a href="/terms-of-service.html">Terms of Service</a></li><li><a href="/terms-of-service.html#privacy">Privacy Policy</a></li>
+      <div><h4>Legal</h4><ul>
+        <li><a href="/terms-of-service.html">Terms of Service</a></li><li><a href="/terms-of-service.html#privacy">Privacy Policy</a></li><li><a href="/">SEOTIZE for website owners</a></li>
       </ul></div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2026 SEOTIZE. All rights reserved.</p>
+      <p>&copy; 2026 SEOTIZE Partners. All rights reserved.</p>
       <div class="social-links">
         <a href="mailto:support@seotize.net" aria-label="Email">
 <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="#2563EB" d="M12 12.713.015 3h23.97L12 12.713ZM6.575 10.89.001 5.562V18.06l6.574-7.17Zm10.85 0 6.575 7.17V5.561l-6.575 5.329Zm-1.557 1.262L12 15.29l-3.868-3.138L0 21h24l-8.11-8.847Z"/></svg>
@@ -266,9 +281,9 @@
     </div>
   </div>
 </footer>
-<nav class="mobile-nav" aria-label="Mobile">
+<nav class="mobile-nav" aria-label="Partners mobile">
   <div class="mobile-items"><span class="mobile-pill"></span>
-    <a href="/" class="mobile-item" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/#features" class="mobile-item" data-key="features"><i class="ri-flashlight-line"></i><span>Features</span></a><a href="/tools" class="mobile-item" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs.html" class="mobile-item" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
+    <a href="#" class="mobile-item active" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="#how-it-works" class="mobile-item" data-key="how-it-works"><i class="ri-information-line"></i><span>How It Works</span></a><a href="#earning" class="mobile-item" data-key="earning"><i class="ri-money-dollar-circle-line"></i><span>Earning</span></a><a href="#payouts" class="mobile-item" data-key="payouts"><i class="ri-wallet-3-line"></i><span>Payouts</span></a><a href="#faq" class="mobile-item" data-key="faq"><i class="ri-question-line"></i><span>FAQ</span></a><a href="/partner/login.html" class="mobile-item" data-key="login"><i class="ri-login-box-line"></i><span>Login</span></a>
   </div>
 </nav>
 <button class="to-top" aria-label="Back to top"><i class="ri-arrow-up-line"></i></button>

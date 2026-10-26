@@ -760,18 +760,30 @@ body {
 </head>
 <body class="theme-green">
 <script>try{localStorage.getItem('theme')==='dark'&&document.body.classList.add('dark')}catch(e){}</script>
-<header class="topnav" id="topnav">
+<header class="topnav partner-nav" id="topnav">
   <div class="nav-inner">
-    <a href="/" class="logo" onmouseenter="animLogo()" aria-label="SEOTIZE home">
-      <span class="logo-icon"><span class="logo-bar logo-b1"></span><span class="logo-bar logo-b2"></span><span class="logo-bar logo-b3"></span></span>
-      SEOTIZE
+    <a href="/partner/" class="logo-v1" id="navLogo" aria-label="SEOTIZE Partners home">
+      <div class="logo-v1-icon-wrapper">
+        <div class="logo-v1-icon">₮</div>
+        <div class="logo-v1-ring"></div>
+      </div>
+      <div class="logo-v1-text">
+        <div class="logo-v1-main">SEOTIZE</div>
+        <div class="logo-v1-tagline">Partners</div>
+      </div>
     </a>
-    <nav aria-label="Main"><ul class="nav-links">
-      <li><a href="/" data-key="home">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs.html" data-key="blog">Blog</a></li>
-    </ul></nav>
+    <nav aria-label="Partners">
+      <ul class="nav-menu">
+        <li><a href="/partner/#" class="nav-link" data-section="home">Home</a></li>
+        <li><a href="/partner/#how-it-works" class="nav-link" data-section="how-it-works">How It Works</a></li>
+        <li><a href="/partner/#earning" class="nav-link" data-section="earning">Earning</a></li>
+        <li><a href="/partner/#payouts" class="nav-link" data-section="payouts">Payouts</a></li>
+        <li><a href="/partner/#faq" class="nav-link" data-section="faq">FAQ</a></li>
+      </ul>
+    </nav>
     <div class="nav-actions">
       <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle dark mode"><i id="themeIcon" class="ri-moon-line"></i></button>
-      <a href="/connect.html" class="btn btn-primary nav-cta"><span>Get Started</span><i class="ri-arrow-right-line"></i></a>
+      <a href="/partner/login.html" class="btn btn-primary nav-cta"><span>Partner Login</span><i class="ri-arrow-right-line"></i></a>
     </div>
   </div>
 </header>
@@ -859,9 +871,9 @@ body {
             </div>
         </section>
     </div>
-<nav class="mobile-nav" aria-label="Mobile">
+<nav class="mobile-nav" aria-label="Partners mobile">
   <div class="mobile-items"><span class="mobile-pill"></span>
-    <a href="/" class="mobile-item" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/#features" class="mobile-item" data-key="features"><i class="ri-flashlight-line"></i><span>Features</span></a><a href="/tools" class="mobile-item" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs.html" class="mobile-item" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
+    <a href="/partner/#" class="mobile-item" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/partner/#how-it-works" class="mobile-item" data-key="how-it-works"><i class="ri-information-line"></i><span>How It Works</span></a><a href="/partner/#earning" class="mobile-item" data-key="earning"><i class="ri-money-dollar-circle-line"></i><span>Earning</span></a><a href="/partner/#payouts" class="mobile-item" data-key="payouts"><i class="ri-wallet-3-line"></i><span>Payouts</span></a><a href="/partner/#faq" class="mobile-item" data-key="faq"><i class="ri-question-line"></i><span>FAQ</span></a><a href="/partner/login.html" class="mobile-item active" data-key="login"><i class="ri-login-box-line"></i><span>Login</span></a>
   </div>
 </nav>
 <button class="to-top" aria-label="Back to top"><i class="ri-arrow-up-line"></i></button>
@@ -1053,6 +1065,5 @@ body {
     </script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <script defer src="/assets/site.js"></script>
-<script defer src="/assets/auth-scenes.js"></script>
 </body>
 </html>
