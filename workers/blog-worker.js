@@ -57,6 +57,7 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&a
 const link = id => '/blogs?id=' + encodeURIComponent(id);
 const iso = d => { const t = new Date(d); return isNaN(t) ? '' : t.toISOString(); };
 const nice = d => { const t = new Date(d); return isNaN(t) ? '' : t.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }); };
+const clock = d => { const t = new Date(d); return isNaN(t) ? '' : t.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC'; };
 const sized = (u, w, h) => !u ? '' : /image-api\.seotize\.net/.test(u) ? u + (u.includes('?') ? '&' : '?') + `w=${w}&h=${h}&fit=cover` : u;
 const text = html => String(html || '').replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
 const clip = (s, n) => s.length <= n ? s : s.slice(0, n - 1).replace(/\s+\S*$/, '') + '…';
@@ -140,21 +141,19 @@ async function article(url, id) {
   const related = l.blogs.filter(b => b._id !== id).slice(0, 5);
   const body = String(a.body || '').replace(/<h1[^>]*>[\s\S]*?<\/h1>/gi, '');
 
-  const reader = `<div class="reader-wrap">
-    <article>
-      <span class="chip"><i class="ri-bookmark-line"></i>Blog</span>
-      <h1>${esc(a.subject)}</h1>
-      <div class="reader-meta">
-        <span class="author"><span class="avatar">ST</span><b style="color:var(--text)">SEOTIZE Team</b></span>
-        <span><i class="ri-calendar-line"></i> <time datetime="${date}">${nice(a.creation_date)}</time></span>
-      </div>
+  // Same markup as showModal() in blogs.html
+  const reader = `<div class="reader-main"><article>
       ${cover ? `<div class="reader-cover"><img src="${esc(cover)}" alt="${esc(a.subject)}" width="1200" height="675" fetchpriority="high"></div>` : ''}
+      <div class="reader-meta">
+        <span class="reader-cat"><i class="ri-bookmark-line"></i>Blog</span>
+        <span class="reader-date"><i class="ri-calendar-line"></i><time datetime="${date}">${nice(a.creation_date)}</time></span>
+        <div class="reader-author"><span class="reader-avatar">ST</span><div><b>SEOTIZE Team</b><small>${clock(a.creation_date)}</small></div></div>
+      </div>
       <div class="prose blog-content">${body}</div>
-    </article>
-    ${related.length ? `<aside class="related"><h2>Related articles</h2>${related.map(b => `<a href="${link(b._id)}" data-id="${esc(b._id)}">
-      <img src="${esc(sized(b.image_url, 168, 128))}" alt="" width="84" height="64" loading="lazy">
-      <div><b>${esc(b.subject)}</b><small>Blog · ${nice(b.creation_date)}</small></div></a>`).join('')}</aside>` : ''}
-  </div>`;
+    </article></div>
+    ${related.length ? `<aside class="related"><h2 class="sidebar-title"><i class="ri-article-line"></i>Related Articles</h2>${related.map(b => `<a class="related-card" href="${link(b._id)}" data-id="${esc(b._id)}">
+      <img src="${esc(sized(b.image_url, 700, 394))}" alt="" width="700" height="394" loading="lazy">
+      <div class="related-body"><span class="related-cat">Blog</span><h3>${esc(b.subject)}</h3><small><i class="ri-calendar-line"></i>${nice(b.creation_date)}</small></div></a>`).join('')}</aside>` : ''}`;
 
   const posting = {
     '@context': 'https://schema.org', '@type': 'BlogPosting',
