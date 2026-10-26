@@ -14,8 +14,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap"></noscript>
+<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css"></noscript>
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -28,7 +29,7 @@
   :root{--trust-h:4.25rem;--trust-gap:.85rem}
   .hero-wrap{padding-bottom:0}
   #heroSlider{height:calc(100dvh - var(--nav-h) - 1rem - var(--trust-gap) - var(--trust-h));min-height:560px;max-height:1100px}
-  .trust{display:flex;align-items:center;height:var(--trust-h);margin-top:var(--trust-gap);border-block:1px solid var(--border);background:var(--surface)}
+  .trust{position:relative;z-index:1;display:flex;align-items:center;height:var(--trust-h);margin-top:var(--trust-gap);border-block:1px solid var(--border);background:var(--surface)}
   .trust .marquee{flex:1}
   .trust .marquee-track{padding:0}
   @media (max-width:768px){
@@ -53,11 +54,11 @@
   <div class="nav-inner">
     <a href="/" class="logo" aria-label="Seotize home"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="logo-bg" d="M16 0C28.5 0 32 3.5 32 16S28.5 32 16 32 0 28.5 0 16 3.5 0 16 0z"/><path class="logo-base" d="M7 25.5h18"/><path class="logo-line" d="M7 21.5l5.2-6 4 3.2L24 10"/><path class="logo-flow" d="M7 21.5l5.2-6 4 3.2L24 10"/><path class="logo-head" d="M18.6 10H24v5.4"/></svg><span>Seotize<i class="logo-dot"></i></span></a>
     <nav aria-label="Main"><ul class="nav-links">
-      <li><a href="/" data-key="home" class="active">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs.html" data-key="blog">Blog</a></li>
+      <li><a href="/" data-key="home" class="active">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs" data-key="blog">Blog</a></li>
     </ul></nav>
     <div class="nav-actions">
       <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle dark mode"><i id="themeIcon" class="ri-moon-line"></i></button>
-      <a href="/connect.html" class="btn btn-primary nav-cta"><span>Get Started</span><i class="ri-arrow-right-line"></i></a>
+      <a href="/connect.html" class="btn btn-primary nav-cta" aria-label="Get Started"><span>Get Started</span><i class="ri-arrow-right-line"></i></a>
     </div>
   </div>
 </header>
@@ -369,7 +370,7 @@
         <div class="card blog-card"><div class="thumb skeleton"></div><div class="body"><div class="skeleton" style="height:12px;width:40%"></div><div class="skeleton" style="height:16px"></div><div class="skeleton" style="height:16px;width:70%"></div></div></div>
       </div>
       <div style="text-align:center;margin-top:1.5rem" data-reveal>
-        <a href="/blogs.html" class="btn btn-ghost">View All Articles <i class="ri-arrow-right-line"></i></a>
+        <a href="/blogs" class="btn btn-ghost">View All Articles <i class="ri-arrow-right-line"></i></a>
       </div>
     </div>
   </section>
@@ -423,14 +424,14 @@
         <a href="/" class="logo" aria-label="Seotize home"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="logo-bg" d="M16 0C28.5 0 32 3.5 32 16S28.5 32 16 32 0 28.5 0 16 3.5 0 16 0z"/><path class="logo-base" d="M7 25.5h18"/><path class="logo-line" d="M7 21.5l5.2-6 4 3.2L24 10"/><path class="logo-flow" d="M7 21.5l5.2-6 4 3.2L24 10"/><path class="logo-head" d="M18.6 10H24v5.4"/></svg><span>Seotize<i class="logo-dot"></i></span></a>
         <p>Real people, real rankings. Human engagement, AI content and a global CDN &mdash; in one platform.</p>
       </div>
-      <div><h4>Product</h4><ul>
+      <div><h2>Product</h2><ul>
         <li><a href="/#features">Features</a></li><li><a href="/#pricing">Pricing</a></li><li><a href="/tools">Free Tools</a></li><li><a href="/connect.html">Get Started</a></li>
       </ul></div>
-      <div><h4>Company</h4><ul>
+      <div><h2>Company</h2><ul>
         <li><a href="/about-us.html">About Us</a></li><li><a href="/contact-us.html">Contact Us</a></li><li><a href="/partner/">Become a Partner</a></li>
       </ul></div>
-      <div><h4>Resources</h4><ul>
-        <li><a href="/blogs.html">Blog</a></li><li><a href="/terms-of-service.html">Terms of Service</a></li><li><a href="/terms-of-service.html#privacy">Privacy Policy</a></li>
+      <div><h2>Resources</h2><ul>
+        <li><a href="/blogs">Blog</a></li><li><a href="/terms-of-service.html">Terms of Service</a></li><li><a href="/terms-of-service.html#privacy">Privacy Policy</a></li>
       </ul></div>
     </div>
     <div class="footer-bottom">
@@ -457,7 +458,7 @@
 </footer>
 <nav class="mobile-nav" aria-label="Mobile">
   <div class="mobile-items"><span class="mobile-pill"></span>
-    <a href="/" class="mobile-item active" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/tools" class="mobile-item" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs.html" class="mobile-item" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
+    <a href="/" class="mobile-item active" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/tools" class="mobile-item" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs" class="mobile-item" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
   </div>
 </nav>
 <button class="to-top" aria-label="Back to top"><i class="ri-arrow-up-line"></i></button>
@@ -583,14 +584,14 @@
     rail.innerHTML = data.data.blogs.map(b => {
       const img = `${b.image_url}${b.image_url.includes('?') ? '&' : '?'}w=750&h=422&fit=cover`;
       const date = new Date(b.creation_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-      return `<a class="card card-hover blog-card" href="https://seotize.net/blogs?id=${encodeURIComponent(b._id)}">
+      return `<a class="card card-hover blog-card" href="/blogs?id=${encodeURIComponent(b._id)}">
         <div class="thumb"><img src="${esc(img)}" alt="${esc(b.title)}" loading="lazy" width="750" height="422"></div>
         <div class="body"><div class="meta"><i class="ri-calendar-line"></i>${date}</div><h3>${esc(b.title)}</h3><span class="read">Read article <i class="ri-arrow-right-line"></i></span></div></a>`;
     }).join('');
     if (window.gsap) gsap.from(rail.children, { opacity: 0, y: 24, stagger: .08, duration: .6, ease: 'power3.out' });
   }).catch(err => {
     console.error('Error fetching blogs:', err);
-    rail.innerHTML = '<div class="blog-empty">Articles are on their way. <a href="/blogs.html" style="color:var(--primary)">Visit the blog</a></div>';
+    rail.innerHTML = '<div class="blog-empty">Articles are on their way. <a href="/blogs" style="color:var(--primary)">Visit the blog</a></div>';
   });
   const step = dir => rail.scrollBy({ left: dir * (rail.firstElementChild ? rail.firstElementChild.offsetWidth + 20 : 300), behavior: 'smooth' });
   document.getElementById('blogPrev').onclick = () => step(-1);

@@ -72,7 +72,7 @@
       window.SEOTIZE_setMobileActive(cur);
     };
     window.addEventListener('scroll', spy, { passive: true });
-    spy();
+    requestAnimationFrame(spy);
   }
 
   /* ---------------- Cursor glow on cards ---------------- */
@@ -655,7 +655,7 @@
         d.classList.toggle('active', i === cur);
         d.setAttribute('aria-current', i === cur ? 'true' : 'false');
         const fill = d.firstElementChild;
-        if (hasGsap) gsap.set(fill, { width: i < cur ? '100%' : '0%' }); else fill.style.width = i <= cur ? '100%' : '0%';
+        if (hasGsap) gsap.set(fill, { scaleX: i < cur ? 1 : 0 }); else fill.style.transform = 'scaleX(' + (i <= cur ? 1 : 0) + ')';
       });
       const a = slides[prev], b = slides[cur];
       if (!hasGsap || reduce || instant) {
@@ -679,7 +679,7 @@
       if (prog) prog.kill();
       const fill = dots[cur] && dots[cur].firstElementChild;
       if (!fill) return;
-      prog = gsap.fromTo(fill, { width: '0%' }, { width: '100%', duration: DURATION, ease: 'none', onComplete: () => go(cur + 1) });
+      prog = gsap.fromTo(fill, { scaleX: 0 }, { scaleX: 1, duration: DURATION, ease: 'none', onComplete: () => go(cur + 1) });
       if (paused || reduce) prog.pause();
     }
     dots.forEach((d, i) => d.addEventListener('click', e => { e.preventDefault(); go(i); }));
@@ -714,9 +714,9 @@
 
   /* ---------------- Boot ---------------- */
   initHeroSlider();
-  initScenes();
-  initMinis();
   initReveals();
+  const idle = window.requestIdleCallback || (f => setTimeout(f, 200));
+  idle(() => { initScenes(); initMinis(); if (hasGsap) ScrollTrigger.refresh(); }, { timeout: 1500 });
   if (hasGsap) window.addEventListener('load', () => ScrollTrigger.refresh());
 })();
 
