@@ -5077,17 +5077,28 @@ async function loadImageDocs() {
     }
 }
 
-// Soft entrance for every page rendered into #content
+// Soft entrance for every page rendered into #content.
+// Only a full page render counts: GSAP briefly detaches display:none elements (e.g. the
+// billing purchase modal) to measure them, and reacting to that re-triggered this
+// observer forever — the "billing keeps reloading" flicker.
 (function () {
     const content = document.getElementById('content');
     if (!content || !window.MutationObserver) return;
-    new MutationObserver(() => {
+    const animatable = el => el.nodeType === 1 && !['STYLE', 'SCRIPT'].includes(el.tagName) &&
+        !el.classList.contains('package-purchase-modal') && getComputedStyle(el).display !== 'none';
+    new MutationObserver((records) => {
         if (!window.gsap) return;
+        const added = records.reduce((n, r) => n + Array.from(r.addedNodes).filter(x => x.nodeType === 1).length, 0);
+        if (added < 2) return; // not a page render (single node moved in/out)
         if (content.querySelector('.docs')) return; // docs animate themselves
         if (content.children.length === 1 && content.querySelector(':scope > div > .spinner')) return; // loading state
-        const kids = Array.from(content.children).filter(el => !el.classList.contains('spinner') && !el.classList.contains('loading-spinner')).slice(0, 8);
+        // Re-renders of the same page (filters, pagination, refresh after an action) shouldn't replay the entrance
+        if (content.dataset.animatedPage === currentPage) return;
+        content.dataset.animatedPage = currentPage;
+        const kids = Array.from(content.children).filter(animatable).slice(0, 8);
         if (kids.length) gsap.fromTo(kids, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .5, stagger: .06, ease: 'power3.out', clearProps: 'opacity,transform' });
-        gsap.fromTo(content.querySelectorAll('.stat-card, .task-card, .media-card'), { opacity: 0, y: 14, scale: .98 }, { opacity: 1, y: 0, scale: 1, duration: .45, stagger: .035, ease: 'power2.out', delay: .1, clearProps: 'opacity,transform' });
+        const cards = Array.from(content.querySelectorAll('.stat-card, .task-card, .media-card, .pa-item')).slice(0, 24);
+        if (cards.length) gsap.fromTo(cards, { opacity: 0, y: 14, scale: .98 }, { opacity: 1, y: 0, scale: 1, duration: .45, stagger: .035, ease: 'power2.out', delay: .1, clearProps: 'opacity,transform' });
     }).observe(content, { childList: true });
 })();
 
@@ -5132,8 +5143,12 @@ function updateUserInfo() {
 }
 // API Helper
 async function api(endpoint, options = {}) {
+    // A request that never answers would leave the page on its loading spinner forever
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 30000);
     try {
         const response = await fetch(`${API_BASE}${endpoint}`, {
+            signal: controller.signal,
             ...options,
             headers: {
                 'Session-Token': sessionToken,
@@ -5157,12 +5172,15 @@ async function api(endpoint, options = {}) {
         }
         return data;
     } catch (error) {
+        if (error.name === 'AbortError') error = new Error('The server took too long to respond. Please try again.');
         console.error('API Error:', error);
         // Only show toast if it's not a 409 error (pending task)
         if (error.code !== 409) {
             showToast(error.message, 'error');
         }
         throw error;
+    } finally {
+        clearTimeout(timer);
     }
 }
 // Helper function to format numbers with K/M abbreviations
@@ -5742,14 +5760,38 @@ async function loadImages(page = 1) {
     }
 }
 // Published articles: client-side domain filter, search and sort over the loaded page
-const articleListState = { domain: 'all', search: '', sort: 'newest' };
+const articleListState = { domain: 'all', search: '', sort: 'newest', page: 1, perPage: 12 };
 function articleCover(article) {
     const img = (article.images || [])[0];
     if (!img) return '';
     return typeof img === 'string' ? img : (img.url || '');
 }
+// Article URLs can come back as "domain.com/" or with a protocol; compare and show the bare host
+function normDomain(url) {
+    return String(url || '').trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '').toLowerCase();
+}
 function escapeHtml(str) {
     return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function renderArticlePager(page, pages, total, start, perPage) {
+    if (total === 0) return '';
+    const btn = (label, p, cls = '', disabled = false) => `<button type="button" class="pagination-btn ${cls}" ${disabled ? 'disabled' : ''} onclick="goArticlePage(${p})">${label}</button>`;
+    const nums = [];
+    const from = Math.max(1, page - 2), to = Math.min(pages, page + 2);
+    if (from > 1) { nums.push(btn(1, 1)); if (from > 2) nums.push('<span class="pagination-info">…</span>'); }
+    for (let i = from; i <= to; i++) nums.push(btn(i, i, i === page ? 'active' : ''));
+    if (to < pages) { if (to < pages - 1) nums.push('<span class="pagination-info">…</span>'); nums.push(btn(pages, pages)); }
+    return `<div class="pagination">
+        ${btn('<i class="ri-arrow-left-s-line"></i> Previous', page - 1, '', page <= 1)}
+        ${nums.join('')}
+        ${btn('Next <i class="ri-arrow-right-s-line"></i>', page + 1, '', page >= pages)}
+        <div class="pagination-info">Showing ${start + 1} to ${Math.min(start + perPage, total)} of ${total}</div>
+    </div>`;
+}
+function goArticlePage(page) {
+    articleListState.page = page;
+    renderArticleList();
+    document.querySelector('.pa-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function renderArticleList() {
     const list = document.getElementById('articlesList');
@@ -5757,8 +5799,8 @@ function renderArticleList() {
     if (!list) return;
     const articles = currentData.articles || [];
     const counts = {};
-    articles.forEach(a => { counts[a.url] = (counts[a.url] || 0) + 1; });
-    const domains = [...new Set([...currentData.domains.map(d => d.domain), ...Object.keys(counts)])];
+    articles.forEach(a => { const d = normDomain(a.url); counts[d] = (counts[d] || 0) + 1; });
+    const domains = [...new Set([...currentData.domains.map(d => normDomain(d.domain)), ...Object.keys(counts)])].filter(Boolean);
     if (articleListState.domain !== 'all' && !domains.includes(articleListState.domain)) articleListState.domain = 'all';
     if (filters) {
         filters.hidden = articles.length === 0;
@@ -5769,23 +5811,36 @@ function renderArticleList() {
             </button>`).join('');
         filters.querySelectorAll('.pa-chip').forEach(chip => chip.addEventListener('click', () => {
             articleListState.domain = chip.dataset.domain;
+            articleListState.page = 1;
             renderArticleList();
         }));
     }
     const q = articleListState.search.trim().toLowerCase();
     let shown = articles.filter(a =>
-        (articleListState.domain === 'all' || a.url === articleListState.domain) &&
+        (articleListState.domain === 'all' || normDomain(a.url) === articleListState.domain) &&
         (!q || String(a.subject || '').toLowerCase().includes(q) || String(a.url || '').toLowerCase().includes(q))
     );
     const time = a => new Date(a.creation_date || 0).getTime();
     shown.sort(articleListState.sort === 'oldest' ? (a, b) => time(a) - time(b)
         : articleListState.sort === 'views' ? (a, b) => (b.total_views || 0) - (a.total_views || 0)
         : (a, b) => time(b) - time(a));
+    // Pagination over the filtered result, so page numbers always match the active filter
+    const pager = document.getElementById('paPagination');
+    const perPage = articleListState.perPage;
+    const pages = Math.max(1, Math.ceil(shown.length / perPage));
+    articleListState.page = Math.min(Math.max(1, articleListState.page), pages);
+    const start = (articleListState.page - 1) * perPage;
+    if (pager) pager.innerHTML = renderArticlePager(articleListState.page, pages, shown.length, start, perPage);
+    const sub = document.getElementById('paSub');
+    if (sub) sub.textContent = articleListState.domain === 'all' && !q
+        ? `${articles.length} article${articles.length === 1 ? '' : 's'} across ${domains.length} domain${domains.length === 1 ? '' : 's'}`
+        : `${shown.length} of ${articles.length} articles${articleListState.domain !== 'all' ? ' on ' + articleListState.domain : ''}`;
     if (articles.length === 0) { list.innerHTML = ''; return; }
     if (shown.length === 0) {
         list.innerHTML = `<div class="pa-empty"><i class="ri-search-eye-line"></i><b>No matching articles</b><span>Try another domain or search term.</span></div>`;
         return;
     }
+    shown = shown.slice(start, start + perPage);
     list.innerHTML = shown.map(article => {
         const cover = articleCover(article);
         const date = article.creation_date ? new Date(article.creation_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
@@ -5795,7 +5850,7 @@ function renderArticleList() {
             <div class="pa-cover">
                 ${cover ? `<img src="${escapeHtml(cover)}" alt="" loading="lazy" onerror="this.remove()">` : ''}
                 <i class="ri-article-line"></i>
-                <span class="pa-domain"><span class="pa-fav">${escapeHtml((article.url || '?')[0]).toUpperCase()}</span>${escapeHtml(article.url)}</span>
+                <span class="pa-domain"><span class="pa-fav">${escapeHtml((normDomain(article.url) || '?')[0]).toUpperCase()}</span>${escapeHtml(normDomain(article.url))}</span>
             </div>
             <div class="pa-body">
                 <h4 title="${escapeHtml(article.subject)}">${escapeHtml(article.subject)}</h4>
@@ -5821,7 +5876,7 @@ function renderArticleList() {
             const act = btn ? btn.dataset.act : 'view';
             if (act === 'view') viewArticle(id);
             else if (act === 'edit') showArticleModal(id);
-            else if (act === 'live') window.open(`https://${article?.url}`, '_blank', 'noopener');
+            else if (act === 'live') window.open(`https://${normDomain(article?.url)}`, '_blank', 'noopener');
             else if (act === 'delete') confirmDeleteArticle(id);
         });
         card.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target === card) viewArticle(id); });
@@ -5832,12 +5887,23 @@ async function loadArticles(page = 1) {
     const seq = ++pageLoadSeq;
     try {
         showSpinner();
-        // Single API call gets both articles and domains
-        const response = await api(`/dashboard/articles?page=${page}&page_size=10`);
+        // Load every article (all pages) so the domain filter, search, sort and
+        // pagination below work across the whole list, not just one API page
+        const response = await api(`/dashboard/articles?page=1&page_size=50`);
         if (seq !== pageLoadSeq) return;
         const { data, pagination } = response;
+        let allArticles = data.articles || [];
+        const apiSize = pagination?.size || allArticles.length || 50;
+        const apiPages = Math.min(40, Math.ceil((pagination?.total || 0) / Math.max(1, apiSize)));
+        if (apiPages > 1) {
+            const rest = await Promise.all(Array.from({ length: apiPages - 1 }, (_, i) =>
+                api(`/dashboard/articles?page=${i + 2}&page_size=${apiSize}`).then(r => r?.data?.articles || []).catch(() => [])));
+            if (seq !== pageLoadSeq) return;
+            const seen = new Set(allArticles.map(a => a.article_id));
+            rest.flat().forEach(a => { if (!seen.has(a.article_id)) { seen.add(a.article_id); allArticles.push(a); } });
+        }
         // Extract articles and domains from the response
-        currentData.articles = data.articles || [];
+        currentData.articles = allArticles;
         currentData.domains = data.user?.domains || [];
         // Extract usage and plan data
         currentData.usage = data.user?.usage || null;
@@ -5997,7 +6063,7 @@ async function loadArticles(page = 1) {
             <div class="pa-head">
                 <div>
                     <h3 class="card-title">Published Articles</h3>
-                    <p class="pa-sub">${paginationState.articles.total} article${paginationState.articles.total === 1 ? '' : 's'} across ${currentData.domains.length} domain${currentData.domains.length === 1 ? '' : 's'}</p>
+                    <p class="pa-sub" id="paSub">${paginationState.articles.total} article${paginationState.articles.total === 1 ? '' : 's'} across ${currentData.domains.length} domain${currentData.domains.length === 1 ? '' : 's'}</p>
                 </div>
                 <div class="pa-tools">
                     <label class="pa-search"><i class="ri-search-line"></i><input type="search" id="paSearch" placeholder="Search titles…" autocomplete="off"></label>
@@ -6017,7 +6083,7 @@ async function loadArticles(page = 1) {
                 <div class="empty-state-description">${currentData.domains.some(d => d.verified) ? 'Create your first article to start publishing content' : 'Add and verify a domain, then create your first article'}</div>
                 <button class="btn btn-primary" id="emptyStateCreateBtn"><i class="ri-add-line"></i> Create First Article</button>
             </div>
-            ` : `<div class="pa-pagination">${generatePagination('articles', loadArticles)}</div>`}
+            ` : `<div class="pa-pagination" id="paPagination"></div>`}
         </div>
         `;
         // Add event listeners after DOM is updated
@@ -6042,11 +6108,15 @@ async function loadArticles(page = 1) {
             btn.addEventListener('click', () => confirmDeleteDomain(btn.dataset.domain));
         });
         renderArticleList();
-        document.getElementById('paSearch')?.addEventListener('input', (e) => { articleListState.search = e.target.value; renderArticleList(); });
+        const searchInput = document.getElementById('paSearch');
+        if (searchInput) {
+            searchInput.value = articleListState.search;
+            searchInput.addEventListener('input', (e) => { articleListState.search = e.target.value; articleListState.page = 1; renderArticleList(); });
+        }
         const sortSel = document.getElementById('paSort');
         if (sortSel) {
             sortSel.value = articleListState.sort;
-            sortSel.addEventListener('change', (e) => { articleListState.sort = e.target.value; renderArticleList(); });
+            sortSel.addEventListener('change', (e) => { articleListState.sort = e.target.value; articleListState.page = 1; renderArticleList(); });
         }
     } catch (error) {
         console.error('Articles error:', error);
@@ -6334,10 +6404,14 @@ async function processPackagePurchase() {
 }
 
 // Upgraded Billing Function with Modern Design
-async function loadBilling(page = 1, type = 'all') {
+async function loadBilling(page = 1, type = 'all', soft = false) {
     const seq = ++pageLoadSeq;
     try {
-        showSpinner();
+        // Tabs and pagination refresh in place: no full-page spinner, no jump to the top
+        const softSection = soft && document.querySelector('.transactions-section');
+        const keepScroll = window.scrollY;
+        if (softSection) softSection.classList.add('is-refreshing');
+        else showSpinner();
         // Single API call for all billing data
         const billingResponse = await api(`/dashboard/billings?page=${page}&limit=10&type=${type}`);
         if (seq !== pageLoadSeq) return;
@@ -6489,7 +6563,6 @@ async function loadBilling(page = 1, type = 'all') {
                 font-weight: 600 !important;
                 padding: 0.75rem 1.5rem !important;
                 box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
-                transition: all 0.3s ease !important;
             }
             .swal2-popup .swal2-confirm:hover {
                 transform: translateY(-2px) !important;
@@ -7451,13 +7524,13 @@ async function loadBilling(page = 1, type = 'all') {
                 <h3 class="transactions-title"><i class="ri-exchange-funds-line"></i> Transaction History</h3>
                 <div class="transactions-filters">
                     <div class="filter-tabs">
-                        <button class="filter-tab ${type === 'all' ? 'active' : ''}" onclick="loadBilling(1, 'all')">
+                        <button class="filter-tab ${type === 'all' ? 'active' : ''}" onclick="loadBilling(1, 'all', true)">
                             All
                         </button>
-                        <button class="filter-tab ${type === 'hosting' ? 'active' : ''}" onclick="loadBilling(1, 'hosting')">
+                        <button class="filter-tab ${type === 'hosting' ? 'active' : ''}" onclick="loadBilling(1, 'hosting', true)">
                             Hosting
                         </button>
-                        <button class="filter-tab ${type === 'tasks' ? 'active' : ''}" onclick="loadBilling(1, 'tasks')">
+                        <button class="filter-tab ${type === 'tasks' ? 'active' : ''}" onclick="loadBilling(1, 'tasks', true)">
                             Tasks
                         </button>
                     </div>
@@ -7637,11 +7710,12 @@ async function loadBilling(page = 1, type = 'all') {
             </div>
         </div>
         
-        ${paginationState.billing.total > paginationState.billing.pageSize ? generatePagination('billing', (page) => loadBilling(page, type)) : ''}
+        ${paginationState.billing.total > paginationState.billing.pageSize ? generatePagination('billing', (page) => loadBilling(page, type, true)) : ''}
         `;
         
         // Initialize purchase modal UI
         updatePackagePurchaseUI();
+        if (softSection) window.scrollTo({ top: keepScroll });
         
     } catch (error) {
         console.error('Billing error:', error);
@@ -10136,18 +10210,25 @@ async function viewTaskDetails(taskId) {
         const hasAnyAnalytics = hasViewsAnalytics || Object.keys(countryVisits).length > 0;
         const totalCountryVisits = Object.values(countryVisits).reduce((sum, v) => sum + (Number(v) || 0), 0);
         const countryBuckets = Object.keys(countryVisits || {}).length;
-        const topCountryChips = Object.entries(countryVisits)
-            .sort((a, b) => (Number(b[1]) || 0) - (Number(a[1]) || 0))
-            .slice(0, 6)
-            .map(([cc, v]) => {
-                const label = String(cc || 'Unknown');
-                const nice = (label.toLowerCase() === 'unknown') ? 'Unknown' : label.toUpperCase();
-                return `<div class="chip"><span>${nice}</span>${formatNumber(Number(v) || 0)}</div>`;
-            })
-            .join('');
+        const ccFlag = (cc) => {
+            const c = String(cc || '').trim().toUpperCase().replace(/^UK$/, 'GB');
+            return /^[A-Z]{2}$/.test(c) ? String.fromCodePoint(...[...c].map(ch => 0x1F1E6 + ch.charCodeAt(0) - 65)) : '🌐';
+        };
+        const topCountryRows = Object.entries(countryVisits)
+            .map(([cc, v]) => [String(cc || 'Unknown'), Number(v) || 0])
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 6);
+        const topCountryMax = Math.max(1, ...topCountryRows.map(r => r[1]));
+        const topCountryChips = topCountryRows.map(([cc, v]) => {
+            const nice = cc.toLowerCase() === 'unknown' ? 'Unknown' : cc.toUpperCase();
+            const share = totalCountryVisits > 0 ? Math.round((v / totalCountryVisits) * 100) : 0;
+            return `<div class="tc-row"><span class="tc-flag" aria-hidden="true">${ccFlag(nice)}</span><span class="tc-code">${nice}</span><span class="tc-bar"><i style="width:${Math.max(4, (v / topCountryMax) * 100)}%"></i></span><span class="tc-val">${formatNumber(v)}<small>${share}%</small></span></div>`;
+        }).join('');
         const mapSummaryChips = `
-            <div class="chip"><span>Total</span>${formatNumber(totalCountryVisits)}</div>
-            <div class="chip"><span>Countries</span>${formatNumber(countryBuckets)}</div>
+            <div class="tc-summary">
+                <div><b>${formatNumber(totalCountryVisits)}</b><span>Total visits</span></div>
+                <div><b>${formatNumber(countryBuckets)}</b><span>Countries</span></div>
+            </div>
         `;
         // --- 2. Construct Modal HTML (New Responsive Layout) ---
         const isVerified = task.verified !== false;
@@ -10155,7 +10236,7 @@ async function viewTaskDetails(taskId) {
             '<span class="badge badge-success"><i class="ri-checkbox-circle-line"></i> Verified</span>' :
             '<span class="badge badge-danger"><i class="ri-error-warning-line"></i> Not Verified</span>';
         const lastVerifiedText = task.last_verified ?
-            `<span><i class="ri-time-line"></i> Last Verified: ${new Date(task.last_verified).toLocaleString()}</span>` : '';
+            `<span class="tm-meta"><i class="ri-time-line"></i><em>Last verified</em>${new Date(task.last_verified).toLocaleString()}</span>` : '';
         // Done parts (More details)
         const donePartsRaw = task.done_parts ?? task.doneParts ?? task.done_parts_list ?? task.donePartsList ?? null;
         const doneParts = Array.isArray(donePartsRaw)
@@ -10231,11 +10312,10 @@ async function viewTaskDetails(taskId) {
                 </div>
                 <div class="header-meta">
                     <div class="header-meta-left">
-                        <span><i class="ri-calendar-line"></i> Created: ${new Date(task.date_created).toLocaleString()}</span>
-                        ${task.email ? `<span><i class="ri-mail-line"></i> Email: ${task.email}</span>` : ''}
-                        <span><i class="ri-key-line"></i> ID: ${task._id}</span>
-                        <span style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-                            <span style="display: inline-flex; align-items: center; gap: 0.35rem;"><i class="ri-shield-check-line"></i> Status: ${verificationStatus}</span>
+                        <span class="tm-meta"><i class="ri-calendar-line"></i><em>Created</em>${new Date(task.date_created).toLocaleString()}</span>
+                        ${task.email ? `<span class="tm-meta"><i class="ri-mail-line"></i><em>Email</em>${task.email}</span>` : ''}
+                        <span class="tm-meta tm-id" onclick="copyToClipboard('${task._id}')" title="Copy task ID"><i class="ri-key-line"></i><em>ID</em><code>${task._id}</code></span>
+                        <span class="tm-meta tm-status"><i class="ri-shield-check-line"></i><em>Status</em>${verificationStatus}
                             ${!isVerified ? `<button class="btn task-verify-inline-btn" onclick="Swal.close(); verifyTask('${task._id}')"><i class="ri-shield-check-line"></i> Verify</button>` : ''}
                         </span>
                         ${lastVerifiedText}
@@ -10324,10 +10404,10 @@ async function viewTaskDetails(taskId) {
                             <h3 class="task-modal-section-title" style="color: var(--info);"><i class="ri-map-2-line"></i>Traffic Map</h3>
                             <div class="task-modal-map" id="taskCountryMap"></div>
                             <div class="task-modal-subtitle">Top Countries</div>
-                            <div class="task-modal-map-note">
+                            <div class="task-modal-map-note tc-wrap">
                                 ${(Object.keys(countryVisits || {}).length > 0)
-                                    ? (mapSummaryChips + topCountryChips)
-                                    : '<div class="chip"><span>—</span>No country data</div>'}
+                                    ? (mapSummaryChips + `<div class="tc-list">${topCountryChips}</div>`)
+                                    : '<div class="tc-empty">No country data yet</div>'}
                             </div>
                         </div>
                     </div>
@@ -11527,11 +11607,14 @@ async function viewArticle(articleId) {
         const hasImages = article.images && article.images.length > 0;
         // Format dates nicely
         const creationDate = new Date(article.creation_date);
-        const formattedDate = creationDate.toLocaleDateString('en-US', {
+        const formattedDate = isNaN(creationDate) ? '—' : creationDate.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
         });
+        const cleanDomain = normDomain(article.url);
+        const firstImage = (article.images || [])[0];
+        const coverUrl = !firstImage ? '' : typeof firstImage === 'string' ? firstImage : (firstImage.url || '');
         // Calculate content stats
         const wordCount = article.body ? article.body.replace(/<[^>]*>/g, '').split(/\s+/).filter(w => w.length > 0).length : 0;
         const readingTime = Math.max(1, Math.ceil(wordCount / 200));
@@ -11545,39 +11628,33 @@ async function viewArticle(articleId) {
         const modalHtml = `
         <div class="article-details-modal-container">
             <!-- Header Section -->
-            <div class="article-modal-header">
-                <div class="article-modal-header-row">
-                    <div class="article-modal-title">
-                        <h3>
-                            <a class="article-modal-url-pill" href="https://${article.url}" target="_blank" rel="noopener noreferrer">
-                                <span>${article.url}</span>
-                                <i class="ri-external-link-line"></i>
-                            </a>
-                        </h3>
+            <div class="ad-head">
+                <div class="ad-cover">
+                    ${coverUrl ? `<img src="${escapeHtml(coverUrl)}" alt="" onerror="this.remove()">` : ''}
+                    <i class="ri-article-line"></i>
+                </div>
+                <div class="ad-main">
+                    <h3 class="ad-title" title="${escapeHtml(article.subject)}">${escapeHtml(article.subject || 'Untitled article')}</h3>
+                    <div class="ad-meta">
+                        <a class="ad-domain article-modal-url-pill" href="https://${escapeHtml(cleanDomain)}" target="_blank" rel="noopener noreferrer" title="Open ${escapeHtml(cleanDomain)}">
+                            <span class="pa-fav">${escapeHtml((cleanDomain[0] || '?').toUpperCase())}</span>
+                            <span>${escapeHtml(cleanDomain)}</span>
+                            <i class="ri-external-link-line"></i>
+                        </a>
+                        <div class="article-header-meta">
+                            <span><i class="ri-calendar-line"></i> ${formattedDate}</span>
+                            <span><i class="ri-text"></i> ${wordCount.toLocaleString('en-US')} ${wordCount === 1 ? 'word' : 'words'}</span>
+                            <span><i class="ri-time-line"></i> ${readingTime} min read</span>
+                        </div>
                     </div>
                 </div>
-                <div class="article-header-meta-row">
-                    <div class="article-header-meta">
-                        <span><i class="ri-calendar-line"></i> ${formattedDate}</span>
-                        <span><i class="ri-text"></i> ${formatNumber(wordCount)} words</span>
-                        <span><i class="ri-time-line"></i> ${readingTime} min</span>
-                    </div>
-                    <div class="article-modal-actions-mobile">
-                        <button class="btn btn-sm" onclick="Swal.close(); showArticleModal('${articleId}')" title="Edit">
-                            <i class="ri-edit-line"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); confirmDeleteArticle('${articleId}')" title="Delete">
-                            <i class="ri-delete-bin-line"></i>
-                        </button>
-                    </div>
-                    <div class="article-modal-actions-desktop">
-                        <button class="btn btn-edit" onclick="Swal.close(); showArticleModal('${articleId}')" title="Edit Article">
-                            <i class="ri-edit-line"></i> Edit Article
-                        </button>
-                        <button class="btn btn-delete" onclick="event.stopPropagation(); confirmDeleteArticle('${articleId}')" title="Delete Article">
-                            <i class="ri-delete-bin-line"></i> Delete
-                        </button>
-                    </div>
+                <div class="ad-actions">
+                    <button type="button" class="ad-btn" onclick="Swal.close(); showArticleModal('${articleId}')" title="Edit article">
+                        <i class="ri-edit-line"></i><span>Edit</span>
+                    </button>
+                    <button type="button" class="ad-btn danger" onclick="event.stopPropagation(); confirmDeleteArticle('${articleId}')" title="Delete article">
+                        <i class="ri-delete-bin-line"></i><span>Delete</span>
+                    </button>
                 </div>
             </div>
             <!-- Stats Grid -->
@@ -11957,120 +12034,762 @@ async function showArticleModal(articleId = null) {
             return;
         }
     }
-    const verifiedDomains = currentData.domains.filter(d => d.verified);
     const modalHtml = `
-    <div class="am">
-        <form id="articleForm" class="am-form" onsubmit="return false">
-            <div class="am-row am-row-top">
-                <div class="am-field am-domain">
-                    <label class="am-label" for="article-url"><i class="ri-global-line"></i> Domain</label>
-                    <div class="am-select-wrap">
-                        <select class="am-input" id="article-url" name="url" required>
-                            <option value="">${verifiedDomains.length ? 'Select a domain…' : 'No verified domains yet'}</option>
-                            ${verifiedDomains.map(d => `<option value="${d.domain}" ${articleData && articleData.url === d.domain ? 'selected' : ''}>${d.domain}</option>`).join('')}
-                        </select>
-                        <i class="ri-arrow-down-s-line"></i>
-                    </div>
+    <style>
+        .article-modal-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 1.25rem;
+            text-align: left;
+            max-height: calc(90vh - 80px);
+            overflow: auto;
+        }
+        .article-main-content {
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .article-main-content form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .article-main-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .article-main-content::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+        .article-main-content::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        .article-main-content::-webkit-scrollbar-thumb:hover {
+            background: var(--text-tertiary);
+        }
+        .article-sidebar {
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            border-left: 2px solid var(--border);
+            padding-left: 1.25rem;
+        }
+        .article-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .article-sidebar::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+        .article-sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        .article-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 0.85rem;
+            transition: var(--transition);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .article-section:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+        }
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-bottom: 0.5rem;
+        }
+        .form-label i {
+            font-size: 1rem;
+            color: var(--primary);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+        }
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-title i {
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+        .ai-btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .ai-btn {
+            padding: 0.35rem 0.75rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            white-space: nowrap;
+        }
+        .ai-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .ai-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .ai-btn.generating {
+            background: linear-gradient(270deg, #667eea, #764ba2, #667eea);
+            background-size: 200% 200%;
+            animation: gradientShift 2s ease infinite;
+        }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .ai-btn i {
+            font-size: 0.85rem;
+        }
+        .ai-btn.generating i {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .progress-dots {
+            display: inline-flex;
+            gap: 2px;
+            margin-left: 4px;
+        }
+        .progress-dots span {
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+        .progress-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .progress-dots span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        .body-editor-container {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .editor-toolbar {
+            display: flex;
+            gap: 0.35rem;
+            padding: 0.5rem;
+            background: var(--card);
+            border-radius: var(--radius);
+            flex-wrap: wrap;
+        }
+        .editor-btn {
+            padding: 0.35rem 0.65rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.75rem;
+            color: var(--text);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .editor-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .editor-btn i {
+            font-size: 0.85rem;
+        }
+        .form-textarea-enhanced {
+            width: 100%;
+            min-height: 300px;
+            max-height: 400px;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--input-bg);
+            color: var(--text);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            resize: vertical;
+        }
+        .form-textarea-enhanced:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        .usage-stats {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 0.85rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.15rem;
+        }
+        .usage-item {
+            text-align: center;
+        }
+        .usage-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        .usage-label {
+            font-size: 0.55rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.65rem;
+        }
+        .image-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 2px solid var(--border);
+            background: var(--bg-tertiary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .image-item:hover {
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+        .image-item.marked-delete {
+            opacity: 0.4;
+            border-color: var(--error);
+        }
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .image-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+            gap: 0.5rem;
+        }
+        .image-item:hover .image-overlay {
+            opacity: 1;
+        }
+        .img-btn {
+            padding: 0.35rem 0.55rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.7rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .img-btn.view { background: var(--primary); }
+        .img-btn.delete { background: var(--error); }
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            text-align: center;
+            background: var(--bg-tertiary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--card-hover);
+        }
+        .upload-area.dragover {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        .upload-icon {
+            font-size: 2rem;
+            color: var(--text-tertiary);
+            margin-bottom: 0.5rem;
+        }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.65rem;
+        }
+        .preview-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            border: 2px solid var(--success);
+        }
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .preview-remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--error);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.7rem;
+            z-index: 2;
+        }
+        .preview-refresh {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.7rem;
+            z-index: 2;
+            transition: var(--transition);
+        }
+        .preview-refresh:hover {
+            transform: rotate(180deg);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+        .preview-refresh.loading {
+            animation: spin 1s linear infinite;
+        }
+        .title-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-top: 0.4rem;
+        }
+        .title-meta-row .char-count { margin-top: 0; flex-shrink: 0; }
+        .ai-hint {
+            font-size: 0.72rem;
+            line-height: 1.45;
+            color: var(--text-secondary);
+        }
+        .ai-hint i { color: #f59e0b; }
+        .ai-hint b { color: var(--text); }
+        .char-count {
+            text-align: right;
+            font-size: 0.7rem;
+            color: var(--text-tertiary);
+            margin-top: 0.35rem;
+        }
+        .generation-status {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: var(--radius);
+            padding: 0.85rem;
+            margin-top: 0.75rem;
+            display: none;
+            align-items: center;
+            gap: 0.65rem;
+        }
+        .generation-status.active {
+            display: flex;
+        }
+        .status-spinner {
+            width: 18px;
+            height: 18px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .status-text {
+            flex: 1;
+            font-size: 0.8rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .article-modal-wrapper {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                max-height: calc(85vh - 80px);
+            }
+            .article-sidebar {
+                border-left: none;
+                border-top: 2px solid var(--border);
+                padding-left: 0;
+                padding-top: 1rem;
+            }
+            .image-gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .usage-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .form-textarea-enhanced {
+                min-height: 280px;
+                max-height: 400px;
+            }
+        }
+        @media (max-width: 768px) {
+            .article-modal-wrapper {
+                max-height: calc(85vh - 60px);
+            }
+            .article-section {
+                padding: 0.75rem;
+            }
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.65rem;
+            }
+            .ai-btn-group {
+                width: 100%;
+            }
+            .ai-btn {
+                justify-content: center;
+                font-size: 0.7rem;
+                padding: 0.3rem 0.55rem;
+            }
+            .image-gallery,
+            .preview-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .usage-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+            .editor-toolbar {
+                padding: 0.4rem;
+            }
+            .editor-btn {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.7rem;
+            }
+            .form-textarea-enhanced {
+                min-height: 220px;
+                max-height: 300px;
+                font-size: 0.8rem;
+            }
+        }
+        /* Fix swal2-title gap and mobile responsiveness */
+        .article-modal-swal .swal2-title {
+            padding: 0.5rem 0 !important;
+            margin: 0 !important;
+            font-size: 1.15rem !important;
+        }
+        @media (max-width: 768px) {
+            .article-modal-swal .swal2-title {
+                padding: 0.25rem 0 !important;
+                font-size: 1rem !important;
+            }
+            .article-modal-swal {
+                padding: 0.75rem !important;
+                padding-top: 0.5rem !important;
+                padding-bottom: 0.75rem !important;
+                max-height: 90vh !important;
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+            }
+            .article-modal-swal .swal2-html-container {
+                max-height: 75vh !important;
+                padding: 0.25rem !important;
+                padding-bottom: 1rem !important;
+            }
+            #ai-generate-all-btn {
+                font-size: 0.65rem !important;
+                padding: 0.25rem 0.4rem !important;
+                white-space: nowrap !important;
+            }
+            #ai-generate-all-btn span {
+                display: inline !important;
+            }
+            #ai-generate-all-btn i {
+                font-size: 0.7rem !important;
+                margin-right: 0.15rem !important;
+            }
+        }
+        @media (max-width: 480px) {
+            #ai-generate-all-btn span {
+                display: inline !important;
+            }
+            #ai-generate-all-btn {
+                padding: 0.3rem 0.45rem !important;
+                font-size: 0.65rem !important;
+            }
+            #ai-generate-all-btn i {
+                font-size: 0.75rem !important;
+                margin-right: 0 !important;
+            }
+        }
+        /* Hide default action buttons */
+        .article-modal-swal .swal2-actions {
+            display: none !important;
+        }
+        /* Custom action buttons in sidebar */
+        .article-section.action-buttons-wrapper {
+            margin-top: auto;
+        }
+        .article-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .article-actions button {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .article-actions .btn-save {
+            background: var(--primary);
+            color: white;
+        }
+        .article-actions .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+        .article-actions .btn-cancel {
+            background: var(--bg-tertiary);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .article-actions .btn-cancel:hover {
+            background: var(--bg-secondary);
+            border-color: var(--primary);
+        }
+    </style>
+    <div class="article-modal-wrapper">
+        <div class="article-main-content">
+            <form id="articleForm">
+                <div class="article-section">
+                    <label class="form-label"><i class="ri-global-line"></i> Domain</label>
+                    <select class="form-select" id="article-url" name="url" required>
+                        <option value="">Select domain...</option>
+                        ${currentData.domains.filter(d => d.verified).map(d => `
+                            <option value="${d.domain}" ${articleData && normDomain(articleData.url) === normDomain(d.domain) ? 'selected' : ''}>${d.domain}</option>
+                        `).join('')}
+                    </select>
                 </div>
-                <div class="am-field am-title">
-                    <label class="am-label" for="article-subject"><i class="ri-text"></i> Title <span class="am-count"><span id="title-count">0</span>/200</span></label>
-                    <div class="am-title-group">
-                        <input type="text" id="article-subject" class="am-input" name="subject" required
-                            placeholder="Write a title, or leave empty for a fresh AI topic" value="${articleData ? String(articleData.subject).replace(/"/g, '&quot;') : ''}" maxlength="200" autocomplete="off">
-                        <button type="button" class="am-ai-btn" id="ai-generate-all-btn" title="Generate the article with AI">
-                            <i class="ri-sparkling-2-line"></i><span>Generate with AI</span>
+                <div class="article-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <label class="form-label" style="margin-bottom: 0;"><i class="ri-text"></i> Title</label>
+                        <button type="button" class="ai-btn" id="ai-generate-all-btn">
+                            <i class="ri-magic-line"></i> <span>Generate by AI</span>
                         </button>
                     </div>
-                    <p class="am-hint"><i class="ri-lightbulb-flash-line"></i><span>Write a title and click <b>Generate with AI</b> to write that article, or leave the title empty and AI will take your last article's title and write a new one based on it.</span></p>
-                </div>
-            </div>
-            <div class="am-field">
-                <label class="am-label" for="article-body"><i class="ri-file-text-line"></i> Content <span class="am-count"><span id="body-count">0</span> characters</span></label>
-                <div class="am-editor">
-                    <div class="editor-toolbar">
-                        <button type="button" class="editor-btn" data-tag="h1" title="Heading 1"><i class="ri-h-1"></i></button>
-                        <button type="button" class="editor-btn" data-tag="h2" title="Heading 2"><i class="ri-h-2"></i></button>
-                        <button type="button" class="editor-btn" data-tag="p" title="Paragraph"><i class="ri-paragraph"></i></button>
-                        <span class="editor-sep"></span>
-                        <button type="button" class="editor-btn" data-tag="strong" title="Bold"><i class="ri-bold"></i></button>
-                        <button type="button" class="editor-btn" data-tag="em" title="Italic"><i class="ri-italic"></i></button>
-                        <button type="button" class="editor-btn" data-tag="a" title="Link"><i class="ri-link"></i></button>
-                        <span class="editor-note">HTML</span>
+                    <input type="text" id="article-subject" class="form-input" name="subject" required
+                        placeholder="Enter article title..." value="${articleData ? String(articleData.subject).replace(/"/g, '&quot;') : ''}" maxlength="200">
+                    <div class="title-meta-row">
+                        <div class="ai-hint"><i class="ri-lightbulb-flash-line"></i> Write a title and click <b>Generate by AI</b>, or leave it empty and AI takes your last article's title and writes a new one based on it.</div>
+                        <div class="char-count"><span id="title-count">0</span>/200</div>
                     </div>
-                    <textarea class="form-textarea-enhanced" id="article-body" name="body" required
-                        placeholder="<h1>Main Heading</h1>&#10;<p>Your content here...</p>&#10;&#10;<h2>Subheading</h2>&#10;<p>More content...</p>">${articleData ? articleData.body : ''}</textarea>
                 </div>
-                <div class="generation-status" id="gen-status">
-                    <div class="status-spinner"></div>
-                    <div class="status-text" id="gen-status-text">Generating content...</div>
+                <div class="article-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <label class="form-label" style="margin-bottom: 0;"><i class="ri-file-text-line"></i> Content</label>
+                    </div>
+                    <div class="body-editor-container">
+                        <div class="editor-toolbar">
+                            <button type="button" class="editor-btn" data-tag="h1">
+                                <i class="ri-h-1"></i> H1
+                            </button>
+                            <button type="button" class="editor-btn" data-tag="h2">
+                                <i class="ri-h-2"></i> H2
+                            </button>
+                            <button type="button" class="editor-btn" data-tag="p">
+                                <i class="ri-paragraph"></i> P
+                            </button>
+                            <button type="button" class="editor-btn" data-tag="strong">
+                                <i class="ri-bold"></i> Bold
+                            </button>
+                            <button type="button" class="editor-btn" data-tag="em">
+                                <i class="ri-italic"></i> Italic
+                            </button>
+                            <button type="button" class="editor-btn" data-tag="a">
+                                <i class="ri-link"></i> Link
+                            </button>
+                        </div>
+                        <textarea class="form-textarea-enhanced" id="article-body" name="body" required
+                            placeholder="<h1>Main Heading</h1>&#10;<p>Your content here...</p>&#10;&#10;<h2>Subheading</h2>&#10;<p>More content...</p>">${articleData ? articleData.body : ''}</textarea>
+                    </div>
+                    <div class="char-count"><span id="body-count">0</span> characters</div>
+                    <div class="generation-status" id="gen-status">
+                        <div class="status-spinner"></div>
+                        <div class="status-text" id="gen-status-text">Generating content...</div>
+                    </div>
                 </div>
-            </div>
-            <input type="hidden" id="delete-images" name="delete_image_ids" value="">
-            <input type="hidden" id="image-urls" name="image_urls" value="">
-        </form>
-        <div class="am-row am-row-bottom">
-            <div class="am-field am-images">
-                <label class="am-label"><i class="ri-image-line"></i> Images ${isEdit ? '' : '<span class="am-req">at least one</span>'}</label>
-                ${isEdit && articleData && articleData.images && articleData.images.length > 0 ? `
-                <div class="am-sub">Current images (${articleData.images.length}) · click the bin to remove</div>
+                <input type="hidden" id="delete-images" name="delete_image_ids" value="">
+                <input type="hidden" id="image-urls" name="image_urls" value="">
+            </form>
+        </div>
+        <div class="article-sidebar">
+            ${isEdit && articleData && articleData.images && articleData.images.length > 0 ? `
+            <div class="article-section">
+                <div class="section-header">
+                    <h3 class="section-title"><i class="ri-image-line"></i> Current (${articleData.images.length})</h3>
+                </div>
                 <div class="image-gallery" id="current-images">
                     ${articleData.images.map((img, i) => {
-                        // Older API responses send plain URL strings; newer ones send {id, url}
+                        // --- [START OF FIX] ---
+                        // This block robustly finds the URL and the REAL ID
                         let url = '';
                         let id = '';
                         if (typeof img === 'string') {
+                            // This handles the old, buggy backend response (a list of strings)
                             url = img;
+                            // Extract the UUID from the URL
                             const match = url.match(/image-cdn\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
-                            id = match ? match[1] : 'img_fallback_' + i;
+                            if (match) {
+                                id = match[1]; // The REAL ID
+                            } else {
+                                id = 'img_fallback_' + i; // A fallback that will fail, but it's better than 'img_0'
+                            }
                         } else if (typeof img === 'object' && img !== null) {
+                            // This handles the new, correct backend response (a list of objects)
                             url = img.url;
-                            id = img.id;
+                            id = img.id; // The key is 'id'
                         }
+                        // --- [END OF FIX] ---
                         return `
                         <div class="image-item" data-id="${id}">
                             <img src="${url}" alt="Image ${i + 1}" loading="lazy">
                             <div class="image-overlay">
-                                <button type="button" class="img-btn view" onclick="window.open('${url}', '_blank')" title="Open"><i class="ri-eye-line"></i></button>
-                                <button type="button" class="img-btn delete" onclick="window.toggleDeleteImage('${id}')" title="Remove"><i class="ri-delete-bin-line"></i></button>
+                                <button type="button" class="img-btn view" onclick="window.open('${url}', '_blank')">
+                                    <i class="ri-eye-line"></i> View
+                                </button>
+                                <button type="button" class="img-btn delete" onclick="window.toggleDeleteImage('${id}')">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
                             </div>
                         </div>
                         `;
                     }).join('')}
                 </div>
-                ` : ''}
-                <div class="am-upload">
-                    <div class="upload-area" id="upload-zone" onclick="document.getElementById('file-input').click()">
-                        <input type="file" id="file-input" name="image_data" multiple accept="image/*" style="display:none;">
-                        <i class="ri-upload-cloud-2-line"></i>
-                        <div><b>${isEdit ? 'Add images' : 'Upload images'}</b><small>Click or drop · max 10 files, 5MB each</small></div>
-                    </div>
-                    <div id="preview-container" class="preview-grid"></div>
-                </div>
             </div>
-            <div class="am-field am-usage" id="usage-section">
-                <label class="am-label"><i class="ri-robot-line"></i> AI generations</label>
+            ` : ''}
+            <div class="article-section">
+                <div class="section-header">
+                    <h3 class="section-title"><i class="ri-upload-line"></i> ${isEdit ? 'Add New' : 'Upload'}</h3>
+                </div>
+                <div class="upload-area" id="upload-zone" onclick="document.getElementById('file-input').click()">
+                    <input type="file" id="file-input" name="image_data" multiple accept="image/*" style="display:none;">
+                    <div class="upload-icon"><i class="ri-upload-cloud-line"></i></div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Click or drop images</div>
+                    <div style="font-size: 0.65rem; color: var(--text-tertiary); margin-top: 0.25rem;">Max 10 files, 5MB each</div>
+                </div>
+                <div id="preview-container" class="preview-grid"></div>
+            </div>
+            <div class="article-section" id="usage-section" style="display: block;">
+                <div class="section-header">
+                    <h3 class="section-title"><i class="ri-pie-chart-line"></i> AI Usage</h3>
+                </div>
                 <div class="usage-category" id="usage-stats-container">
-                    <div class="am-usage-top">
-                        <span><strong id="usage-remaining">0</strong> left</span>
-                        <span id="usage-percentage">0%</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="ri-robot-line" style="color: var(--primary); font-size: 1.1rem;"></i>
+                            <span style="font-weight: 600; color: var(--text);">AI Generations</span>
+                        </div>
+                        <span style="font-size: 0.875rem; font-weight: 600;" id="usage-percentage">0%</span>
                     </div>
-                    <div class="am-usage-track"><div id="usage-progress-bar"></div></div>
-                    <div class="am-usage-foot"><span><strong id="usage-used">0</strong> used</span><span><strong id="usage-limit">0</strong> total</span></div>
+                    <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
+                        <div id="usage-progress-bar" style="height: 100%; width: 0%; transition: width 0.3s ease, background-color 0.3s ease;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
+                        <span><strong id="usage-used">0</strong> used</span>
+                        <span><strong id="usage-remaining">0</strong> remaining / <strong id="usage-limit">0</strong> total</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="am-actions">
-            <button type="button" class="btn-cancel" id="article-cancel-btn">Cancel</button>
-            <button type="button" class="btn-save" id="article-save-btn">
-                <i class="ri-${isEdit ? 'save' : 'send-plane'}-line"></i> ${isEdit ? 'Update Article' : 'Publish Article'}
-            </button>
+            <div class="article-section action-buttons-wrapper">
+                <div class="article-actions">
+                    <button type="button" class="btn-save" id="article-save-btn">
+                        <i class="ri-save-line"></i> ${isEdit ? 'Update Article' : 'Create Article'}
+                    </button>
+                    <button type="button" class="btn-cancel" id="article-cancel-btn">
+                        <i class="ri-close-line"></i> Cancel
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     `;
     Swal.fire({
-        title: `<div class="am-head"><span class="am-head-ico"><i class="ri-${isEdit ? 'edit' : 'quill-pen'}-line"></i></span><span>${isEdit ? 'Edit Article' : 'Create Article'}<small>${isEdit ? 'Update the content and images of this article' : 'Publish an SEO article to one of your verified domains'}</small></span></div>`,
+        title: `<div style="font-size: 1.15rem; font-weight: 700;">${isEdit ? '<i class="ri-edit-line"></i> Edit Article' : '<i class="ri-add-line"></i> Create Article'}</div>`,
         html: modalHtml,
-        width: 'min(1080px, 96vw)',
+        width: '95vw',
         showCloseButton: true,
         showCancelButton: true,
         confirmButtonText: `<i class="ri-save-line"></i> ${isEdit ? 'Update' : 'Create'}`,
@@ -12279,7 +12998,7 @@ async function showArticleModal(articleId = null) {
                 }
                 btn.disabled = true;
                 btn.classList.add('generating');
-                btn.innerHTML = '<i class="ri-loader-4-line"></i><span>Generating…</span>';
+                btn.innerHTML = '<i class="ri-loader-4-line"></i> <span>Generating</span><div class="progress-dots"><span></span><span></span><span></span></div>';
                 window.showGenStatus(subject ? `Writing “${subject}” with AI…` : 'Picking a new topic from your last article and writing it with AI…');
                 try {
                     // Build payload: with subject if provided, without subject if empty
@@ -12342,7 +13061,7 @@ async function showArticleModal(articleId = null) {
                 } finally {
                     btn.disabled = false;
                     btn.classList.remove('generating');
-                    btn.innerHTML = '<i class="ri-sparkling-2-line"></i><span>Generate with AI</span>';
+                    btn.innerHTML = '<i class="ri-magic-line"></i> <span>Generate by AI</span>';
                     window.hideGenStatus();
                 }
             });
@@ -12590,14 +13309,16 @@ async function showImageUploadModal() {
         </div>
     `;
     Swal.fire({
-        title: 'Upload Images',
+        title: '<span class="upl-head"><span class="upl-head-ico"><i class="ri-image-add-line"></i></span><span>Upload images<small>Hosted on the Seotize CDN with view analytics</small></span></span>',
         html: swalHtml,
         showCloseButton: true,
         showCancelButton: true,
+        reverseButtons: true,
+        buttonsStyling: false,
         confirmButtonText: '<i class="ri-upload-2-line"></i> Upload',
-        confirmButtonColor: 'var(--primary)',
-        width: 'min(560px, 96vw)',
-        customClass: { popup: 'swal2-toast upl-swal' },
+        cancelButtonText: 'Cancel',
+        width: 'min(580px, 96vw)',
+        customClass: { popup: 'upl-swal', actions: 'upl-actions', confirmButton: 'upl-btn upl-btn-primary', cancelButton: 'upl-btn' },
         didOpen: () => {
             const fileInput = document.getElementById('swal-file-input');
             const zone = document.getElementById('uplZone');
@@ -12614,7 +13335,12 @@ async function showImageUploadModal() {
                     grid.appendChild(item);
                 });
                 document.getElementById('uplBar').hidden = selectedFiles.length === 0;
-                document.getElementById('uplCount').textContent = `${selectedFiles.length} of ${MAX_FILES} selected`;
+                const totalSize = selectedFiles.reduce((n, f) => n + f.size, 0);
+                document.getElementById('uplCount').textContent = `${selectedFiles.length} of ${MAX_FILES} selected · ${formatFileSize(totalSize)}`;
+                const confirmBtn = Swal.getConfirmButton && Swal.getConfirmButton();
+                if (confirmBtn) confirmBtn.innerHTML = selectedFiles.length
+                    ? `<i class="ri-upload-2-line"></i> Upload ${selectedFiles.length} image${selectedFiles.length === 1 ? '' : 's'}`
+                    : '<i class="ri-upload-2-line"></i> Upload';
                 Swal.resetValidationMessage();
             };
             const addFiles = (files) => {
@@ -12646,27 +13372,45 @@ async function showImageUploadModal() {
         // This block runs after preConfirm is successful and the user has confirmed
         if (result.isConfirmed) {
             const formData = result.value;
-            // Show a loading indicator
+            // Upload with a real progress bar (fetch can't report upload progress)
             Swal.fire({
-                title: 'Uploading...',
-                text: 'Please wait while your images are being uploaded.',
-                didOpen: () => Swal.showLoading(),
+                title: '<span class="upl-head"><span class="upl-head-ico"><i class="ri-upload-cloud-2-line"></i></span><span>Uploading…<small>Keep this window open until it finishes</small></span></span>',
+                html: '<div class="upl-progress"><div class="upl-progress-track"><i id="uplProgress"></i></div><span id="uplProgressText">0%</span></div>',
+                showConfirmButton: false,
                 allowOutsideClick: false,
-                customClass: { popup: 'swal2-toast' }
+                allowEscapeKey: false,
+                width: 'min(480px, 96vw)',
+                customClass: { popup: 'upl-swal' }
             });
             try {
-                const response = await fetch(`${API_BASE}/images/upload`, {
-                    method: 'POST',
-                    headers: { 'Session-Token': sessionToken },
-                    body: formData
+                const data = await new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', `${API_BASE}/images/upload`);
+                    xhr.setRequestHeader('Session-Token', sessionToken);
+                    xhr.timeout = 120000;
+                    xhr.upload.onprogress = (e) => {
+                        if (!e.lengthComputable) return;
+                        const pct = Math.round((e.loaded / e.total) * 100);
+                        const bar = document.getElementById('uplProgress');
+                        const txt = document.getElementById('uplProgressText');
+                        if (bar) bar.style.width = pct + '%';
+                        if (txt) txt.textContent = pct < 100 ? pct + '%' : 'Processing…';
+                    };
+                    xhr.onload = () => {
+                        let body = {};
+                        try { body = JSON.parse(xhr.responseText || '{}'); } catch (_) {}
+                        if (xhr.status === 401 || xhr.status === 403) { redirectToLogin(true); return; }
+                        if (xhr.status < 200 || xhr.status >= 300) return reject(new Error(body.error?.message || body.message || 'Upload failed'));
+                        resolve(body);
+                    };
+                    xhr.onerror = () => reject(new Error('Network error while uploading. Please try again.'));
+                    xhr.ontimeout = () => reject(new Error('The upload took too long. Please try again.'));
+                    xhr.send(formData);
                 });
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.error?.message || data.message || 'Upload failed');
-                }
-                Swal.close(); // <-- ADD THIS LINE
-                showToast(`Successfully uploaded ${data.data.uploaded_images.length} images!`, 'success');
-                loadImages(); // Refresh the images list
+                Swal.close();
+                const count = data?.data?.uploaded_images?.length || 0;
+                showToast(`Uploaded ${count} image${count === 1 ? '' : 's'}`, 'success');
+                loadImages();
             } catch (error) {
                 console.error('Upload error:', error);
                 Swal.fire({
@@ -13006,7 +13750,7 @@ function deleteImageFromModal(imageId) {
 // [NEW] Payment Details Modal with auto-retry for pending status
 let paymentCheckInterval = null;
 let paymentCheckAttempts = 0;
-const MAX_PAYMENT_CHECK_ATTEMPTS = 60; // Max 5 minutes (60 * 5 seconds)
+const MAX_PAYMENT_CHECK_ATTEMPTS = 24; // Max 2 minutes (24 * 5 seconds), then offer a manual check
 
 async function viewPaymentDetails(billingId, isAutoCheck = false, noPoll = false) {
     // Clear any existing interval when manually opening
@@ -13043,6 +13787,9 @@ async function viewPaymentDetails(billingId, isAutoCheck = false, noPoll = false
                 if (paymentCheckAttempts >= MAX_PAYMENT_CHECK_ATTEMPTS || !document.getElementById('pendingCheckTimer')) {
                     clearInterval(paymentCheckInterval);
                     paymentCheckInterval = null;
+                    // Stop the "verifying" animation and let the user re-check by hand
+                    const box = document.querySelector('.pay-pending-check');
+                    if (box) box.innerHTML = `<div class="check-title"><i class="ri-time-line"></i>Still pending</div><div class="check-desc">The provider hasn't confirmed this payment yet. It can take a few minutes.</div><button type="button" class="pay-btn" onclick="viewPaymentDetails('${billingId}')"><i class="ri-refresh-line"></i>Check again</button>`;
                     return;
                 }
                 // Update the countdown timer
@@ -14229,102 +14976,31 @@ tbody tr:hover{background:var(--card-hover)}
 .img-tabs button.active{background:var(--gradient-primary);color:#fff;box-shadow:0 8px 18px -10px var(--glow-strong)}
 @media (max-width:768px){.img-tabs{display:flex;width:100%}.img-tabs button{flex:1;justify-content:center;padding:.6rem .5rem;font-size:.82rem}}
 
-/* ---------- Article editor modal ---------- */
-.article-modal-swal{padding:1.4rem 1.5rem 1.25rem!important}
-.article-modal-swal .swal2-title{padding:0 0 .9rem!important;margin:0 0 1rem!important;border-bottom:1px solid var(--border);text-align:left!important}
-.article-modal-swal .swal2-html-container{margin:0!important;padding:0!important;overflow:visible!important}
-.article-modal-swal .swal2-actions{display:none!important}
-.am-head{display:flex;align-items:center;gap:.8rem;font-size:1.15rem;font-weight:700;color:var(--text)}
-.am-head-ico{width:42px;height:42px;flex-shrink:0;border-radius:12px;display:grid;place-items:center;background:var(--gradient-primary);color:#fff;font-size:1.2rem}
-.am-head small{display:block;font:500 .8rem 'Inter',sans-serif;color:var(--text-secondary);letter-spacing:0;margin-top:.15rem}
-.am{display:flex;flex-direction:column;gap:1.1rem;text-align:left;max-height:calc(100dvh - 190px);overflow-y:auto;overflow-x:hidden;padding:0 .2rem .1rem}
-.am-form{display:flex;flex-direction:column;gap:1.1rem;margin:0}
-.am-row{display:grid;gap:1rem;align-items:start}
-.am-row-top{grid-template-columns:minmax(200px,260px) minmax(0,1fr)}
-.am-row-bottom{grid-template-columns:minmax(0,1fr) 260px}
-.am-field{display:flex;flex-direction:column;gap:.45rem;min-width:0}
-.am-label{display:flex;align-items:center;gap:.4rem;margin:0;font-size:.82rem;font-weight:600;color:var(--text)}
-.am-label i{color:var(--primary);font-size:1rem}
-.am-count{margin-left:auto;font-weight:500;font-size:.72rem;color:var(--text-tertiary);font-family:var(--font-mono)}
-.am-req{margin-left:.25rem;font-weight:500;font-size:.7rem;padding:.1rem .45rem;border-radius:99px;background:var(--glow);color:var(--primary)}
-.am-sub{font-size:.75rem;color:var(--text-secondary)}
-.am-input{width:100%;height:46px;padding:0 .9rem;border:1px solid var(--border);border-radius:12px;background:var(--input-bg);color:var(--text);font:500 .92rem 'Inter',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s;box-sizing:border-box}
-.am-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--glow)}
-.am-input::placeholder{color:var(--text-tertiary)}
-.am-select-wrap{position:relative}
-.am-select-wrap select{appearance:none;-webkit-appearance:none;padding-right:2.2rem;cursor:pointer;text-overflow:ellipsis}
-.am-select-wrap i{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text-secondary)}
-.am-title-group{display:flex;align-items:stretch;gap:.5rem}
-.am-title-group .am-input{flex:1;min-width:0}
-.am-ai-btn{flex-shrink:0;height:46px;display:inline-flex;align-items:center;gap:.45rem;padding:0 1.1rem;border:0;border-radius:12px;cursor:pointer;color:#fff;font:600 .88rem 'Inter',sans-serif;white-space:nowrap;background:linear-gradient(135deg,#7c3aed 0%,#2563eb 55%,#06b6d4 100%);background-size:180% 180%;box-shadow:0 10px 22px -12px rgba(79,70,229,.8);transition:transform .25s var(--ease),box-shadow .25s,background-position .6s}
-.am-ai-btn:hover:not(:disabled){transform:translateY(-1px);background-position:100% 0;box-shadow:0 14px 26px -12px rgba(79,70,229,.9)}
-.am-ai-btn:disabled{cursor:progress;opacity:.9;animation:amShift 1.6s ease infinite}
-.am-ai-btn i{font-size:1.05rem}
-.am-ai-btn:disabled i{animation:spin 1s linear infinite}
-@keyframes amShift{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
-.am-hint{display:flex;gap:.4rem;align-items:flex-start;margin:0;font-size:.76rem;line-height:1.45;color:var(--text-secondary)}
-.am-hint i{color:#f59e0b;font-size:.95rem;margin-top:.05rem}
-.am-hint b{color:var(--text);font-weight:600}
-.am-editor{border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--input-bg);transition:border-color .2s,box-shadow .2s}
-.am-editor:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px var(--glow)}
-.am-editor .editor-toolbar{display:flex;align-items:center;gap:.25rem;padding:.4rem .5rem;margin:0;border-bottom:1px solid var(--border);background:var(--bg-tertiary);border-radius:0;flex-wrap:wrap}
-.am-editor .editor-btn{width:32px;height:30px;padding:0;display:grid;place-items:center;border:0;border-radius:8px;background:transparent;color:var(--text-secondary);font-size:1rem;cursor:pointer;transition:background .15s,color .15s}
-.am-editor .editor-btn:hover{background:var(--card);color:var(--primary)}
-.am-editor .editor-sep{width:1px;height:18px;background:var(--border);margin:0 .25rem}
-.am-editor .editor-note{margin-left:auto;font:600 .65rem var(--font-mono);letter-spacing:.1em;color:var(--text-tertiary);padding-right:.3rem}
-.am-editor .form-textarea-enhanced{display:block;width:100%;min-height:280px;max-height:52vh;padding:.9rem 1rem;border:0;border-radius:0;background:transparent;color:var(--text);font:400 .86rem/1.6 var(--font-mono);resize:vertical;box-shadow:none;outline:none;box-sizing:border-box}
-.am .generation-status{display:none;align-items:center;gap:.65rem;padding:.75rem .9rem;margin:0;border-radius:12px;border:1px solid color-mix(in srgb,var(--primary) 30%,var(--border));background:var(--glow)}
-.am .generation-status.active{display:flex}
-.am .status-spinner{width:18px;height:18px;flex-shrink:0;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
-.am .status-text{font-size:.82rem;font-weight:500;color:var(--text)}
-.am-upload{display:flex;flex-wrap:wrap;gap:.6rem;align-items:stretch}
-.am .upload-area{flex:1 1 240px;display:flex;align-items:center;gap:.8rem;padding:.85rem 1rem;border:1.5px dashed var(--border);border-radius:14px;background:var(--bg-tertiary);cursor:pointer;text-align:left;transition:border-color .2s,background .2s}
-.am .upload-area:hover{border-color:var(--primary);background:var(--glow)}
-.am .upload-area.dragover{border-color:var(--success);background:rgba(16,185,129,.1)}
-.am .upload-area>i{font-size:1.6rem;color:var(--primary)}
-.am .upload-area b{display:block;font-size:.88rem;color:var(--text)}
-.am .upload-area small{display:block;font-size:.72rem;color:var(--text-secondary);margin-top:.1rem}
-.am .preview-grid,.am .image-gallery{display:flex;flex-wrap:wrap;gap:.5rem;margin:0}
-.am .preview-grid:empty{display:none}
-.am .preview-item,.am .image-item{position:relative;width:76px;height:76px;aspect-ratio:auto;flex-shrink:0;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:var(--bg-tertiary)}
-.am .preview-item img,.am .image-item img{width:100%;height:100%;object-fit:cover;display:block}
-.am .preview-remove,.am .preview-refresh{position:absolute;top:4px;z-index:2;width:22px;height:22px;padding:0;display:grid;place-items:center;border:0;border-radius:50%;color:#fff;font-size:.75rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-.am .preview-remove{right:4px;background:var(--error)}
-.am .preview-refresh{left:4px;background:var(--primary)}
-.am .preview-refresh:disabled{opacity:.7}
-.am .preview-refresh i.loading{animation:spin 1s linear infinite;display:inline-block}
-.am .image-item.marked-delete{opacity:.4;border-color:var(--error)}
-.am .image-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:.3rem;background:rgba(2,6,23,.6);opacity:0;transition:opacity .2s}
-.am .image-item:hover .image-overlay,.am .image-item:focus-within .image-overlay{opacity:1}
-.am .img-btn{width:28px;height:28px;padding:0;display:grid;place-items:center;border:0;border-radius:8px;color:#fff;font-size:.85rem;cursor:pointer}
-.am .img-btn.view{background:var(--primary)}
-.am .img-btn.delete{background:var(--error)}
-.am-usage .usage-category{padding:.9rem 1rem;border:1px solid var(--border);border-radius:14px;background:var(--bg-tertiary)}
-.am-usage-top{display:flex;justify-content:space-between;align-items:baseline;font-size:.8rem;color:var(--text-secondary)}
-.am-usage-top strong{font:800 1.35rem var(--font-display);color:var(--text);margin-right:.15rem}
-.am-usage-top #usage-percentage{font-weight:700;font-size:.85rem}
-.am-usage-track{height:6px;border-radius:99px;background:var(--border);overflow:hidden;margin:.55rem 0 .45rem}
-.am-usage-track #usage-progress-bar{height:100%;width:0;border-radius:99px;transition:width .4s var(--ease),background-color .3s}
-.am-usage-foot{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-secondary)}
-.am-actions{display:flex;justify-content:flex-end;gap:.6rem;padding-top:1rem;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--card);z-index:2}
-.am-actions button{height:44px;display:inline-flex;align-items:center;justify-content:center;gap:.45rem;padding:0 1.25rem;border-radius:12px;font:600 .9rem 'Inter',sans-serif;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
-.am-actions .btn-cancel{background:transparent;border:1px solid var(--border);color:var(--text)}
-.am-actions .btn-cancel:hover{border-color:var(--text-tertiary)}
-.am-actions .btn-save{border:0;color:#fff;background:var(--gradient-primary);box-shadow:0 10px 22px -12px var(--glow-strong)}
-.am-actions .btn-save:hover{transform:translateY(-1px)}
-.article-modal-swal .swal2-validation-message{margin:.75rem 0 0!important;border-radius:10px}
-@media (max-width:820px){
-  .article-modal-swal{padding:1rem!important}
-  .am{max-height:calc(100dvh - 150px)}
-  .am-row-top,.am-row-bottom{grid-template-columns:minmax(0,1fr)}
-  .am-head small{display:none}
-}
-@media (max-width:520px){
-  .am-title-group{flex-direction:column}
-  .am-title-group .am-input{flex:none}
-  .am-ai-btn{justify-content:center}
-  .am-actions button{flex:1}
-  .am-editor .form-textarea-enhanced{min-height:220px}
+/* ---------- Article details header ---------- */
+.ad-head{display:flex;align-items:center;gap:1rem;padding:0 0 1rem;margin:0 0 1rem;border-bottom:1px solid var(--border);text-align:left}
+.ad-cover{position:relative;width:96px;height:72px;flex-shrink:0;border-radius:14px;overflow:hidden;display:grid;place-items:center;background:radial-gradient(120% 140% at 0% 0%,#2563eb 0%,#1e3a8a 55%,#0b1222 100%)}
+.ad-cover>i{font-size:1.6rem;color:rgba(255,255,255,.4)}
+.ad-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ad-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:.5rem}
+.ad-title{margin:0;font:700 1.15rem/1.35 var(--font-display);letter-spacing:-.015em;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ad-meta{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem .9rem}
+.ad-meta .article-header-meta{flex:0 1 auto;gap:.35rem .9rem;font-size:.78rem}
+.ad-domain.article-modal-url-pill{gap:.4rem;padding:.2rem .65rem .2rem .25rem;font-size:.78rem;max-width:100%}
+.ad-domain .pa-fav{width:22px;height:22px}
+.ad-domain>i{font-size:.85rem;opacity:.8}
+.ad-actions{display:flex;gap:.5rem;flex-shrink:0}
+.ad-btn{height:38px;display:inline-flex;align-items:center;gap:.35rem;padding:0 .9rem;border:1px solid var(--border);border-radius:11px;background:var(--bg-tertiary);color:var(--text);font:600 .8rem 'Inter',sans-serif;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.ad-btn:hover{border-color:var(--primary);color:var(--primary)}
+.ad-btn.danger{color:var(--error);background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3)}
+.ad-btn.danger:hover{background:var(--error);border-color:var(--error);color:#fff}
+.ad-btn i{font-size:1rem}
+@media (max-width:640px){
+  .ad-head{flex-wrap:wrap;align-items:flex-start;gap:.75rem}
+  .ad-cover{width:64px;height:52px;border-radius:12px}
+  .ad-main{flex:1 1 calc(100% - 80px)}
+  .ad-title{font-size:1rem}
+  .ad-actions{width:100%}
+  .ad-btn{flex:1;justify-content:center}
 }
 
 /* ---------- Image upload modal ---------- */
@@ -14350,6 +15026,28 @@ tbody tr:hover{background:var(--card-hover)}
 .upl-meta small{font-size:.68rem;color:var(--text-secondary)}
 .upl-remove{position:absolute;top:4px;right:4px;width:20px;height:20px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:var(--bg-tertiary);color:var(--text-secondary);cursor:pointer;font-size:.8rem}
 .upl-remove:hover{background:var(--error);color:#fff}
+
+/* ---------- Image upload modal: popup chrome ---------- */
+.swal2-popup.upl-swal{padding:1.4rem 1.5rem 1.25rem!important;border-radius:22px!important;background:var(--card)!important;text-align:left}
+.upl-swal .swal2-title{padding:0 2.5rem .9rem 0!important;margin:0 0 1rem!important;border-bottom:1px solid var(--border);text-align:left!important;font-size:1.1rem!important}
+.upl-swal .swal2-html-container{margin:0!important;padding:0!important;overflow:visible!important}
+.upl-swal .swal2-close{top:1rem!important;right:1rem!important;width:36px!important;height:36px!important;border-radius:10px!important;font-size:1.5rem!important;color:var(--text-secondary)!important;background:var(--bg-tertiary)!important}
+.upl-swal .swal2-close:hover{background:var(--error)!important;color:#fff!important}
+.upl-head{display:flex;align-items:center;gap:.75rem;color:var(--text)}
+.upl-head small{display:block;font:500 .78rem 'Inter',sans-serif;color:var(--text-secondary);margin-top:.15rem}
+.upl-head-ico{width:40px;height:40px;flex-shrink:0;border-radius:12px;display:grid;place-items:center;background:var(--gradient-primary);color:#fff;font-size:1.15rem}
+.swal2-actions.upl-actions{flex-direction:row!important;flex-wrap:nowrap!important}
+.upl-actions{width:100%!important;justify-content:flex-end!important;gap:.6rem!important;margin:1.1rem 0 0!important;padding:1rem 0 0!important;border-top:1px solid var(--border)}
+.upl-btn{height:42px;display:inline-flex;align-items:center;gap:.4rem;padding:0 1.15rem;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font:600 .88rem 'Inter',sans-serif;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s}
+.upl-btn:hover{border-color:var(--text-tertiary)}
+.upl-btn-primary{border:0;color:#fff;background:var(--gradient-primary);box-shadow:0 10px 22px -12px var(--glow-strong)}
+.upl-btn-primary:hover{transform:translateY(-1px)}
+.upl-swal .swal2-validation-message{margin:.8rem 0 0!important;border-radius:10px;background:rgba(239,68,68,.08)!important;color:var(--error)!important}
+.upl-progress{display:flex;align-items:center;gap:.75rem;padding:.5rem 0 .25rem}
+.upl-progress-track{flex:1;height:10px;border-radius:99px;background:var(--bg-tertiary);overflow:hidden}
+.upl-progress-track i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#2563eb,#06b6d4);transition:width .2s}
+#uplProgressText{min-width:5.5rem;text-align:right;font-weight:700;font-size:.85rem;color:var(--text)}
+@media (max-width:520px){.upl-actions .upl-btn{flex:1;justify-content:center}.upl-head small{display:none}}
 
 /* ---------- Image details: meta row & CDN link ---------- */
 .image-info-bar{align-items:center}
