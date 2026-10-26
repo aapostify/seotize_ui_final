@@ -11,7 +11,6 @@
 <link rel="canonical" href="https://seotize.net/">
 <link rel="dns-prefetch" href="https://api.seotize.net">
 <link rel="preconnect" href="https://image-api.seotize.net">
-<!--@HEAD:start-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -23,13 +22,12 @@
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#0b1222">
 <link rel="stylesheet" href="/assets/site.css">
-<!--@HEAD:end-->
 <script defer src="https://seotize.net/seotize-engine.js?id=0x4AAAAAACGBdhanjO8qCW6A"></script>
 <style>
   .hero-wrap{padding-bottom:1rem}
-  .trust{padding:1.5rem 0 0}
+  .trust{display:flex;align-items:center;margin-top:1.25rem;padding:1.6rem 0;border-block:1px solid var(--border);background:var(--surface)}
+  .trust .marquee{flex:1}
   .features-intro{padding-top:3rem;padding-bottom:1rem}
-  #freeBanner .free-banner{margin-bottom:1.9rem}
   .blog-rail:has(.blog-empty){display:block}
   #pricing .section-head{margin-bottom:2rem}
   .blog-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:2rem;flex-wrap:wrap}
@@ -39,7 +37,6 @@
 </style>
 </head>
 <body data-spy="home,features,tools,pricing,blog">
-<!--@NAV:home:start-->
 <script>try{localStorage.getItem('theme')==='dark'&&document.body.classList.add('dark')}catch(e){}</script>
 <header class="topnav" id="topnav">
   <div class="nav-inner">
@@ -48,7 +45,7 @@
       SEOTIZE
     </a>
     <nav aria-label="Main"><ul class="nav-links">
-      <li><a href="/" data-key="home" class="active">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs.html" data-key="blog">Blog</a></li><li><a href="/partner/" data-key="partner">Partners</a></li>
+      <li><a href="/" data-key="home" class="active">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs.html" data-key="blog">Blog</a></li>
     </ul></nav>
     <div class="nav-actions">
       <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle dark mode"><i id="themeIcon" class="ri-moon-line"></i></button>
@@ -56,7 +53,6 @@
     </div>
   </div>
 </header>
-<!--@NAV:end-->
 
 <main>
   <!-- ================= HERO ================= -->
@@ -316,10 +312,10 @@
         <p>Start free. Upgrade hosting when you need more, and pay per real click for SEO tasks.</p>
       </div>
       <div class="pricing-controls" data-reveal>
-        <div class="seg" id="typeSeg" role="tablist" aria-label="Pricing type">
+        <div class="seg seg-lg" id="typeSeg" role="tablist" aria-label="Pricing type">
           <span class="seg-pill"></span>
-          <button class="active" data-type="hosting" role="tab">Hosting Plans</button>
-          <button data-type="task" role="tab">Task Pricing</button>
+          <button class="active" data-type="hosting" role="tab"><i class="ri-server-line"></i> Hosting Plans</button>
+          <button data-type="task" role="tab"><i class="ri-cursor-line"></i> Task Pricing</button>
         </div>
         <div class="seg" id="periodSeg" role="tablist" aria-label="Billing period">
           <span class="seg-pill"></span>
@@ -327,9 +323,18 @@
           <button data-period="6month" role="tab">6 Months<span class="save">-10%</span></button>
           <button data-period="12month" role="tab">12 Months<span class="save">-20%</span></button>
         </div>
+        <div class="calc" id="taskCalc" hidden>
+          <div class="calc-top"><span>Your budget</span><b id="calcVal">$150</b></div>
+          <input type="range" id="calcRange" min="10" max="1000" step="10" value="150" aria-label="Budget in dollars">
+          <div class="calc-scale"><span>$10</span><span>$1,000</span></div>
+        </div>
       </div>
-      <div id="freeBanner" data-reveal></div>
       <div class="pricing-grid" id="pricingGrid"></div>
+      <ul class="pricing-notes" data-reveal>
+        <li><i class="ri-bank-card-line"></i>No credit card required to start</li>
+        <li><i class="ri-coins-line"></i>Pay by card or crypto</li>
+        <li><i class="ri-shield-check-line"></i>Real human traffic only</li>
+      </ul>
     </div>
   </section>
 
@@ -400,7 +405,6 @@
   </section>
 </main>
 
-<!--@FOOTER:start-->
 <footer class="footer">
   <div class="container">
     <div class="footer-top">
@@ -438,89 +442,100 @@
 </a>
       </div>
     </div>
-    <div class="footer-wordmark" aria-hidden="true">SEOTIZE</div>
   </div>
 </footer>
-<!--@FOOTER:end-->
-<!--@MNAV:home:start-->
 <nav class="mobile-nav" aria-label="Mobile">
   <div class="mobile-items"><span class="mobile-pill"></span>
     <a href="/" class="mobile-item active" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/#features" class="mobile-item" data-key="features"><i class="ri-flashlight-line"></i><span>Features</span></a><a href="/tools" class="mobile-item" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs.html" class="mobile-item" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
   </div>
 </nav>
 <button class="to-top" aria-label="Back to top"><i class="ri-arrow-up-line"></i></button>
-<!--@MNAV:end-->
-<!--@SCRIPTS:start-->
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <script defer src="/assets/site.js"></script>
-<!--@SCRIPTS:end-->
 <script>
 (function () {
   const DATA = {
     hosting: {
-      free: { name: 'Free', price: { '3month': 0, '6month': 0, '12month': 0 }, features: ['30 articles hosted', '100 images stored', '3 AI credits', 'Basic CDN access', 'Community support', 'Basic analytics'] },
-      basic: { name: 'Basic', sub: 'For growing blogs', price: { '3month': 10, '6month': 18, '12month': 32 }, features: ['200 articles hosted', '1,000 images stored', '20 AI credits', 'Fast CDN delivery', 'Email support', 'Standard analytics', 'Custom domain'] },
-      professional: { name: 'Professional', sub: 'For serious publishers', price: { '3month': 25, '6month': 45, '12month': 80 }, features: ['600 articles hosted', '4,000 images stored', '60 AI credits', 'Premium CDN delivery', 'Priority support', 'Advanced analytics', 'Custom domain', 'API access'], popular: true },
-      enterprise: { name: 'Enterprise', sub: 'For agencies & networks', price: { '3month': 50, '6month': 90, '12month': 160 }, features: ['2,000 articles hosted', '20,000 images stored', '200 AI credits', 'Ultra-fast CDN worldwide', '24/7 dedicated support', 'Full analytics suite', 'Multiple custom domains', 'Full API access'] }
+      free: { name: 'Free', sub: 'For trying things out', icon: 'ri-seedling-line', price: { '3month': 0, '6month': 0, '12month': 0 }, features: ['30 articles hosted', '100 images stored', '3 AI credits', 'Basic CDN access', 'Community support', 'Basic analytics'] },
+      basic: { name: 'Basic', sub: 'For growing blogs', icon: 'ri-rocket-line', price: { '3month': 10, '6month': 18, '12month': 32 }, features: ['200 articles hosted', '1,000 images stored', '20 AI credits', 'Fast CDN delivery', 'Email support', 'Standard analytics', 'Custom domain'] },
+      professional: { name: 'Professional', sub: 'For serious publishers', icon: 'ri-vip-crown-line', price: { '3month': 25, '6month': 45, '12month': 80 }, features: ['600 articles hosted', '4,000 images stored', '60 AI credits', 'Premium CDN delivery', 'Priority support', 'Advanced analytics', 'Custom domain', 'API access'], popular: true },
+      enterprise: { name: 'Enterprise', sub: 'For agencies & networks', icon: 'ri-building-4-line', price: { '3month': 50, '6month': 90, '12month': 160 }, features: ['2,000 articles hosted', '20,000 images stored', '200 AI credits', 'Ultra-fast CDN worldwide', '24/7 dedicated support', 'Full analytics suite', 'Multiple custom domains', 'Full API access'] }
     },
     task: {
-      basic: { name: 'Basic', sub: 'Up to 1 concurrent location', price: 0.10, features: ['$0.10 per click', '1 concurrent location', 'Standard processing speed', 'Email support', 'Basic task analytics'] },
-      standard: { name: 'Standard', sub: 'Up to 3 concurrent locations', price: 0.12, features: ['$0.12 per click', '3 concurrent locations', 'Fast processing speed', 'Priority support', 'Advanced task analytics', 'Task scheduling'], popular: true },
-      premium: { name: 'Premium', sub: 'Up to 5 concurrent locations', price: 0.15, features: ['$0.15 per click', '5 concurrent locations', 'Ultra-fast processing', '24/7 dedicated support', 'Full task analytics', 'Advanced scheduling', 'API access', 'Priority queue'] }
+      basic: { name: 'Basic', sub: 'Up to 1 concurrent location', icon: 'ri-map-pin-line', price: 0.10, features: ['$0.10 per click', '1 concurrent location', 'Standard processing speed', 'Email support', 'Basic task analytics'] },
+      standard: { name: 'Standard', sub: 'Up to 3 concurrent locations', icon: 'ri-map-pin-range-line', price: 0.12, features: ['$0.12 per click', '3 concurrent locations', 'Fast processing speed', 'Priority support', 'Advanced task analytics', 'Task scheduling'], popular: true },
+      premium: { name: 'Premium', sub: 'Up to 5 concurrent locations', icon: 'ri-earth-line', price: 0.15, features: ['$0.15 per click', '5 concurrent locations', 'Ultra-fast processing', '24/7 dedicated support', 'Full task analytics', 'Advanced scheduling', 'API access', 'Priority queue'] }
     }
   };
-  let type = 'hosting', period = '3month';
-  const per = { '3month': '/3 mo', '6month': '/6 mo', '12month': '/year' };
-  const grid = document.getElementById('pricingGrid'), banner = document.getElementById('freeBanner');
-  const periodSeg = document.getElementById('periodSeg');
+  const MONTHS = { '3month': 3, '6month': 6, '12month': 12 };
+  const PER = { '3month': 'every 3 months', '6month': 'every 6 months', '12month': 'per year' };
+  let type = 'hosting', period = '3month', budget = 150;
+  const grid = document.getElementById('pricingGrid');
+  const periodSeg = document.getElementById('periodSeg'), calc = document.getElementById('taskCalc');
+  const money = (v, d = 0) => '$' + v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 
   function movePill(seg) {
     const a = seg.querySelector('button.active'), p = seg.querySelector('.seg-pill');
-    if (!a || !p) return;
+    if (!a || !p || !seg.offsetParent) return;
     p.style.width = a.offsetWidth + 'px';
     p.style.transform = 'translateX(' + a.offsetLeft + 'px)';
   }
-  const card = (p, amount, unit, cta) => `
-    <div class="card card-hover price-card ${p.popular ? 'popular' : ''}">
+  function hostingCard(k) {
+    const p = DATA.hosting[k], total = p.price[period], m = MONTHS[period];
+    const full = DATA.hosting[k].price['3month'] * (m / 3), saved = full - total;
+    return `<div class="card card-hover price-card ${p.popular ? 'popular' : ''}">
       ${p.popular ? '<div class="badge-pop">Most Popular</div>' : ''}
-      <h3>${p.name}</h3><div class="sub">${p.sub || ''}</div>
-      <div class="amount"><span class="val" data-val="${amount}">$${amount}</span><span class="per">${unit}</span></div>
+      <div class="pc-head"><span class="pc-icon"><i class="${p.icon}"></i></span><div><h3>${p.name}</h3><div class="sub">${p.sub}</div></div></div>
+      <div class="amount"><span class="val" data-val="${total}">${money(total)}</span><span class="per">${total ? PER[period] : 'forever'}</span></div>
+      <div class="pc-meta">${total ? `<span>${money(total / m, 2)}/month</span>${saved > 0 ? `<span class="pc-save">You save ${money(saved)}</span>` : ''}` : '<span>No credit card required</span>'}</div>
       <ul>${p.features.map(f => `<li><i class="ri-checkbox-circle-fill"></i><span>${f}</span></li>`).join('')}</ul>
-      <a href="/connect.html" class="btn ${p.popular ? 'btn-primary' : 'btn-ghost'}">${cta} <i class="ri-arrow-right-line"></i></a>
+      <a href="/connect.html" class="btn ${p.popular ? 'btn-primary' : 'btn-ghost'}">${total ? 'Upgrade Now' : 'Get Started Free'} <i class="ri-arrow-right-line"></i></a>
     </div>`;
-
+  }
+  function taskCard(k) {
+    const p = DATA.task[k];
+    return `<div class="card card-hover price-card ${p.popular ? 'popular' : ''}">
+      ${p.popular ? '<div class="badge-pop">Most Popular</div>' : ''}
+      <div class="pc-head"><span class="pc-icon"><i class="${p.icon}"></i></span><div><h3>${p.name}</h3><div class="sub">${p.sub}</div></div></div>
+      <div class="amount"><span class="val" data-val="${p.price}">${money(p.price, 2)}</span><span class="per">per real click</span></div>
+      <div class="pc-meta"><span class="pc-clicks" data-price="${p.price}">≈ ${Math.floor(budget / p.price).toLocaleString('en-US')} visits for ${money(budget)}</span></div>
+      <ul>${p.features.map(f => `<li><i class="ri-checkbox-circle-fill"></i><span>${f}</span></li>`).join('')}</ul>
+      <a href="/connect.html" class="btn ${p.popular ? 'btn-primary' : 'btn-ghost'}">Get Started <i class="ri-arrow-right-line"></i></a>
+    </div>`;
+  }
   function render(animate) {
-    periodSeg.style.display = type === 'hosting' ? '' : 'none';
-    if (type === 'hosting') {
-      const f = DATA.hosting.free;
-      banner.innerHTML = `<div class="free-banner">
-        <div class="fb-title"><h3>Free forever</h3><span class="price">$0</span></div>
-        <ul>${f.features.map(x => `<li><i class="ri-check-line"></i>${x}</li>`).join('')}</ul>
-        <a href="/connect.html" class="btn btn-primary btn-sm">Get Started Free</a></div>`;
-      grid.innerHTML = ['basic', 'professional', 'enterprise'].map(k => card(DATA.hosting[k], DATA.hosting[k].price[period], per[period], 'Upgrade Now')).join('');
-    } else {
-      banner.innerHTML = '';
-      grid.innerHTML = Object.values(DATA.task).map(p => card(p, p.price.toFixed(2), '/click', 'Get Started')).join('');
-    }
+    const hosting = type === 'hosting';
+    periodSeg.hidden = !hosting; calc.hidden = hosting;
+    grid.classList.toggle('four', hosting);
+    grid.innerHTML = hosting ? Object.keys(DATA.hosting).map(hostingCard).join('') : Object.keys(DATA.task).map(taskCard).join('');
     if (window.gsap && animate) {
-      gsap.from(grid.children, { y: 24, opacity: 0, duration: .55, stagger: .07, ease: 'power3.out' });
+      gsap.from(grid.children, { y: 24, opacity: 0, duration: .55, stagger: .07, ease: 'power3.out', clearProps: 'opacity,transform' });
       grid.querySelectorAll('.val').forEach(el => {
-        const end = parseFloat(el.dataset.val), dec = type === 'task' ? 2 : 0, o = { v: 0 };
-        gsap.to(o, { v: end, duration: .8, ease: 'power2.out', onUpdate: () => { el.textContent = '$' + o.v.toFixed(dec); } });
+        const end = parseFloat(el.dataset.val), dec = hosting ? 0 : 2, o = { v: 0 };
+        gsap.to(o, { v: end, duration: .8, ease: 'power2.out', onUpdate: () => { el.textContent = money(o.v, dec); } });
       });
     }
     const pop = grid.querySelector('.popular');
     if (pop && window.innerWidth <= 980) grid.scrollTo({ left: pop.offsetLeft - (grid.clientWidth - pop.offsetWidth) / 2, behavior: animate ? 'smooth' : 'auto' });
+    requestAnimationFrame(() => document.querySelectorAll('.seg').forEach(movePill));
   }
   document.querySelectorAll('#typeSeg button').forEach(b => b.addEventListener('click', () => {
     document.querySelectorAll('#typeSeg button').forEach(x => x.classList.toggle('active', x === b));
-    type = b.dataset.type; movePill(b.parentElement); render(true); requestAnimationFrame(() => movePill(periodSeg));
+    type = b.dataset.type; render(true);
   }));
   document.querySelectorAll('#periodSeg button').forEach(b => b.addEventListener('click', () => {
     document.querySelectorAll('#periodSeg button').forEach(x => x.classList.toggle('active', x === b));
-    period = b.dataset.period; movePill(periodSeg); render(true);
+    period = b.dataset.period; render(true);
   }));
+  const range = document.getElementById('calcRange');
+  range.addEventListener('input', () => {
+    budget = +range.value;
+    document.getElementById('calcVal').textContent = money(budget);
+    range.style.setProperty('--p', ((budget - 10) / 990 * 100) + '%');
+    grid.querySelectorAll('.pc-clicks').forEach(el => { el.textContent = `≈ ${Math.floor(budget / +el.dataset.price).toLocaleString('en-US')} visits for ${money(budget)}`; });
+  });
+  range.style.setProperty('--p', ((budget - 10) / 990 * 100) + '%');
   render(false);
   const pills = () => document.querySelectorAll('.seg').forEach(movePill);
   window.addEventListener('resize', pills);

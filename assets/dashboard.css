@@ -48,7 +48,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-fon
 .nav-item:hover{background:var(--bg-tertiary);color:var(--text)}
 .nav-item.active{background:var(--glow);color:var(--primary);font-weight:600}
 .nav-item.active::before{content:"";position:absolute;left:-1rem;top:22%;bottom:22%;width:3px;border-radius:0 3px 3px 0;background:var(--primary)}
-.nav-item .nav-new{margin-left:auto;font-size:.6rem;font-weight:800;letter-spacing:.06em;padding:.15rem .4rem;border-radius:99px;background:linear-gradient(135deg,#2563eb,#06b6d4);color:#fff}
 .sidebar-promo{margin-top:auto;padding:1.1rem;border-radius:18px;color:#fff;background:radial-gradient(120% 120% at 0% 0%,#2563eb 0%,#1e3a8a 55%,#0b1222 100%);position:relative;overflow:hidden;text-decoration:none;display:block}
 .sidebar-promo::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:22px 22px;mask-image:radial-gradient(circle at 80% 20%,#000,transparent 70%);-webkit-mask-image:radial-gradient(circle at 80% 20%,#000,transparent 70%)}
 .sidebar-promo b{display:block;font-family:var(--font-display);font-size:1.05rem;margin:.5rem 0 .25rem}
@@ -252,3 +251,10 @@ tbody tr:hover{background:var(--card-hover)}
   .media-filename{font-size:.82rem}
   .media-card .btn{padding:.45rem .55rem;font-size:.75rem}
 }
+
+/* Images section tabs (Library / URL options) */
+.img-tabs{display:inline-flex;gap:.25rem;padding:.3rem;margin-bottom:1.25rem;border-radius:14px;background:var(--card);border:1px solid var(--border);max-width:100%;overflow-x:auto;scrollbar-width:none}
+.img-tabs button{display:inline-flex;align-items:center;gap:.45rem;padding:.6rem 1rem;border:0;border-radius:11px;background:transparent;color:var(--text-secondary);font:600 .88rem 'Inter',sans-serif;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
+.img-tabs button:hover{color:var(--text)}
+.img-tabs button.active{background:var(--gradient-primary);color:#fff;box-shadow:0 8px 18px -10px var(--glow-strong)}
+@media (max-width:768px){.img-tabs{display:flex;width:100%}.img-tabs button{flex:1;justify-content:center;padding:.6rem .5rem;font-size:.82rem}}

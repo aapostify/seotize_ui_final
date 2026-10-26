@@ -3974,11 +3974,6 @@ th, td {
 <i class="ri-article-line"></i>
 <span>Articles</span>
 </a>
-<a href="#" class="nav-item" data-page="image-docs">
-<i class="ri-code-s-slash-line"></i>
-<span>Image API</span>
-<span class="nav-new">DOCS</span>
-</a>
 </div>
 <div class="nav-section">
 <div class="nav-section-title">Account</div>
@@ -4048,10 +4043,6 @@ th, td {
         <a href="#" class="nav-item" data-page="billing" onclick="closeMobileMenu()">
             <i class="ri-bank-card-line"></i>
             <span>Billing & Plans</span>
-        </a>
-        <a href="#" class="nav-item" data-page="image-docs" onclick="closeMobileMenu()">
-            <i class="ri-code-s-slash-line"></i>
-            <span>Image API Docs</span>
         </a>
     </div>
     <div style="border-top: 1px solid var(--border); margin: 0.5rem 0;"></div>
@@ -4130,10 +4121,6 @@ th, td {
             <i class="ri-device-line"></i>
             <span>Active Sessions</span>
             <span class="badge badge-primary" id="mobileDropdownSessionCount" style="margin-left: auto;"></span>
-        </a>
-        <a href="#" class="nav-item" onclick="closeMobileProfileDropdown(); navigateTo('image-docs')" style="padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem;">
-            <i class="ri-code-s-slash-line"></i>
-            <span>Image API Docs</span>
         </a>
         <a href="/tools" target="_blank" rel="noopener" class="nav-item" style="padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem;">
             <i class="ri-magic-line"></i>
@@ -4907,12 +4894,13 @@ function updateThemeIcon(theme) {
 // Navigation
 function navigateTo(page) {
     // Update desktop nav
+    const navPage = page === 'image-docs' ? 'images' : page;
     document.querySelectorAll('.sidebar .nav-item').forEach(item => item.classList.remove('active'));
-    document.querySelector(`.sidebar .nav-item[data-page="${page}"]`)?.classList.add('active');
+    document.querySelector(`.sidebar .nav-item[data-page="${navPage}"]`)?.classList.add('active');
     // Update mobile nav
     document.querySelectorAll('.mobile-nav-item').forEach(item => item.classList.remove('active'));
-    document.querySelector(`.mobile-nav-item[data-page="${page}"]`)?.classList.add('active');
-    const titles = { dashboard: ['Workspace', 'Dashboard'], tasks: ['SEO', 'SEO Tasks'], images: ['Hosting', 'Images'], articles: ['Hosting', 'Articles'], billing: ['Account', 'Billing'], profile: ['Account', 'Profile'], 'image-docs': ['Developers', 'Image API'] };
+    document.querySelector(`.mobile-nav-item[data-page="${navPage}"]`)?.classList.add('active');
+    const titles = { dashboard: ['Workspace', 'Dashboard'], tasks: ['SEO', 'SEO Tasks'], images: ['Hosting', 'Images'], articles: ['Hosting', 'Articles'], billing: ['Account', 'Billing'], profile: ['Account', 'Profile'], 'image-docs': ['Hosting', 'Images'] };
     const pt = document.getElementById('pageTitle');
     if (pt && titles[page]) pt.innerHTML = `<small>${titles[page][0]}</small><b>${titles[page][1]}</b>`;
     window.scrollTo({ top: 0 });
@@ -4960,6 +4948,13 @@ const IMAGE_DOCS = [
         { name: 'anim', desc: 'Keep animation, or freeze an animated GIF on its first frame.', values: ['true', 'false'], ex: 'anim=false', soon: true }
     ] }
 ];
+// Images section tabs: the hosted library and the URL options reference
+function imagesTabs(active) {
+    return `<div class="img-tabs" role="tablist" aria-label="Images">
+        <button type="button" role="tab" class="${active === 'library' ? 'active' : ''}" aria-selected="${active === 'library'}" onclick="navigateTo('images')"><i class="ri-gallery-line"></i> Library</button>
+        <button type="button" role="tab" class="${active === 'docs' ? 'active' : ''}" aria-selected="${active === 'docs'}" onclick="navigateTo('image-docs')"><i class="ri-code-s-slash-line"></i> URL options &amp; docs</button>
+    </div>`;
+}
 const DOCS_DEMO_IMAGE = 'https://image-api.seotize.net/image-cdn/e380574d-86ba-45f4-877f-c8a384ea637c';
 
 function docsCopy(text, btn) {
@@ -4988,6 +4983,7 @@ async function loadImageDocs() {
     const fullEx = `${baseUrl}?width=800&height=600&fit=cover&format=webp&quality=80`;
 
     document.getElementById('content').innerHTML = `
+    ${imagesTabs('docs')}
     <div class="docs">
         <nav class="docs-toc" aria-label="Image API sections">
             <small>On this page</small>
@@ -5258,7 +5254,7 @@ async function loadDashboard(page = 1) {
                 <button class="primary" onclick="showTaskModal()"><i class="ri-add-line"></i> New SEO task</button>
                 <button onclick="showImageUploadModal()"><i class="ri-upload-cloud-2-line"></i> Upload images</button>
                 <button onclick="navigateTo('articles')"><i class="ri-quill-pen-line"></i> Articles</button>
-                <button onclick="navigateTo('image-docs')"><i class="ri-code-s-slash-line"></i> Image API</button>
+                <button onclick="navigateTo('images')"><i class="ri-image-line"></i> Images</button>
             </div>
         </section>
         <div class="stats-grid">
@@ -5708,15 +5704,13 @@ async function loadImages(page = 1) {
         };
         const content = document.getElementById('content');
         content.innerHTML = `
+        ${imagesTabs('library')}
         <div class="mobilearticle2" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <h2 style="font-size: 1.5rem; font-weight: 700;">Image Hosting</h2>
         <div style="display: flex; gap: 1rem; align-items: center;">
         <div style="font-size: 0.875rem; color: var(--text-secondary);">
         ${data.user?.uploaded || 0}/${(data.user?.uploaded || 0) + (data.user?.remaining || 0)} images used
         </div>
-        <button class="btn" onclick="navigateTo('image-docs')">
-        <i class="ri-code-s-slash-line"></i> API Docs
-        </button>
         <button class="btn btn-primary" onclick="showImageUploadModal()">
         <i class="ri-upload-line"></i> Upload Images
         </button>

@@ -7,7 +7,6 @@
 <meta name="description" content="Join SEOTIZE Partners and earn money by completing SEO tasks. Work from anywhere, flexible schedule, instant payouts via USDT.">
 <meta name="keywords" content="earn money online, SEO tasks, work from home, flexible income, USDT payouts">
 <link rel="canonical" href="https://seotize.com/partner/">
-<!--@HEAD:start-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -19,7 +18,6 @@
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#0b1222">
 <link rel="stylesheet" href="/assets/site.css">
-<!--@HEAD:end-->
 <style>
   .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;counter-reset:step}
   .step{position:relative;padding:2rem 1.7rem 1.8rem;overflow:hidden}
@@ -51,8 +49,7 @@
   @media (max-width:980px){.steps,.payouts{grid-template-columns:1fr}.split{grid-template-columns:1fr}.grow{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
-<body data-spy="top,how-it-works,earning,payouts,faq">
-<!--@NAV:partner:start-->
+<body class="theme-green">
 <script>try{localStorage.getItem('theme')==='dark'&&document.body.classList.add('dark')}catch(e){}</script>
 <header class="topnav" id="topnav">
   <div class="nav-inner">
@@ -61,21 +58,20 @@
       SEOTIZE
     </a>
     <nav aria-label="Main"><ul class="nav-links">
-      <li><a href="/" data-key="home">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs.html" data-key="blog">Blog</a></li><li><a href="/partner/" data-key="partner" class="active">Partners</a></li>
+      <li><a href="/" data-key="home">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs.html" data-key="blog">Blog</a></li>
     </ul></nav>
     <div class="nav-actions">
       <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle dark mode"><i id="themeIcon" class="ri-moon-line"></i></button>
-      <a href="/partner/login.html" class="btn btn-primary nav-cta"><span>Partner Login</span><i class="ri-arrow-right-line"></i></a>
+      <a href="/connect.html" class="btn btn-primary nav-cta"><span>Get Started</span><i class="ri-arrow-right-line"></i></a>
     </div>
   </div>
 </header>
-<!--@NAV:end-->
 
 <main>
   <div class="hero-wrap" id="top">
     <section class="hero-slider" id="heroSlider" aria-roledescription="carousel" aria-label="SEOTIZE Partners" tabindex="0">
       <div class="blur-orb" style="background:#10b981;width:440px;height:440px;top:-140px;right:-120px"></div>
-      <div class="blur-orb" style="background:#2563eb;width:360px;height:360px;bottom:-120px;left:-100px"></div>
+      <div class="blur-orb" style="background:#14b8a6;width:360px;height:360px;bottom:-120px;left:-100px"></div>
 
       <a href="/partner/login.html" class="apple-slide" data-slide aria-label="1 of 3">
         <div class="slide-inner">
@@ -231,7 +227,6 @@
   </section>
 </main>
 
-<!--@FOOTER:start-->
 <footer class="footer">
   <div class="container">
     <div class="footer-top">
@@ -269,26 +264,17 @@
 </a>
       </div>
     </div>
-    <div class="footer-wordmark" aria-hidden="true">SEOTIZE</div>
   </div>
 </footer>
-<!--@FOOTER:end-->
 <nav class="mobile-nav" aria-label="Mobile">
   <div class="mobile-items"><span class="mobile-pill"></span>
-    <a href="#top" class="mobile-item active" data-key="top"><i class="ri-home-5-line"></i><span>Home</span></a>
-    <a href="#how-it-works" class="mobile-item" data-key="how-it-works"><i class="ri-route-line"></i><span>How</span></a>
-    <a href="#earning" class="mobile-item" data-key="earning"><i class="ri-money-dollar-circle-line"></i><span>Earning</span></a>
-    <a href="#payouts" class="mobile-item" data-key="payouts"><i class="ri-wallet-3-line"></i><span>Payouts</span></a>
-    <a href="#faq" class="mobile-item" data-key="faq"><i class="ri-question-line"></i><span>FAQ</span></a>
-    <a href="/partner/login.html" class="mobile-item" data-key="login"><i class="ri-login-circle-line"></i><span>Login</span></a>
+    <a href="/" class="mobile-item" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/#features" class="mobile-item" data-key="features"><i class="ri-flashlight-line"></i><span>Features</span></a><a href="/tools" class="mobile-item" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs.html" class="mobile-item" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
   </div>
 </nav>
 <button class="to-top" aria-label="Back to top"><i class="ri-arrow-up-line"></i></button>
-<!--@SCRIPTS:start-->
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <script defer src="/assets/site.js"></script>
-<!--@SCRIPTS:end-->
 <script>
   function toggleFaq(button) {
     const item = button.parentElement, ans = item.querySelector('.faq-answer'), open = !item.classList.contains('open');

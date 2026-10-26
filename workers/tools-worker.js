@@ -335,7 +335,7 @@ $('go').onclick=()=>{if(busy)return;$('errm').style.display='none';
 `
 };
 
-// ---------- Shared layout (identical to seotize.net — generated from assets/partials.py) ----------
+// ---------- Shared layout (same header, footer and mobile nav as seotize.net) ----------
 
 const NAV = `<header class="topnav" id="topnav">
   <div class="nav-inner">
@@ -344,7 +344,7 @@ const NAV = `<header class="topnav" id="topnav">
       SEOTIZE
     </a>
     <nav aria-label="Main"><ul class="nav-links">
-      <li><a href="/" data-key="home">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools" class="active">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs.html" data-key="blog">Blog</a></li><li><a href="/partner/" data-key="partner">Partners</a></li>
+      <li><a href="/" data-key="home">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools" class="active">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs.html" data-key="blog">Blog</a></li>
     </ul></nav>
     <div class="nav-actions">
       <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle dark mode"><i id="themeIcon" class="ri-moon-line"></i></button>
@@ -397,7 +397,6 @@ const FOOTER = `<footer class="footer">
 </a>
       </div>
     </div>
-    <div class="footer-wordmark" aria-hidden="true">SEOTIZE</div>
   </div>
 </footer>`;
 

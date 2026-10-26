@@ -41,8 +41,7 @@
       }
     }
     </script>
-    <!--@HEAD:start-->
-<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap">
@@ -53,7 +52,6 @@
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#0b1222">
 <link rel="stylesheet" href="/assets/site.css">
-<!--@HEAD:end-->
 <style>
   .blog-hero{padding-bottom:2.5rem}
   .search-wrap{position:relative;max-width:620px;margin:2rem auto 0}
@@ -111,7 +109,6 @@
 </style>
 </head>
 <body>
-<!--@NAV:blog:start-->
 <script>try{localStorage.getItem('theme')==='dark'&&document.body.classList.add('dark')}catch(e){}</script>
 <header class="topnav" id="topnav">
   <div class="nav-inner">
@@ -120,7 +117,7 @@
       SEOTIZE
     </a>
     <nav aria-label="Main"><ul class="nav-links">
-      <li><a href="/" data-key="home">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs.html" data-key="blog" class="active">Blog</a></li><li><a href="/partner/" data-key="partner">Partners</a></li>
+      <li><a href="/" data-key="home">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs.html" data-key="blog" class="active">Blog</a></li>
     </ul></nav>
     <div class="nav-actions">
       <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle dark mode"><i id="themeIcon" class="ri-moon-line"></i></button>
@@ -128,7 +125,6 @@
     </div>
   </div>
 </header>
-<!--@NAV:end-->
 
 <section class="page-hero blog-hero">
   <div class="grid-bg"></div>
@@ -174,7 +170,6 @@
 
 <div class="loading-spinner" id="loadingSpinner"><div class="spinner"></div></div>
 
-<!--@FOOTER:start-->
 <footer class="footer">
   <div class="container">
     <div class="footer-top">
@@ -212,23 +207,17 @@
 </a>
       </div>
     </div>
-    <div class="footer-wordmark" aria-hidden="true">SEOTIZE</div>
   </div>
 </footer>
-<!--@FOOTER:end-->
-<!--@MNAV:blog:start-->
 <nav class="mobile-nav" aria-label="Mobile">
   <div class="mobile-items"><span class="mobile-pill"></span>
     <a href="/" class="mobile-item" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/#features" class="mobile-item" data-key="features"><i class="ri-flashlight-line"></i><span>Features</span></a><a href="/tools" class="mobile-item" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs.html" class="mobile-item active" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
   </div>
 </nav>
 <button class="to-top" aria-label="Back to top"><i class="ri-arrow-up-line"></i></button>
-<!--@MNAV:end-->
-<!--@SCRIPTS:start-->
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <script defer src="/assets/site.js"></script>
-<!--@SCRIPTS:end-->
 <script>
 (function () {
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -246,6 +235,7 @@
       { _id: 'p8', title: 'Content Marketing Strategies', image_url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop' },
       { _id: 'p9', title: 'Link Building Techniques', image_url: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=400&h=300&fit=crop' }
   ];
+  placeholders.forEach(p => { p.subject = p.subject || p.title; p.creation_date = p.creation_date || new Date().toUTCString(); });
 
   function getKeywords(subjects) {
       // Common/filler words to exclude
