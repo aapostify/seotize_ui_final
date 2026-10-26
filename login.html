@@ -1059,7 +1059,12 @@
         document.getElementById('loginForm').addEventListener('submit', login);
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (getCookie('session_token')) { window.location.href = '/dashboard'; return; }
+            if (new URLSearchParams(location.search).has('expired')) {
+                // The dashboard rejected this session: drop any leftover cookie instead of bouncing back (redirect loop)
+                ['', '; Domain=.seotize.net', '; Domain=' + location.hostname].forEach(d => { document.cookie = 'session_token=; path=/' + d + '; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax; Secure'; });
+                history.replaceState(null, '', location.pathname);
+                setTimeout(() => toast('Your session expired. Please sign in again.', 'error'), 300);
+            } else if (getCookie('session_token')) { window.location.href = '/dashboard'; return; }
             loadTheme();
             buildTitle();
             if (window.innerWidth > 768) { initShowcase(); }
