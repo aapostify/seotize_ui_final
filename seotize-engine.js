@@ -8,7 +8,7 @@
         },
         CDN: {
             CRYPTO: 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js',
-            TURNSTILE: 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback',
+            TURNSTILE: 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onloadTurnstileCallback',
             SWEETALERT: 'https://cdn.jsdelivr.net/npm/sweetalert2@11',
             GSAP: 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js'
         },
@@ -271,84 +271,123 @@
         domCache.body.appendChild(state.captchaContainer);
     }
 
+    function waitForTurnstile() {
+        return new Promise((resolve, reject) => {
+            if (typeof turnstile !== 'undefined') return resolve();
+            const started = Date.now();
+            const check = () => {
+                if (typeof turnstile !== 'undefined') return resolve();
+                if (Date.now() - started > CONFIG.TIMING.TURNSTILE_READY_TIMEOUT) return reject(new Error('Verification is still loading. Please try again.'));
+                setTimeout(check, 100);
+            };
+            check();
+        });
+    }
+
     function getTurnstileToken() {
         return new Promise((resolve, reject) => {
             debugLog('Requesting captcha verification', 'info');
-            
-            // Create fresh widget container
+
+            // The promise must settle exactly once, and only this captcha's own
+            // timer may close this captcha's modal. Previously a stale 60s timer
+            // could close a *later* modal (e.g. the next captcha), leaving the
+            // engine stuck in "processing" until the page was reloaded.
             const widgetId = 'seotize-turnstile-widget-' + Date.now();
-            
+            let settled = false;
+            let renderedId = null;
+            let timeoutId = null;
+
+            const cleanup = () => {
+                clearTimeout(timeoutId);
+                if (renderedId !== null && typeof turnstile !== 'undefined') {
+                    try { turnstile.remove(renderedId); } catch (e) {}
+                }
+                renderedId = null;
+            };
+            const finish = (err, token) => {
+                if (settled) return;
+                settled = true;
+                cleanup();
+                if (Swal.isVisible() && document.getElementById(widgetId)) Swal.close();
+                err ? reject(err) : resolve(token);
+            };
+
             Swal.fire({
                 html: `
                     <div class="seotize-captcha-modal">
                         <div class="seotize-captcha-icon">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"></path>
+                                <polyline points="8.5 12 11 14.5 15.5 10"></polyline>
                             </svg>
                         </div>
-                        <h2 class="seotize-captcha-title">Security Verification</h2>
-                        <p class="seotize-captcha-text">Please complete the verification below</p>
+                        <h2 class="seotize-captcha-title">Quick security check</h2>
+                        <p class="seotize-captcha-text">Confirm you're human to collect this diamond</p>
                         <div class="seotize-captcha-widget">
-                            <div id="${widgetId}"></div>
+                            <div id="${widgetId}" class="seotize-captcha-slot"><div class="seotize-status-spinner seotize-spinner-sm"></div></div>
                         </div>
                     </div>
                 `,
                 allowOutsideClick: false,
+                allowEscapeKey: false,
                 showConfirmButton: false,
-                backdrop: 'rgba(0, 0, 0, 0.75)',
+                backdrop: 'rgba(2, 6, 23, 0.72)',
                 customClass: {
-                    popup: 'seotize-modal-popup'
+                    popup: 'seotize-modal-popup',
+                    htmlContainer: 'seotize-modal-html'
+                },
+                willClose: () => {
+                    // Closed by anything other than our own callbacks: settle so the engine recovers.
+                    if (!settled) {
+                        settled = true;
+                        cleanup();
+                        reject(new Error('Verification was closed. Tap the diamond to try again.'));
+                    }
                 },
                 didOpen: () => {
-                    const widget = document.getElementById(widgetId);
-                    
-                    // Small delay for mobile rendering
-                    setTimeout(() => {
-                        if (typeof turnstile !== 'undefined') {
-                            debugLog('Rendering Turnstile widget', 'info');
-                            try {
-                                turnstile.render(widget, {
-                                    sitekey: state.systemId,
-                                    theme: 'light',
-                                    size: 'normal',
-                                    callback: (token) => {
-                                        debugLog('✓ Verification successful', 'success');
-                                        Swal.close();
-                                        resolve(token);
-                                    },
-                                    'error-callback': () => {
-                                        debugLog('✗ Verification error', 'error');
-                                        Swal.close();
-                                        reject(new Error('Verification failed'));
-                                    },
-                                    'timeout-callback': () => {
-                                        debugLog('✗ Verification timeout', 'error');
-                                        Swal.close();
-                                        reject(new Error('Verification timeout'));
-                                    }
-                                });
-                            } catch (err) {
-                                debugLog('✗ Render error: ' + err.message, 'error');
-                                Swal.close();
-                                reject(err);
-                            }
-                        } else {
-                            debugLog('✗ Turnstile not available', 'error');
-                            Swal.close();
-                            reject(new Error('Turnstile not loaded'));
+                    waitForTurnstile().then(() => {
+                        if (settled) return;
+                        const widget = document.getElementById(widgetId);
+                        if (!widget) return finish(new Error('Verification could not start'));
+                        widget.innerHTML = '';
+                        // The normal widget is 300px wide; use the compact one when the slot is narrower
+                        // so it never overflows the popup and always stays centred.
+                        const size = widget.parentElement.clientWidth < 304 ? 'compact' : 'normal';
+                        debugLog('Rendering Turnstile widget (' + size + ')', 'info');
+                        try {
+                            renderedId = turnstile.render(widget, {
+                                sitekey: state.systemId,
+                                theme: 'light',
+                                size: size,
+                                callback: (token) => {
+                                    debugLog('✓ Verification successful', 'success');
+                                    finish(null, token);
+                                },
+                                'error-callback': () => {
+                                    debugLog('✗ Verification error', 'error');
+                                    finish(new Error('Verification failed. Please try again.'));
+                                },
+                                'expired-callback': () => {
+                                    debugLog('Verification expired, refreshing', 'warning');
+                                    try { turnstile.reset(renderedId); } catch (e) {}
+                                },
+                                'timeout-callback': () => {
+                                    debugLog('✗ Verification timeout', 'error');
+                                    finish(new Error('Verification timed out. Please try again.'));
+                                }
+                            });
+                        } catch (err) {
+                            debugLog('✗ Render error: ' + err.message, 'error');
+                            finish(err);
                         }
-                    }, 100);
+                    }).catch(err => {
+                        debugLog('✗ Turnstile not available', 'error');
+                        finish(err);
+                    });
                 }
             });
 
-            // Timeout fallback
-            setTimeout(() => {
-                if (Swal.isVisible()) {
-                    Swal.close();
-                    reject(new Error('Verification timeout'));
-                }
-            }, 60000);
+            timeoutId = setTimeout(() => finish(new Error('Verification timed out. Please try again.')), 60000);
         });
     }
 
@@ -495,7 +534,7 @@
                 ease: "back.out(1.7)"
             });
 
-            gsap.to(coin, {
+            coin._pulse = gsap.to(coin, {
                 scale: 1.1,
                 repeat: -1,
                 yoyo: true,
@@ -563,42 +602,41 @@
             const isVisible = rect.top >= 0 && rect.bottom <= viewportHeight && 
                             rect.left >= 0 && rect.right <= viewportWidth;
 
-            if (typeof gsap !== 'undefined') {
+            const mode = isVisible ? 'on' : rect.bottom < 0 ? 'up' : rect.top > viewportHeight ? 'down' : rect.right < 0 ? 'left' : 'right';
+            const changed = arrow._mode !== mode;
+            arrow._mode = mode;
+            if (typeof gsap !== 'undefined' && changed) {
                 gsap.killTweensOf(arrow);
+                gsap.set(arrow, { x: 0, y: 0 });
             }
+            const bob = (vars) => { if (changed && typeof gsap !== 'undefined') gsap.to(arrow, Object.assign({ repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 }, vars)); };
 
             if (isVisible) {
                 arrow.style.top = (rect.top - CONFIG.ARROW.OFFSET) + 'px';
                 arrow.style.left = (targetX - arrowWidth / 2) + 'px';
                 arrow.innerHTML = '👇';
-                gsap.to(arrow, {
-                    y: 10,
-                    repeat: -1,
-                    yoyo: true,
-                    ease: "sine.inOut",
-                    duration: 0.6
-                });
+                bob({ y: 10 });
             } else {
                 if (rect.bottom < 0) {
                     arrow.style.top = '20px';
                     arrow.style.left = (viewportWidth / 2 - arrowWidth / 2) + 'px';
                     arrow.innerHTML = '👆';
-                    gsap.to(arrow, { y: -10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
+                    bob({ y: -10 });
                 } else if (rect.top > viewportHeight) {
                     arrow.style.top = (viewportHeight - arrowHeight - 20) + 'px';
                     arrow.style.left = (viewportWidth / 2 - arrowWidth / 2) + 'px';
                     arrow.innerHTML = '👇';
-                    gsap.to(arrow, { y: 10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
+                    bob({ y: 10 });
                 } else if (rect.right < 0) {
                     arrow.style.top = (viewportHeight / 2 - arrowHeight / 2) + 'px';
                     arrow.style.left = '20px';
                     arrow.innerHTML = '👈';
-                    gsap.to(arrow, { x: -10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
+                    bob({ x: -10 });
                 } else if (rect.left > viewportWidth) {
                     arrow.style.top = (viewportHeight / 2 - arrowHeight / 2) + 'px';
                     arrow.style.left = (viewportWidth - arrowWidth - 20) + 'px';
                     arrow.innerHTML = '👉';
-                    gsap.to(arrow, { x: 10, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 0.6 });
+                    bob({ x: 10 });
                 }
             }
         };
@@ -635,6 +673,7 @@
         try {
             // Animate coin collection
             if (typeof gsap !== 'undefined') {
+                gsap.killTweensOf(clickedCoin);
                 gsap.to(clickedCoin, {
                     scale: 1.5,
                     opacity: 0,
@@ -791,7 +830,7 @@
                             </svg>
                         </div>
                         <h2 class="seotize-error-title">Error</h2>
-                        <p class="seotize-error-text">${error.message || 'Something went wrong. Please try again.'}</p>
+                        <p class="seotize-error-text">${String(error.message || 'Something went wrong. Please try again.').replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]))}</p>
                         <button class="seotize-error-button" onclick="Swal.close()">Try Again</button>
                     </div>
                 `,
@@ -802,6 +841,20 @@
                     popup: 'seotize-modal-popup'
                 }
             });
+
+            // Bring the diamond (faded out by the collect animation) and its arrow back,
+            // so the visitor can simply tap it again instead of reloading the page.
+            if (clickedCoin && clickedCoin.parentNode) {
+                if (typeof gsap !== 'undefined') {
+                    gsap.killTweensOf(clickedCoin);
+                    gsap.fromTo(clickedCoin, { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.7)" });
+                    clickedCoin._pulse = gsap.to(clickedCoin, { scale: 1.1, repeat: -1, yoyo: true, ease: "sine.inOut", duration: 1.5, delay: 0.45 });
+                } else {
+                    clickedCoin.style.opacity = '1';
+                    clickedCoin.style.transform = 'none';
+                }
+                createArrowToCoin(clickedCoin);
+            }
 
             state.isProcessing = false;
             coinElements.forEach(el => el.style.pointerEvents = 'auto');
@@ -838,38 +891,61 @@
             /* Modal Base */
             .seotize-modal-popup {
                 padding: 0 !important;
-                background: white !important;
-                border-radius: 12px !important;
-                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-                max-width: 90vw !important;
+                background: #ffffff !important;
+                border-radius: 22px !important;
+                box-shadow: 0 30px 70px -20px rgba(2, 6, 23, 0.45), 0 0 0 1px rgba(15, 23, 42, 0.06) !important;
+                max-width: 92vw !important;
                 width: 400px !important;
+                overflow: hidden !important;
+                font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif !important;
+            }
+            .seotize-modal-popup::before {
+                content: "";
+                display: block;
+                height: 4px;
+                background: linear-gradient(90deg, #2563eb, #06b6d4);
+            }
+            /* SweetAlert's default html-container margins made the 300px widget overflow on phones */
+            .seotize-modal-popup .swal2-html-container,
+            .seotize-modal-html {
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                text-align: center !important;
             }
 
             /* Captcha Modal */
             .seotize-captcha-modal {
-                padding: 32px 24px;
+                padding: 28px 20px 26px;
                 text-align: center;
             }
 
             .seotize-captcha-icon {
-                width: 48px;
-                height: 48px;
-                margin: 0 auto 16px;
-                color: #3b82f6;
+                width: 60px;
+                height: 60px;
+                margin: 0 auto 14px;
+                border-radius: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #ffffff;
+                background: linear-gradient(135deg, #2563eb, #1e40af);
+                box-shadow: 0 14px 28px -12px rgba(37, 99, 235, 0.6);
             }
 
             .seotize-captcha-title {
                 font-size: 20px;
-                font-weight: 600;
-                color: #111827;
-                margin: 0 0 8px 0;
+                font-weight: 700;
+                color: #0f172a;
+                margin: 0 0 6px 0;
                 line-height: 1.3;
+                letter-spacing: -0.01em;
             }
 
             .seotize-captcha-text {
                 font-size: 14px;
-                color: #6b7280;
-                margin: 0 0 24px 0;
+                color: #64748b;
+                margin: 0 0 20px 0;
                 line-height: 1.5;
             }
 
@@ -877,7 +953,29 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                width: 100%;
+                min-height: 72px;
+            }
+
+            .seotize-captcha-slot {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 0 auto;
                 min-height: 65px;
+                max-width: 100%;
+            }
+
+            .seotize-captcha-slot > div,
+            .seotize-captcha-slot iframe {
+                margin: 0 auto !important;
+                max-width: 100%;
+            }
+
+            .seotize-spinner-sm {
+                width: 28px !important;
+                height: 28px !important;
+                margin: 0 !important;
             }
 
             /* Status Modal (Verifying & Verified) */
@@ -891,7 +989,7 @@
                 height: 48px;
                 margin: 0 auto 16px;
                 border: 3px solid #e5e7eb;
-                border-top-color: #3b82f6;
+                border-top-color: #2563eb;
                 border-radius: 50%;
                 animation: seotize-spin 0.8s linear infinite;
             }
@@ -993,7 +1091,7 @@
 
             .seotize-progress-bar-fill {
                 height: 100%;
-                background: #10b981;
+                background: linear-gradient(90deg, #2563eb, #06b6d4);
                 border-radius: 3px;
                 transition: width 0.6s ease;
             }
@@ -1062,11 +1160,12 @@
             }
 
             .seotize-error-button {
-                background: #3b82f6;
+                background: linear-gradient(135deg, #2563eb, #1e40af);
                 color: white;
                 border: none;
-                padding: 10px 24px;
-                border-radius: 8px;
+                padding: 12px 28px;
+                border-radius: 12px;
+                box-shadow: 0 10px 22px -10px rgba(37, 99, 235, 0.6);
                 font-size: 14px;
                 font-weight: 500;
                 cursor: pointer;
@@ -1107,9 +1206,9 @@
             }
 
             .seotize-welcome-features {
-                background: #f9fafb;
+                background: #f1f5f9;
                 padding: 16px;
-                border-radius: 8px;
+                border-radius: 14px;
                 margin-bottom: 16px;
                 text-align: left;
             }
@@ -1139,37 +1238,19 @@
 
             /* Timer Progress Bar */
             .swal2-timer-progress-bar {
-                background: #e5e7eb !important;
+                background: linear-gradient(90deg, #2563eb, #06b6d4) !important;
                 height: 3px !important;
             }
 
             /* Mobile Optimizations */
             @media (max-width: 480px) {
-                .seotize-modal-popup {
-                    width: 95vw !important;
-                }
-                
                 .seotize-captcha-modal,
                 .seotize-status-modal,
                 .seotize-progress-modal,
                 .seotize-completion-modal,
                 .seotize-error-modal,
                 .seotize-welcome-modal {
-                    padding: 28px 20px;
-                }
-                
-                .seotize-captcha-widget iframe,
-                .seotize-captcha-widget > div {
-                    max-width: 100% !important;
-                    transform: scale(0.95);
-                    transform-origin: center;
-                }
-            }
-
-            @media (max-width: 360px) {
-                .seotize-captcha-widget iframe,
-                .seotize-captcha-widget > div {
-                    transform: scale(0.9);
+                    padding: 26px 16px 22px;
                 }
             }
         `;
@@ -1301,18 +1382,6 @@
         }
     }
 
-    function setupTurnstile() {
-        const div = document.createElement('div');
-        div.className = 'cf-turnstile';
-        div.style.position = 'fixed';
-        div.style.opacity = '0';
-        div.style.pointerEvents = 'none';
-        div.style.left = '-9999px';
-        div.style.top = '-9999px';
-        
-        domCache.body.insertBefore(div, domCache.body.firstChild);
-    }
-
     async function loadDependencies() {
         try {
             debugLog('Loading dependencies...', 'info');
@@ -1372,7 +1441,6 @@
             return;
         }
 
-        setupTurnstile();
         initializeEngine();
     }
 

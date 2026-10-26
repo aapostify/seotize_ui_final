@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In - SEOTIZE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@800&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <link rel="stylesheet" href="/assets/site.css">
     <style>
         * {
             margin: 0;
@@ -60,125 +61,35 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 65px;
-            background: var(--nav-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-        }
+        
 
-        .nav-container {
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        
 
         /* --- LOGO STYLES (Analytics Concept) --- */
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--text);
-            letter-spacing: -0.5px;
-            cursor: pointer;
-            user-select: none;
-        }
 
-        .logo-icon {
-            display: flex;
-            align-items: flex-end;
-            gap: 4px;
-            height: 24px;
-        }
+        
 
-        .logo-bar {
-            width: 6px;
-            background: var(--primary);
-            border-radius: 2px;
-            transform-origin: bottom;
-        }
+        
 
-        .logo-b1 { height: 40%; opacity: 0.6; }
-        .logo-b2 { height: 70%; opacity: 0.8; }
-        .logo-b3 { height: 100%; opacity: 1; }
+        
+        
+        
 
-        .nav-menu {
-            display: flex;
-            align-items: center;
-            gap: 1.75rem;
-            list-style: none;
-        }
+        
 
-        .nav-menu a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-            position: relative;
-        }
+        
 
-        .nav-menu a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--primary);
-            transition: width 0.3s ease;
-        }
+        
 
-        .nav-menu a:hover {
-            color: var(--primary);
-        }
+        
 
-        .nav-menu a:hover::after {
-            width: 100%;
-        }
+        
 
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.875rem;
-        }
+        
 
-        .theme-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-            color: var(--text);
-        }
+        
 
-        .theme-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--card-shadow);
-            border-color: var(--primary);
-        }
+        
 
         .page-wrapper {
             display: flex;
@@ -664,9 +575,7 @@
         .toast.error { background: var(--error); }
         .toast.show { transform: translateX(0); }
 
-        .mobile-nav {
-            display: none;
-        }
+        
 
         @media (max-width: 968px) {
             .hero-section {
@@ -694,14 +603,14 @@
         }
 
         @media (max-width: 768px) {
-            nav { height: 58px; }
+            
 
             .page-wrapper {
                 margin-top: 58px;
                 height: calc(100vh - 58px - 68px);
             }
 
-            .nav-menu { display: none; }
+            
 
             .hero-section { display: none; }
 
@@ -785,60 +694,21 @@
                 margin-top: 0.5rem;
             }
 
-            .nav-container { padding: 0 1rem; }
-            .logo { font-size: 1.25rem; }
-            .theme-btn { width: 38px; height: 38px; font-size: 1.1rem; }
+            
+            
+            
 
-            .mobile-nav {
-                display: block;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                height: 68px;
-                background: var(--nav-bg);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                border-top: 1px solid var(--border);
-                z-index: 100;
-                padding: 0.625rem 0.875rem;
-                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
-            }
+            
 
-            .mobile-items {
-                display: grid;
-                grid-template-columns: repeat(5, 1fr);
-                gap: 0.5rem;
-                max-width: 600px;
-                height: 100%;
-                margin: 0 auto;
-            }
+            
 
-            .mobile-item {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 0.25rem;
-                padding: 0.375rem;
-                color: var(--text-light);
-                text-decoration: none;
-                font-size: 0.75rem;
-                font-weight: 500;
-                border-radius: 8px;
-                transition: all 0.3s ease;
-                border: none;
-                background: transparent;
-                cursor: pointer;
-            }
+            
 
-            .mobile-item:active { transform: scale(0.95); }
-            .mobile-item.active { color: var(--primary); background: var(--primary-glow); }
-            .mobile-item i { font-size: 1.375rem; }
+            
+            
+            
 
-            .mobile-item.mobile-signin {
-                pointer-events: none;
-            }
+            
 
             .toast {
                 top: 68px;
@@ -893,17 +763,10 @@
                 font-size: 0.85rem;
             }
 
-            .mobile-items {
-                grid-template-columns: repeat(5, 1fr);
-                gap: 0.25rem;
-            }
+            
 
-            .mobile-item {
-                font-size: 0.65rem;
-                gap: 0.15rem;
-                padding: 0.25rem;
-            }
-            .mobile-item i { font-size: 1.2rem; }
+            
+            
         }
 
         /* Landscape Mobile Optimization */
@@ -946,37 +809,57 @@
             }
         }
     </style>
+    <style id="seotize-polish">
+        /* 2026 theme polish — aligns auth pages with the redesigned site */
+        body.dark { --bg:#0a0e1a; --bg-secondary:#121827; --border:#232c40; --nav-bg:rgba(13,18,32,.72); --card-shadow:0 30px 60px -30px rgba(0,0,0,.8); }
+        body { font-family:'Inter',system-ui,sans-serif; }
+        .form-header h1 { font-family:'Outfit','Inter',sans-serif; letter-spacing:-.03em; }
+        
+        
+        
+        
+        .form-card { border-radius:26px; box-shadow:0 30px 70px -35px rgba(15,23,42,.35); position:relative; overflow:hidden; }
+        .form-card::before { content:""; position:absolute; inset:0 0 auto 0; height:3px; background:linear-gradient(90deg,var(--primary),#06b6d4); }
+        input, select { border-width:1px !important; border-radius:12px !important; }
+        input:focus, select:focus { box-shadow:0 0 0 4px var(--primary-glow) !important; }
+        button[type="submit"], .btn-primary { border-radius:12px; box-shadow:0 12px 26px -12px var(--primary-glow); }
+        .captcha-wrap { display:flex !important; justify-content:center !important; align-items:center; width:100%; }
+        .cf-turnstile { margin:0 auto; }
+    </style>
+    <style id="seotize-chrome">
+        .auth-scene { width: min(360px, 100%); aspect-ratio: 1; margin: 0 auto 1.25rem; }
+        .auth-scene svg { width: 100%; height: 100%; display: block; overflow: visible; }
+        .hero-image-wrap .auth-scene { width: 100%; height: 100%; margin: 0; position: relative; z-index: 1; }
+        @media (max-height: 760px) { .auth-scene { width: min(280px, 100%); } }
+        .page-wrapper { margin-top: var(--nav-h) !important; height: calc(100dvh - var(--nav-h)) !important; }
+        @media (max-width: 768px) {
+            body { padding-bottom: 0 !important; }
+            .page-wrapper { height: calc(100dvh - var(--nav-h)) !important; }
+            .form-section { height: 100% !important; padding-bottom: calc(var(--mnav-h) + 1.4rem + env(safe-area-inset-bottom)) !important; }
+        }
+    </style>
 </head>
 <body>
-    <nav>
-        <div class="nav-container">
-            <a href="index.html" class="logo" onmouseenter="animLogo()" onclick="animLogo()">
-                <div class="logo-icon">
-                    <div class="logo-bar logo-b1"></div>
-                    <div class="logo-bar logo-b2"></div>
-                    <div class="logo-bar logo-b3"></div>
-                </div>
-                SEOTIZE
-            </a>
-            <ul class="nav-menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="index.html#features">Features</a></li>
-                <li><a href="index.html#pricing">Pricing</a></li>
-                <li><a href="blogs.html">Blog</a></li>
-            </ul>
-            <div class="nav-actions">
-                <button class="theme-btn" onclick="toggleTheme()">
-                    <span id="themeIcon">🌙</span>
-                </button>
-            </div>
-        </div>
-    </nav>
+<script>try{localStorage.getItem('theme')==='dark'&&document.body.classList.add('dark')}catch(e){}</script>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="seo-g" x1="7" y1="22" x2="24" y2="10" gradientUnits="userSpaceOnUse"><stop stop-color="#818cf8"/><stop offset="1" stop-color="#22d3ee"/></linearGradient><linearGradient id="seo-gd" x1="7" y1="22" x2="24" y2="10" gradientUnits="userSpaceOnUse"><stop stop-color="#4f46e5"/><stop offset="1" stop-color="#0891b2"/></linearGradient></defs></svg>
+<header class="topnav" id="topnav">
+  <div class="nav-inner">
+    <a href="/" class="logo" aria-label="Seotize home"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="logo-bg" d="M16 0C28.5 0 32 3.5 32 16S28.5 32 16 32 0 28.5 0 16 3.5 0 16 0z"/><path class="logo-base" d="M7 25.5h18"/><path class="logo-line" d="M7 21.5l5.2-6 4 3.2L24 10"/><path class="logo-flow" d="M7 21.5l5.2-6 4 3.2L24 10"/><path class="logo-head" d="M18.6 10H24v5.4"/></svg><span>Seotize<i class="logo-dot"></i></span></a>
+    <nav aria-label="Main"><ul class="nav-links">
+      <li><a href="/" data-key="home">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs.html" data-key="blog">Blog</a></li>
+    </ul></nav>
+    <div class="nav-actions">
+      <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle dark mode"><i id="themeIcon" class="ri-moon-line"></i></button>
+      <a href="/connect.html" class="btn btn-primary nav-cta"><span>Get Started</span><i class="ri-arrow-right-line"></i></a>
+    </div>
+  </div>
+</header>
 
     <div class="page-wrapper">
         <section class="hero-section">
             <div class="hero-content">
                 <div class="hero-image-wrap">
-                    <img class="hero-image" id="showcaseImage" src="" alt="SEOTIZE Platform">
+                    <div class="auth-scene" data-auth-scene="login" aria-label="Your SEOTIZE dashboard updating with fresh results"></div>
                 </div>
                 <div class="hero-subtitle" id="typeText"></div>
                 <div class="hero-title-slot">
@@ -1033,30 +916,12 @@
             </div>
         </section>
     </div>
-
-    <div class="mobile-nav">
-        <div class="mobile-items">
-            <a href="index.html" class="mobile-item">
-                <i class="ri-home-5-line"></i>
-                <span>Home</span>
-            </a>
-            <a href="index.html#features" class="mobile-item">
-                <i class="ri-flashlight-line"></i>
-                <span>Features</span>
-            </a>
-            <a href="index.html#pricing" class="mobile-item">
-                <i class="ri-price-tag-3-line"></i>
-                <span>Pricing</span>
-            </a>
-            <a href="blogs.html" class="mobile-item">
-                <i class="ri-article-line"></i>
-                <span>Blog</span>
-            </a>
-            <div class="mobile-item active mobile-signin">
-                <i class="ri-login-box-line"></i>
-                <span>Sign In</span>
-            </div>
-        </div>
+<nav class="mobile-nav" aria-label="Mobile">
+  <div class="mobile-items"><span class="mobile-pill"></span>
+    <a href="/" class="mobile-item" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/tools" class="mobile-item" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs.html" class="mobile-item" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item active" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
+  </div>
+</nav>
+<button class="to-top" aria-label="Back to top"><i class="ri-arrow-up-line"></i></button>
     </div>
 
     <div class="toast" id="toast"></div>
@@ -1066,10 +931,7 @@
 
         /* ---------- Logo + Title bar-style animation ---------- */
         function animLogo() {
-            gsap.fromTo(".logo-bar",
-                { scaleY: 0.3 },
-                { scaleY: 1, duration: 0.4, stagger: 0.1, ease: "back.out(1.7)", overwrite: true }
-            );
+            /* logo animates with CSS */
             gsap.fromTo(".hero-title .letter",
                 { scaleY: 0.3, opacity: 0, y: 10 },
                 { scaleY: 1, opacity: 1, y: 0, duration: 0.55, stagger: 0.05, ease: "power3.out", overwrite: true }
@@ -1092,11 +954,11 @@
 
         /* ---------- Showcase data: unique to the sign-in page (returning-user tone) ---------- */
         const showcaseData = [
-            { text: "👋 Welcome back, pick up where you left off", image: "https://image-worker.cranko.cloud/placeholder/380/380?text=Welcome+Back&color=2563eb" },
-            { text: "📊 Your dashboard has fresh insights waiting", image: "https://image-worker.cranko.cloud/placeholder/380/380?text=Dashboard&color=10b981" },
-            { text: "📈 See how far your rankings climbed", image: "https://image-worker.cranko.cloud/placeholder/380/380?text=Rankings&color=f59e0b" },
-            { text: "🔔 Catch up on what changed while you were away", image: "https://image-worker.cranko.cloud/placeholder/380/380?text=Updates&color=8b5cf6" },
-            { text: "🔐 Your SEO command center is ready", image: "https://image-worker.cranko.cloud/placeholder/380/380?text=Sign+In&color=06b6d4" }
+            { text: "👋 Welcome back, pick up where you left off" },
+            { text: "📊 Your dashboard has fresh insights waiting" },
+            { text: "📈 See how far your rankings climbed" },
+            { text: "🔔 Catch up on what changed while you were away" },
+            { text: "🔐 Your SEO command center is ready" }
         ];
 
         let currentIndex = 0;
@@ -1110,14 +972,14 @@
         function toggleTheme() {
             document.body.classList.toggle('dark');
             const isDark = document.body.classList.contains('dark');
-            document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+            document.getElementById('themeIcon').className = isDark ? 'ri-sun-line' : 'ri-moon-line';
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         }
 
         function loadTheme() {
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark');
-                document.getElementById('themeIcon').textContent = '☀️';
+                document.getElementById('themeIcon').className = 'ri-sun-line';
             }
         }
 
@@ -1144,24 +1006,6 @@
         }
 
         function updateShowcase() {
-            const image = document.getElementById('showcaseImage');
-            const current = showcaseData[currentIndex];
-
-            gsap.to(image, {
-                scale: 0.9,
-                opacity: 0.6,
-                duration: 0.3,
-                onComplete: () => {
-                    image.src = current.image;
-                    gsap.to(image, {
-                        scale: 1,
-                        opacity: 1,
-                        duration: 0.4,
-                        ease: "back.out(1.7)"
-                    });
-                }
-            });
-
             setTimeout(type, 300);
         }
 
@@ -1176,19 +1020,13 @@
         }
 
         function initShowcase() {
-            const image = document.getElementById('showcaseImage');
-            image.addEventListener('load', () => image.classList.add('is-loaded'), { once: true });
-            image.src = showcaseData[currentIndex].image;
-
             type();
-
             setInterval(() => {
                 currentIndex = (currentIndex + 1) % showcaseData.length;
                 updateShowcase();
             }, 5000);
-
-            preloadImages(showcaseData.slice(1).map(d => d.image));
         }
+
 
         function validate(inp, iconId) {
             const v = inp.value.trim(), icon = document.getElementById(iconId);
@@ -1228,5 +1066,7 @@
             animLogo();
         });
     </script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script defer src="/assets/site.js"></script>
 </body>
 </html>
