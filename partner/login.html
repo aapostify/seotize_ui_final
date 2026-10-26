@@ -756,7 +756,14 @@ body {
             .page-wrapper { height: calc(100dvh - var(--nav-h)) !important; }
             .form-section { height: 100% !important; padding-bottom: calc(var(--mnav-h) + 1.4rem + env(safe-area-inset-bottom)) !important; }
         }
-    </style>
+    
+/* Icon and title share one row; subtitle sits underneath */
+.login-header { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; column-gap: .85rem; }
+.login-header .login-icon { margin: 0 !important; }
+.login-header .login-title { margin: 0; text-align: left; }
+.login-header .login-subtitle { flex-basis: 100%; margin: .75rem 0 0; padding: 0; text-align: center; }
+@media (max-width: 480px) { .login-header .login-icon { width: 44px; height: 44px; font-size: 1.35rem; } }
+</style>
 </head>
 <body class="theme-green">
 <script data-cfasync="false">try{localStorage.getItem('theme')==='dark'&&document.body.classList.add('dark')}catch(e){}</script>
@@ -873,7 +880,7 @@ body {
     </div>
 <nav class="mobile-nav" aria-label="Partners mobile">
   <div class="mobile-items"><span class="mobile-pill"></span>
-    <a href="/partner/#" class="mobile-item" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/partner/#how-it-works" class="mobile-item" data-key="how-it-works"><i class="ri-information-line"></i><span>How It Works</span></a><a href="/partner/#earning" class="mobile-item" data-key="earning"><i class="ri-money-dollar-circle-line"></i><span>Earning</span></a><a href="/partner/#payouts" class="mobile-item" data-key="payouts"><i class="ri-wallet-3-line"></i><span>Payouts</span></a><a href="/partner/#faq" class="mobile-item" data-key="faq"><i class="ri-question-line"></i><span>FAQ</span></a><a href="/partner/login.html" class="mobile-item active" data-key="login"><i class="ri-login-box-line"></i><span>Login</span></a>
+    <a href="/partner/#" class="mobile-item" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/partner/#how-it-works" class="mobile-item" data-key="how-it-works"><i class="ri-information-line"></i><span>How It Works</span></a><a href="/partner/#payouts" class="mobile-item" data-key="payouts"><i class="ri-wallet-3-line"></i><span>Payouts</span></a><a href="/partner/#faq" class="mobile-item" data-key="faq"><i class="ri-question-line"></i><span>FAQ</span></a><a href="/partner/login.html" class="mobile-item active" data-key="login"><i class="ri-login-box-line"></i><span>Login</span></a>
   </div>
 </nav>
 <button class="to-top" aria-label="Back to top"><i class="ri-arrow-up-line"></i></button>

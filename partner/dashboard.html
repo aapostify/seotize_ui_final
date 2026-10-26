@@ -1449,6 +1449,43 @@ tr:hover { background: var(--card-hover); }
 @keyframes spin { 
     to { transform: rotate(360deg); } 
 }
+
+/* Withdraw form */
+.wd-balance { display: grid; gap: .2rem; padding: 1.1rem 1.25rem; margin-bottom: 1.25rem; border-radius: var(--radius-lg); color: #fff; background: linear-gradient(135deg, #059669, #0d9488); box-shadow: 0 14px 30px -18px rgba(5, 150, 105, .8); }
+.wd-balance span { font-size: .8rem; opacity: .85; }
+.wd-balance b { font-size: 2rem; line-height: 1.15; letter-spacing: -.02em; }
+.wd-balance small { display: flex; align-items: center; gap: .35rem; font-size: .75rem; opacity: .85; }
+.wd-amount { position: relative; }
+.wd-amount span { position: absolute; left: .9rem; top: 50%; transform: translateY(-50%); font-weight: 700; color: var(--text-secondary); pointer-events: none; }
+.wd-amount .form-input { padding-left: 1.9rem; font-size: 1.15rem; font-weight: 600; }
+.wd-quick { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; margin-top: .6rem; }
+.wd-quick button { padding: .55rem 0; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg-tertiary); color: var(--text); font-weight: 600; font-size: .8125rem; cursor: pointer; transition: var(--transition); }
+.wd-quick button:hover, .wd-quick button:active { border-color: var(--primary); color: var(--primary); }
+.wd-hint { display: block; margin-top: .5rem; font-size: .8125rem; color: var(--text-secondary); }
+.wd-address { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .875rem; }
+.wd-summary { display: grid; gap: .5rem; padding: 1rem; margin-bottom: 1.25rem; border-radius: var(--radius); background: var(--bg-tertiary); font-size: .875rem; }
+.wd-summary div { display: flex; justify-content: space-between; gap: 1rem; }
+.wd-summary div span:last-child { font-weight: 600; }
+.wd-fee { color: var(--error); }
+.wd-total { padding-top: .6rem; border-top: 1px solid var(--border); font-weight: 700; }
+.wd-total span:last-child { color: var(--success); font-size: 1.05rem; }
+.wd-actions { display: flex; gap: .75rem; }
+.wd-actions .btn { flex: 1; justify-content: center; margin: 0; }
+.wd-actions .btn-primary { flex: 2; }
+
+@media (max-width: 768px) {
+    /* Modals open as a bottom sheet instead of a full-height white page */
+    .modal-overlay.active { align-items: flex-end; }
+    .modal { width: 100% !important; max-width: 100% !important; height: auto; max-height: 92vh; max-height: 92dvh; border-radius: 22px 22px 0 0; border-bottom: 0; }
+    .modal-header { position: relative; padding: 1.4rem 1.25rem 1rem; }
+    .modal-header::before { content: ""; position: absolute; top: .5rem; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 4px; background: var(--border); }
+    .modal-close { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-tertiary); display: grid; place-items: center; }
+    .modal-body { max-height: calc(92dvh - 70px); padding: 1.25rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); }
+    .wd-balance b { font-size: 1.75rem; }
+    .wd-actions { flex-direction: column-reverse; }
+    .wd-actions .btn { width: 100%; padding: .9rem 1rem; font-size: .95rem; }
+    .form-input { font-size: 16px; } /* stops iOS zooming into the field */
+}
 </style>
 </head>
 <body data-theme="light">
@@ -2518,58 +2555,55 @@ function showWithdrawalModal() {
     const fee = 1;
 
     showModal('Withdraw Funds', `
-        <form id="withdrawForm">
+        <form id="withdrawForm" class="wd">
+            <div class="wd-balance">
+                <span>Available balance</span>
+                <b>$${balance.toFixed(2)}</b>
+                <small><i class="ri-shield-check-line"></i> Paid in USDT on BNB Smart Chain (BEP20)</small>
+            </div>
+
             <div class="form-group">
-                <label class="form-label">Available Balance</label>
-                <input type="text" class="form-input" value="$${balance.toFixed(2)}" readonly>
+                <label class="form-label" for="withdrawAmount">Amount</label>
+                <div class="wd-amount">
+                    <span>$</span>
+                    <input type="number" inputmode="decimal" class="form-input" id="withdrawAmount" name="amount" required min="${minWithdrawal}" max="${balance}" step="0.01" placeholder="0.00">
+                </div>
+                <div class="wd-quick">
+                    ${[['25%', .25], ['50%', .5], ['75%', .75], ['Max', 1]].map(([l, f]) => `<button type="button" data-f="${f}">${l}</button>`).join('')}
+                </div>
+                <small class="wd-hint">Minimum withdrawal: $${minWithdrawal.toFixed(2)}</small>
             </div>
-            
+
             <div class="form-group">
-                <label class="form-label">Withdrawal Amount ($)</label>
-                <input type="number" class="form-input" id="withdrawAmount" name="amount" required min="${minWithdrawal}" max="${balance}" step="0.01" placeholder="Enter amount">
-                <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem; font-size: 0.8125rem;">
-                    Minimum withdrawal: $${minWithdrawal.toFixed(2)}
-                </small>
+                <label class="form-label" for="withdrawAddress">USDT (BEP20) address</label>
+                <input type="text" class="form-input wd-address" id="withdrawAddress" name="address" required placeholder="0x…" autocomplete="off" autocapitalize="off" spellcheck="false">
+                <small class="wd-hint">Make sure this is a valid BEP20 (BSC) address</small>
             </div>
-            
-            <div class="form-group">
-                <label class="form-label">USDT (BEP20) Address</label>
-                <input type="text" class="form-input" name="address" required placeholder="0x...">
-                <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem; font-size: 0.8125rem;">
-                    Make sure this is a valid BEP20 (BSC) address
-                </small>
+
+            <div class="wd-summary">
+                <div><span>Amount</span><span id="summaryAmount">$0.00</span></div>
+                <div><span>Network fee</span><span class="wd-fee">-$${fee.toFixed(2)}</span></div>
+                <div class="wd-total"><span>You receive</span><span id="summaryNet">$0.00</span></div>
             </div>
-            
-            <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius); font-size: 0.875rem; margin-bottom: 1.25rem;">
-                <div style="display:flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                    <span>Amount:</span> 
-                    <span id="summaryAmount" style="font-weight: 600;">$0.00</span>
-                </div>
-                <div style="display:flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                    <span>Network Fee:</span> 
-                    <span style="color: var(--error);">-$${fee.toFixed(2)}</span>
-                </div>
-                <hr style="border: none; border-top: 1px solid var(--border); margin: 0.625rem 0;">
-                <div style="display:flex; justify-content: space-between; font-weight: 700;">
-                    <span>You Receive:</span> 
-                    <span id="summaryNet" style="color: var(--success);">$0.00</span>
-                </div>
-            </div>
-            
-            <div style="display: flex; gap: 0.75rem;">
-                <button type="button" class="btn btn-secondary" onclick="closeModal()" style="flex: 1;">Cancel</button>
-                <button type="submit" class="btn btn-primary" style="flex: 2;">
-                    <i class="ri-send-plane-line"></i> Request Withdrawal
-                </button>
+
+            <div class="wd-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="ri-send-plane-line"></i> Request Withdrawal</button>
             </div>
         </form>
     `);
-    
-    document.getElementById('withdrawAmount').addEventListener('input', (e) => {
-        const amount = parseFloat(e.target.value) || 0;
+
+    const amountInput = document.getElementById('withdrawAmount');
+    const updateSummary = () => {
+        const amount = parseFloat(amountInput.value) || 0;
         document.getElementById('summaryAmount').textContent = `$${amount.toFixed(2)}`;
         document.getElementById('summaryNet').textContent = `$${Math.max(0, amount - fee).toFixed(2)}`;
-    });
+    };
+    amountInput.addEventListener('input', updateSummary);
+    document.querySelectorAll('.wd-quick button').forEach(b => b.addEventListener('click', () => {
+        amountInput.value = (Math.floor(balance * +b.dataset.f * 100) / 100).toFixed(2);
+        updateSummary();
+    }));
 
     document.getElementById('withdrawForm').addEventListener('submit', handleWithdrawal);
 }
