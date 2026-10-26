@@ -147,7 +147,7 @@ function render(url, env, o, status = 200) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap"></noscript>
 <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css"></noscript>
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -158,7 +158,7 @@ function render(url, env, o, status = 200) {
 <link rel="stylesheet" href="/assets/site.css">
 ${t ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=tsInit" async defer></script>' : ''}
 <style>${CSS}</style>
-</head><body>
+</head><body><!--email_off-->
 <script>try{localStorage.getItem('theme')==='dark'&&document.body.classList.add('dark')}catch(e){}</script>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="seo-g" x1="7" y1="22" x2="24" y2="10" gradientUnits="userSpaceOnUse"><stop stop-color="#818cf8"/><stop offset="1" stop-color="#22d3ee"/></linearGradient><linearGradient id="seo-gd" x1="7" y1="22" x2="24" y2="10" gradientUnits="userSpaceOnUse"><stop stop-color="#4f46e5"/><stop offset="1" stop-color="#0891b2"/></linearGradient></defs></svg>
 ${NAV}
@@ -196,7 +196,7 @@ ${FOOTER}${MNAV}
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <script defer src="/assets/site.js"></script>
 <script>${COMMON}${t ? TOOLJS + SCRIPT[t.slug] : ''}</script>
-</body></html>`;
+<!--/email_off--></body></html>`;
   return new Response(html, { status, headers: { 'content-type': 'text/html;charset=utf-8', 'cache-control': 'no-cache' } });
 }
 

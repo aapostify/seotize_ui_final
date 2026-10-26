@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap"></noscript>
 <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css"></noscript>
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -50,7 +50,7 @@
   @media (max-width:980px){.steps,.payouts{grid-template-columns:1fr}.split{grid-template-columns:1fr}.grow{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
-<body class="theme-green" data-spy="home,how-it-works,earning,payouts,faq">
+<body class="theme-green" data-spy="home,how-it-works,earning,payouts,faq"><!--email_off-->
 <script>try{localStorage.getItem('theme')==='dark'&&document.body.classList.add('dark')}catch(e){}</script>
 <header class="topnav partner-nav" id="topnav">
   <div class="nav-inner">
@@ -299,5 +299,5 @@
     ans.style.height = open ? ans.scrollHeight + 'px' : '0px';
   }
 </script>
-</body>
+<!--/email_off--></body>
 </html>

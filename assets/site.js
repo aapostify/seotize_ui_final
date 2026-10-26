@@ -619,8 +619,8 @@
   window.SEOTIZE_buildScene = buildScene;
   window.SEOTIZE_sceneTl = h => sceneTimelines.get(h);
 
-  function initScenes() {
-    $$('[data-scene]').forEach(holder => {
+  function initScenes(only) {
+    (only ? [only] : $$('[data-scene]')).forEach(holder => {
       if (holder.closest('.apple-slide')) return; // slider controls these
       const tl = buildScene(holder);
       if (!tl || reduce) return;
@@ -701,22 +701,19 @@
       if (s.isActive) { if (!paused) prog && prog.resume(); t && !reduce && t.play(); } else { prog && prog.pause(); t && t.pause(); }
     } });
     document.addEventListener('visibilitychange', () => { if (document.hidden) prog && prog.pause(); else if (!paused) prog && prog.resume(); });
-    // Intro
+    // No intro fade: the first slide is the LCP element and must stay painted from the first frame
     slides[0].classList.add('is-active');
-    if (hasGsap && !reduce) {
-      gsap.from(root, { opacity: 0, y: 30, scale: .985, duration: 1.1, ease: 'power3.out' });
-      gsap.from($$('[data-anim]', slides[0]), { opacity: 0, y: 24, duration: .8, stagger: .1, ease: 'power3.out', delay: .35 });
-      gsap.from($('.slide-frame', slides[0]), { opacity: 0, x: 40, duration: 1.1, ease: 'power3.out', delay: .25 });
-      gsap.from($('.slider-ui', root), { opacity: 0, y: 12, duration: .7, delay: .8 });
-    }
     go(0, true);
   }
 
   /* ---------------- Boot ---------------- */
   initHeroSlider();
   initReveals();
+  // Off-screen scenes are built one per idle slot so no single task gets long
   const idle = window.requestIdleCallback || (f => setTimeout(f, 200));
-  idle(() => { initScenes(); initMinis(); if (hasGsap) ScrollTrigger.refresh(); }, { timeout: 1500 });
+  const jobs = [...$$('[data-scene]').map(h => () => initScenes(h)), initMinis, () => hasGsap && ScrollTrigger.refresh()];
+  const next = () => { const job = jobs.shift(); if (job) { job(); idle(next, { timeout: 1500 }); } };
+  idle(next, { timeout: 1500 });
   if (hasGsap) window.addEventListener('load', () => ScrollTrigger.refresh());
 })();
 
