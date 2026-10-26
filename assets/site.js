@@ -512,6 +512,88 @@
     }
   };
 
+  /* =====================================================================
+     TOOL PREVIEWS — tiny looping animations on the free-tool cards.
+     ===================================================================== */
+  const MINIS = {
+    bgremove(svg) {
+      let checker = '';
+      for (let y = 0; y < 9; y++) for (let x = 0; x < 16; x++) if ((x + y) % 2) checker += `<rect x="${x * 20}" y="${y * 20}" width="20" height="20" fill="${C.line}"/>`;
+      svg.innerHTML = `<defs><linearGradient id="mbBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f59e0b"/><stop offset="1" stop-color="#ec4899"/></linearGradient>
+          <linearGradient id="mbSub" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1e40af"/></linearGradient></defs>
+        <rect width="320" height="180" fill="${C.panel}"/>${checker}
+        <g class="bg"><rect width="320" height="180" fill="url(#mbBg)"/><circle cx="60" cy="48" r="22" fill="#fde68a" opacity=".75"/><path d="M0 150 Q80 110 160 140 T320 120 V180 H0z" fill="#7c2d12" opacity=".4"/></g>
+        <g class="sub"><circle cx="160" cy="78" r="26" fill="#fcd9b6"/><path d="M134 72 q26 -36 52 0 q-4 -26 -26 -28 q-22 2 -26 28z" fill="#1f2937"/><path d="M108 180 q4 -70 52 -70 q48 0 52 70z" fill="url(#mbSub)"/></g>
+        <rect class="scan" x="0" y="0" width="320" height="3" fill="${C.a2}"/>
+        <g class="badge" opacity="0"><rect x="226" y="12" width="82" height="24" rx="12" fill="${C.good}"/><text x="267" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">✓ PNG ready</text></g>`;
+      const tl = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 1 });
+      tl.set(q(svg, '.bg'), { opacity: 1 }).set(q(svg, '.scan'), { y: 0, opacity: 1 }).set(q(svg, '.badge'), { opacity: 0, y: -6 })
+        .to(q(svg, '.scan'), { y: 177, duration: 1.4, ease: 'power1.inOut' }, .3)
+        .to(q(svg, '.bg'), { opacity: 0, duration: .8 }, 1.1)
+        .to(q(svg, '.scan'), { opacity: 0, duration: .2 }, 1.7)
+        .to(q(svg, '.badge'), { opacity: 1, y: 0, duration: .4, ease: 'back.out(2)' }, 1.8)
+        .to({}, { duration: 1.6 });
+      return tl;
+    },
+    optimize(svg) {
+      svg.innerHTML = `<defs><linearGradient id="moSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#bae6fd"/></linearGradient></defs>
+        <rect width="320" height="180" fill="${C.panel}"/>
+        <g><rect x="18" y="18" width="128" height="96" rx="10" fill="url(#moSky)"/><circle cx="120" cy="40" r="10" fill="#fde68a"/>
+          <path d="M18 100 L58 64 L86 88 L112 66 L146 96 V114 H18 Z" fill="#0f766e"/></g>
+        <g class="fmt"><rect x="18" y="126" width="62" height="22" rx="11" fill="${C.bad}" fill-opacity=".14"/><text class="fmtt" x="49" y="141" text-anchor="middle" font-size="10" font-weight="700" fill="${C.bad}">JPEG</text></g>
+        <text x="166" y="36" font-size="10" fill="${C.dim}">File size</text>
+        <text class="size" x="166" y="66" font-size="24" font-weight="800" fill="${C.ink}">2.40 MB</text>
+        <rect x="166" y="80" width="136" height="8" rx="4" fill="${C.line}"/><rect class="bar" x="166" y="80" width="136" height="8" rx="4" fill="${C.good}"/>
+        <text class="save" x="166" y="112" font-size="12" font-weight="700" fill="${C.good}" opacity="0">−92% smaller</text>
+        <text x="166" y="140" font-size="10" fill="${C.dim}">Quality</text><rect x="210" y="133" width="92" height="6" rx="3" fill="${C.line}"/>
+        <rect x="210" y="133" width="74" height="6" rx="3" fill="${C.a1}"/><circle cx="284" cy="136" r="6" fill="#fff" stroke="${C.a1}" stroke-width="2.5"/>`;
+      const tl = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 1 });
+      const size = q(svg, '.size');
+      tl.set(q(svg, '.bar'), { scaleX: 1, transformOrigin: '0% 50%' }).set(size, { textContent: '2.40 MB' }).set(q(svg, '.save'), { opacity: 0 })
+        .set(q(svg, '.fmtt'), { textContent: 'JPEG', attr: { fill: 'var(--s-bad)' } }).set(q(svg, '.fmt rect'), { attr: { fill: 'var(--s-bad)' } })
+        .to(q(svg, '.fmt'), { scale: .8, opacity: 0, duration: .2, transformOrigin: '50% 50%' }, .4)
+        .set(q(svg, '.fmtt'), { textContent: 'WEBP', attr: { fill: 'var(--s-good)' } }, .6).set(q(svg, '.fmt rect'), { attr: { fill: 'var(--s-good)' } }, .6)
+        .to(q(svg, '.fmt'), { scale: 1, opacity: 1, duration: .35, ease: 'back.out(2)' }, .6)
+        .to(q(svg, '.bar'), { scaleX: .08, duration: 1.4, ease: 'power3.inOut' }, .6);
+      countTo(tl, size, 2400, 186, .6, 1.4, v => v >= 1000 ? (v / 1000).toFixed(2) + ' MB' : Math.round(v) + ' KB');
+      tl.to(q(svg, '.save'), { opacity: 1, duration: .3 }, 2).to({}, { duration: 1.8 });
+      return tl;
+    },
+    crop(svg) {
+      svg.innerHTML = `<defs><linearGradient id="mcSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a5b4fc"/><stop offset="1" stop-color="#fbcfe8"/></linearGradient></defs>
+        <rect width="320" height="180" fill="url(#mcSky)"/><circle cx="230" cy="54" r="18" fill="#fef3c7"/>
+        <path d="M0 140 L70 90 L120 122 L190 70 L320 136 V180 H0 Z" fill="#6d28d9" opacity=".55"/><path d="M0 180 L90 132 L170 160 L250 126 L320 158 V180 Z" fill="#4c1d95" opacity=".6"/>
+        <path class="mask" fill="#020617" fill-opacity=".5" fill-rule="evenodd" d="M0 0H320V180H0Z M70 0H250V180H70Z"/>
+        <rect class="box" x="70" y="0" width="180" height="180" fill="none" stroke="#fff" stroke-width="2"/>
+        <g class="lbl"><rect x="252" y="12" width="56" height="22" rx="11" fill="#020617" fill-opacity=".65"/><text class="lt" x="280" y="27" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">1:1</text></g>`;
+      const R = [['1:1', 70, 0, 180, 180], ['4:3', 40, 0, 240, 180], ['16:9', 0, 0, 320, 180], ['9:16', 109, 0, 102, 180]];
+      const tl = gsap.timeline({ paused: true, repeat: -1 });
+      R.forEach(([lab, x, y, w, h], i) => {
+        const at = i * 1.3;
+        tl.to(q(svg, '.box'), { attr: { x, y, width: w, height: h }, duration: .7, ease: 'power3.inOut' }, at)
+          .to(q(svg, '.mask'), { attr: { d: `M0 0H320V180H0Z M${x} ${y}H${x + w}V${y + h}H${x}Z` }, duration: .7, ease: 'power3.inOut' }, at)
+          .set(q(svg, '.lt'), { textContent: lab }, at + .35);
+      });
+      tl.to({}, { duration: .6 });
+      return tl;
+    }
+  };
+  function initMinis() {
+    $$('[data-mini]').forEach(holder => {
+      const build = MINIS[holder.dataset.mini];
+      if (!build || holder.__built || !hasGsap) return;
+      holder.__built = true;
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 320 180');
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+      svg.setAttribute('aria-hidden', 'true');
+      holder.appendChild(svg);
+      const tl = build(svg);
+      if (reduce) { tl.progress(.8).pause(); return; }
+      ScrollTrigger.create({ trigger: holder, start: 'top 92%', end: 'bottom 5%', onToggle: st => st.isActive ? tl.play() : tl.pause() });
+    });
+  }
+
   /* Build every [data-scene] frame */
   const sceneTimelines = new Map();
   function buildScene(holder) {
@@ -633,6 +715,7 @@
   /* ---------------- Boot ---------------- */
   initHeroSlider();
   initScenes();
+  initMinis();
   initReveals();
   if (hasGsap) window.addEventListener('load', () => ScrollTrigger.refresh());
 })();

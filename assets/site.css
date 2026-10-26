@@ -134,7 +134,7 @@ button{font:inherit;color:inherit}
 
 /* ---------- Mobile bottom nav ---------- */
 .mobile-nav{display:none;position:fixed;left:.6rem;right:.6rem;bottom:calc(.6rem + env(safe-area-inset-bottom));height:var(--mnav-h);z-index:200;background:var(--nav-bg);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border:1px solid var(--border);border-radius:22px;box-shadow:0 18px 40px -18px rgba(15,23,42,.45)}
-.mobile-items{position:relative;display:grid;grid-template-columns:repeat(6,1fr);height:100%;padding:.4rem;gap:.15rem}
+.mobile-items{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;height:100%;padding:.4rem;gap:.15rem}
 .mobile-item{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.15rem;color:var(--text-light);text-decoration:none;font-size:.64rem;font-weight:600;border-radius:16px;transition:color .25s}
 .mobile-item span{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mobile-item i{font-size:1.28rem;line-height:1;transition:transform .35s var(--ease)}
@@ -493,3 +493,54 @@ body.dark .float-chip small{color:#94a3b8}
 .float-chip.br{right:1.1rem;bottom:1.1rem}
 @media (max-width:520px){.float-chip{font-size:.72rem;padding:.45rem .6rem .45rem .45rem}.float-chip .chip-ico{width:28px;height:28px}.float-chip.tl{top:.7rem;left:.7rem}.float-chip.br{right:.7rem;bottom:.7rem}}
 .partner-nav .logo-v1-icon{width:38px;height:38px;font-size:1.3rem}
+
+/* ---------- Tool cards (v2) with animated previews ---------- */
+.tool-card{padding:0;gap:0;transition:transform .45s var(--ease),box-shadow .45s var(--ease),border-color .3s}
+.tool-card:hover{transform:translateY(-6px);border-color:color-mix(in srgb,var(--primary) 55%,var(--border));box-shadow:var(--shadow-lg)}
+.tool-card::before{z-index:1}
+.tool-preview{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--s-panel);border-bottom:1px solid var(--border)}
+.tool-preview svg{position:absolute;inset:0;width:100%;height:100%;display:block;transition:transform .8s var(--ease)}
+.tool-preview text{font-family:var(--font-body)}
+.tool-card:hover .tool-preview svg{transform:scale(1.04)}
+.tool-preview .tag{position:absolute;top:.8rem;left:.8rem;right:auto;z-index:2;background:rgba(255,255,255,.9);color:var(--primary);box-shadow:0 6px 14px -8px rgba(15,23,42,.4)}
+body.dark .tool-preview .tag{background:rgba(15,23,42,.85)}
+.tool-body{position:relative;z-index:2;display:flex;flex-direction:column;gap:.6rem;padding:1.3rem 1.4rem 1.4rem;flex:1}
+.tool-foot{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:auto;padding-top:.9rem;border-top:1px dashed var(--border)}
+.tool-stat{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:600;color:var(--text-light)}
+.tool-stat i{color:var(--primary);font-size:1rem}
+
+/* ---------- Pricing cards: desktop layout + phone accordion ---------- */
+.pc-head{display:flex;align-items:center;gap:.8rem;width:100%;margin-bottom:1.3rem;padding:0;border:0;background:none;text-align:left;cursor:default;color:inherit;font:inherit}
+.pc-name{display:flex;flex-direction:column;min-width:0;flex:1}
+.pc-title{font-family:var(--font-display);font-size:1.25rem;font-weight:700;color:var(--text);line-height:1.2}
+.pc-name .sub{margin:0;min-height:0;font-size:.84rem;color:var(--text-light)}
+.pc-mprice,.pc-chev{display:none}
+.pc-body{display:grid;grid-template-rows:1fr}
+.pc-body-in{display:flex;flex-direction:column;min-height:0}
+.pc-body-in ul{flex:1}
+.price-card{display:flex;flex-direction:column}
+.price-card .pc-body{flex:1}
+@media (max-width:768px){
+  .pricing-grid,.pricing-grid.four{display:flex;flex-direction:column;gap:.85rem;overflow:visible;padding:.6rem 0 0;grid-auto-flow:unset}
+  .price-card{padding:0;scroll-snap-align:none;border-radius:18px;transition:border-color .3s,box-shadow .3s}
+  .price-card.card-hover:hover{transform:none}
+  .price-card .badge-pop{left:auto;right:1rem;transform:none;top:-11px;font-size:.62rem;padding:.3rem .7rem}
+  .pc-head{margin:0;padding:1rem 1.1rem;cursor:pointer;gap:.75rem}
+  .pc-icon{width:40px;height:40px;font-size:1.1rem;border-radius:12px}
+  .pc-title{font-size:1.08rem}
+  .pc-name .sub{font-size:.76rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pc-mprice{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1;flex-shrink:0}
+  .pc-mprice b{font-family:var(--font-display);font-size:1.3rem;font-weight:800;color:var(--primary)}
+  .pc-mprice small{font-size:.7rem;color:var(--text-light);font-weight:600}
+  .pc-chev{display:grid;place-items:center;width:30px;height:30px;flex-shrink:0;border-radius:10px;background:var(--surface-2);color:var(--text-light);font-size:1.25rem;transition:transform .4s var(--ease),background .3s,color .3s}
+  .price-card.open .pc-chev{transform:rotate(180deg);background:var(--glow);color:var(--primary)}
+  .price-card.open{border-color:color-mix(in srgb,var(--primary) 55%,var(--border));box-shadow:0 18px 40px -26px var(--glow-strong)}
+  .pc-body{grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease)}
+  .price-card.open .pc-body{grid-template-rows:1fr}
+  .pc-body-in{overflow:hidden;padding:0 1.1rem}
+  .price-card.open .pc-body-in{padding-bottom:1.15rem}
+  .pc-body .amount{display:none}
+  .pc-meta{margin:0 0 .9rem;padding:.8rem 0 .8rem;border-top:1px dashed var(--border);border-bottom:1px dashed var(--border)}
+  .price-card ul{margin-bottom:1.1rem;gap:.5rem}
+  .price-card li{font-size:.88rem}
+}

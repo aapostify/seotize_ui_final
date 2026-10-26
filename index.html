@@ -24,9 +24,19 @@
 <link rel="stylesheet" href="/assets/site.css">
 <script defer src="https://seotize.net/seotize-engine.js?id=0x4AAAAAACGBdhanjO8qCW6A"></script>
 <style>
-  .hero-wrap{padding-bottom:1rem}
-  .trust{display:flex;align-items:center;margin-top:1.25rem;padding:1.6rem 0;border-block:1px solid var(--border);background:var(--surface)}
+  /* Hero + trust strip fill exactly one screen: the strip ends at the bottom edge */
+  :root{--trust-h:4.25rem;--trust-gap:.85rem}
+  .hero-wrap{padding-bottom:0}
+  #heroSlider{height:calc(100dvh - var(--nav-h) - 1rem - var(--trust-gap) - var(--trust-h));min-height:560px;max-height:1100px}
+  .trust{display:flex;align-items:center;height:var(--trust-h);margin-top:var(--trust-gap);border-block:1px solid var(--border);background:var(--surface)}
   .trust .marquee{flex:1}
+  .trust .marquee-track{padding:0}
+  @media (max-width:768px){
+    :root{--trust-h:3.6rem;--trust-gap:.7rem}
+    .trust .marquee-item{font-size:.92rem}
+    #heroSlider{height:calc(100svh - var(--nav-h) - 1rem - var(--trust-gap) - var(--trust-h) - var(--mnav-h) - 1.2rem - env(safe-area-inset-bottom));min-height:470px}
+    #heroSlider .slide-frame{max-height:36svh}
+  }
   .features-intro{padding-top:3rem;padding-bottom:1rem}
   .blog-rail:has(.blog-empty){display:block}
   #pricing .section-head{margin-bottom:2rem}
@@ -275,26 +285,29 @@
         <p>Fast, private tools running on our global network &mdash; made for product photos, blog images and page speed.</p>
       </div>
       <div class="tools-grid" data-stagger>
-        <a class="card card-hover tool-card" href="/tools/ai-background-remover">
-          <span class="chip tag">AI</span>
-          <div class="icon-tile"><i class="ri-magic-line"></i></div>
-          <h3>AI Background Remover</h3>
-          <p>Remove the background from any photo with AI and download a clean transparent PNG.</p>
-          <span class="go">Open tool <i class="ri-arrow-right-line"></i></span>
+        <a class="card tool-card" href="/tools/ai-background-remover">
+          <div class="tool-preview" data-mini="bgremove"><span class="chip tag">AI</span></div>
+          <div class="tool-body">
+            <h3>AI Background Remover</h3>
+            <p>Remove the background from any photo with AI and download a clean transparent PNG.</p>
+            <div class="tool-foot"><span class="tool-stat"><i class="ri-timer-flash-line"></i>Ready in seconds</span><span class="go">Open tool <i class="ri-arrow-right-line"></i></span></div>
+          </div>
         </a>
-        <a class="card card-hover tool-card" href="/tools/image-optimizer">
-          <span class="chip tag">Fast</span>
-          <div class="icon-tile" style="background:linear-gradient(135deg,#06b6d4,#0e7490)"><i class="ri-speed-up-line"></i></div>
-          <h3>Image Optimizer</h3>
-          <p>Compress and convert images to WebP, AVIF, JPEG or PNG to make your pages load faster.</p>
-          <span class="go">Open tool <i class="ri-arrow-right-line"></i></span>
+        <a class="card tool-card" href="/tools/image-optimizer">
+          <div class="tool-preview" data-mini="optimize"><span class="chip tag">Fast</span></div>
+          <div class="tool-body">
+            <h3>Image Optimizer</h3>
+            <p>Compress and convert images to WebP, AVIF, JPEG or PNG to make your pages load faster.</p>
+            <div class="tool-foot"><span class="tool-stat"><i class="ri-arrow-down-circle-line"></i>Up to 90% smaller</span><span class="go">Open tool <i class="ri-arrow-right-line"></i></span></div>
+          </div>
         </a>
-        <a class="card card-hover tool-card" href="/tools/image-crop">
-          <span class="chip tag">Free</span>
-          <div class="icon-tile" style="background:linear-gradient(135deg,#10b981,#047857)"><i class="ri-crop-line"></i></div>
-          <h3>Image Crop</h3>
-          <p>Crop images freely or to popular aspect ratios like 1:1, 4:3, 16:9 and 9:16.</p>
-          <span class="go">Open tool <i class="ri-arrow-right-line"></i></span>
+        <a class="card tool-card" href="/tools/image-crop">
+          <div class="tool-preview" data-mini="crop"><span class="chip tag">Free</span></div>
+          <div class="tool-body">
+            <h3>Image Crop</h3>
+            <p>Crop images freely or to popular aspect ratios like 1:1, 4:3, 16:9 and 9:16.</p>
+            <div class="tool-foot"><span class="tool-stat"><i class="ri-aspect-ratio-line"></i>5 aspect ratios</span><span class="go">Open tool <i class="ri-arrow-right-line"></i></span></div>
+          </div>
         </a>
       </div>
     </div>
@@ -444,7 +457,7 @@
 </footer>
 <nav class="mobile-nav" aria-label="Mobile">
   <div class="mobile-items"><span class="mobile-pill"></span>
-    <a href="/" class="mobile-item active" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/#features" class="mobile-item" data-key="features"><i class="ri-flashlight-line"></i><span>Features</span></a><a href="/tools" class="mobile-item" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs.html" class="mobile-item" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
+    <a href="/" class="mobile-item active" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/tools" class="mobile-item" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs.html" class="mobile-item" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
   </div>
 </nav>
 <button class="to-top" aria-label="Back to top"><i class="ri-arrow-up-line"></i></button>
@@ -479,29 +492,50 @@
     p.style.width = a.offsetWidth + 'px';
     p.style.transform = 'translateX(' + a.offsetLeft + 'px)';
   }
+  const SHORT = { '3month': '/3 mo', '6month': '/6 mo', '12month': '/year' };
+  // One card markup for every layout: on desktop the header is a static title row,
+  // on phones it becomes the tap target of an accordion (like the original mobile pricing).
+  function shell(p, headPrice, headPer, body) {
+    const open = p.popular ? ' open' : '';
+    return `<div class="card card-hover price-card${p.popular ? ' popular' : ''}${open}">
+      ${p.popular ? '<div class="badge-pop">Most Popular</div>' : ''}
+      <button type="button" class="pc-head" aria-expanded="${!!p.popular}">
+        <span class="pc-icon"><i class="${p.icon}"></i></span>
+        <span class="pc-name"><span class="pc-title">${p.name}</span><span class="sub">${p.sub}</span></span>
+        <span class="pc-mprice"><b>${headPrice}</b><small>${headPer}</small></span>
+        <i class="ri-arrow-down-s-line pc-chev" aria-hidden="true"></i>
+      </button>
+      <div class="pc-body"><div class="pc-body-in">${body}</div></div>
+    </div>`;
+  }
+  const featureList = p => `<ul>${p.features.map(f => `<li><i class="ri-checkbox-circle-fill"></i><span>${f}</span></li>`).join('')}</ul>`;
   function hostingCard(k) {
     const p = DATA.hosting[k], total = p.price[period], m = MONTHS[period];
     const full = DATA.hosting[k].price['3month'] * (m / 3), saved = full - total;
-    return `<div class="card card-hover price-card ${p.popular ? 'popular' : ''}">
-      ${p.popular ? '<div class="badge-pop">Most Popular</div>' : ''}
-      <div class="pc-head"><span class="pc-icon"><i class="${p.icon}"></i></span><div><h3>${p.name}</h3><div class="sub">${p.sub}</div></div></div>
+    return shell(p, money(total), total ? SHORT[period] : 'forever', `
       <div class="amount"><span class="val" data-val="${total}">${money(total)}</span><span class="per">${total ? PER[period] : 'forever'}</span></div>
       <div class="pc-meta">${total ? `<span>${money(total / m, 2)}/month</span>${saved > 0 ? `<span class="pc-save">You save ${money(saved)}</span>` : ''}` : '<span>No credit card required</span>'}</div>
-      <ul>${p.features.map(f => `<li><i class="ri-checkbox-circle-fill"></i><span>${f}</span></li>`).join('')}</ul>
-      <a href="/connect.html" class="btn ${p.popular ? 'btn-primary' : 'btn-ghost'}">${total ? 'Upgrade Now' : 'Get Started Free'} <i class="ri-arrow-right-line"></i></a>
-    </div>`;
+      ${featureList(p)}
+      <a href="/connect.html" class="btn ${p.popular ? 'btn-primary' : 'btn-ghost'}">${total ? 'Upgrade Now' : 'Get Started Free'} <i class="ri-arrow-right-line"></i></a>`);
   }
   function taskCard(k) {
     const p = DATA.task[k];
-    return `<div class="card card-hover price-card ${p.popular ? 'popular' : ''}">
-      ${p.popular ? '<div class="badge-pop">Most Popular</div>' : ''}
-      <div class="pc-head"><span class="pc-icon"><i class="${p.icon}"></i></span><div><h3>${p.name}</h3><div class="sub">${p.sub}</div></div></div>
+    return shell(p, money(p.price, 2), '/click', `
       <div class="amount"><span class="val" data-val="${p.price}">${money(p.price, 2)}</span><span class="per">per real click</span></div>
       <div class="pc-meta"><span class="pc-clicks" data-price="${p.price}">≈ ${Math.floor(budget / p.price).toLocaleString('en-US')} visits for ${money(budget)}</span></div>
-      <ul>${p.features.map(f => `<li><i class="ri-checkbox-circle-fill"></i><span>${f}</span></li>`).join('')}</ul>
-      <a href="/connect.html" class="btn ${p.popular ? 'btn-primary' : 'btn-ghost'}">Get Started <i class="ri-arrow-right-line"></i></a>
-    </div>`;
+      ${featureList(p)}
+      <a href="/connect.html" class="btn ${p.popular ? 'btn-primary' : 'btn-ghost'}">Get Started <i class="ri-arrow-right-line"></i></a>`);
   }
+  const phone = window.matchMedia('(max-width: 768px)');
+  grid.addEventListener('click', e => {
+    const head = e.target.closest('.pc-head');
+    if (!head || !phone.matches) return;
+    const card = head.parentElement, willOpen = !card.classList.contains('open');
+    grid.querySelectorAll('.price-card.open').forEach(c => { c.classList.remove('open'); c.querySelector('.pc-head').setAttribute('aria-expanded', 'false'); });
+    card.classList.toggle('open', willOpen);
+    head.setAttribute('aria-expanded', String(willOpen));
+    if (willOpen && window.gsap) gsap.from(card.querySelectorAll('.pc-body li'), { opacity: 0, x: -10, stagger: .04, duration: .35, delay: .1, ease: 'power2.out' });
+  });
   function render(animate) {
     const hosting = type === 'hosting';
     periodSeg.hidden = !hosting; calc.hidden = hosting;
@@ -515,7 +549,7 @@
       });
     }
     const pop = grid.querySelector('.popular');
-    if (pop && window.innerWidth <= 980) grid.scrollTo({ left: pop.offsetLeft - (grid.clientWidth - pop.offsetWidth) / 2, behavior: animate ? 'smooth' : 'auto' });
+    if (pop && window.innerWidth <= 980 && !phone.matches) grid.scrollTo({ left: pop.offsetLeft - (grid.clientWidth - pop.offsetWidth) / 2, behavior: animate ? 'smooth' : 'auto' });
     requestAnimationFrame(() => document.querySelectorAll('.seg').forEach(movePill));
   }
   document.querySelectorAll('#typeSeg button').forEach(b => b.addEventListener('click', () => {

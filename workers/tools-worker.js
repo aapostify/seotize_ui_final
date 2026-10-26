@@ -199,7 +199,9 @@ ${FOOTER}${MNAV}
   return new Response(html, { status, headers: { 'content-type': 'text/html;charset=utf-8', 'cache-control': 'no-cache' } });
 }
 
-const card = t => `<a class="card card-hover tool-card" href="/tools/${t.slug}"><span class="chip tag">${t.tag}</span><div class="icon-tile" style="background:${GRADS[t.slug]}"><i class="${t.icon}"></i></div><h3>${t.name}</h3><p>${t.desc}</p><span class="go">Open tool <i class="ri-arrow-right-line"></i></span></a>`;
+const MINI = { 'ai-background-remover': ['bgremove', 'ri-timer-flash-line', 'Ready in seconds'], 'image-optimizer': ['optimize', 'ri-arrow-down-circle-line', 'Up to 90% smaller'], 'image-crop': ['crop', 'ri-aspect-ratio-line', '5 aspect ratios'] };
+
+const card = t => `<a class="card tool-card" href="/tools/${t.slug}"><div class="tool-preview" data-mini="${MINI[t.slug][0]}"><span class="chip tag">${t.tag}</span></div><div class="tool-body"><h3>${t.name}</h3><p>${t.desc}</p><div class="tool-foot"><span class="tool-stat"><i class="${MINI[t.slug][1]}"></i>${MINI[t.slug][2]}</span><span class="go">Open tool <i class="ri-arrow-right-line"></i></span></div></div></a>`;
 
 const DROP = hint => `<label class="drop" id="drop"><input type="file" id="file" accept="image/*" hidden><div class="dicon"><i class="ri-upload-cloud-2-line"></i></div><b>Drop your image here</b><small>or <u>click to browse</u> · ${hint}</small><span class="paste-hint"><i class="ri-clipboard-line"></i>You can also paste an image</span></label>`;
 
@@ -353,7 +355,7 @@ const NAV = `<header class="topnav" id="topnav">
 
 const MNAV = `<nav class="mobile-nav" aria-label="Mobile">
   <div class="mobile-items"><span class="mobile-pill"></span>
-    <a href="/" class="mobile-item" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/#features" class="mobile-item" data-key="features"><i class="ri-flashlight-line"></i><span>Features</span></a><a href="/tools" class="mobile-item active" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs.html" class="mobile-item" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
+    <a href="/" class="mobile-item" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/tools" class="mobile-item active" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs.html" class="mobile-item" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
   </div>
 </nav>
 <button class="to-top" aria-label="Back to top"><i class="ri-arrow-up-line"></i></button>`;
