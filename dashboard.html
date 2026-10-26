@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>SEOTIZE Dashboard</title>
 <!-- Fonts & Icons -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
 <!-- Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -17,10 +19,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
 :root {
-  --primary: #6366f1; --primary-dark: #4f46e5; --primary-light: #818cf8; --secondary: #10b981;
+  --primary: #2563eb; --primary-dark: #1e40af; --primary-light: #3b82f6; --secondary: #10b981;
   --secondary-dark: #059669; --accent: #f59e0b; --error: #ef4444; --warning: #f59e0b;
   --success: #10b981; --info: #3b82f6; --danger: #e63946;
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   --gradient-accent: linear-gradient(135deg, #fa709a 0%, #fee140 100%); --radius-sm: 8px;
   --radius: 12px; --radius-lg: 16px; --radius-xl: 24px;
@@ -126,7 +128,7 @@ body {
   font-size: 0.875rem; transition: var(--transition);
 }
 .search-bar input:focus {
-  outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 .search-bar i {
   position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);
@@ -188,7 +190,7 @@ body {
   justify-content: center; font-size: 1.25rem; flex-shrink: 0;
 }
 .stat-icon.primary {
-  background: rgba(99, 102, 241, 0.1); color: var(--primary);
+  background: rgba(37, 99, 235, 0.1); color: var(--primary);
 }
 .stat-icon.success {
   background: rgba(16, 185, 129, 0.1); color: var(--success);
@@ -250,7 +252,7 @@ body {
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
-  outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 .form-textarea {
   resize: vertical; min-height: 100px;
@@ -392,7 +394,7 @@ tr:hover {
   background: rgba(245, 158, 11, 0.1); color: var(--warning);
 }
 .task-status.completed {
-  background: rgba(99, 102, 241, 0.1); color: var(--primary);
+  background: rgba(37, 99, 235, 0.1); color: var(--primary);
 }
 .task-status.unverified {
   background: rgba(239, 68, 68, 0.1); color: var(--error);
@@ -503,7 +505,7 @@ tr:hover {
   display: inline-block; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;
 }
 .badge-primary {
-  background: rgba(99, 102, 241, 0.1); color: var(--primary);
+  background: rgba(37, 99, 235, 0.1); color: var(--primary);
 }
 .badge-success {
   background: rgba(16, 185, 129, 0.1); color: var(--success);
@@ -589,7 +591,7 @@ to {
   background: var(--success); border-color: var(--success); color: white;
 }
 .progress-step.active .step-indicator {
-  background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 .step-info {
   flex: 1;
@@ -615,7 +617,7 @@ to {
   border-top: 1px solid var(--border);
 }
 .pending-task-alert {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 1rem;
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); border-radius: 1rem;
   padding: 2rem; margin-bottom: 2rem; color: white; display: none;
 }
 .pending-task-alert.show {
@@ -660,7 +662,7 @@ to {
 }
 .priority-option.selected {
   border-color: var(--primary);
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(37, 99, 235, 0.1) 100%);
 }
 .priority-option.selected::before {
   background: var(--primary);
@@ -671,7 +673,7 @@ to {
   letter-spacing: 0.5px; margin-bottom: 0.75rem; align-self: center;
 }
 .priority-option[data-priority="basic"] .priority-badge {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white;
 }
 .priority-option[data-priority="standard"] .priority-badge {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;
@@ -737,7 +739,7 @@ to {
   border-color: var(--primary); transform: translateY(-2px);
 }
 .payment-card.selected {
-  border-color: var(--primary); background: rgba(99, 102, 241, 0.05);
+  border-color: var(--primary); background: rgba(37, 99, 235, 0.05);
 }
 .payment-card.selected::after {
   content: '✓'; position: absolute; top: 1rem; right: 1rem; width: 1.5rem; height: 1.5rem;
@@ -755,7 +757,7 @@ to {
   font-size: 0.875rem; color: var(--text-secondary);
 }
 .payment-type-toggle {
-  background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(99, 102, 241, 0.1) 100%);
+  background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(37, 99, 235, 0.1) 100%);
   border-radius: 1rem; padding: 0.375rem; display: flex; margin-bottom: 2rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); border: 1px solid var(--border);
 }
@@ -768,8 +770,8 @@ to {
   transform: translateY(-1px);
 }
 .payment-type-option.active {
-  background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%); color: white;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); transform: scale(1.02);
+  background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%); color: white;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); transform: scale(1.02);
 }
 .payment-type-option i {
   font-size: 1.125rem;
@@ -824,9 +826,9 @@ to {
   display: flex; align-items: center; gap: 0.85rem; width: 100%;
 }
 .billing-icon {
-  width: 3rem; height: 3rem; border-radius: 0.85rem; background: rgba(99, 102, 241, 0.12);
+  width: 3rem; height: 3rem; border-radius: 0.85rem; background: rgba(37, 99, 235, 0.12);
   color: var(--primary); display: flex; align-items: center; justify-content: center;
-  font-size: 1.35rem; flex-shrink: 0; box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.15);
+  font-size: 1.35rem; flex-shrink: 0; box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.15);
 }
 .billing-option-header {
   display: flex; flex-direction: column; align-items: flex-start; gap: 0.15rem; margin-bottom: 0;
@@ -838,7 +840,7 @@ to {
   font-size: 0.85rem; color: var(--text-secondary);
 }
 .billing-save {
-  display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: inline-block; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   color: white; padding: 0.25rem 0.75rem; border-radius: 0.5rem; font-size: 0.75rem;
   font-weight: 600; margin-left: auto;
 }
@@ -849,11 +851,11 @@ to {
   font-size: 0.85rem; color: var(--text-secondary);
 }
 .billing-option:hover {
-  border-color: var(--primary); transform: translateY(-4px); box-shadow: 0 20px 35px rgba(99, 102, 241, 0.2);
+  border-color: var(--primary); transform: translateY(-4px); box-shadow: 0 20px 35px rgba(37, 99, 235, 0.2);
 }
 .billing-option.selected {
-  border-color: transparent; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  box-shadow: 0 30px 45px rgba(99, 102, 241, 0.35); color: white;
+  border-color: transparent; background: linear-gradient(135deg, #2563eb 0%, #8b5cf6 100%);
+  box-shadow: 0 30px 45px rgba(37, 99, 235, 0.35); color: white;
 }
 .billing-option.selected .billing-icon {
   background: rgba(255, 255, 255, 0.18); color: white; box-shadow: none;
@@ -872,9 +874,9 @@ to {
 }
 .billing-badge {
   position: absolute; top: 1rem; right: 1.25rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white;
   padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600;
-  white-space: nowrap; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.35);
+  white-space: nowrap; box-shadow: 0 5px 15px rgba(37, 99, 235, 0.35);
 }
 .billing-popular {
   position: relative;
@@ -906,12 +908,12 @@ to {
   background: var(--bg-tertiary);
 }
 .btn-primary-gradient {
-  padding: 0.75rem 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0.75rem 2rem; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer;
   transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;
 }
 .btn-primary-gradient:hover {
-  transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
 }
 .btn-primary-gradient:disabled {
   opacity: 0.5; cursor: not-allowed; transform: none;
@@ -953,7 +955,7 @@ to {
   transform: scale(0.95);
 }
 .mobile-nav-item.active {
-  color: var(--primary); background: rgba(99, 102, 241, 0.1);
+  color: var(--primary); background: rgba(37, 99, 235, 0.1);
 }
 .mobile-nav-item i {
   font-size: 1.25rem;
@@ -1138,8 +1140,8 @@ to {
 }
 }
 @keyframes pulseGlow {
-0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); };
-50% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); };
+0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); };
+50% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); };
 }
 .usage-category {
   transition: transform 0.2s ease;
@@ -1155,7 +1157,7 @@ to {
 }
 div#modalBody { padding-bottom: 100px; }
 .swal2-popup.swal2-toast {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 40px rgba(99, 102, 241, 0.08) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 40px rgba(37, 99, 235, 0.08) !important;
   background: linear-gradient(135deg, var(--card) 0%, var(--bg-secondary) 100%) !important;
   border: 1px solid var(--border) !important; border-radius: 1rem !important;
 }
@@ -1169,7 +1171,7 @@ IMAGE DETAILS MODAL - Premium Design
   display: flex; flex-direction: column; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);
 }
 .image-hero-preview {
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.03), rgba(99, 102, 241, 0.05));
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.03), rgba(37, 99, 235, 0.05));
   border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; display: flex;
   align-items: center; justify-content: center; min-height: 220px; position: relative;
 }
@@ -1218,10 +1220,10 @@ IMAGE DETAILS MODAL - Premium Design
   background: var(--card-hover); border-color: var(--primary); color: var(--primary); transform: translateY(-1px);
 }
 .image-action-btn.btn-copy {
-  background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3); color: var(--primary);
+  background: rgba(37, 99, 235, 0.1); border-color: rgba(37, 99, 235, 0.3); color: var(--primary);
 }
 .image-action-btn.btn-copy:hover {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(37, 99, 235, 0.2);
 }
 .image-action-btn.btn-open {
   background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: var(--success);
@@ -1246,7 +1248,7 @@ IMAGE DETAILS MODAL - Premium Design
   padding: 0.85rem 0.5rem; text-align: center; transition: all 0.2s ease;
 }
 .image-stat-card:hover {
-  border-color: rgba(99, 102, 241, 0.3); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border-color: rgba(37, 99, 235, 0.3); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 .image-stat-card .stat-value {
   font-size: 1.4rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.25rem;
@@ -1266,11 +1268,11 @@ IMAGE DETAILS MODAL - Premium Design
   transition: all 0.2s ease; flex: 1;
 }
 .image-modal-tab:hover:not(:disabled) {
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(37, 99, 235, 0.08);
 }
 .image-modal-tab[data-tab="analytics"].active {
-  background: rgba(99, 102, 241, 0.14); border-color: rgba(99, 102, 241, 0.5);
-  color: var(--primary); box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+  background: rgba(37, 99, 235, 0.14); border-color: rgba(37, 99, 235, 0.5);
+  color: var(--primary); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
 }
 .image-modal-tab[data-tab="traffic"].active {
   background: rgba(245, 158, 11, 0.14); border-color: rgba(245, 158, 11, 0.5);
@@ -1334,7 +1336,7 @@ IMAGE DETAILS MODAL - Premium Design
   transition: all 0.15s ease;
 }
 .image-traffic-item:hover {
-  background: var(--card-hover); border-color: rgba(99, 102, 241, 0.25);
+  background: var(--card-hover); border-color: rgba(37, 99, 235, 0.25);
 }
 .image-traffic-item .item-name {
   font-weight: 600; color: var(--text); font-size: 0.85rem;
@@ -1384,13 +1386,13 @@ ARTICLE DETAILS MODAL - Premium Design with Tabs
 }
 .article-modal-url-pill {
   display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.85rem;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08));
-  border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 999px; color: var(--primary);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(139, 92, 246, 0.08));
+  border: 1px solid rgba(37, 99, 235, 0.35); border-radius: 999px; color: var(--primary);
   text-decoration: none; font-weight: 600; font-size: 0.85rem; max-width: 100%; transition: all 0.2s ease;
 }
 .article-modal-url-pill:hover {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(139, 92, 246, 0.12));
-  transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(139, 92, 246, 0.12));
+  transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 .article-modal-url-pill span {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -1439,7 +1441,7 @@ ARTICLE DETAILS MODAL - Premium Design with Tabs
   padding: 0.85rem; text-align: center; transition: all 0.2s ease;
 }
 .article-modal-stat-card:hover {
-  border-color: rgba(99, 102, 241, 0.3); transform: translateY(-1px);
+  border-color: rgba(37, 99, 235, 0.3); transform: translateY(-1px);
 }
 .article-modal-stat-card .stat-value {
   font-size: 1.35rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.25rem;
@@ -1465,8 +1467,8 @@ ARTICLE DETAILS MODAL - Premium Design with Tabs
   cursor: not-allowed; opacity: 0.5; transform: none; box-shadow: none;
 }
 .article-modal-tab[data-tab="analytics"].active {
-  background: rgba(99, 102, 241, 0.14); border-color: rgba(99, 102, 241, 0.65); color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20), 0 14px 40px rgba(99, 102, 241, 0.15);
+  background: rgba(37, 99, 235, 0.14); border-color: rgba(37, 99, 235, 0.65); color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.20), 0 14px 40px rgba(37, 99, 235, 0.15);
 }
 .article-modal-tab[data-tab="images"].active {
   background: rgba(245, 158, 11, 0.14); border-color: rgba(245, 158, 11, 0.65); color: var(--warning);
@@ -1522,7 +1524,7 @@ ARTICLE DETAILS MODAL - Premium Design with Tabs
   display: flex; flex-direction: column; gap: 1rem;
 }
 .article-image-slider {
-  position: relative; background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+  position: relative; background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(139, 92, 246, 0.05));
   border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem;
   min-height: 320px; display: flex; align-items: center; justify-content: center;
 }
@@ -1562,7 +1564,7 @@ ARTICLE DETAILS MODAL - Premium Design with Tabs
   opacity: 1; border-color: var(--text-secondary);
 }
 .article-slider-thumb.active {
-  opacity: 1; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+  opacity: 1; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
 }
 .article-slider-thumb img {
   width: 100%; height: 100%; object-fit: cover;
@@ -1688,8 +1690,8 @@ ARTICLE DETAILS MODAL - Premium Design with Tabs
   min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1 1 auto;
 }
 .task-modal-url-pill:hover {
-  background: rgba(99, 102, 241, 0.10); border-color: rgba(99, 102, 241, 0.55);
-  color: var(--primary); box-shadow: 0 12px 30px rgba(99, 102, 241, 0.12);
+  background: rgba(37, 99, 235, 0.10); border-color: rgba(37, 99, 235, 0.55);
+  color: var(--primary); box-shadow: 0 12px 30px rgba(37, 99, 235, 0.12);
 }
 .task-modal-url-pill i {
   font-size: 1.05em; flex: 0 0 auto; opacity: 0.9;
@@ -1712,8 +1714,8 @@ ARTICLE DETAILS MODAL - Premium Design with Tabs
   cursor: not-allowed; opacity: 0.5; transform: none; box-shadow: none;
 }
 .task-modal-tab[data-tab="analytics"].active {
-  background: rgba(99, 102, 241, 0.14); border-color: rgba(99, 102, 241, 0.65); color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20), 0 14px 40px rgba(99, 102, 241, 0.15);
+  background: rgba(37, 99, 235, 0.14); border-color: rgba(37, 99, 235, 0.65); color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.20), 0 14px 40px rgba(37, 99, 235, 0.15);
 }
 .task-modal-tab[data-tab="details"].active {
   background: rgba(16, 185, 129, 0.14); border-color: rgba(16, 185, 129, 0.55); color: var(--success);
@@ -1885,7 +1887,7 @@ from { opacity: 0; transform: translateY(6px); };
 .task-done-idx {
   display: inline-flex; align-items: center; justify-content: center; padding: 0.22rem 0.5rem;
   border-radius: 8px; border: 1px solid rgba(148,163,184,0.18);
-  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.08));
+  background: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(139,92,246,0.08));
   color: var(--primary); font-weight: 800; font-size: 0.75rem; white-space: nowrap; min-width: 28px;
 }
 .task-done-time {
@@ -2000,7 +2002,7 @@ from { opacity: 0; transform: translateY(6px); };
 }
 .task-budget-split .split-item.used .dot { background: var(--warning); box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.18); }
 .task-budget-split .split-item.avail .dot { background: var(--success); box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.16); }
-.task-budget-split .split-item.total .dot { background: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.14); }
+.task-budget-split .split-item.total .dot { background: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14); }
 .task-budget-bar {
   width: 100%; height: 10px; border-radius: 999px; overflow: hidden;
   background: rgba(148, 163, 184, 0.18); display: flex;
@@ -2009,7 +2011,7 @@ from { opacity: 0; transform: translateY(6px); };
   height: 100%;
 }
 .task-budget-bar .seg.used {
-  background: rgba(99, 102, 241, 0.95);
+  background: rgba(37, 99, 235, 0.95);
 }
 .task-budget-bar .seg.avail {
   background: rgba(16, 185, 129, 0.95);
@@ -2037,8 +2039,8 @@ from { opacity: 0; transform: translateY(6px); };
   color: var(--text); background: rgba(148, 163, 184, 0.1);
 }
 .analytics-switch-btn.active {
-  background: var(--bg); color: var(--primary); border-color: rgba(99, 102, 241, 0.4);
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+  background: var(--bg); color: var(--primary); border-color: rgba(37, 99, 235, 0.4);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
 }
 .analytics-switch-btn.active[data-view="map"] {
   color: var(--info); border-color: rgba(14, 165, 233, 0.4); box-shadow: 0 2px 8px rgba(14, 165, 233, 0.15);
@@ -2181,7 +2183,7 @@ from { opacity: 0; transform: translateY(6px); };
 .recharge-methods { display: flex; flex-direction: column; gap: 0.5rem; }
 .recharge-method { display: flex; align-items: center; gap: 0.6rem; padding: 0.75rem 0.875rem; background: var(--bg-tertiary); border: 2px solid transparent; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
 .recharge-method:hover { border-color: var(--border); }
-.recharge-method.active { border-color: var(--primary); background: rgba(99, 102, 241, 0.06); }
+.recharge-method.active { border-color: var(--primary); background: rgba(37, 99, 235, 0.06); }
 .recharge-method i { font-size: 1.2rem; color: var(--text-secondary); flex-shrink: 0; }
 .recharge-method.active i { color: var(--primary); }
 .recharge-method-text { font-size: 0.85rem; font-weight: 600; color: var(--text); white-space: nowrap; }
@@ -2193,8 +2195,8 @@ from { opacity: 0; transform: translateY(6px); };
 .recharge-row.total { border-top: 2px dashed var(--border); margin-top: 0.4rem; padding-top: 0.6rem; }
 .recharge-row.total .recharge-row-label { font-size: 0.9rem; font-weight: 700; color: var(--text); }
 .recharge-row.total .recharge-row-value { font-size: 1.35rem; font-weight: 800; color: var(--success); }
-.recharge-pay-btn { width: 100%; padding: 0.9rem; margin-top: 0.875rem; border: none; border-radius: 10px; background: var(--gradient-primary); color: white; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
-.recharge-pay-btn:hover { box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4); transform: translateY(-1px); }
+.recharge-pay-btn { width: 100%; padding: 0.9rem; margin-top: 0.875rem; border: none; border-radius: 10px; background: var(--gradient-primary); color: white; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+.recharge-pay-btn:hover { box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); transform: translateY(-1px); }
 .recharge-pay-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 @media (min-width: 640px) {
   .swal2-popup.recharge-swal .swal2-html-container { padding: 1.5rem !important; }
@@ -2300,7 +2302,7 @@ to {
 .swal2-popup {
   background: var(--card) !important; color: var(--text) !important; border: none !important;
   border-radius: 1.25rem !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 80px rgba(99, 102, 241, 0.1) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 80px rgba(37, 99, 235, 0.1) !important;
 }
 .swal2-title {
   color: var(--text) !important;
@@ -2365,11 +2367,11 @@ to {
   border: none !important;
 }
 .swal2-confirm {
-  background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%) !important;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+  background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%) !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
 }
 .swal2-confirm:hover {
-  transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4) !important;
+  transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4) !important;
 }
 .swal2-cancel {
   background: var(--bg-tertiary) !important; color: var(--text) !important; border: 2px solid var(--border) !important;
@@ -2383,7 +2385,7 @@ to {
   padding: 0.75rem !important; font-size: 0.9375rem !important; transition: all 0.3s !important;
 }
 .swal2-input:focus {
-  border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+  border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
 }
 /* Consolidated Media Queries */
 @media (min-width: 769px) {
@@ -2520,7 +2522,7 @@ to {
 .task-creator-sidebar {
   width: 100%; height: auto; min-height: auto; max-height: none; border-right: none;
   border-bottom: 1px solid rgba(148, 163, 184, 0.15); padding: 0.6rem 0.75rem; order: 1; position: relative;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(14, 165, 233, 0.04) 100%), var(--bg-secondary);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(14, 165, 233, 0.04) 100%), var(--bg-secondary);
   z-index: 10; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05); display: flex; flex-direction: column;
   gap: 0; flex-shrink: 0;
 }
@@ -2571,8 +2573,8 @@ to {
   border-color: rgba(34, 197, 94, 0.4);
 }
 .progress-step.active {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-color: transparent;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); color: white;
+  background: linear-gradient(135deg, #2563eb 0%, #8b5cf6 100%); border-color: transparent;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); color: white;
 }
 .step-info {
   display: flex; flex-direction: column; align-items: center; gap: 0.2rem; min-width: 0; width: 100%;
@@ -2582,8 +2584,8 @@ to {
   text-overflow: ellipsis; width: 100%; line-height: 1;
 }
 .step-indicator {
-  width: 1.5rem; height: 1.5rem; border-radius: 50%; background: rgba(99, 102, 241, 0.1);
-  border: 1.5px solid rgba(99, 102, 241, 0.3); display: flex; align-items: center;
+  width: 1.5rem; height: 1.5rem; border-radius: 50%; background: rgba(37, 99, 235, 0.1);
+  border: 1.5px solid rgba(37, 99, 235, 0.3); display: flex; align-items: center;
   justify-content: center; font-weight: 700; font-size: 0.65rem; color: var(--text);
   transition: all 0.2s ease; flex-shrink: 0;
 }
@@ -2624,11 +2626,11 @@ to {
   width: 300px; height: 300px;
 }
 .btn-ghost {
-  background: var(--bg-tertiary); border: 2px solid rgba(99, 102, 241, 0.2); color: var(--text);
+  background: var(--bg-tertiary); border: 2px solid rgba(37, 99, 235, 0.2); color: var(--text);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 .btn-ghost:active {
-  transform: scale(0.97); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); border-color: rgba(99, 102, 241, 0.3);
+  transform: scale(0.97); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); border-color: rgba(37, 99, 235, 0.3);
 }
 .btn-ghost i {
   transition: transform 0.3s ease;
@@ -2637,8 +2639,8 @@ to {
   transform: translateX(-2px);
 }
 .btn-primary-gradient {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
-  background-size: 200% 200%; color: white; box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  background: linear-gradient(135deg, #2563eb 0%, #8b5cf6 50%, #a855f7 100%);
+  background-size: 200% 200%; color: white; box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
   animation: gradientShift 3s ease infinite;
 }
 @keyframes gradientShift {
@@ -2646,7 +2648,7 @@ to {
 100% { background-position: 0% 50%; };
 }
 .btn-primary-gradient:active {
-  transform: scale(0.97); box-shadow: 0 2px 10px rgba(99, 102, 241, 0.4);
+  transform: scale(0.97); box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4);
 }
 .btn-primary-gradient i {
   transition: transform 0.3s ease;
@@ -2690,8 +2692,8 @@ to {
   font-size: 0.75rem;
 }
 .priority-option.selected {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
-  border-color: var(--primary); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+  border-color: var(--primary); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
 }
 .payment-type-toggle {
   margin-bottom: 1.25rem; padding: 0.25rem;
@@ -2752,8 +2754,8 @@ to {
   display: none;
 }
 .billing-cycle-options .billing-option.selected {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-color: transparent;
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  background: linear-gradient(135deg, #2563eb 0%, #8b5cf6 100%); border-color: transparent;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
 }
 .billing-cycle-options .billing-option.selected .billing-icon {
   background: rgba(255, 255, 255, 0.2); color: white;
@@ -3972,6 +3974,11 @@ th, td {
 <i class="ri-article-line"></i>
 <span>Articles</span>
 </a>
+<a href="#" class="nav-item" data-page="image-docs">
+<i class="ri-code-s-slash-line"></i>
+<span>Image API</span>
+<span class="nav-new">DOCS</span>
+</a>
 </div>
 <div class="nav-section">
 <div class="nav-section-title">Account</div>
@@ -3981,6 +3988,12 @@ th, td {
 </a>
 <!-- Logout moved to user dropdown menu -->
 </div>
+<a href="/tools" class="sidebar-promo" target="_blank" rel="noopener">
+<i class="ri-magic-line"></i>
+<b>Free AI image tools</b>
+<span>Remove backgrounds, optimize and crop images in seconds.</span>
+<em>Open tools <i class="ri-arrow-right-up-line" style="font-size:1rem"></i></em>
+</a>
 </nav>
 </aside>
 <!-- Mobile Menu Overlay -->
@@ -4036,6 +4049,10 @@ th, td {
             <i class="ri-bank-card-line"></i>
             <span>Billing & Plans</span>
         </a>
+        <a href="#" class="nav-item" data-page="image-docs" onclick="closeMobileMenu()">
+            <i class="ri-code-s-slash-line"></i>
+            <span>Image API Docs</span>
+        </a>
     </div>
     <div style="border-top: 1px solid var(--border); margin: 0.5rem 0;"></div>
     <!-- Logout Section -->
@@ -4077,6 +4094,7 @@ th, td {
 <!-- Header -->
 <header class="header">
 <div class="header-left">
+<div class="page-title" id="pageTitle"><small>Workspace</small><b>Dashboard</b></div>
 <a class="logox hidedesktop" onmouseenter="animLogo()" onclick="animLogo()">
     <div class="logo-icon">
         <div class="logo-bar logo-b1"></div>
@@ -4112,6 +4130,14 @@ th, td {
             <i class="ri-device-line"></i>
             <span>Active Sessions</span>
             <span class="badge badge-primary" id="mobileDropdownSessionCount" style="margin-left: auto;"></span>
+        </a>
+        <a href="#" class="nav-item" onclick="closeMobileProfileDropdown(); navigateTo('image-docs')" style="padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="ri-code-s-slash-line"></i>
+            <span>Image API Docs</span>
+        </a>
+        <a href="/tools" target="_blank" rel="noopener" class="nav-item" style="padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="ri-magic-line"></i>
+            <span>Free Image Tools</span>
         </a>
         <div style="border-top: 1px solid var(--border); margin: 0.5rem 0;"></div>
         <a href="#" class="nav-item" onclick="logout(); closeMobileProfileDropdown()" style="padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; color: var(--error);">
@@ -4886,7 +4912,12 @@ function navigateTo(page) {
     // Update mobile nav
     document.querySelectorAll('.mobile-nav-item').forEach(item => item.classList.remove('active'));
     document.querySelector(`.mobile-nav-item[data-page="${page}"]`)?.classList.add('active');
+    const titles = { dashboard: ['Workspace', 'Dashboard'], tasks: ['SEO', 'SEO Tasks'], images: ['Hosting', 'Images'], articles: ['Hosting', 'Articles'], billing: ['Account', 'Billing'], profile: ['Account', 'Profile'], 'image-docs': ['Developers', 'Image API'] };
+    const pt = document.getElementById('pageTitle');
+    if (pt && titles[page]) pt.innerHTML = `<small>${titles[page][0]}</small><b>${titles[page][1]}</b>`;
+    window.scrollTo({ top: 0 });
     switch(page) {
+        case 'image-docs': loadImageDocs(); break;
         case 'dashboard': loadDashboard(); break;
         case 'tasks': loadTasks(); break;
         case 'images': loadImages(); break;
@@ -4895,6 +4926,196 @@ function navigateTo(page) {
         case 'profile': loadProfile(); break;
     }
 }
+// ---------------------------------------------------------------------------
+// Image API docs page: every URL option with a copy button and a live builder
+// ---------------------------------------------------------------------------
+const IMAGE_DOCS = [
+    { id: 'size', icon: 'ri-aspect-ratio-line', color: 'linear-gradient(135deg,#2563eb,#1e40af)', title: 'Size & crop', sub: 'Resize and frame images for any layout', opts: [
+        { name: 'width', alias: 'w', desc: 'Target width in pixels.', values: ['pixels'], ex: 'width=800' },
+        { name: 'height', alias: 'h', desc: 'Target height in pixels.', values: ['pixels'], ex: 'height=600' },
+        { name: 'fit', desc: 'How the image fits the width/height box.', values: ['scale-down', 'contain', 'cover', 'crop', 'pad'], ex: 'fit=cover' },
+        { name: 'gravity', desc: 'Focal point used when cropping. Use XxY (0–1) for an exact point.', values: ['auto', 'face', 'left', 'right', 'top', 'bottom', 'XxY'], ex: 'gravity=0.5x0.2' },
+        { name: 'background', desc: 'Fill color used with fit=pad. Encode # as %23.', values: ['CSS color'], ex: 'background=%23ffffff' },
+        { name: 'dpr', desc: 'Device pixel ratio multiplier for width and height.', values: ['1', '2', '3'], ex: 'dpr=2', soon: true },
+        { name: 'trim', desc: 'Trim pixels from the edges (top;right;bottom;left) or trim a solid border.', values: ['top;right;bottom;left', 'border'], ex: 'trim=20;30;20;0', soon: true },
+        { name: 'fit=squeeze', desc: 'Stretch to exactly the requested width and height.', values: ['squeeze'], ex: 'fit=squeeze', soon: true }
+    ] },
+    { id: 'geometry', icon: 'ri-shape-line', color: 'linear-gradient(135deg,#8b5cf6,#6d28d9)', title: 'Geometry', sub: 'Rotate, mirror and frame', opts: [
+        { name: 'rotate', desc: 'Rotate clockwise. Width and height apply after rotation.', values: ['90', '180', '270'], ex: 'rotate=90' },
+        { name: 'flip', desc: 'Mirror horizontally, vertically or both.', values: ['h', 'v', 'hv'], ex: 'flip=h', soon: true },
+        { name: 'border', desc: 'Add a border as color;width, or per side.', values: ['color;width'], ex: 'border=%23000000;10', soon: true }
+    ] },
+    { id: 'effects', icon: 'ri-contrast-drop-2-line', color: 'linear-gradient(135deg,#f59e0b,#b45309)', title: 'Effects', sub: 'Color and detail adjustments', opts: [
+        { name: 'blur', desc: 'Gaussian blur radius.', values: ['1–250'], ex: 'blur=20' },
+        { name: 'sharpen', desc: 'Sharpen strength.', values: ['0–10'], ex: 'sharpen=2' },
+        { name: 'brightness', desc: '1 = no change; higher is brighter.', values: ['0–2+'], ex: 'brightness=1.2' },
+        { name: 'contrast', desc: '1 = no change; higher adds contrast.', values: ['0–2+'], ex: 'contrast=1.1' },
+        { name: 'gamma', desc: '1 = no change; higher lightens mid-tones.', values: ['0–2+'], ex: 'gamma=1.5' },
+        { name: 'saturation', desc: '1 = no change, 0 = grayscale.', values: ['0–2+'], ex: 'saturation=0' }
+    ] },
+    { id: 'output', icon: 'ri-file-settings-line', color: 'linear-gradient(135deg,#10b981,#047857)', title: 'Output', sub: 'Format, quality and metadata', opts: [
+        { name: 'format', desc: 'Output format. Leave it out to serve AVIF, WebP or JPEG automatically based on the browser.', values: ['avif', 'webp', 'jpeg', 'png'], ex: 'format=webp' },
+        { name: 'quality', alias: 'q', desc: 'Compression quality for lossy formats.', values: ['1–100'], ex: 'quality=80' },
+        { name: 'metadata', desc: 'Which EXIF metadata to keep.', values: ['keep', 'copyright', 'none'], ex: 'metadata=none' },
+        { name: 'anim', desc: 'Keep animation, or freeze an animated GIF on its first frame.', values: ['true', 'false'], ex: 'anim=false', soon: true }
+    ] }
+];
+const DOCS_DEMO_IMAGE = 'https://image-api.seotize.net/image-cdn/e380574d-86ba-45f4-877f-c8a384ea637c';
+
+function docsCopy(text, btn) {
+    const done = () => {
+        if (!btn) return;
+        const old = btn.innerHTML;
+        btn.classList.add('done');
+        btn.innerHTML = '<i class="ri-check-line"></i> Copied';
+        setTimeout(() => { btn.classList.remove('done'); btn.innerHTML = old; }, 1400);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => { copyToClipboard(text); done(); });
+    else { copyToClipboard(text); done(); }
+}
+
+async function loadImageDocs() {
+    showSpinner();
+    if (!currentData.images || !currentData.images.length) {
+        try {
+            const response = await api('/images/dashboard?page=1&page_size=20');
+            currentData.images = (response && response.data && response.data.images) || [];
+        } catch (e) { /* the docs still work with the demo image */ }
+    }
+    const images = (currentData.images || []).filter(i => i && i.cdn_url);
+    const baseUrl = images.length ? images[0].cdn_url.split('?')[0] : DOCS_DEMO_IMAGE;
+    const esc = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const fullEx = `${baseUrl}?width=800&height=600&fit=cover&format=webp&quality=80`;
+
+    document.getElementById('content').innerHTML = `
+    <div class="docs">
+        <nav class="docs-toc" aria-label="Image API sections">
+            <small>On this page</small>
+            <a href="#docs-start" data-docs-link><i class="ri-rocket-2-line"></i> Quick start</a>
+            <a href="#docs-play" data-docs-link><i class="ri-equalizer-line"></i> URL builder</a>
+            ${IMAGE_DOCS.map(g => `<a href="#docs-${g.id}" data-docs-link><i class="${g.icon}"></i> ${g.title}</a>`).join('')}
+        </nav>
+        <div>
+            <section class="docs-hero docs-section" id="docs-start">
+                <small>Image API · Docs</small>
+                <h2>Transform images with a URL</h2>
+                <p>Every image you host on SEOTIZE can be resized, cropped, converted and adjusted on the fly. Add options to the image URL as <b>?name=value&amp;name=value</b> &mdash; results are cached on our global CDN.</p>
+                <div class="code-line"><code id="docsExample">${esc(baseUrl)}<span class="p">?</span><span class="k">width</span>=<span class="v">800</span><span class="p">&amp;</span><span class="k">height</span>=<span class="v">600</span><span class="p">&amp;</span><span class="k">fit</span>=<span class="v">cover</span><span class="p">&amp;</span><span class="k">format</span>=<span class="v">webp</span><span class="p">&amp;</span><span class="k">quality</span>=<span class="v">80</span></code>
+                    <button class="copy-btn" type="button" data-copy="${esc(fullEx)}"><i class="ri-file-copy-line"></i> Copy</button></div>
+            </section>
+
+            <section class="docs-section" id="docs-play">
+                <div class="docs-section-head"><div class="ico" style="background:linear-gradient(135deg,#06b6d4,#0e7490)"><i class="ri-equalizer-line"></i></div>
+                    <div><h3>URL builder</h3><p>Pick options and copy a ready-to-use URL${images.length ? ' for one of your images' : ''}.</p></div></div>
+                <div class="play">
+                    <div class="play-controls">
+                        ${images.length > 1 ? `<label class="full">Image<select id="pgImage">${images.slice(0, 20).map(i => `<option value="${esc(i.cdn_url.split('?')[0])}">${esc(i.original_filename || i.image_id)}</option>`).join('')}</select></label>` : ''}
+                        <label>Width<input type="number" id="pgW" min="1" max="4000" value="800"></label>
+                        <label>Height<input type="number" id="pgH" min="1" max="4000" value="500"></label>
+                        <label>Fit<select id="pgFit"><option value="">—</option><option value="cover" selected>cover</option><option>contain</option><option>scale-down</option><option>crop</option><option>pad</option></select></label>
+                        <label>Gravity<select id="pgGravity"><option value="">—</option><option>auto</option><option>face</option><option>top</option><option>bottom</option><option>left</option><option>right</option></select></label>
+                        <label>Format<select id="pgFormat"><option value="">auto</option><option>webp</option><option>avif</option><option>jpeg</option><option>png</option></select></label>
+                        <label>Rotate<select id="pgRotate"><option value="">0°</option><option>90</option><option>180</option><option>270</option></select></label>
+                        <label>Quality <span class="rv" id="pgQv">80</span><input type="range" id="pgQ" min="1" max="100" value="80"></label>
+                        <label>Blur <span class="rv" id="pgBv">0</span><input type="range" id="pgB" min="0" max="100" value="0"></label>
+                        <label>Brightness <span class="rv" id="pgBrv">1</span><input type="range" id="pgBr" min="0.2" max="2" step="0.1" value="1"></label>
+                        <label>Saturation <span class="rv" id="pgSv">1</span><input type="range" id="pgS" min="0" max="2" step="0.1" value="1"></label>
+                    </div>
+                    <div class="play-preview">
+                        <div class="play-stage" id="pgStage"><img id="pgImg" alt="Transformed preview"><span class="loading"></span></div>
+                        <div class="code-line"><code id="pgUrl"></code><button class="copy-btn" type="button" id="pgCopy"><i class="ri-file-copy-line"></i> Copy URL</button></div>
+                        <div class="play-meta"><span id="pgMeta">Preview updates as you change options.</span><a href="#" id="pgOpen" target="_blank" rel="noopener" style="color:var(--primary);font-weight:600;text-decoration:none">Open in new tab <i class="ri-external-link-line"></i></a></div>
+                    </div>
+                </div>
+            </section>
+
+            ${IMAGE_DOCS.map(g => `
+            <section class="docs-section" id="docs-${g.id}">
+                <div class="docs-section-head"><div class="ico" style="background:${g.color}"><i class="${g.icon}"></i></div><div><h3>${g.title}</h3><p>${g.sub}</p></div></div>
+                <div class="opt-grid">
+                    ${g.opts.map(o => `
+                    <article class="opt${o.soon ? ' is-soon' : ''}">
+                        <div class="opt-top"><span class="opt-name">${o.name}</span>${o.alias ? `<span class="opt-alias">${o.alias}</span>` : ''}${o.soon ? '<span class="opt-soon">Coming soon</span>' : ''}</div>
+                        <div class="opt-desc">${o.desc}</div>
+                        <div class="opt-values">${o.values.map(v => `<span>${esc(v)}</span>`).join('')}</div>
+                        <div class="opt-ex"><code>?${esc(o.ex)}</code><button class="copy-btn" type="button" data-copy="${esc(o.ex)}"><i class="ri-file-copy-line"></i> Copy</button></div>
+                    </article>`).join('')}
+                </div>
+            </section>`).join('')}
+
+            <div class="docs-tip"><i class="ri-lightbulb-flash-line"></i><div><b>Tip:</b> combine options freely, e.g. <code>?w=400&amp;h=400&amp;fit=cover&amp;gravity=face</code> for avatars, or omit <code>format</code> to let each browser get the smallest supported format.</div></div>
+        </div>
+    </div>`;
+
+    const content = document.getElementById('content');
+    content.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => docsCopy(b.dataset.copy, b)));
+    content.querySelectorAll('[data-docs-link]').forEach(a => a.addEventListener('click', e => {
+        e.preventDefault();
+        const el = document.querySelector(a.getAttribute('href'));
+        if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 84, behavior: 'smooth' });
+    }));
+
+    // Live URL builder
+    const $p = id => document.getElementById(id);
+    const stage = $p('pgStage'), img = $p('pgImg');
+    let timer = null, lastUrl = '';
+    function buildUrl() {
+        const base = $p('pgImage') ? $p('pgImage').value : baseUrl;
+        const parts = [];
+        const add = (k, v) => { if (v !== '' && v != null) parts.push(`${k}=${encodeURIComponent(v)}`); };
+        add('width', $p('pgW').value); add('height', $p('pgH').value); add('fit', $p('pgFit').value);
+        add('gravity', $p('pgGravity').value); add('rotate', $p('pgRotate').value); add('format', $p('pgFormat').value);
+        if ($p('pgQ').value !== '80') add('quality', $p('pgQ').value);
+        if ($p('pgB').value !== '0') add('blur', $p('pgB').value);
+        if ($p('pgBr').value !== '1') add('brightness', $p('pgBr').value);
+        if ($p('pgS').value !== '1') add('saturation', $p('pgS').value);
+        return base + (parts.length ? '?' + parts.join('&') : '');
+    }
+    function refresh() {
+        $p('pgQv').textContent = $p('pgQ').value; $p('pgBv').textContent = $p('pgB').value;
+        $p('pgBrv').textContent = $p('pgBr').value; $p('pgSv').textContent = $p('pgS').value;
+        const url = buildUrl();
+        const [b, q] = url.split('?');
+        $p('pgUrl').innerHTML = esc(b) + (q ? '<span class="p">?</span>' + q.split('&').map(kv => { const [k, v] = kv.split('='); return `<span class="k">${esc(k)}</span>=<span class="v">${esc(decodeURIComponent(v))}</span>`; }).join('<span class="p">&amp;</span>') : '');
+        $p('pgOpen').href = url;
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            if (url === lastUrl) return;
+            lastUrl = url;
+            stage.classList.add('busy');
+            const t0 = performance.now();
+            const probe = new Image();
+            probe.onload = () => { if (url !== lastUrl) return; img.src = url; stage.classList.remove('busy'); $p('pgMeta').textContent = `${probe.naturalWidth} × ${probe.naturalHeight}px · ${Math.round(performance.now() - t0)} ms`; };
+            probe.onerror = () => { if (url !== lastUrl) return; stage.classList.remove('busy'); $p('pgMeta').textContent = 'Preview unavailable for this combination.'; };
+            probe.src = url;
+        }, 350);
+    }
+    ['pgImage', 'pgW', 'pgH', 'pgFit', 'pgGravity', 'pgFormat', 'pgRotate', 'pgQ', 'pgB', 'pgBr', 'pgS'].forEach(id => {
+        const el = $p(id); if (el) { el.addEventListener('input', refresh); el.addEventListener('change', refresh); }
+    });
+    $p('pgCopy').addEventListener('click', e => docsCopy(buildUrl(), e.currentTarget));
+    refresh();
+
+    if (window.gsap) {
+        gsap.from('.docs-hero, #docs-play', { opacity: 0, y: 24, duration: .6, stagger: .1, ease: 'power3.out' });
+        gsap.from('.opt', { opacity: 0, y: 18, duration: .45, stagger: .03, ease: 'power2.out', delay: .2 });
+    }
+}
+
+// Soft entrance for every page rendered into #content
+(function () {
+    const content = document.getElementById('content');
+    if (!content || !window.MutationObserver) return;
+    new MutationObserver(() => {
+        if (!window.gsap) return;
+        if (content.querySelector('.docs')) return; // docs animate themselves
+        if (content.children.length === 1 && content.querySelector(':scope > div > .spinner')) return; // loading state
+        const kids = Array.from(content.children).filter(el => !el.classList.contains('spinner') && !el.classList.contains('loading-spinner')).slice(0, 8);
+        if (kids.length) gsap.fromTo(kids, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .5, stagger: .06, ease: 'power3.out', clearProps: 'opacity,transform' });
+        gsap.fromTo(content.querySelectorAll('.stat-card, .task-card, .media-card'), { opacity: 0, y: 14, scale: .98 }, { opacity: 1, y: 0, scale: 1, duration: .45, stagger: .035, ease: 'power2.out', delay: .1, clearProps: 'opacity,transform' });
+    }).observe(content, { childList: true });
+})();
+
 // Update User Info
 function updateUserInfo() {
     const user = currentData.user;
@@ -5024,7 +5245,22 @@ async function loadDashboard(page = 1) {
         document.getElementById('userInitial').textContent = user.email[0].toUpperCase();
         updateUserInfo();
         const content = document.getElementById('content');
+        const hour = new Date().getHours();
+        const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
         content.innerHTML = `
+        <section class="welcome">
+            <div>
+                <small>${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</small>
+                <h2>${greeting}, ${user.email.split('@')[0]}</h2>
+                <p>Here's how your SEO is performing today.</p>
+            </div>
+            <div class="welcome-actions">
+                <button class="primary" onclick="showTaskModal()"><i class="ri-add-line"></i> New SEO task</button>
+                <button onclick="showImageUploadModal()"><i class="ri-upload-cloud-2-line"></i> Upload images</button>
+                <button onclick="navigateTo('articles')"><i class="ri-quill-pen-line"></i> Articles</button>
+                <button onclick="navigateTo('image-docs')"><i class="ri-code-s-slash-line"></i> Image API</button>
+            </div>
+        </section>
         <div class="stats-grid">
         <div class="stat-card">
         <div class="stat-icon primary">
@@ -5478,6 +5714,9 @@ async function loadImages(page = 1) {
         <div style="font-size: 0.875rem; color: var(--text-secondary);">
         ${data.user?.uploaded || 0}/${(data.user?.uploaded || 0) + (data.user?.remaining || 0)} images used
         </div>
+        <button class="btn" onclick="navigateTo('image-docs')">
+        <i class="ri-code-s-slash-line"></i> API Docs
+        </button>
         <button class="btn btn-primary" onclick="showImageUploadModal()">
         <i class="ri-upload-line"></i> Upload Images
         </button>
@@ -5925,8 +6164,8 @@ const hostingPackages = {
     professional: {
         name: 'Professional',
         icon: 'ri-rocket-line',
-        color: '#6366f1',
-        gradient: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+        color: '#2563eb',
+        gradient: 'linear-gradient(135deg, #2563eb 0%, #8b5cf6 100%)',
         popular: true,
         price: { '3month': 25, '6month': 45, '12month': 80 },
         limits: { articles: 600, images: 4000 },
@@ -6336,12 +6575,12 @@ async function loadBilling(page = 1, type = 'all') {
                 border-radius: var(--radius) !important;
                 font-weight: 600 !important;
                 padding: 0.75rem 1.5rem !important;
-                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
                 transition: all 0.3s ease !important;
             }
             .swal2-popup .swal2-confirm:hover {
                 transform: translateY(-2px) !important;
-                box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4) !important;
+                box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4) !important;
             }
             .swal2-popup .swal2-cancel {
                 background: var(--bg-tertiary) !important;
@@ -6450,7 +6689,7 @@ async function loadBilling(page = 1, type = 'all') {
                 width: 32px; height: 32px; border-radius: 8px; display: flex;
                 align-items: center; justify-content: center; font-size: 1rem;
             }
-            .plan-usage-icon.images { background: rgba(99, 102, 241, 0.12); color: var(--primary); }
+            .plan-usage-icon.images { background: rgba(37, 99, 235, 0.12); color: var(--primary); }
             .plan-usage-icon.articles { background: rgba(16, 185, 129, 0.12); color: var(--success); }
             .plan-usage-icon.ai { background: rgba(168, 85, 247, 0.12); color: #a855f7; }
             .plan-usage-icon.time { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
@@ -6621,7 +6860,7 @@ async function loadBilling(page = 1, type = 'all') {
             }
             .pkg-option-card:hover { border-color: var(--primary); transform: translateY(-2px); }
             .pkg-option-card.selected {
-                border-color: var(--primary); background: rgba(99, 102, 241, 0.05);
+                border-color: var(--primary); background: rgba(37, 99, 235, 0.05);
             }
             .pkg-option-card.selected::after {
                 content: '✓'; position: absolute; top: 0.75rem; right: 0.75rem;
@@ -6665,7 +6904,7 @@ async function loadBilling(page = 1, type = 'all') {
                 display: flex; align-items: center; justify-content: center; gap: 0.5rem;
             }
             .pkg-payment-type-btn.active {
-                background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+                background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
             }
             
             /* Duration Options */
@@ -6678,7 +6917,7 @@ async function loadBilling(page = 1, type = 'all') {
             }
             .pkg-duration-option:hover { border-color: var(--primary); }
             .pkg-duration-option.selected {
-                border-color: var(--primary); background: rgba(99, 102, 241, 0.05);
+                border-color: var(--primary); background: rgba(37, 99, 235, 0.05);
             }
             .pkg-duration-option.best-value::before {
                 content: 'BEST VALUE'; position: absolute; top: -10px; left: 50%;
@@ -6702,7 +6941,7 @@ async function loadBilling(page = 1, type = 'all') {
             }
             .pkg-provider-option:hover { border-color: var(--primary); }
             .pkg-provider-option.selected {
-                border-color: var(--primary); background: rgba(99, 102, 241, 0.05);
+                border-color: var(--primary); background: rgba(37, 99, 235, 0.05);
             }
             .pkg-provider-icon { font-size: 1.5rem; }
             .pkg-provider-name { font-weight: 600; color: var(--text); }
@@ -6742,7 +6981,7 @@ async function loadBilling(page = 1, type = 'all') {
             }
             #pkgPurchaseBtn:hover {
                 background: var(--primary-dark); transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+                box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
             }
             
             /* Free Plan Card */
@@ -6887,8 +7126,8 @@ async function loadBilling(page = 1, type = 'all') {
                 .pkg-option-card .pkg-option-features li i { font-size: 0.75rem; }
                 .pkg-option-card.selected { 
                     border-color: var(--primary); 
-                    background: rgba(99, 102, 241, 0.08);
-                    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
+                    background: rgba(37, 99, 235, 0.08);
+                    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.15);
                 }
                 .pkg-option-card.selected::after { 
                     content: '✓'; grid-row: 1; grid-column: 3;
@@ -6917,7 +7156,7 @@ async function loadBilling(page = 1, type = 'all') {
                 .pkg-payment-type-btn i { font-size: 1.1rem; }
                 .pkg-payment-type-btn.active {
                     background: var(--primary); color: white;
-                    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+                    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
                 }
                 
                 /* Duration Grid - Horizontal Single Row */
@@ -6931,7 +7170,7 @@ async function loadBilling(page = 1, type = 'all') {
                 }
                 .pkg-duration-option.selected {
                     border-color: var(--primary);
-                    background: rgba(99, 102, 241, 0.08);
+                    background: rgba(37, 99, 235, 0.08);
                 }
                 .pkg-duration-option.best-value::before { 
                     content: 'BEST'; top: -8px; font-size: 0.5rem; 
@@ -6954,7 +7193,7 @@ async function loadBilling(page = 1, type = 'all') {
                 }
                 .pkg-provider-option.selected {
                     border-color: var(--primary);
-                    background: rgba(99, 102, 241, 0.08);
+                    background: rgba(37, 99, 235, 0.08);
                 }
                 .pkg-provider-icon { font-size: 1.5rem; line-height: 1; }
                 .pkg-provider-name { font-size: 0.8rem; font-weight: 600; }
@@ -7181,7 +7420,7 @@ async function loadBilling(page = 1, type = 'all') {
         ` : `
         <!-- Current Plan Card with Usage Side by Side -->
         <div class="current-plan-card">
-            <div class="current-plan-gradient" style="background: ${currentPkg?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};">
+            <div class="current-plan-gradient" style="background: ${currentPkg?.gradient || 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)'};">
                 <div class="current-plan-header">
                     <div class="current-plan-info">
                         <div class="current-plan-badge">
@@ -7332,7 +7571,7 @@ async function loadBilling(page = 1, type = 'all') {
                         if (isTask) {
                             paymentType = 'SEO Task'; badgeClass = 'primary'; 
                             description = payment.description || 'Task Payment';
-                            icon = 'ri-rocket-line'; iconBg = 'rgba(99, 102, 241, 0.1)';
+                            icon = 'ri-rocket-line'; iconBg = 'rgba(37, 99, 235, 0.1)';
                         } else if (isHosting) {
                             paymentType = 'Hosting'; badgeClass = 'warning'; 
                             description = payment.description || 'Hosting Package';
@@ -7340,7 +7579,7 @@ async function loadBilling(page = 1, type = 'all') {
                         } else {
                             paymentType = 'Payment'; badgeClass = 'primary'; 
                             description = payment.description || 'Payment';
-                            icon = 'ri-bank-card-line'; iconBg = 'rgba(99, 102, 241, 0.1)';
+                            icon = 'ri-bank-card-line'; iconBg = 'rgba(37, 99, 235, 0.1)';
                         }
                         
                         // Format currency symbol
@@ -7407,7 +7646,7 @@ async function loadBilling(page = 1, type = 'all') {
                     if (isTask) {
                         paymentType = 'SEO Task'; badgeClass = 'primary'; 
                         description = payment.description || 'Task Payment';
-                        icon = 'ri-rocket-line'; iconBg = 'rgba(99, 102, 241, 0.1)';
+                        icon = 'ri-rocket-line'; iconBg = 'rgba(37, 99, 235, 0.1)';
                     } else if (isHosting) {
                         paymentType = 'Hosting'; badgeClass = 'warning'; 
                         description = payment.description || 'Hosting Package';
@@ -7415,7 +7654,7 @@ async function loadBilling(page = 1, type = 'all') {
                     } else {
                         paymentType = 'Payment'; badgeClass = 'primary'; 
                         description = payment.description || 'Payment';
-                        icon = 'ri-bank-card-line'; iconBg = 'rgba(99, 102, 241, 0.1)';
+                        icon = 'ri-bank-card-line'; iconBg = 'rgba(37, 99, 235, 0.1)';
                     }
                     
                     // Format currency symbol
@@ -7582,7 +7821,7 @@ function showSubscriptionModal() {
                 align-items: center;
                 gap: 0.5rem;
                 padding: 0.4rem 0.75rem;
-                background: rgba(99, 102, 241, 0.15);
+                background: rgba(37, 99, 235, 0.15);
                 color: var(--primary);
                 border-radius: 20px;
                 font-size: 0.7rem;
@@ -7629,7 +7868,7 @@ function showSubscriptionModal() {
             .sub-panel-switch button.active {
                 background: var(--primary);
                 color: white;
-                box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+                box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
             }
             
             .sub-panel-switch button i {
@@ -7647,14 +7886,14 @@ function showSubscriptionModal() {
                 width: 64px;
                 height: 64px;
                 flex-shrink: 0;
-                background: ${pkg?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};
+                background: ${pkg?.gradient || 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)'};
                 border-radius: 16px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 font-size: 1.75rem;
                 color: white;
-                box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+                box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
             }
             
             .sub-plan-title {
@@ -7830,13 +8069,13 @@ function showSubscriptionModal() {
             
             .sub-task-card:hover {
                 border-color: var(--primary);
-                box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+                box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
             }
             
             .sub-task-icon-sm {
                 width: 38px;
                 height: 38px;
-                background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+                background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
                 color: var(--primary);
                 border-radius: 10px;
                 display: flex;
@@ -7977,10 +8216,10 @@ function showSubscriptionModal() {
                 align-items: flex-start;
                 gap: 0.6rem;
                 padding: 0.85rem 1rem;
-                background: rgba(99, 102, 241, 0.08);
+                background: rgba(37, 99, 235, 0.08);
                 border-radius: 8px;
                 margin-top: 1rem;
-                border: 1px solid rgba(99, 102, 241, 0.15);
+                border: 1px solid rgba(37, 99, 235, 0.15);
             }
             
             .sub-info-notice i {
@@ -8080,7 +8319,7 @@ function showSubscriptionModal() {
                     top: 0;
                     z-index: 10;
                     padding: 1.25rem 1.5rem;
-                    background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+                    background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
                     border-bottom: none;
                     border-radius: 0;
                     gap: 1rem;
@@ -8188,7 +8427,7 @@ function showSubscriptionModal() {
                     height: 60px;
                     font-size: 1.5rem;
                     border-radius: 14px;
-                    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.25);
+                    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
                 }
                 
                 .sub-plan-title {
@@ -8407,9 +8646,9 @@ function showSubscriptionModal() {
                 .sub-info-notice {
                     margin-top: auto;
                     padding: 1rem 1.15rem;
-                    background: rgba(99, 102, 241, 0.08);
+                    background: rgba(37, 99, 235, 0.08);
                     border-radius: 14px;
-                    border: 1px solid rgba(99, 102, 241, 0.15);
+                    border: 1px solid rgba(37, 99, 235, 0.15);
                 }
                 
                 .sub-info-notice i {
@@ -8927,7 +9166,7 @@ function loadWebsitePreview(url) {
                 </button>
                 <div style="width:1px;height:24px;background:linear-gradient(to bottom, transparent, #cbd5e1, transparent);margin:0 12px;"></div>
                 <button id="zoomResetBtn" style="
-                    background:linear-gradient(145deg, #6366f1 0%, #4f46e5 100%);
+                    background:linear-gradient(145deg, #2563eb 0%, #1e40af 100%);
                     color:white;
                     border:none;
                     padding:0 16px;
@@ -8940,7 +9179,7 @@ function loadWebsitePreview(url) {
                     font-size:13px;
                     font-weight:600;
                     transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                    box-shadow:0 3px 8px rgba(99,102,241,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+                    box-shadow:0 3px 8px rgba(37,99,235,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
                     position:relative;
                     overflow:hidden;
                 " title="Reset Zoom (Ctrl/Cmd + 0)">
@@ -10679,10 +10918,10 @@ function initializeTaskAnalyticsCharts(sortedDates) {
             const t2d = trendCanvas.getContext('2d');
             const indigoFill = t2d ? (() => {
                 const g = t2d.createLinearGradient(0, 0, 0, 220);
-                g.addColorStop(0, isDark ? 'rgba(99, 102, 241, 0.30)' : 'rgba(99, 102, 241, 0.22)');
-                g.addColorStop(1, 'rgba(99, 102, 241, 0.02)');
+                g.addColorStop(0, isDark ? 'rgba(37, 99, 235, 0.30)' : 'rgba(37, 99, 235, 0.22)');
+                g.addColorStop(1, 'rgba(37, 99, 235, 0.02)');
                 return g;
-            })() : 'rgba(99, 102, 241, 0.12)';
+            })() : 'rgba(37, 99, 235, 0.12)';
             window.charts.taskModalTrend = new Chart(trendCanvas, {
                 type: 'line',
                 data: {
@@ -10690,12 +10929,12 @@ function initializeTaskAnalyticsCharts(sortedDates) {
                     datasets: [{
                         label: 'Views (recent)',
                         data: tValues,
-                        borderColor: '#6366f1',
+                        borderColor: '#2563eb',
                         backgroundColor: indigoFill,
                         tension: 0.4,
                         fill: true,
                         borderWidth: 2,
-                        pointBackgroundColor: '#6366f1',
+                        pointBackgroundColor: '#2563eb',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 2,
                         pointRadius: tValues.length > 1 ? 3 : 0,
@@ -11747,7 +11986,7 @@ function initializeArticleCharts(countries, browsers, devices, sortedDates) {
     // Doughnuts with distinct readable colors
     const distinctColors = [
         '#10b981', // green
-        '#6366f1', // indigo
+        '#2563eb', // indigo
         '#f59e0b', // amber
         '#ef4444', // red
         '#8b5cf6', // violet
@@ -11895,7 +12134,7 @@ async function showArticleModal(articleId = null) {
         }
         .article-section:hover {
             border-color: var(--primary);
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
         }
         .form-label {
             font-size: 0.9rem;
@@ -11937,7 +12176,7 @@ async function showArticleModal(articleId = null) {
         }
         .ai-btn {
             padding: 0.35rem 0.75rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
             color: white;
             border: none;
             border-radius: var(--radius);
@@ -11952,14 +12191,14 @@ async function showArticleModal(articleId = null) {
         }
         .ai-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
         }
         .ai-btn:disabled {
             opacity: 0.7;
             cursor: not-allowed;
         }
         .ai-btn.generating {
-            background: linear-gradient(270deg, #667eea, #764ba2, #667eea);
+            background: linear-gradient(270deg, #2563eb, #1e40af, #2563eb);
             background-size: 200% 200%;
             animation: gradientShift 2s ease infinite;
         }
@@ -12050,11 +12289,11 @@ async function showArticleModal(articleId = null) {
         .form-textarea-enhanced:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
         .usage-stats {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            border: 1px solid rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(30, 64, 175, 0.1) 100%);
+            border: 1px solid rgba(37, 99, 235, 0.3);
             border-radius: var(--radius-lg);
             padding: 0.85rem;
             display: grid;
@@ -12209,7 +12448,7 @@ async function showArticleModal(articleId = null) {
         }
         .preview-refresh:hover {
             transform: rotate(180deg);
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
         }
         .preview-refresh.loading {
             animation: spin 1s linear infinite;
@@ -12221,8 +12460,8 @@ async function showArticleModal(articleId = null) {
             margin-top: 0.35rem;
         }
         .generation-status {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            border: 1px solid rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(30, 64, 175, 0.1) 100%);
+            border: 1px solid rgba(37, 99, 235, 0.3);
             border-radius: var(--radius);
             padding: 0.85rem;
             margin-top: 0.75rem;
@@ -12336,31 +12575,8 @@ async function showArticleModal(articleId = null) {
                 padding: 0.25rem !important;
                 padding-bottom: 1rem !important;
             }
-            #ai-generate-all-btn {
-                font-size: 0.65rem !important;
-                padding: 0.25rem 0.4rem !important;
-                white-space: nowrap !important;
-            }
-            #ai-generate-all-btn span {
-                display: inline !important;
-            }
-            #ai-generate-all-btn i {
-                font-size: 0.7rem !important;
-                margin-right: 0.15rem !important;
-            }
         }
         @media (max-width: 480px) {
-            #ai-generate-all-btn span {
-                display: none !important;
-            }
-            #ai-generate-all-btn {
-                padding: 0.3rem 0.45rem !important;
-                font-size: 0.65rem !important;
-            }
-            #ai-generate-all-btn i {
-                font-size: 0.75rem !important;
-                margin-right: 0 !important;
-            }
         }
         /* Hide default action buttons */
         .article-modal-swal .swal2-actions {
@@ -12395,7 +12611,7 @@ async function showArticleModal(articleId = null) {
         }
         .article-actions .btn-save:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
         }
         .article-actions .btn-cancel {
             background: var(--bg-tertiary);
@@ -12419,12 +12635,13 @@ async function showArticleModal(articleId = null) {
                         `).join('')}
                     </select>
                 </div>
+                <button type="button" class="ai-hero-btn" id="ai-generate-all-btn">
+                    <span class="ai-ico"><i class="ri-magic-line"></i></span>
+                    <span><b>Generate by AI</b><small>Writes the title, content and a cover image for your domain</small></span>
+                </button>
                 <div class="article-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                         <label class="form-label" style="margin-bottom: 0;"><i class="ri-text"></i> Title</label>
-                        <button type="button" class="ai-btn" id="ai-generate-all-btn">
-                            <i class="ri-magic-line"></i> <span>Generate by AI</span>
-                        </button>
                     </div>
                     <input type="text" id="article-subject" class="form-input" name="subject" required
                         placeholder="Enter article title..." value="${articleData ? articleData.subject : ''}" maxlength="200">
@@ -12516,9 +12733,6 @@ async function showArticleModal(articleId = null) {
             <div class="article-section">
                 <div class="section-header">
                     <h3 class="section-title"><i class="ri-upload-line"></i> ${isEdit ? 'Add New' : 'Upload'}</h3>
-                    <button type="button" class="ai-btn" id="ai-image-btn">
-                        <i class="ri-magic-line"></i> <span>AI</span>
-                    </button>
                 </div>
                 <div class="upload-area" id="upload-zone" onclick="document.getElementById('file-input').click()">
                     <input type="file" id="file-input" name="image_data" multiple accept="image/*" style="display:none;">
@@ -12774,7 +12988,7 @@ async function showArticleModal(articleId = null) {
                 }
                 btn.disabled = true;
                 btn.classList.add('generating');
-                btn.innerHTML = '<i class="ri-loader-4-line"></i> <span>Generating</span><div class="progress-dots"><span></span><span></span><span></span></div>';
+                btn.innerHTML = '<span class="ai-ico"><i class="ri-loader-4-line"></i></span><span><b>Generating your article…</b><small>This usually takes a few seconds</small></span>';
                 window.showGenStatus('Generating complete article with AI...');
                 try {
                     // Build payload: with subject if provided, without subject if empty
@@ -12837,78 +13051,7 @@ async function showArticleModal(articleId = null) {
                 } finally {
                     btn.disabled = false;
                     btn.classList.remove('generating');
-                    btn.innerHTML = '<i class="ri-magic-line"></i> <span>Generate by AI</span>';
-                    window.hideGenStatus();
-                }
-            });
-            // AI Generate Image Only
-            document.getElementById('ai-image-btn').addEventListener('click', async (e) => {
-                e.preventDefault();
-                const btn = e.currentTarget;
-                const url = document.getElementById('article-url').value.trim();
-                const subject = document.getElementById('article-subject').value.trim();
-                // Validate that domain is selected
-                if (!url) {
-                    showToast('Please select a domain first', 'warning');
-                    return;
-                }
-                if (!subject) {
-                    showToast('Enter a title first', 'warning');
-                    return;
-                }
-                btn.disabled = true;
-                btn.classList.add('generating');
-                btn.innerHTML = '<i class="ri-loader-4-line"></i> <span>AI</span><div class="progress-dots"><span></span><span></span><span></span></div>';
-                window.showGenStatus('Generating AI image...');
-                try {
-                    const response = await fetch(`${API_BASE}/generate-article`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Session-Token': sessionToken
-                        },
-                        body: JSON.stringify({ url: url, subject })
-                    });
-                    const data = await response.json();
-                    if (data.status === 'success' && data.data) {
-                        // Handle AI-generated image URL
-                        if (data.data.image_url) {
-                            const totalImages = window.articleFiles.length + window.imageUrls.length;
-                            if (totalImages >= 10) {
-                                showToast('Max 10 images reached', 'warning');
-                                return;
-                            }
-                            window.imageUrls.push(data.data.image_url);
-                            document.getElementById('image-urls').value = window.imageUrls.join(',');
-                            // Add preview
-                            const div = document.createElement('div');
-                            div.className = 'preview-item';
-                            div.dataset.isAiGenerated = 'true';
-                            div.innerHTML = `
-                                <img src="${data.data.image_url}" alt="AI Generated">
-                                <button type="button" class="preview-refresh" onclick="window.refreshAiImage('${data.data.image_url}', this)" title="Reload image">
-                                    <i class="ri-refresh-line"></i>
-                                </button>
-                                <button type="button" class="preview-remove" onclick="window.removeUrlPreview('${data.data.image_url}', this)">
-                                    <i class="ri-close-line"></i>
-                                </button>
-                            `;
-                            document.getElementById('preview-container').appendChild(div);
-                            showToast('AI image generated!', 'success');
-                        }
-                        // Update usage
-                        if (data.data && data.data.usage) {
-                            window.updateUsageDisplay(data.data.usage);
-                        }
-                    } else {
-                        throw new Error(data.error?.message || 'Failed to generate');
-                    }
-                } catch (error) {
-                    showToast(error.message, 'error');
-                } finally {
-                    btn.disabled = false;
-                    btn.classList.remove('generating');
-                    btn.innerHTML = '<i class="ri-magic-line"></i> <span>AI</span>';
+                    btn.innerHTML = '<span class="ai-ico"><i class="ri-magic-line"></i></span><span><b>Generate by AI</b><small>Writes the title, content and a cover image for your domain</small></span>';
                     window.hideGenStatus();
                 }
             });
@@ -13640,7 +13783,7 @@ async function viewPaymentDetails(billingId, isAutoCheck = false) {
 .pay-modal .swal2-close{position:absolute;top:1.25rem;right:1.25rem;width:2.5rem;height:2.5rem;background:var(--bg-tertiary,rgba(0,0,0,.06));color:var(--text-secondary,#64748b);border-radius:var(--radius,8px);font-size:1.5rem;transition:.2s;z-index:10;display:flex;align-items:center;justify-content:center}
 .pay-modal .swal2-close:hover{background:var(--error,#ef4444);color:#fff}
 .pay-wrap{display:grid;grid-template-columns:340px 1fr;min-height:400px}
-.pay-left{background:linear-gradient(180deg,var(--primary,#6366f1) 0%,#4f46e5 100%);color:#fff;padding:2.5rem;display:flex;flex-direction:column}
+.pay-left{background:linear-gradient(180deg,var(--primary,#2563eb) 0%,#1e40af 100%);color:#fff;padding:2.5rem;display:flex;flex-direction:column}
 .pay-amount{margin-bottom:2rem}
 .pay-amount h2{font-size:3.5rem;font-weight:800;margin:0;letter-spacing:-2px;line-height:1}
 .pay-amount span{font-size:1rem;opacity:.7;font-weight:500;margin-left:.25rem}
@@ -13672,8 +13815,8 @@ async function viewPaymentDetails(billingId, isAutoCheck = false) {
 .pay-section h3 i{font-size:1.1rem;opacity:.6}
 .pay-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
 .pay-card{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:var(--radius,12px);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;transition:.2s}
-.pay-card:hover{border-color:var(--primary,#6366f1);box-shadow:0 4px 20px rgba(99,102,241,.1)}
-.pay-card-icon{width:2.75rem;height:2.75rem;background:linear-gradient(135deg,var(--primary,#6366f1),#8b5cf6);border-radius:var(--radius,8px);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pay-card:hover{border-color:var(--primary,#2563eb);box-shadow:0 4px 20px rgba(37,99,235,.1)}
+.pay-card-icon{width:2.75rem;height:2.75rem;background:linear-gradient(135deg,var(--primary,#2563eb),#8b5cf6);border-radius:var(--radius,8px);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .pay-card-icon i{font-size:1.25rem;color:#fff}
 .pay-card-info{flex:1;min-width:0}
 .pay-card label{font-size:.65rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text-secondary,#64748b);font-weight:600;display:block;margin-bottom:.15rem}
@@ -13682,17 +13825,17 @@ async function viewPaymentDetails(billingId, isAutoCheck = false) {
 .pay-stat{display:inline-flex;align-items:center;gap:.25rem;padding:.3rem .7rem;border-radius:6px;font-size:.85rem;font-weight:600;background:${sC}15;color:${sC}}
 .pay-timeline{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .pay-time{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:var(--radius,12px);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem}
-.pay-time i{font-size:1.5rem;color:var(--primary,#6366f1)}
+.pay-time i{font-size:1.5rem;color:var(--primary,#2563eb)}
 .pay-time div label{font-size:.65rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;display:block;margin-bottom:.15rem}
 .pay-time div strong{font-size:.95rem;color:var(--text,#1e293b)}
 .pay-refs{display:flex;flex-direction:column;gap:.75rem}
 .pay-ref{background:var(--bg-secondary,#f8fafc);border:1px solid var(--border,#e2e8f0);border-radius:var(--radius,10px);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;transition:.2s}
-.pay-ref:hover{border-color:var(--primary,#6366f1)}
+.pay-ref:hover{border-color:var(--primary,#2563eb)}
 .pay-ref label{font-size:.75rem;text-transform:uppercase;letter-spacing:.3px;color:var(--text-secondary,#64748b);font-weight:600;white-space:nowrap}
 .pay-ref div{display:flex;align-items:center;gap:.5rem;flex:1;min-width:0;justify-content:flex-end}
 .pay-ref code{background:var(--bg-tertiary,#f1f5f9);padding:.4rem .6rem;border-radius:6px;font-size:.8rem;font-family:'SF Mono',Monaco,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text,#1e293b)}
 .pcp{cursor:pointer;width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:.15s;color:var(--text-secondary,#94a3b8);font-size:1.1rem}
-.pcp:hover{color:var(--primary,#6366f1);background:rgba(99,102,241,.1)}
+.pcp:hover{color:var(--primary,#2563eb);background:rgba(37,99,235,.1)}
 @media(max-width:800px){.pay-modal{width:calc(100vw - 1.5rem)!important;max-width:100%!important;border-radius:1.25rem!important;margin:.75rem!important;max-height:calc(100vh - 1.5rem)!important}.pay-wrap{grid-template-columns:1fr;display:flex;flex-direction:column}.pay-left{padding:1.25rem 1rem;flex-direction:column;align-items:center;text-align:center;gap:.5rem;flex-shrink:0}.pay-amount{margin-bottom:0}.pay-amount h2{font-size:2.25rem;letter-spacing:-1px}.pay-amount span{font-size:.85rem;opacity:.8}.pay-status{padding:.45rem 1rem;font-size:.8rem;margin-top:.25rem;border-radius:2rem}.pay-status i{font-size:.9rem}.pay-pending-check{margin-top:.75rem;padding:.75rem;border-radius:10px}.pay-pending-check .check-title{font-size:.75rem}.pay-pending-check .check-desc{font-size:.65rem;margin-bottom:.5rem}.pay-pending-check .check-timer{font-size:.7rem;padding:.3rem .6rem}.pay-pending-loader span{width:6px;height:6px}.pay-actions{margin-top:.6rem;flex-direction:row;width:100%;gap:.35rem}.pay-btn{flex:1;flex-direction:column;align-items:center;gap:.2rem;padding:.5rem .35rem;font-size:.65rem;text-align:center;border-radius:.6rem}.pay-btn i{font-size:1.1rem}.pay-right{padding:.85rem;flex:1;overflow-y:auto}.pay-section{margin-bottom:.85rem}.pay-section:last-child{margin-bottom:0}.pay-section h3{font-size:.65rem;margin-bottom:.5rem}.pay-cards{grid-template-columns:1fr 1fr;gap:.4rem}.pay-card{padding:.55rem .6rem;gap:.4rem}.pay-card-icon{width:1.85rem;height:1.85rem}.pay-card-icon i{font-size:.85rem}.pay-card label{font-size:.5rem}.pay-card strong{font-size:.7rem}.pay-timeline{grid-template-columns:1fr;gap:.4rem}.pay-time{padding:.55rem .6rem;gap:.4rem}.pay-time i{font-size:.95rem}.pay-time div label{font-size:.5rem}.pay-time div strong{font-size:.7rem}.pay-refs{gap:.35rem}.pay-ref{padding:.5rem .6rem;flex-direction:column;align-items:flex-start;gap:.3rem}.pay-ref label{font-size:.55rem}.pay-ref div{width:100%;justify-content:space-between}.pay-ref code{font-size:.6rem;padding:.2rem .35rem;max-width:calc(100% - 2.5rem)}}
 </style>
 <div class="pay-wrap">
@@ -13757,12 +13900,12 @@ function initializeCharts(user) {
                 datasets: [{
                     label: 'Views',
                     data: taskData.views,
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
                     tension: 0.4,
                     fill: true,
                     borderWidth: 2,
-                    pointBackgroundColor: '#6366f1',
+                    pointBackgroundColor: '#2563eb',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: hasRealData ? 4 : 0
@@ -13849,7 +13992,7 @@ function initializeCharts(user) {
                 z-index: 10;
             `;
             noDataMsg.innerHTML = `
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">??</div>
+                <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--primary);"><i class="ri-bar-chart-2-line"></i></div>
                 <div>No analytics data available yet</div>
                 <div style="font-size: 0.75rem; margin-top: 0.25rem;">Data will appear when tasks receive views</div>
             `;
@@ -13928,8 +14071,8 @@ function initializeCountryMap(user) {
     ocean: '#0f172a',           // Very dark blue (slate-900) - distinct ocean
     noDataFill: '#475569',      // Slate-600 for countries - clearly different from ocean
     noDataEdge: '#64748b',      // Slate-500 border
-    rampMin: '#818cf8',         // Light indigo
-    rampMax: '#4f46e5',         // Deep indigo
+    rampMin: '#3b82f6',         // Light indigo
+    rampMax: '#1e40af',         // Deep indigo
     hoverFill: '#22c55e',       // Green accent
     hoverEdge: '#16a34a',       // Darker green
     hoverNoData: '#64748b',     // Subtle hover
@@ -13943,7 +14086,7 @@ function initializeCountryMap(user) {
     noDataFill: '#f8fafc',      // Slate-50 for countries - white/light gray land
     noDataEdge: '#cbd5e1',      // Slate-300 border
     rampMin: '#a5b4fc',         // Light indigo
-    rampMax: '#4f46e5',         // Deep indigo
+    rampMax: '#1e40af',         // Deep indigo
     hoverFill: '#10b981',       // Green accent
     hoverEdge: '#059669',       // Darker green
     hoverNoData: '#e2e8f0',     // Subtle hover
@@ -14379,10 +14522,10 @@ async function logout() {
 window.addEventListener('resize', () => {
     const sidebarToggle = document.getElementById('sidebarToggle');
     if (window.innerWidth <= 768) {
-        sidebarToggle.style.display = 'block';
+        if (sidebarToggle) sidebarToggle.style.display = 'block';
     } else {
-        sidebarToggle.style.display = 'none';
-        document.getElementById('sidebar').classList.remove('active');
+        if (sidebarToggle) sidebarToggle.style.display = 'none';
+        document.getElementById('sidebar')?.classList.remove('active');
     }
     // Handle task creator layout on resize
     const taskCreator = document.getElementById('seoTaskCreator');
@@ -14476,5 +14619,6 @@ document.addEventListener('DOMContentLoaded', () => {
    }
 }
 </style>
+<link rel="stylesheet" href="/assets/dashboard.css">
 </body>
 </html>

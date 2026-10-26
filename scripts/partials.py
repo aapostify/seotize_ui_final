@@ -11,7 +11,7 @@ Pages contain one-line markers which this script expands in place:
 Already-expanded blocks are wrapped in <!--@X:key:start--> ... <!--@X:end-->
 comments, so re-running the script refreshes them:
 
-    python3 assets/partials.py index.html blogs.html ...
+    python3 scripts/partials.py index.html blogs.html ...
 """
 import re
 import sys
