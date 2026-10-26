@@ -156,10 +156,10 @@ function render(url, env, o, status = 200) {
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#0b1222">
 <link rel="stylesheet" href="/assets/site.css">
-${t ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=tsInit" async defer></script>' : ''}
+${t ? '<script data-cfasync="false" src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=tsInit" async defer></script>' : ''}
 <style>${CSS}</style>
 </head><body><!--email_off-->
-<script>try{localStorage.getItem('theme')==='dark'&&document.body.classList.add('dark')}catch(e){}</script>
+<script data-cfasync="false">try{localStorage.getItem('theme')==='dark'&&document.body.classList.add('dark')}catch(e){}</script>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="seo-g" x1="7" y1="22" x2="24" y2="10" gradientUnits="userSpaceOnUse"><stop stop-color="#818cf8"/><stop offset="1" stop-color="#22d3ee"/></linearGradient><linearGradient id="seo-gd" x1="7" y1="22" x2="24" y2="10" gradientUnits="userSpaceOnUse"><stop stop-color="#4f46e5"/><stop offset="1" stop-color="#0891b2"/></linearGradient></defs></svg>
 ${NAV}
 <main>
@@ -192,10 +192,10 @@ ${NAV}
   </div>
 </main>
 ${FOOTER}${MNAV}
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-<script defer src="/assets/site.js"></script>
-<script>${COMMON}${t ? TOOLJS + SCRIPT[t.slug] : ''}</script>
+<script data-cfasync="false" defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script data-cfasync="false" defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script data-cfasync="false" defer src="/assets/site.js"></script>
+<script data-cfasync="false">${COMMON}${t ? TOOLJS + SCRIPT[t.slug] : ''}</script>
 <!--/email_off--></body></html>`;
   return new Response(html, { status, headers: { 'content-type': 'text/html;charset=utf-8', 'cache-control': 'no-cache' } });
 }
