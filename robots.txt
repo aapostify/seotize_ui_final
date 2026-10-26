@@ -1,0 +1,30 @@
+User-agent: *
+Allow: /
+# Signed-in app pages and old design copies (duplicates of the live pages)
+Disallow: /dashboard
+Disallow: /dash.html
+Disallow: /dash2.html
+Disallow: /partner/dashboard
+Disallow: /index1.html
+Disallow: /index2.html
+Disallow: /index3.html
+Disallow: /index4.html
+Disallow: /index5.html
+Disallow: /index6.html
+Disallow: /blogs1.html
+Disallow: /blogs2.html
+Disallow: /blogs3.html
+Disallow: /blogs4.html
+Disallow: /blogs5.html
+Disallow: /connect1.html
+Disallow: /connect2.html
+Disallow: /login1.html
+Disallow: /login2.html
+Disallow: /register1.html
+Disallow: /forgot-password1.html
+Disallow: /partner/index1.html
+Disallow: /partner/index2.html
+Disallow: /partner/login1.html
+
+Sitemap: https://seotize.net/sitemap.xml
+Sitemap: https://seotize.net/blogs/sitemap.xml

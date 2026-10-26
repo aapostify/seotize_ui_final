@@ -13,15 +13,13 @@
     <meta property="og:title" content="Blog - SEOTIZE | SEO Insights & Strategies">
     <meta property="og:description" content="Discover the latest SEO strategies, AI content tips, and digital marketing insights from SEOTIZE experts. Stay ahead with cutting-edge SEO knowledge.">
     <meta property="og:url" content="https://seotize.net/blogs">
-    <meta property="og:image" content="https://seotize.net/og-blog.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <!-- Twitter Card -->
+    <meta property="og:image" content="https://seotize.net/seotize.png">
+        <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@seotize">
     <meta name="twitter:title" content="Blog - SEOTIZE | SEO Insights & Strategies">
     <meta name="twitter:description" content="Discover the latest SEO strategies, AI content tips, and digital marketing insights from SEOTIZE experts.">
-    <meta name="twitter:image" content="https://seotize.net/og-blog.png">
+    <meta name="twitter:image" content="https://seotize.net/seotize.png">
     <!-- JSON-LD: Blog listing -->
     <script type="application/ld+json">
     {
@@ -36,7 +34,7 @@
         "url": "https://seotize.net",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://seotize.net/logo.png"
+          "url": "https://seotize.net/android-chrome-512x512.png"
         }
       }
     }
@@ -44,8 +42,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap"></noscript>
+<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css"></noscript>
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -66,18 +65,18 @@
   .filter-count{font-size:.7rem;padding:.08rem .45rem;border-radius:99px;background:var(--surface-2);color:var(--text-light)}
   .filter-btn.active .filter-count{background:rgba(255,255,255,.22);color:#fff}
   .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;padding:2.5rem 0 1rem}
-  .blog-grid .blog-card:first-child{grid-column:span 2;display:grid;grid-template-columns:1.2fr 1fr}
-  .blog-grid .blog-card:first-child .thumb{aspect-ratio:auto;min-height:100%}
-  .blog-grid .blog-card:first-child h3{font-size:1.45rem;-webkit-line-clamp:4;font-family:var(--font-display);letter-spacing:-.01em}
-  .blog-card .excerpt{color:var(--text-light);font-size:.88rem;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .blog-grid .blog-card h3{font-size:1.08rem;-webkit-line-clamp:2}
+  .blog-card .excerpt{color:var(--text-light);font-size:.88rem;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
   .blog-card .cat{position:absolute;top:.85rem;left:.85rem;padding:.3rem .7rem;border-radius:99px;font-size:.7rem;font-weight:700;background:rgba(15,23,42,.72);color:#fff;backdrop-filter:blur(6px)}
-  .blog-card .foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:.6rem;border-top:1px solid var(--border)}
+  .blog-card .foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:.8rem;border-top:1px solid var(--border)}
+  .blog-card .foot .read{margin-top:0}
   .avatar{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:.66rem;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--primary),var(--accent))}
   .author{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--text-light)}
   .no-results{text-align:center;padding:4rem 1rem;color:var(--text-light)}
   .no-results h3{font-family:var(--font-display);font-size:1.4rem;color:var(--text);margin-bottom:.4rem}
   .pagination{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:.45rem;padding:1.5rem 0 4rem}
   .page-btn{min-width:42px;height:42px;padding:0 .8rem;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-weight:600;cursor:pointer;transition:all .2s}
+  a.page-btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
   .page-btn:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
   .page-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
   .page-btn:disabled{opacity:.4;cursor:not-allowed}
@@ -93,9 +92,9 @@
   .reader h1{font-family:var(--font-display);font-size:clamp(2rem,4.5vw,3.2rem);font-weight:800;letter-spacing:-.03em;line-height:1.08;margin:1rem 0 1.4rem}
   .reader-meta{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;color:var(--text-light);font-size:.86rem;margin-bottom:1.8rem}
   .reader-cover{border-radius:var(--radius-lg);overflow:hidden;margin-bottom:2.2rem;border:1px solid var(--border);background:var(--surface-2)}
-  .reader-cover img{width:100%;height:auto}
+  .reader-cover img{width:100%;height:100%;aspect-ratio:16/9;object-fit:cover}
   .related{position:sticky;top:5.5rem;align-self:start;display:grid;gap:.8rem}
-  .related h4{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-light);margin-bottom:.3rem}
+  .related h2{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-light);margin-bottom:.3rem}
   .related a{display:grid;grid-template-columns:84px 1fr;gap:.8rem;padding:.6rem;border-radius:14px;text-decoration:none;color:var(--text);border:1px solid var(--border);background:var(--surface);transition:border-color .2s,transform .3s var(--ease)}
   .related a:hover{border-color:var(--primary);transform:translateX(4px)}
   .related img{width:84px;height:64px;object-fit:cover;border-radius:10px}
@@ -105,7 +104,7 @@
   .spinner{width:44px;height:44px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--primary);animation:spin .8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
   @media (max-width:1024px){.blog-grid{grid-template-columns:repeat(2,1fr)}.reader-wrap{grid-template-columns:1fr}.related{position:static}}
-  @media (max-width:680px){.blog-grid{grid-template-columns:1fr}.blog-grid .blog-card:first-child{grid-column:auto;display:flex}.blog-grid .blog-card:first-child .thumb{aspect-ratio:16/9}.blog-grid .blog-card:first-child h3{font-size:1.15rem}.reader-wrap{padding:1.5rem 1.1rem 6rem}}
+  @media (max-width:680px){.blog-grid{grid-template-columns:1fr}.reader-wrap{padding:1.5rem 1.1rem 6rem}}
 </style>
 </head>
 <body>
@@ -115,11 +114,11 @@
   <div class="nav-inner">
     <a href="/" class="logo" aria-label="Seotize home"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="logo-bg" d="M16 0C28.5 0 32 3.5 32 16S28.5 32 16 32 0 28.5 0 16 3.5 0 16 0z"/><path class="logo-base" d="M7 25.5h18"/><path class="logo-line" d="M7 21.5l5.2-6 4 3.2L24 10"/><path class="logo-flow" d="M7 21.5l5.2-6 4 3.2L24 10"/><path class="logo-head" d="M18.6 10H24v5.4"/></svg><span>Seotize<i class="logo-dot"></i></span></a>
     <nav aria-label="Main"><ul class="nav-links">
-      <li><a href="/" data-key="home">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs.html" data-key="blog" class="active">Blog</a></li>
+      <li><a href="/" data-key="home">Home</a></li><li><a href="/#features" data-key="features">Features</a></li><li><a href="/#pricing" data-key="pricing">Pricing</a></li><li><a href="/tools" data-key="tools">Tools <span class="new-chip">FREE</span></a></li><li><a href="/blogs" data-key="blog" class="active">Blog</a></li>
     </ul></nav>
     <div class="nav-actions">
       <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle dark mode"><i id="themeIcon" class="ri-moon-line"></i></button>
-      <a href="/connect.html" class="btn btn-primary nav-cta"><span>Get Started</span><i class="ri-arrow-right-line"></i></a>
+      <a href="/connect.html" class="btn btn-primary nav-cta" aria-label="Get Started"><span>Get Started</span><i class="ri-arrow-right-line"></i></a>
     </div>
   </div>
 </header>
@@ -175,14 +174,14 @@
         <a href="/" class="logo" aria-label="Seotize home"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="logo-bg" d="M16 0C28.5 0 32 3.5 32 16S28.5 32 16 32 0 28.5 0 16 3.5 0 16 0z"/><path class="logo-base" d="M7 25.5h18"/><path class="logo-line" d="M7 21.5l5.2-6 4 3.2L24 10"/><path class="logo-flow" d="M7 21.5l5.2-6 4 3.2L24 10"/><path class="logo-head" d="M18.6 10H24v5.4"/></svg><span>Seotize<i class="logo-dot"></i></span></a>
         <p>Real people, real rankings. Human engagement, AI content and a global CDN &mdash; in one platform.</p>
       </div>
-      <div><h4>Product</h4><ul>
+      <div><h2>Product</h2><ul>
         <li><a href="/#features">Features</a></li><li><a href="/#pricing">Pricing</a></li><li><a href="/tools">Free Tools</a></li><li><a href="/connect.html">Get Started</a></li>
       </ul></div>
-      <div><h4>Company</h4><ul>
+      <div><h2>Company</h2><ul>
         <li><a href="/about-us.html">About Us</a></li><li><a href="/contact-us.html">Contact Us</a></li><li><a href="/partner/">Become a Partner</a></li>
       </ul></div>
-      <div><h4>Resources</h4><ul>
-        <li><a href="/blogs.html">Blog</a></li><li><a href="/terms-of-service.html">Terms of Service</a></li><li><a href="/terms-of-service.html#privacy">Privacy Policy</a></li>
+      <div><h2>Resources</h2><ul>
+        <li><a href="/blogs">Blog</a></li><li><a href="/terms-of-service.html">Terms of Service</a></li><li><a href="/terms-of-service.html#privacy">Privacy Policy</a></li>
       </ul></div>
     </div>
     <div class="footer-bottom">
@@ -209,7 +208,7 @@
 </footer>
 <nav class="mobile-nav" aria-label="Mobile">
   <div class="mobile-items"><span class="mobile-pill"></span>
-    <a href="/" class="mobile-item" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/tools" class="mobile-item" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs.html" class="mobile-item active" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
+    <a href="/" class="mobile-item" data-key="home"><i class="ri-home-5-line"></i><span>Home</span></a><a href="/tools" class="mobile-item" data-key="tools"><i class="ri-tools-line"></i><span>Tools</span></a><a href="/#pricing" class="mobile-item" data-key="pricing"><i class="ri-price-tag-3-line"></i><span>Pricing</span></a><a href="/blogs" class="mobile-item active" data-key="blog"><i class="ri-article-line"></i><span>Blog</span></a><a href="/connect.html" class="mobile-item" data-key="connect"><i class="ri-user-star-line"></i><span>Connect</span></a>
   </div>
 </nav>
 <button class="to-top" aria-label="Back to top"><i class="ri-arrow-up-line"></i></button>
@@ -220,7 +219,14 @@
 (function () {
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const API = 'https://api.seotize.net';
-  let blogs = [], page = 1, total = 1, totalBlogs = 0, search = '', category = 'all', loading = false, keywords = {};
+  const SITE = 'https://seotize.net';
+  const LIST_TITLE = 'Blog - SEOTIZE | SEO Insights & Strategies';
+  const LIST_DESC = document.querySelector('meta[name="description"]').getAttribute('content');
+  // Clean, crawlable article URL (also what the blog worker renders server-side)
+  const link = id => '/blogs?id=' + encodeURIComponent(id);
+  // Ask the image CDN for a cropped copy so every thumbnail has the same ratio and weight
+  const sized = (url, w, h) => !url ? '' : /image-api\.seotize\.net/.test(url) ? url + (url.includes('?') ? '&' : '?') + `w=${w}&h=${h}&fit=cover` : url;
+  let blogs = [], page = Math.max(1, parseInt(new URLSearchParams(location.search).get('page')) || 1), total = 1, totalBlogs = 0, search = '', category = 'all', loading = false, keywords = {};
 
   const placeholders = [
       { _id: 'p1', title: 'SEO Strategies for Modern Search', image_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop' },
@@ -275,7 +281,7 @@
       
       try {
           let url = `${API}/blogs?page=${page}&page_size=9`;
-          if (search) url += `&search=${search}`;
+          if (search) url += `&search=${encodeURIComponent(search)}`;
           
           const res = await fetch(url);
           const data = await res.json();
@@ -382,14 +388,9 @@
       return `${month} ${day}, ${year}`;
   }
 
-  function formatApiTime(dateString) {
-      // Format: "Mon, 27 Oct 2025 05:56:25 GMT" to "05:56 AM"
-      const date = new Date(dateString);
-      let hours = date.getHours();
-      const minutes = String(date.getMinutes()).padStart(2, '0');
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12 || 12;
-      return `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
+  function isoDate(dateString) {
+      const d = new Date(dateString);
+      return isNaN(d) ? '' : d.toISOString();
   }
 
   function renderPagination() {
@@ -466,6 +467,9 @@
   function goPage(p) {
       if (p !== page && p >= 1 && p <= total && !loading) {
           page = p;
+          const u = new URL(location.href);
+          if (p > 1) u.searchParams.set('page', p); else u.searchParams.delete('page');
+          window.history.replaceState({}, '', u);
           loadBlogs();
           window.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -475,9 +479,7 @@
       if (id.startsWith('p')) {
           const blog = placeholders.find(b => b._id === id);
           showModal(blog.subject || blog.title, blog.image_url, 'Demo', new Date().toUTCString(), '<p>This is a demo article showcasing the blog functionality. In production, full article content would be displayed here.</p>', id);
-          const newUrl = new URL(window.location);
-          newUrl.searchParams.set('id', id);
-          window.history.pushState({}, '', newUrl);
+          window.history.pushState({}, '', link(id));
           return;
       }
 
@@ -488,13 +490,12 @@
           const data = await res.json();
           showModal(data.subject, data.image_url, getCategoryFromSubject(data.subject), data.creation_date, data.body, id);
 
-          const newUrl = new URL(window.location);
-          newUrl.searchParams.set('id', id);
-          window.history.pushState({}, '', newUrl);
+          const newUrl = new URL(link(id), SITE);
+          if (location.pathname + location.search !== link(id)) window.history.pushState({}, '', link(id));
 
           // Update page title and meta for this article so Googlebot sees them
           document.title = `${data.subject} - SEOTIZE Blog`;
-          document.querySelector('meta[name="description"]').setAttribute('content', data.title || data.subject);
+          document.querySelector('meta[name="description"]').setAttribute('content', (data.title || data.subject).slice(0, 160));
           document.querySelector('meta[property="og:title"]').setAttribute('content', data.subject);
           document.querySelector('meta[property="og:description"]').setAttribute('content', data.title || data.subject);
           document.querySelector('meta[property="og:url"]').setAttribute('content', newUrl.toString());
@@ -521,7 +522,7 @@
                   "@type": "Organization",
                   "name": "SEOTIZE",
                   "url": "https://seotize.net",
-                  "logo": { "@type": "ImageObject", "url": "https://seotize.net/logo.png" }
+                  "logo": { "@type": "ImageObject", "url": "https://seotize.net/android-chrome-512x512.png" }
               },
               "mainEntityOfPage": { "@type": "WebPage", "@id": newUrl.toString() }
           });
@@ -551,15 +552,15 @@
     }
     noRes.style.display = 'none';
     grid.style.display = 'grid';
-    grid.innerHTML = blogs.map(b => `
-      <a class="card card-hover blog-card" href="blogs.html?id=${b._id}" onclick="event.preventDefault(); openBlog('${b._id}')" aria-label="${esc(b.subject)}">
-        <div class="thumb"><img src="${b.image_url}" alt="${esc(b.subject)}" loading="lazy"><span class="cat">${getCategoryFromSubject(b.subject)}</span></div>
+    grid.innerHTML = blogs.map((b, i) => `
+      <a class="card card-hover blog-card" href="${link(b._id)}" data-id="${esc(b._id)}">
+        <div class="thumb"><img src="${esc(sized(b.image_url, 750, 422))}" alt="${esc(b.subject)}" width="750" height="422"${i > 2 ? ' loading="lazy"' : ''}><span class="cat">${esc(getCategoryFromSubject(b.subject))}</span></div>
         <div class="body">
-          <div class="meta"><i class="ri-calendar-line"></i> ${formatApiDate(b.creation_date)}</div>
-          <h3>${b.subject}</h3>
-          <p class="excerpt">${b.title}</p>
-          <div class="foot"><span class="read">Read more <i class="ri-arrow-right-line"></i></span>
-            <span class="author"><span class="avatar">ST</span>${formatApiTime(b.creation_date)}</span></div>
+          <div class="meta"><i class="ri-calendar-line"></i><time datetime="${esc(isoDate(b.creation_date))}">${formatApiDate(b.creation_date)}</time></div>
+          <h2>${esc(b.subject)}</h2>
+          <p class="excerpt">${esc(b.title)}</p>
+          <div class="foot"><span class="author"><span class="avatar">ST</span>SEOTIZE Team</span>
+            <span class="read">Read more <i class="ri-arrow-right-line"></i></span></div>
         </div>
       </a>`).join('');
     window.gsap && gsap.fromTo('.blog-grid .blog-card', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.55, stagger: 0.07, ease: 'power3.out' });
@@ -574,20 +575,19 @@
     modal.querySelector('#blogModalBody').innerHTML = `
       <div class="reader-wrap">
         <article>
-          <span class="chip"><i class="ri-bookmark-line"></i>${category}</span>
-          <h1>${subject}</h1>
+          <span class="chip"><i class="ri-bookmark-line"></i>${esc(category)}</span>
+          <h1>${esc(subject)}</h1>
           <div class="reader-meta">
             <span class="author"><span class="avatar">ST</span><b style="color:var(--text)">SEOTIZE Team</b></span>
-            <span><i class="ri-calendar-line"></i> ${formatApiDate(date)}</span>
-            <span><i class="ri-time-line"></i> ${formatApiTime(date)}</span>
+            <span><i class="ri-calendar-line"></i> <time datetime="${esc(isoDate(date))}">${formatApiDate(date)}</time></span>
           </div>
-          ${imageUrl ? `<div class="reader-cover"><img src="${imageUrl}" alt="${esc(subject)}"></div>` : ''}
+          ${imageUrl ? `<div class="reader-cover"><img src="${esc(sized(imageUrl, 1200, 675))}" alt="${esc(subject)}" width="1200" height="675"></div>` : ''}
           <div class="prose blog-content">${cleanContent}</div>
         </article>
-        ${relatedBlogs.length ? `<aside class="related"><h4>Related articles</h4>
-          ${relatedBlogs.map(blog => `<a href="blogs.html?id=${blog._id}" onclick="event.preventDefault(); openBlog('${blog._id}')">
-            <img src="${blog.image_url}" alt="${esc(blog.subject)}" loading="lazy">
-            <div><b>${blog.subject}</b><small>${getCategoryFromSubject(blog.subject)} · ${formatApiDate(blog.creation_date)}</small></div></a>`).join('')}
+        ${relatedBlogs.length ? `<aside class="related"><h2>Related articles</h2>
+          ${relatedBlogs.map(blog => `<a href="${link(blog._id)}" data-id="${esc(blog._id)}">
+            <img src="${esc(sized(blog.image_url, 168, 128))}" alt="" width="84" height="64" loading="lazy">
+            <div><b>${esc(blog.subject)}</b><small>${esc(getCategoryFromSubject(blog.subject))} · ${formatApiDate(blog.creation_date)}</small></div></a>`).join('')}
         </aside>` : ''}
       </div>`;
     const wasOpen = modal.classList.contains('active');
@@ -610,13 +610,33 @@
     const newUrl = new URL(window.location);
     newUrl.searchParams.delete('id');
     window.history.pushState({}, '', newUrl);
-    document.title = 'Blog - SEOTIZE | SEO Insights & Strategies';
+    resetHead();
+  }
+
+  function resetHead() {
+    document.title = LIST_TITLE;
+    document.querySelector('meta[name="description"]').setAttribute('content', LIST_DESC);
+    document.querySelector('link[rel="canonical"]').setAttribute('href', SITE + '/blogs');
+    document.querySelector('meta[property="og:url"]').setAttribute('content', SITE + '/blogs');
+    const ld = document.getElementById('article-jsonld');
+    if (ld) ld.remove();
   }
 
   function checkUrlParams() {
     const blogId = new URLSearchParams(window.location.search).get('id');
-    if (blogId) setTimeout(() => openBlog(blogId), 500);
+    if (!blogId) return;
+    // Already rendered on the server (workers/blog-worker.js): just lock the page scroll
+    if (document.getElementById('blogModal').dataset.ssr === blogId) { document.body.style.overflow = 'hidden'; return; }
+    setTimeout(() => openBlog(blogId), 500);
   }
+
+  // Cards and related links are real <a href> links for crawlers; open them in the reader
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[data-id]');
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    e.preventDefault();
+    openBlog(a.dataset.id);
+  });
 
   window.openBlog = openBlog; window.closeBlogModal = closeBlogModal; window.setFilter = setFilter;
 
@@ -632,7 +652,8 @@
     const id = new URLSearchParams(location.search).get('id');
     if (!id && document.getElementById('blogModal').classList.contains('active')) {
       document.getElementById('blogModal').classList.remove('active'); document.body.style.overflow = '';
-    }
+      resetHead();
+    } else if (id) openBlog(id);
   });
 
   document.addEventListener('DOMContentLoaded', () => {
