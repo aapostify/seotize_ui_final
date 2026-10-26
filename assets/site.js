@@ -51,7 +51,8 @@
   }
   window.SEOTIZE_setMobileActive = function (key) {
     mItems.forEach(i => i.classList.toggle('active', i.dataset.key === key));
-    $$('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.key === key));
+    const links = $$('.nav-links a');
+    if (links.some(a => a.dataset.key === key)) links.forEach(a => a.classList.toggle('active', a.dataset.key === key));
     movePill();
   };
   window.addEventListener('resize', movePill);

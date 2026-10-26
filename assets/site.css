@@ -386,3 +386,10 @@ html.anim [data-reveal="fade"]{transform:none}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+/* ---------- Legacy aliases (page-specific CSS on secondary pages) ---------- */
+:root,body.dark{--bg-secondary:var(--surface);--primary-glow:var(--glow);--text-muted:var(--muted);--error:var(--danger);--card-shadow:var(--shadow)}
+.page-hero .hero-badge,.page-hero .hero-stats{position:relative;z-index:1}
+.content h2,.contact-form-wrap h2,.legal-section h2{font-family:var(--font-display);letter-spacing:-.02em}
+.cta-band h2,.content-section .cta-band h2{color:#fff;-webkit-text-fill-color:#fff}
+.page-hero .hero-badge{margin-top:1.5rem}

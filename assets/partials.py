@@ -45,6 +45,7 @@ def nav(key):
         chip = ' <span class="new-chip">FREE</span>' if k == "tools" else ""
         cls = ' class="active"' if k == key else ""
         items.append(f'<li><a href="{href}" data-key="{k}"{cls}>{label}{chip}</a></li>')
+    cta_href, cta_label = ("/partner/login.html", "Partner Login") if key == "partner" else ("/connect.html", "Get Started")
     return f"""{THEME_BOOT}
 <header class="topnav" id="topnav">
   <div class="nav-inner">
@@ -57,7 +58,7 @@ def nav(key):
     </ul></nav>
     <div class="nav-actions">
       <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle dark mode"><i id="themeIcon" class="ri-moon-line"></i></button>
-      <a href="/connect.html" class="btn btn-primary nav-cta"><span>Get Started</span><i class="ri-arrow-right-line"></i></a>
+      <a href="{cta_href}" class="btn btn-primary nav-cta"><span>{cta_label}</span><i class="ri-arrow-right-line"></i></a>
     </div>
   </div>
 </header>"""

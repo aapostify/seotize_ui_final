@@ -625,6 +625,11 @@
     document.title = 'Blog - SEOTIZE | SEO Insights & Strategies';
   }
 
+  function checkUrlParams() {
+    const blogId = new URLSearchParams(window.location.search).get('id');
+    if (blogId) setTimeout(() => openBlog(blogId), 500);
+  }
+
   window.openBlog = openBlog; window.closeBlogModal = closeBlogModal; window.setFilter = setFilter;
 
   document.getElementById('blogModal').addEventListener('scroll', e => {
