@@ -4185,7 +4185,7 @@ th, td {
                     <div class="step-indicator">1</div>
                         <div class="step-info">
                             <div class="step-title">Website</div>
-                            <div class="step-description">Pick your site from Search Console and a plan</div>
+                            <div class="step-description">Choose your website and a plan</div>
                         </div>
                 </div>
                 <div class="progress-step" data-step="2">
@@ -4323,50 +4323,22 @@ th, td {
                     <div id="subscriptionOptions" style="display: block;">
                         <div class="form-group">
                             <label class="form-label" style="margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem;">Billing Cycle</label>
-                            <div class="billing-cycle-options">
-                                <div class="billing-option" data-cycle="monthly" onclick="selectBillingCycle('monthly', this)">
-                                    <div class="billing-option-top">
-                                        <div class="billing-icon">
-                                            <i class="ri-calendar-line"></i>
-                                        </div>
-                                        <div class="billing-option-header">
-                                            <span class="billing-period">Monthly</span>
-                                            <span class="billing-frequency">Billed every 30 days</span>
-                                        </div>
-                                    </div>
-                                    <div class="billing-price">Pay monthly</div>
-                                    <div class="billing-note">Cancel anytime for full flexibility</div>
-                                </div>
-                                <div class="billing-option billing-popular selected" data-cycle="quarterly" onclick="selectBillingCycle('quarterly', this)">
-                                    <div class="billing-badge">Popular</div>
-                                    <div class="billing-option-top">
-                                        <div class="billing-icon">
-                                            <i class="ri-calendar-check-line"></i>
-                                        </div>
-                                        <div class="billing-option-header">
-                                            <span class="billing-period">Quarterly</span>
-                                            <span class="billing-frequency">Billed every 3 months</span>
-                                        </div>
-                                        <span class="billing-save">Save 10%</span>
-                                    </div>
-                                    <div class="billing-price">3 months billing</div>
-                                    <div class="billing-note">Ideal balance of savings and agility</div>
-                                </div>
-                                <div class="billing-option" data-cycle="yearly" onclick="selectBillingCycle('yearly', this)">
-                                    <div class="billing-badge" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">Best Value</div>
-                                    <div class="billing-option-top">
-                                        <div class="billing-icon">
-                                            <i class="ri-calendar-todo-line"></i>
-                                        </div>
-                                        <div class="billing-option-header">
-                                            <span class="billing-period">Yearly</span>
-                                            <span class="billing-frequency">Billed every 12 months</span>
-                                        </div>
-                                        <span class="billing-save">Save 20%</span>
-                                    </div>
-                                    <div class="billing-price">12 months billing</div>
-                                    <div class="billing-note">Maximize savings for long-term growth</div>
-                                </div>
+                            <div class="bc-options" role="radiogroup" aria-label="Billing cycle">
+                                <button type="button" class="bc-option" data-cycle="monthly" role="radio" aria-checked="false" onclick="selectBillingCycle('monthly', this)">
+                                    <span class="bc-radio"></span>
+                                    <span class="bc-body"><span class="bc-name">Monthly</span><span class="bc-sub">Billed every month</span></span>
+                                    <span class="bc-save muted">Flexible</span>
+                                </button>
+                                <button type="button" class="bc-option selected" data-cycle="quarterly" role="radio" aria-checked="true" onclick="selectBillingCycle('quarterly', this)">
+                                    <span class="bc-radio"></span>
+                                    <span class="bc-body"><span class="bc-name">Quarterly <em class="bc-badge">Popular</em></span><span class="bc-sub">Billed every 3 months</span></span>
+                                    <span class="bc-save">Save 10%</span>
+                                </button>
+                                <button type="button" class="bc-option" data-cycle="yearly" role="radio" aria-checked="false" onclick="selectBillingCycle('yearly', this)">
+                                    <span class="bc-radio"></span>
+                                    <span class="bc-body"><span class="bc-name">Yearly <em class="bc-badge best">Best value</em></span><span class="bc-sub">Billed every 12 months</span></span>
+                                    <span class="bc-save">Save 20%</span>
+                                </button>
                             </div>
                             <select class="form-select" id="billingCycle" style="display: none;">
                                 <option value="monthly">Monthly</option>
@@ -4393,7 +4365,7 @@ th, td {
                         </div>
                         <div class="budget-summary">
                             <div class="budget-summary-item">
-                                <div class="budget-summary-label">Provider Fee</div>
+                                <div class="budget-summary-label" id="providerFeeLabel">Stripe Fee</div>
                                 <div class="budget-summary-value" id="providerFee">$0.00</div>
                             </div>
                             <div class="budget-summary-item">
@@ -9798,12 +9770,11 @@ function resetTaskCreatorState() {
         billingCycle.value = 'quarterly'; // Set default to quarterly (popular option)
     }
     // Reset billing cycle visual options
-    document.querySelectorAll('.billing-option').forEach(opt => opt.classList.remove('selected'));
-    // Set quarterly as selected by default
-    const quarterlyOption = document.querySelector('.billing-option.billing-popular');
-    if (quarterlyOption) {
-        quarterlyOption.classList.add('selected');
-    }
+    document.querySelectorAll('.bc-option').forEach(opt => {
+        const on = opt.dataset.cycle === 'quarterly';
+        opt.classList.toggle('selected', on);
+        opt.setAttribute('aria-checked', on ? 'true' : 'false');
+    });
     // Reset payment method visibility for subscription (only Stripe visible)
     const stripeCard = document.querySelector('.payment-card[data-method="stripe"]');
     const oxapayCard = document.querySelector('.payment-card[data-method="oxapay"]');
@@ -9821,7 +9792,7 @@ function resetTaskCreatorState() {
     const body = document.querySelector('#seoTaskCreator .task-creator-body');
     if (body) body.scrollTop = 0;
     tcGsc.site = '';
-    tcGsc.page = '';
+    tcGsc.home = '';
     tcGsc.rows = null;
     renderGscWebsite();
     updateBudgetSummary();
@@ -10030,9 +10001,10 @@ function selectPaymentMethod(method) {
 // Select billing cycle
 function selectBillingCycle(cycle, element) {
     // Remove selected class from all billing options
-    document.querySelectorAll('.billing-option').forEach(opt => opt.classList.remove('selected'));
-    // Add selected class to clicked option
-    element.classList.add('selected');
+    document.querySelectorAll('.bc-option').forEach(opt => {
+        opt.classList.toggle('selected', opt === element);
+        opt.setAttribute('aria-checked', opt === element ? 'true' : 'false');
+    });
     // Update the hidden select element
     document.getElementById('billingCycle').value = cycle;
     // Update budget summary to reflect new billing cycle
@@ -10061,6 +10033,8 @@ function updateBudgetSummary() {
     const totalPlatformFee = monthlyPlatformFee * multiplier;
     const totalFinalAmount = monthlyFinalAmount * multiplier;
     document.getElementById('estimatedClicks').value = estimatedClicks.toLocaleString();
+    const feeLabel = document.getElementById('providerFeeLabel');
+    if (feeLabel) feeLabel.textContent = taskCreatorState.paymentMethod === 'oxapay' ? 'OxaPay Fee' : 'Stripe Fee';
     // Update fee displays with period info
     const providerFeeElem = document.getElementById('providerFee');
     const platformFeeElem = document.getElementById('platformFee');
@@ -13928,9 +13902,12 @@ async function viewPaymentDetails(billingId, isAutoCheck = false, noPoll = false
 .ppc-head{display:flex;align-items:center;gap:.7rem;min-width:0}
 .ppc-icon{width:2.25rem;height:2.25rem;flex-shrink:0;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;font-size:1.05rem}
 .ppc-ring{width:1.1rem;height:1.1rem;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:pendingSpin 1s linear infinite}
-.ppc-text{min-width:0}
+.ppc-text{min-width:0;flex:1}
+.pay-card strong,.pay-time div strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pay-card label,.pay-time div label,.pay-section h3{white-space:nowrap}
+.pay-time div{min-width:0}
 .ppc-text b{display:block;font-size:.92rem;font-weight:700;white-space:nowrap}
-.ppc-text small{display:block;font-size:.74rem;opacity:.8;line-height:1.35}
+.ppc-text small{display:block;font-size:.74rem;opacity:.8;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ppc-progress{height:4px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
 .ppc-progress i{display:block;height:100%;width:0;border-radius:inherit;background:#fff;transition:width 1s linear}
 .pay-pending-check .check-timer{display:inline-flex;align-items:center;gap:.4rem;align-self:flex-start;padding:.35rem .75rem;background:rgba(255,255,255,.15);border-radius:99px;font-size:.78rem;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -13981,7 +13958,7 @@ async function viewPaymentDetails(billingId, isAutoCheck = false, noPoll = false
 <div class="pay-amount"><h2>$${(p.amount||0).toFixed(2)}<span>${(p.currency||'USD').toUpperCase()}</span></h2></div>
 <div class="pay-status${isPending?' pending':''}"><i class="${sI}"></i>${sT}</div>
 ${isPending?`<div class="pay-pending-check">
-<div class="ppc-head"><span class="ppc-icon"><span class="ppc-ring"></span></span><div class="ppc-text"><b>Verifying payment</b><small>Checking with the payment provider</small></div></div>
+<div class="ppc-head"><span class="ppc-icon"><span class="ppc-ring"></span></span><div class="ppc-text"><b>Verifying payment</b><small>Checking with your provider</small></div></div>
 <div class="ppc-progress"><i id="pendingCheckBar"></i></div>
 <div class="check-timer"><i class="ri-refresh-line"></i><span class="ppc-next">Next check in <b id="pendingCheckTimer">${PAYMENT_CHECK_SECONDS}</b>s</span><span class="ppc-now">Checking now…</span></div>
 </div>`:''}
@@ -14882,22 +14859,21 @@ function gscConnectFromClick(btn, after) {
 }
 
 // ---------- Task creator: website and keywords come only from Search Console ----------
-const tcGsc = { site: '', page: '', pages: null, home: '', days: 28, sort: 'impressions', limit: 50, rows: null, seq: 0, pseq: 0 };
+const tcGsc = { site: '', home: '', days: 28, sort: 'impressions', limit: 50, rows: null, seq: 0, hseq: 0 };
 const gscPath = u => { try { const x = new URL(u); return (x.pathname + x.search) || '/'; } catch (_) { return u; } };
-function tcTaskUrl() { return tcGsc.page || tcGsc.home || (tcGsc.site ? gscSiteUrl(tcGsc.site) : ''); }
 function tcSetUrl() {
-    const url = tcTaskUrl();
+    const url = tcGsc.home || (tcGsc.site ? gscSiteUrl(tcGsc.site) : '');
     document.getElementById('taskUrl').value = url;
     const prev = document.getElementById('gscUrlPreview');
     if (prev) prev.textContent = url || '—';
 }
 
-// Step 1: connect, then choose the site and the page to promote
+// Step 1: connect, then choose the site
 async function renderGscWebsite(errMsg) {
     const box = document.getElementById('gscWebsite');
     if (!box) return;
     if (!gscToken()) {
-        tcGsc.site = ''; tcGsc.page = ''; tcGsc.pages = null; tcGsc.home = '';
+        tcGsc.site = ''; tcGsc.home = '';
         document.getElementById('taskUrl').value = '';
         box.innerHTML = gscConnectCard({
             title: 'Connect Google Search Console',
@@ -14908,13 +14884,10 @@ async function renderGscWebsite(errMsg) {
     }
     box.innerHTML = `<div class="gsc-site-box">
         <div class="gsc-panel-head">
-            <div class="gsc-panel-title">${GSC_G_ICON}<div><b>Search Console connected</b><span>Choose the site and the page to promote</span></div></div>
+            <div class="gsc-panel-title">${GSC_G_ICON}<div><b>Search Console</b><span>Connected · choose the website for this task</span></div></div>
             <button type="button" class="tc-link" data-gsc-disconnect>Disconnect</button>
         </div>
-        <div class="gsc-fields">
-            <label class="gsc-field"><span>Site</span><select id="gscSiteSel"><option>Loading your sites…</option></select></label>
-            <label class="gsc-field"><span>Page to promote</span><select id="gscPageSel" disabled><option value="">Whole site (homepage)</option></select></label>
-        </div>
+        <label class="gsc-field"><span>Website</span><select id="gscSiteSel"><option>Loading your sites…</option></select></label>
         <div class="gsc-url-preview"><i class="ri-links-line"></i><span id="gscUrlPreview">—</span></div>
     </div>`;
     const siteSel = document.getElementById('gscSiteSel');
@@ -14922,50 +14895,33 @@ async function renderGscWebsite(errMsg) {
         const sites = await gscSites();
         if (!siteSel.isConnected) return;
         if (!sites.length) {
-            box.querySelector('.gsc-fields').innerHTML = '<div class="gsc-state">This Google account has no verified sites in Search Console. Add your site at search.google.com/search-console, then come back.</div>';
+            siteSel.closest('.gsc-field').outerHTML = '<div class="gsc-state">This Google account has no verified sites in Search Console. Add your site at search.google.com/search-console, then come back.</div>';
             return;
         }
-        if (!sites.includes(tcGsc.site)) { tcGsc.site = sites[0]; tcGsc.page = ''; tcGsc.pages = null; }
+        if (!sites.includes(tcGsc.site)) { tcGsc.site = sites[0]; tcGsc.home = ''; }
         siteSel.innerHTML = sites.map(x => `<option value="${escHtml(x)}">${escHtml(gscSiteLabel(x))}</option>`).join('');
         siteSel.value = tcGsc.site;
-        siteSel.onchange = () => { tcGsc.site = siteSel.value; tcGsc.page = ''; tcGsc.pages = null; tcGsc.home = ''; tcGsc.rows = null; loadGscPages(); };
+        siteSel.onchange = () => { tcGsc.site = siteSel.value; tcGsc.home = ''; tcGsc.rows = null; tcSetUrl(); findGscHome(); };
         tcSetUrl();
-        loadGscPages();
+        findGscHome();
     } catch (err) {
         if (err.auth) renderGscWebsite(err.message);
-        else box.querySelector('.gsc-fields').innerHTML = `<div class="gsc-state tc-error">${escHtml(err.message)}</div>`;
+        else siteSel.closest('.gsc-field').outerHTML = `<div class="gsc-state tc-error">${escHtml(err.message)}</div>`;
     }
 }
-async function loadGscPages() {
-    const sel = document.getElementById('gscPageSel');
-    if (!sel || !tcGsc.site) return;
-    const seq = ++tcGsc.pseq;
-    sel.disabled = true;
-    sel.innerHTML = '<option value="">Loading pages…</option>';
+// The homepage URL exactly as Search Console reports it (www or not, http or https)
+async function findGscHome() {
+    if (!tcGsc.site) return;
+    const seq = ++tcGsc.hseq;
     try {
-        const rows = tcGsc.pages || await gscQuery(tcGsc.site, { days: 90, dimensions: ['page'], rowLimit: 500 });
-        if (seq !== tcGsc.pseq || !sel.isConnected) return;
-        tcGsc.pages = rows;
-        // The real homepage URL (www or not, http or https) as Search Console reports it
-        const home = rows.map(r => r.keys[0]).find(u => gscPath(u) === '/');
-        tcGsc.home = home || '';
-        const others = rows.filter(r => r.keys[0] !== home).sort((a, b) => b.clicks - a.clicks || b.impressions - a.impressions);
-        sel.innerHTML = `<option value="">Whole site (homepage)</option>` +
-            others.map(r => `<option value="${escHtml(r.keys[0])}">${escHtml(gscPath(r.keys[0]))} · ${gscNum(r.clicks)} clicks</option>`).join('');
-        if (tcGsc.page && rows.some(r => r.keys[0] === tcGsc.page)) sel.value = tcGsc.page; else tcGsc.page = '';
-        sel.disabled = false;
-        sel.onchange = () => { tcGsc.page = sel.value; tcGsc.rows = null; tcSetUrl(); };
+        const rows = await gscQuery(tcGsc.site, { days: 90, dimensions: ['page'], rowLimit: 500 });
+        if (seq !== tcGsc.hseq) return;
+        tcGsc.home = rows.map(r => r.keys[0]).find(u => gscPath(u) === '/') || '';
         tcSetUrl();
-    } catch (err) {
-        if (seq !== tcGsc.pseq) return;
-        if (err.auth) return renderGscWebsite(err.message);
-        sel.innerHTML = '<option value="">Whole site (homepage)</option>';
-        sel.disabled = false;
-        tcSetUrl();
-    }
+    } catch (_) { /* keep the property URL */ }
 }
 
-// Step 2: the keywords the chosen site or page already ranks for
+// Step 2: the keywords the chosen site already ranks for
 function renderGscKeywordsCard(errMsg) {
     const card = document.getElementById('gscKeywordsCard');
     if (!card) return;
@@ -14973,10 +14929,9 @@ function renderGscKeywordsCard(errMsg) {
         card.innerHTML = gscConnectCard({ title: 'Connect Google Search Console', text: 'Keywords come from Search Console. Connect to see the keywords your site ranks for.', error: errMsg });
         return;
     }
-    const target = tcGsc.page ? gscPath(tcGsc.page) : 'Whole site';
     card.innerHTML = `<div class="gsc-panel">
         <div class="gsc-panel-head">
-            <div class="gsc-panel-title">${GSC_G_ICON}<div><b>${escHtml(gscSiteLabel(tcGsc.site))} <small>${escHtml(target)}</small></b><span id="gscSelSummary">Loading keywords…</span></div></div>
+            <div class="gsc-panel-title">${GSC_G_ICON}<div><b>${escHtml(gscSiteLabel(tcGsc.site))}</b><span id="gscSelSummary">Loading keywords…</span></div></div>
         </div>
         <div class="gsc-toolbar">
             <select id="gscDays" aria-label="Date range"><option value="7">7 days</option><option value="28">28 days</option><option value="90">3 months</option><option value="480">16 months</option></select>
@@ -15003,8 +14958,7 @@ async function loadGscKeywords() {
     tcGsc.rows = null;
     list.innerHTML = '<div class="gsc-state"><span class="gsc-spinner"></span> Loading keywords…</div>';
     try {
-        const filters = tcGsc.page ? [{ dimension: 'page', operator: 'equals', expression: tcGsc.page }] : [];
-        const rows = await gscQuery(tcGsc.site, { days: tcGsc.days, dimensions: ['query'], rowLimit: 1000, filters });
+        const rows = await gscQuery(tcGsc.site, { days: tcGsc.days, dimensions: ['query'], rowLimit: 1000 });
         if (seq !== tcGsc.seq) return;
         tcGsc.rows = rows;
         renderGscKeywordList();
@@ -15023,7 +14977,7 @@ function renderGscKeywordList() {
     if (!list || !tcGsc.rows) return;
     const rows = gscVisibleKeywords();
     if (!rows.length) {
-        list.innerHTML = `<div class="gsc-state">No keyword data for ${tcGsc.page ? 'this page' : 'this site'} in this period.<br>Try a longer date range${tcGsc.page ? ' or the whole site' : ''}.</div>`;
+        list.innerHTML = `<div class="gsc-state">No keyword data for this site in this period.<br>Try a longer date range.</div>`;
         updateGscSelectionSummary();
         return;
     }
@@ -15500,7 +15454,9 @@ tbody tr:hover{background:var(--card-hover)}
 .docs-toc a:hover,.docs-toc a.active{background:var(--glow);color:var(--primary)}
 .docs-hero{position:relative;overflow:hidden;padding:1.8rem;border-radius:var(--radius-xl);border:1px solid var(--border);background:radial-gradient(90% 140% at 100% 0%,var(--glow) 0%,transparent 60%),var(--card);margin-bottom:1.25rem}
 .docs-hero small{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--primary)}
-.docs-hero h2{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;margin:.4rem 0 .5rem}
+.docs-hero{container-type:inline-size}
+.docs-hero h2{font-size:clamp(1.1rem,6cqi,2.2rem);font-weight:800;margin:.4rem 0 .5rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.docs-hero p b{white-space:nowrap}
 .docs-hero p{color:var(--text-secondary);max-width:680px}
 .code-line{display:flex;align-items:center;gap:.6rem;margin-top:1.1rem;padding:.75rem .9rem;border-radius:14px;background:#0b1222;color:#e2e8f0;font-family:var(--font-mono);font-size:.84rem;overflow:hidden}
 .code-line code{flex:1;min-width:0;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
@@ -15561,12 +15517,13 @@ tbody tr:hover{background:var(--card-hover)}
 .pg-group-title{margin-bottom:.6rem;font:700 .68rem var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--text-tertiary)}
 .pg-group>select{width:100%}
 .pg-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem .75rem}
-.pg-grid label{display:flex;flex-direction:column;gap:.3rem;min-width:0;font-size:.76rem;font-weight:600;color:var(--text-secondary)}
+.pg-grid label{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;row-gap:.3rem;column-gap:.4rem;min-width:0;font-size:.76rem;font-weight:600;color:var(--text-secondary);white-space:nowrap}
+.pg-grid label>input,.pg-grid label>select,.pg-grid label>.pg-chips,.pg-grid label>.pg-color{grid-column:1/-1}
 .pg-grid label.full{grid-column:1/-1}
 .pg-controls input:not([type=range]):not([type=color]),.pg-controls select{width:100%;height:38px;padding:0 .65rem;border-radius:10px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);font:500 .86rem 'Inter',sans-serif;outline:none}
 .pg-controls input:focus,.pg-controls select:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--glow)}
 .pg-controls input[type=range]{width:100%;height:24px;padding:0;accent-color:var(--primary);cursor:pointer}
-.pg-controls .rv{font-family:var(--font-mono);color:var(--primary);margin-left:.25rem}
+.pg-controls .rv{font-family:var(--font-mono);color:var(--primary);text-align:right}
 .pg-color{display:flex;align-items:center;gap:.5rem}
 .pg-color input{width:44px;height:34px;padding:0;border:1px solid var(--border);border-radius:8px;background:none;cursor:pointer}
 .pg-color code{font-family:var(--font-mono);font-size:.8rem;color:var(--text)}
@@ -15841,13 +15798,6 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
   #seoTaskCreator .priority-option:hover{transform:translateY(-2px)}
   #seoTaskCreator .payment-type-toggle{margin-bottom:1.25rem}
   #seoTaskCreator .payment-options{margin-bottom:1.25rem;gap:.85rem}
-  #seoTaskCreator .billing-cycle-options{gap:.85rem;margin-bottom:1.25rem}
-  #seoTaskCreator .billing-option{min-height:0;padding:1.1rem 1rem 1rem;gap:.55rem}
-  #seoTaskCreator .billing-option:hover{transform:translateY(-2px)}
-  #seoTaskCreator .billing-option.selected::after{top:auto;bottom:.8rem;right:.8rem}
-  #seoTaskCreator .billing-option{padding-top:1.5rem}
-  #seoTaskCreator .billing-cycle-options .billing-badge{top:-.7rem;right:1rem;padding:.2rem .65rem;font-size:.68rem}
-  #seoTaskCreator .billing-cycle-options{padding-top:.7rem}
   #seoTaskCreator .budget-calculator{margin-bottom:0;padding:1.1rem}
 }
 
@@ -15886,6 +15836,42 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 #seoTaskCreator .payment-title{margin:0}
 #seoTaskCreator .payment-card.selected::after{top:50%;transform:translateY(-50%)}
 @media (max-width:768px){#seoTaskCreator .payment-options{grid-template-columns:1fr;gap:.6rem;margin-bottom:1rem}#seoTaskCreator .gsc-list{max-height:46dvh}#seoTaskCreator .gsc-toolbar select{flex:1 1 130px;padding:0 .5rem}#seoTaskCreator .gsc-toolbar #gscDays{flex:0 1 auto}}
+
+/* ---------- One-line titles and labels ---------- */
+.gsc-block-head h4,.gsc-block-head>span,.gsc-panel-title b,.gsc-panel-title span,.gsc-connect-text b,.gsc-field>span,.gsc-kpi span,.gsc-legend span,
+.tcfg-label,.tii-head b,.pg-group-title,.pg-out-label span,.docs-section-head h3,.selected-keywords-header>span,.gsc-src,
+.task-modal-section-title,#seoTaskCreator .form-label,#seoTaskCreator .step-title,#seoTaskCreator .budget-summary-label,#seoTaskCreator .budget-field label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.gsc-block-head h4{flex-shrink:0;max-width:100%}
+.gsc-panel-title>div{min-width:0}
+.gsc-panel-head .tc-link{flex-shrink:0}
+.gsc-kpi,.gsc-chart-card,.gsc-block{min-width:0}
+@media (max-width:640px){
+  #seoTaskCreator .budget-summary-label{font-size:.6rem!important;letter-spacing:.02em!important}
+  .gsc-panel-title span{white-space:normal}
+}
+
+/* ---------- Billing cycle ---------- */
+.bc-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;margin-bottom:1.25rem}
+.bc-option{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.55rem;min-width:0;padding:1rem;border:1.5px solid var(--border);border-radius:16px;background:var(--card);color:var(--text);text-align:left;font-family:'Inter',sans-serif;cursor:pointer;transition:border-color .2s,box-shadow .2s,background .2s}
+.bc-option:hover{border-color:color-mix(in srgb,var(--primary) 55%,var(--border))}
+.bc-option.selected{border-color:var(--primary);background:linear-gradient(180deg,var(--glow),transparent 75%),var(--card);box-shadow:0 0 0 3px var(--glow)}
+.bc-radio{position:absolute;top:1rem;right:1rem;width:20px;height:20px;border-radius:50%;border:2px solid var(--border);background:var(--card);transition:border-color .2s,border-width .2s}
+.bc-option.selected .bc-radio{border:6px solid var(--primary)}
+.bc-body{display:flex;flex-direction:column;gap:.2rem;min-width:0;padding-right:1.75rem}
+.bc-name{display:flex;align-items:center;gap:.45rem;font-size:1rem;font-weight:700;white-space:nowrap}
+.bc-badge{padding:.12rem .45rem;border-radius:99px;background:var(--primary);color:#fff;font-style:normal;font-size:.62rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.bc-badge.best{background:linear-gradient(135deg,#ec4899,#f97316)}
+.bc-sub{font-size:.8rem;color:var(--text-secondary);white-space:nowrap}
+.bc-save{padding:.2rem .55rem;border-radius:8px;background:rgba(16,185,129,.14);color:#059669;font-size:.76rem;font-weight:700;white-space:nowrap}
+.bc-save.muted{background:var(--bg-tertiary);color:var(--text-secondary)}
+[data-theme="dark"] .bc-save:not(.muted){color:#34d399}
+@media (max-width:1000px){
+  .bc-options{grid-template-columns:minmax(0,1fr);gap:.5rem;margin-bottom:1rem}
+  .bc-option{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:.75rem;padding:.8rem .9rem}
+  .bc-radio{position:static}
+  .bc-body{padding-right:0}
+  .bc-name{font-size:.95rem}
+}
 
 /* ---------- Selected keywords ---------- */
 #seoTaskCreator .selected-keywords{margin:1.1rem 0 0;padding:.85rem .9rem;border:1px solid color-mix(in srgb,var(--primary) 25%,var(--border));border-radius:14px;background:var(--glow)}
@@ -15926,7 +15912,6 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 
 /* ---------- Search Console: task creator ---------- */
 .gsc-site-box{display:flex;flex-direction:column;gap:.85rem;padding:1rem;border:1px solid var(--border);border-radius:16px;background:radial-gradient(120% 160% at 0% 0%,var(--glow) 0%,transparent 55%),var(--card)}
-.gsc-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:.7rem}
 .gsc-field{display:flex;flex-direction:column;gap:.35rem;min-width:0}
 .gsc-field>span{font-size:.74rem;font-weight:700;letter-spacing:.02em;color:var(--text-secondary)}
 .gsc-field select{width:100%;min-width:0;height:44px;padding:0 .75rem;border:1.5px solid var(--border);border-radius:12px;background:var(--input-bg);color:var(--text);font:500 .9rem 'Inter',sans-serif;outline:none;cursor:pointer;text-overflow:ellipsis}
@@ -15934,8 +15919,7 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 .gsc-field select:disabled{opacity:.6;cursor:progress}
 .gsc-url-preview{display:flex;align-items:center;gap:.5rem;min-width:0;padding:.55rem .75rem;border-radius:10px;background:var(--bg-tertiary);font:500 .8rem var(--font-mono);color:var(--text-secondary)}
 .gsc-url-preview span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
-.gsc-panel-title b small{margin-left:.35rem;font:500 .74rem var(--font-mono);color:var(--primary)}
-@media (max-width:640px){.gsc-fields{grid-template-columns:minmax(0,1fr)}.gsc-site-box{padding:.85rem}}
+@media (max-width:640px){.gsc-site-box{padding:.85rem}}
 .gsc-panel{display:flex;flex-direction:column;gap:.65rem;padding:1rem;border:1px solid var(--border);border-radius:16px;background:var(--card);margin-bottom:1.25rem}
 .gsc-panel-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem}
 .gsc-panel-title{display:flex;align-items:center;gap:.65rem;min-width:0}
