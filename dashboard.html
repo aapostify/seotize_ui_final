@@ -9791,8 +9791,11 @@ function resetTaskCreatorState() {
     }
     const body = document.querySelector('#seoTaskCreator .task-creator-body');
     if (body) body.scrollTop = 0;
-    tcGsc.site = '';
     tcGsc.home = '';
+    tcGsc.manual = false;
+    tcGsc.pendingDomain = '';
+    tcGsc.manualError = '';
+    tcGsc.typed = '';
     tcGsc.rows = null;
     renderGscWebsite();
     updateBudgetSummary();
@@ -9842,7 +9845,7 @@ function completePendingPayment() {
 function nextStep() {
     const currentStep = taskCreatorState.currentStep;
     if (currentStep === 1) {
-        if (!gscToken() || !tcGsc.site || !document.getElementById('taskUrl').value) {
+        if (!gscTokenFor(tcGsc.domain) || !document.getElementById('taskUrl').value) {
             showToast('Connect Google Search Console and choose your website', 'error');
             return;
         }
@@ -14708,33 +14711,50 @@ document.addEventListener('DOMContentLoaded', () => {
 const GSC_CLIENT_ID = '202412576162-796gpf0rqasgvt7ilqj11uf24498f7ua.apps.googleusercontent.com';
 const GSC_SCOPE = 'https://www.googleapis.com/auth/webmasters.readonly';
 const GSC_API = 'https://www.googleapis.com/webmasters/v3/';
-const GSC_COOKIE = 'seotize_gsc';
+// One cookie per domain: { d: domain, s: Search Console property, t: token, e: token expiry }.
+// Each domain keeps the token of the Google account it was connected with, so domains from
+// different Google accounts work side by side.
+const GSC_PREFIX = 'seotize_gsc_';
+const GSC_KEEP_DAYS = 30;
+const GSC_VERIFY_URL = 'https://search.google.com/search-console/welcome';
 const GSC_G_ICON = '<svg class="g-ico" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
-const gsc = { client: null, gis: null, pending: null, sites: null, cache: new Map() };
+const gsc = { client: null, gis: null, pending: null, cache: new Map() };
 
-function gscToken() {
-    try {
-        const raw = getCookie(GSC_COOKIE);
-        if (!raw) return '';
-        const { t, e } = JSON.parse(decodeURIComponent(raw));
-        return t && e > Date.now() ? t : '';
-    } catch (_) { return ''; }
+const gscHost = u => { try { return new URL(/^https?:\/\//i.test(u) ? u : 'https://' + u).hostname.toLowerCase().replace(/^www\./, ''); } catch (_) { return ''; } };
+const gscDomainOf = site => site.startsWith('sc-domain:') ? site.slice(10).toLowerCase().replace(/^www\./, '') : gscHost(site);
+const gscSiteUrl = site => site.startsWith('sc-domain:') ? 'https://' + site.slice(10) : site;
+const gscCookieName = d => GSC_PREFIX + d.replace(/[^a-z0-9]/gi, '_');
+function gscWriteCookie(name, value, maxAge) {
+    document.cookie = `${name}=${value}; max-age=${maxAge}; path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
 }
-function gscSaveToken(token, expiresIn) {
-    const life = Math.max(60, (Number(expiresIn) || 3600) - 60);
-    const value = encodeURIComponent(JSON.stringify({ t: token, e: Date.now() + life * 1000 }));
-    document.cookie = `${GSC_COOKIE}=${value}; max-age=${life}; path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
+// Every saved domain, valid or expired
+function gscConnections() {
+    const out = [];
+    document.cookie.split('; ').forEach(c => {
+        if (!c.startsWith(GSC_PREFIX)) return;
+        try {
+            const v = JSON.parse(decodeURIComponent(c.slice(c.indexOf('=') + 1)));
+            if (v && v.d && v.s) out.push(v);
+        } catch (_) {}
+    });
+    return out.sort((a, b) => a.d.localeCompare(b.d));
 }
-function gscForget() {
-    document.cookie = `${GSC_COOKIE}=; max-age=0; path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
-    gsc.sites = null;
+function gscConn(domain) {
+    const d = String(domain || '').toLowerCase().replace(/^www\./, '');
+    return d ? gscConnections().find(c => c.d === d) || null : null;
+}
+const gscValid = c => !!(c && c.t && c.e > Date.now());
+const gscTokenFor = domain => { const c = gscConn(domain); return gscValid(c) ? c.t : ''; };
+function gscSaveConn(c) {
+    gscWriteCookie(gscCookieName(c.d), encodeURIComponent(JSON.stringify(c)), GSC_KEEP_DAYS * 86400);
+}
+function gscForgetDomain(domain) {
+    gscWriteCookie(gscCookieName(domain), '', 0);
     gsc.cache.clear();
 }
-function gscDisconnect() {
-    const t = gscToken();
-    gscForget();
-    try { if (t && window.google?.accounts?.oauth2) google.accounts.oauth2.revoke(t, () => {}); } catch (_) {}
-}
+// Clean up the single shared cookie used before tokens were kept per domain
+try { if (getCookie('seotize_gsc')) gscWriteCookie('seotize_gsc', '', 0); } catch (_) {}
+
 // Google Identity Services, loaded once and early, so the sign-in popup opens straight from the click
 function gscLoadGis() {
     if (gsc.gis) return gsc.gis;
@@ -14747,10 +14767,7 @@ function gscLoadGis() {
                     const p = gsc.pending; gsc.pending = null;
                     if (!p) return;
                     if (r.error || !r.access_token) return p.reject(new Error(r.error_description || r.error || 'Google sign-in failed'));
-                    gscSaveToken(r.access_token, r.expires_in);
-                    gsc.sites = null;
-                    gsc.cache.clear();
-                    p.resolve(r.access_token);
+                    p.resolve({ token: r.access_token, expires: Date.now() + Math.max(60, (Number(r.expires_in) || 3600) - 60) * 1000 });
                 },
                 error_callback: err => {
                     const p = gsc.pending; gsc.pending = null;
@@ -14769,20 +14786,19 @@ function gscLoadGis() {
     });
     return gsc.gis;
 }
-function gscConnect() {
+// Always shows Google's account chooser, so another Google account can be added
+function gscSignIn() {
     return new Promise((resolve, reject) => {
         const go = () => {
             if (gsc.pending) gsc.pending.reject(new Error('Superseded'));
             gsc.pending = { resolve, reject };
-            gsc.client.requestAccessToken();
+            gsc.client.requestAccessToken({ prompt: 'select_account' });
         };
         if (gsc.client) go();
         else gscLoadGis().then(go, reject);
     });
 }
-async function gscFetch(path, body) {
-    const token = gscToken();
-    if (!token) { const e = new Error('Not connected'); e.auth = true; throw e; }
+async function gscFetch(path, body, token) {
     const r = await fetch(GSC_API + path, {
         method: body ? 'POST' : 'GET',
         headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
@@ -14790,148 +14806,177 @@ async function gscFetch(path, body) {
     });
     const data = await r.json().catch(() => ({}));
     if (r.status === 401 || data.error?.code === 401) {
-        gscForget();
-        const e = new Error('Your Google session expired. Please connect again.'); e.auth = true; throw e;
+        const e = new Error('Your Google access expired. Please connect again.'); e.auth = true; throw e;
     }
     if (!r.ok || data.error) throw new Error(data.error?.message || 'Search Console request failed');
     return data;
 }
-async function gscSites() {
-    if (gsc.sites) return gsc.sites;
-    const d = await gscFetch('sites');
-    gsc.sites = (d.siteEntry || []).filter(x => x.permissionLevel !== 'siteUnverifiedUser').map(x => x.siteUrl)
-        .sort((a, b) => gscSiteLabel(a).localeCompare(gscSiteLabel(b)));
-    return gsc.sites;
+// Signs in with a Google account and saves a token for every domain verified in it.
+// Returns the domains that account gives access to.
+async function gscConnectAccount() {
+    const { token, expires } = await gscSignIn();
+    const d = await gscFetch('sites', null, token);
+    const best = new Map();
+    (d.siteEntry || []).filter(x => x.permissionLevel !== 'siteUnverifiedUser').forEach(x => {
+        const dom = gscDomainOf(x.siteUrl);
+        if (!dom) return;
+        const cur = best.get(dom);
+        // Prefer the Domain property, then the shortest URL-prefix property (usually the homepage)
+        const rank = s => s.startsWith('sc-domain:') ? 0 : s.length;
+        if (!cur || rank(x.siteUrl) < rank(cur)) best.set(dom, x.siteUrl);
+    });
+    best.forEach((s, dom) => gscSaveConn({ d: dom, s, t: token, e: expires }));
+    gsc.cache.clear();
+    return [...best.keys()];
 }
 const gscDay = n => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
-function gscQuery(site, { days = 28, dimensions, rowLimit, filters = [] } = {}) {
+// conn: a saved domain connection
+function gscQuery(conn, { days = 28, dimensions, rowLimit, filters = [] } = {}) {
+    if (!gscValid(conn)) { const e = new Error('Not connected'); e.auth = true; return Promise.reject(e); }
     const body = { startDate: gscDay(days), endDate: gscDay(0) };
     if (dimensions) body.dimensions = dimensions;
     if (rowLimit) body.rowLimit = rowLimit;
     if (filters.length) body.dimensionFilterGroups = [{ filters }];
-    const key = site + '|' + JSON.stringify(body);
+    const key = conn.t.slice(-12) + '|' + conn.s + '|' + JSON.stringify(body);
     if (!gsc.cache.has(key)) {
-        const p = gscFetch('sites/' + encodeURIComponent(site) + '/searchAnalytics/query', body).then(d => d.rows || []);
-        p.catch(() => gsc.cache.delete(key));
+        const p = gscFetch('sites/' + encodeURIComponent(conn.s) + '/searchAnalytics/query', body, conn.t).then(d => d.rows || []);
+        p.catch(err => {
+            gsc.cache.delete(key);
+            // Keep the domain but mark its token expired, so it shows "reconnect"
+            if (err.auth) { const c = gscConn(conn.d); if (c && c.t === conn.t) gscSaveConn({ ...c, e: 0 }); }
+        });
         gsc.cache.set(key, p);
     }
     return gsc.cache.get(key);
 }
-const gscHost = u => { try { return new URL(/^https?:\/\//i.test(u) ? u : 'https://' + u).hostname.toLowerCase().replace(/^www\./, ''); } catch (_) { return ''; } };
-const gscSiteLabel = site => site.startsWith('sc-domain:') ? site.slice(10) : site.replace(/^https?:\/\//, '').replace(/\/$/, '');
-const gscSiteUrl = site => site.startsWith('sc-domain:') ? 'https://' + site.slice(10) : site;
-// The property that covers a URL: the longest matching URL-prefix property wins over a domain property
-function gscMatchSite(sites, url) {
-    const host = gscHost(url);
-    if (!host) return '';
-    const full = (/^https?:\/\//i.test(url) ? url : 'https://' + url).toLowerCase().replace('://www.', '://');
-    let best = '', bestLen = -1;
-    sites.forEach(s => {
-        let len = -1;
-        if (s.startsWith('sc-domain:')) {
-            const d = s.slice(10).toLowerCase().replace(/^www\./, '');
-            if (host === d || host.endsWith('.' + d)) len = d.length;
-        } else {
-            const pre = s.toLowerCase().replace('://www.', '://');
-            if (full.startsWith(pre) || full + '/' === pre) len = 1000 + pre.length;
-        }
-        if (len > bestLen) { best = s; bestLen = len; }
-    });
-    return best;
+// "example.com" from whatever the user typed (URL, www., trailing path)
+function gscCleanDomain(v) {
+    const d = gscHost(String(v || '').trim());
+    return /^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/.test(d) ? d : '';
 }
 const gscPos = n => n ? n.toFixed(1).replace(/\.0$/, '') : '–';
 const gscPct = n => (n * 100).toFixed(1) + '%';
 const gscNum = n => Math.round(n || 0).toLocaleString();
 const gscBadge = p => `<span class="gsc-pos ${p <= 3 ? 'g' : p <= 10 ? 'bl' : p <= 20 ? 'a' : 'x'}">${gscPos(p)}</span>`;
-function gscConnectCard({ title, text, compact, error }) {
-    return `<div class="gsc-connect${compact ? ' compact' : ''}">
+function gscConnectCard({ title, text, error, button = 'Connect Search Console', extra = '' }) {
+    return `<div class="gsc-connect">
         <div class="gsc-connect-ico">${GSC_G_ICON}</div>
-        <div class="gsc-connect-text"><b>${title}</b><span>${text}</span>${error ? `<em>${escHtml(error)}</em>` : ''}</div>
-        <button type="button" class="gsc-connect-btn" data-gsc-connect>${GSC_G_ICON}<span>Connect Search Console</span></button>
+        <div class="gsc-connect-text"><b>${title}</b><span>${text}</span>${error ? `<em>${escHtml(error)}</em>` : ''}${extra}</div>
+        <button type="button" class="gsc-connect-btn" data-gsc-connect>${GSC_G_ICON}<span>${button}</span></button>
     </div>`;
 }
-// Runs the Google sign-in from a click, then calls `after`
+// Runs the Google sign-in from a click, then calls `after(domains)`
 function gscConnectFromClick(btn, after) {
     if (btn) { btn.disabled = true; btn.classList.add('busy'); }
-    gscConnect().then(() => after(), err => {
+    gscConnectAccount().then(domains => after(domains), err => {
         if (err.message !== 'Superseded' && err.message !== 'Sign-in window was closed') showToast(err.message, 'error');
     }).finally(() => { if (btn && btn.isConnected) { btn.disabled = false; btn.classList.remove('busy'); } });
 }
+// Opens Search Console's "add property" page with the domain on the clipboard
+function gscOpenVerify(domain) {
+    window.open(GSC_VERIFY_URL, '_blank', 'noopener');
+    try { navigator.clipboard?.writeText(domain); } catch (_) {}
+}
 
 // ---------- Task creator: website and keywords come only from Search Console ----------
-const tcGsc = { site: '', home: '', days: 28, sort: 'impressions', limit: 50, rows: null, seq: 0, hseq: 0 };
+const tcGsc = { domain: '', home: '', manual: false, pendingDomain: '', manualError: '', days: 28, sort: 'impressions', limit: 50, rows: null, seq: 0, hseq: 0 };
 const gscPath = u => { try { const x = new URL(u); return (x.pathname + x.search) || '/'; } catch (_) { return u; } };
+const tcConn = () => gscConn(tcGsc.domain);
 function tcSetUrl() {
-    const url = tcGsc.home || (tcGsc.site ? gscSiteUrl(tcGsc.site) : '');
-    document.getElementById('taskUrl').value = url;
+    const c = tcConn();
+    const url = c ? (tcGsc.home || gscSiteUrl(c.s)) : '';
+    document.getElementById('taskUrl').value = gscValid(c) ? url : '';
     const prev = document.getElementById('gscUrlPreview');
     if (prev) prev.textContent = url || '—';
 }
 
-// Step 1: connect, then choose the site
-async function renderGscWebsite(errMsg) {
+// Step 1: choose a connected domain, add another Google account, or verify a new domain
+function renderGscWebsite(errMsg) {
     const box = document.getElementById('gscWebsite');
     if (!box) return;
-    if (!gscToken()) {
-        tcGsc.site = ''; tcGsc.home = '';
+    const conns = gscConnections();
+    if (!conns.length && !tcGsc.manual) {
+        tcGsc.domain = ''; tcGsc.home = '';
         document.getElementById('taskUrl').value = '';
         box.innerHTML = gscConnectCard({
             title: 'Connect Google Search Console',
-            text: 'Your website and keywords come straight from Search Console, so every task targets keywords your site can really rank for. Read-only access.',
-            error: errMsg
+            text: 'Your website and keywords come straight from Search Console. Each domain remembers the Google account it belongs to, so you can connect several accounts. Read-only access.',
+            error: errMsg,
+            extra: '<button type="button" class="tc-link gsc-notfound" data-gsc-manual>My domain isn\'t in Search Console yet</button>'
         });
         return;
     }
+    if (!conns.some(c => c.d === tcGsc.domain)) { tcGsc.domain = (conns.find(gscValid) || conns[0] || {}).d || ''; tcGsc.home = ''; }
+    const cur = tcConn();
+    const valid = gscValid(cur);
     box.innerHTML = `<div class="gsc-site-box">
         <div class="gsc-panel-head">
-            <div class="gsc-panel-title">${GSC_G_ICON}<div><b>Search Console</b><span>Connected · choose the website for this task</span></div></div>
-            <button type="button" class="tc-link" data-gsc-disconnect>Disconnect</button>
+            <div class="gsc-panel-title">${GSC_G_ICON}<div><b>Search Console</b><span>${conns.length} domain${conns.length === 1 ? '' : 's'} connected</span></div></div>
+            <button type="button" class="gsc-add-btn" data-gsc-connect><i class="ri-user-add-line"></i><span>Add account</span></button>
         </div>
-        <label class="gsc-field"><span>Website</span><select id="gscSiteSel"><option>Loading your sites…</option></select></label>
-        <div class="gsc-url-preview"><i class="ri-links-line"></i><span id="gscUrlPreview">—</span></div>
+        ${conns.length ? `<label class="gsc-field"><span>Website</span><select id="gscSiteSel">
+            ${conns.map(c => `<option value="${escHtml(c.d)}" ${c.d === tcGsc.domain ? 'selected' : ''}>${escHtml(c.d)}${gscValid(c) ? '' : ' — reconnect'}</option>`).join('')}
+        </select></label>` : ''}
+        ${cur && !valid ? `<div class="gsc-expired"><i class="ri-time-line"></i><span>Access to <b>${escHtml(cur.d)}</b> expired.</span><button type="button" class="tc-link" data-gsc-connect>Reconnect</button></div>` : ''}
+        ${cur && valid ? `<div class="gsc-url-preview"><i class="ri-links-line"></i><span id="gscUrlPreview">—</span><button type="button" class="tc-link" data-gsc-forget title="Remove this domain">Remove</button></div>` : ''}
+        ${errMsg ? `<div class="gsc-msg error">${escHtml(errMsg)}</div>` : ''}
+        ${renderGscManual()}
     </div>`;
-    const siteSel = document.getElementById('gscSiteSel');
-    try {
-        const sites = await gscSites();
-        if (!siteSel.isConnected) return;
-        if (!sites.length) {
-            siteSel.closest('.gsc-field').outerHTML = '<div class="gsc-state">This Google account has no verified sites in Search Console. Add your site at search.google.com/search-console, then come back.</div>';
-            return;
-        }
-        if (!sites.includes(tcGsc.site)) { tcGsc.site = sites[0]; tcGsc.home = ''; }
-        siteSel.innerHTML = sites.map(x => `<option value="${escHtml(x)}">${escHtml(gscSiteLabel(x))}</option>`).join('');
-        siteSel.value = tcGsc.site;
-        siteSel.onchange = () => { tcGsc.site = siteSel.value; tcGsc.home = ''; tcGsc.rows = null; tcSetUrl(); findGscHome(); };
-        tcSetUrl();
-        findGscHome();
-    } catch (err) {
-        if (err.auth) renderGscWebsite(err.message);
-        else siteSel.closest('.gsc-field').outerHTML = `<div class="gsc-state tc-error">${escHtml(err.message)}</div>`;
-    }
+    const sel = document.getElementById('gscSiteSel');
+    if (sel) sel.onchange = () => { tcGsc.domain = sel.value; tcGsc.home = ''; tcGsc.rows = null; renderGscWebsite(); };
+    bindGscManual();
+    tcSetUrl();
+    if (valid) findGscHome();
 }
-// The homepage URL exactly as Search Console reports it (www or not, http or https)
+// "Not found the domain?": type it, verify it in Search Console, then connect that Google account
+function renderGscManual() {
+    if (!tcGsc.manual) return `<button type="button" class="tc-link gsc-notfound" data-gsc-manual><i class="ri-question-line"></i> Can't find your domain?</button>`;
+    const d = tcGsc.pendingDomain;
+    return `<div class="gsc-manual">
+        <div class="gsc-manual-head"><b>Add a domain</b><button type="button" class="tc-link" data-gsc-manual-close>Cancel</button></div>
+        <div class="gsc-manual-row">
+            <input type="text" id="gscManualInput" placeholder="yourdomain.com" value="${escHtml(tcGsc.typed || d)}" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url" enterkeyhint="go">
+            <button type="button" class="gsc-verify-btn" data-gsc-verify><i class="ri-external-link-line"></i><span>Verify in Search Console</span></button>
+        </div>
+        ${tcGsc.manualError ? `<div class="gsc-msg error">${escHtml(tcGsc.manualError)}</div>` : ''}
+        ${d ? `<ol class="gsc-steps">
+            <li>In the Search Console tab, add <b>${escHtml(d)}</b> as a property (it's on your clipboard) and finish verification.</li>
+            <li>Come back and tap <b>Connect verified account</b>, then pick the Google account you verified it with.</li>
+        </ol>
+        <button type="button" class="gsc-connect-btn wide" data-gsc-verified>${GSC_G_ICON}<span>Connect verified account</span></button>` : '<small class="tc-hint">We\'ll open Google Search Console so you can add and verify your domain.</small>'}
+    </div>`;
+}
+function bindGscManual() {
+    const input = document.getElementById('gscManualInput');
+    if (input) input.oninput = () => { tcGsc.typed = input.value; };
+    if (input) input.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); document.querySelector('[data-gsc-verify]')?.click(); } };
+}
 async function findGscHome() {
-    if (!tcGsc.site) return;
+    const c = tcConn();
+    if (!gscValid(c)) return;
     const seq = ++tcGsc.hseq;
     try {
-        const rows = await gscQuery(tcGsc.site, { days: 90, dimensions: ['page'], rowLimit: 500 });
+        const rows = await gscQuery(c, { days: 90, dimensions: ['page'], rowLimit: 500 });
         if (seq !== tcGsc.hseq) return;
-        tcGsc.home = rows.map(r => r.keys[0]).find(u => gscPath(u) === '/') || '';
+        tcGsc.home = rows.map(r => r.keys[0]).find(u => gscPath(u) === '/' && gscHost(u) === c.d) || '';
         tcSetUrl();
-    } catch (_) { /* keep the property URL */ }
+    } catch (err) {
+        if (err.auth && seq === tcGsc.hseq) renderGscWebsite();
+    }
 }
 
-// Step 2: the keywords the chosen site already ranks for
+// Step 2: the keywords the chosen domain already ranks for
 function renderGscKeywordsCard(errMsg) {
     const card = document.getElementById('gscKeywordsCard');
     if (!card) return;
-    if (!gscToken()) {
-        card.innerHTML = gscConnectCard({ title: 'Connect Google Search Console', text: 'Keywords come from Search Console. Connect to see the keywords your site ranks for.', error: errMsg });
+    const c = tcConn();
+    if (!gscValid(c)) {
+        card.innerHTML = gscConnectCard({ title: `Reconnect ${escHtml(tcGsc.domain || 'Search Console')}`, text: 'Access to this domain expired. Sign in again with its Google account.', error: errMsg, button: 'Reconnect' });
         return;
     }
     card.innerHTML = `<div class="gsc-panel">
         <div class="gsc-panel-head">
-            <div class="gsc-panel-title">${GSC_G_ICON}<div><b>${escHtml(gscSiteLabel(tcGsc.site))}</b><span id="gscSelSummary">Loading keywords…</span></div></div>
+            <div class="gsc-panel-title">${GSC_G_ICON}<div><b>${escHtml(c.d)}</b><span id="gscSelSummary">Loading keywords…</span></div></div>
         </div>
         <div class="gsc-toolbar">
             <select id="gscDays" aria-label="Date range"><option value="7">7 days</option><option value="28">28 days</option><option value="90">3 months</option><option value="480">16 months</option></select>
@@ -14953,18 +14998,19 @@ function renderGscKeywordsCard(errMsg) {
 }
 async function loadGscKeywords() {
     const list = document.getElementById('gscList');
-    if (!list || !tcGsc.site) return;
+    const c = tcConn();
+    if (!list || !c) return;
     const seq = ++tcGsc.seq;
     tcGsc.rows = null;
     list.innerHTML = '<div class="gsc-state"><span class="gsc-spinner"></span> Loading keywords…</div>';
     try {
-        const rows = await gscQuery(tcGsc.site, { days: tcGsc.days, dimensions: ['query'], rowLimit: 1000 });
+        const rows = await gscQuery(c, { days: tcGsc.days, dimensions: ['query'], rowLimit: 1000 });
         if (seq !== tcGsc.seq) return;
         tcGsc.rows = rows;
         renderGscKeywordList();
     } catch (err) {
         if (seq !== tcGsc.seq) return;
-        if (err.auth) { renderGscWebsite(err.message); renderGscKeywordsCard(err.message); }
+        if (err.auth) renderGscKeywordsCard(err.message);
         else list.innerHTML = `<div class="gsc-state tc-error">${escHtml(err.message)}</div>`;
     }
 }
@@ -14977,7 +15023,7 @@ function renderGscKeywordList() {
     if (!list || !tcGsc.rows) return;
     const rows = gscVisibleKeywords();
     if (!rows.length) {
-        list.innerHTML = `<div class="gsc-state">No keyword data for this site in this period.<br>Try a longer date range.</div>`;
+        list.innerHTML = '<div class="gsc-state">No keyword data for this site in this period.<br>Try a longer date range.</div>';
         updateGscSelectionSummary();
         return;
     }
@@ -15004,18 +15050,54 @@ function updateGscSelectionSummary() {
     const n = tcGsc.rows.filter(r => hasKeyword(r.keys[0])).length;
     el.textContent = `${tcGsc.rows.length.toLocaleString()} keyword${tcGsc.rows.length === 1 ? '' : 's'} found` + (n ? ` · ${n} selected` : ' · tap to select');
 }
-// Connect / disconnect buttons anywhere in the creator
+// Buttons inside the creator's Search Console boxes
 document.addEventListener('click', e => {
     const creator = document.getElementById('seoTaskCreator');
     if (!creator || !creator.contains(e.target)) return;
-    const c = e.target.closest('[data-gsc-connect]');
-    if (c) return gscConnectFromClick(c, () => { renderGscWebsite(); if (taskCreatorState.currentStep === 2) renderGscKeywordsCard(); });
-    if (e.target.closest('[data-gsc-disconnect]')) {
-        gscDisconnect();
-        tcGsc.rows = null;
-        clearSelectedKeywords();
+    const after = domains => {
+        // Pick the domain this sign-in was for (a reconnect, or the first new one)
+        if (domains.length && !domains.includes(tcGsc.domain)) tcGsc.domain = domains[0];
+        if (!domains.length) showToast('That Google account has no verified sites in Search Console', 'error');
+        tcGsc.home = ''; tcGsc.rows = null;
         renderGscWebsite();
-        if (taskCreatorState.currentStep !== 1) goToStep(1);
+        if (taskCreatorState.currentStep === 2) renderGscKeywordsCard();
+    };
+    const c = e.target.closest('[data-gsc-connect]');
+    if (c) return gscConnectFromClick(c, after);
+    if (e.target.closest('[data-gsc-forget]')) {
+        gscForgetDomain(tcGsc.domain);
+        tcGsc.domain = ''; tcGsc.home = ''; tcGsc.rows = null;
+        clearSelectedKeywords();
+        return renderGscWebsite();
+    }
+    if (e.target.closest('[data-gsc-manual]')) { tcGsc.manual = true; tcGsc.manualError = ''; renderGscWebsite(); return document.getElementById('gscManualInput')?.focus(); }
+    if (e.target.closest('[data-gsc-manual-close]')) { tcGsc.manual = false; tcGsc.pendingDomain = ''; tcGsc.typed = ''; tcGsc.manualError = ''; return renderGscWebsite(); }
+    if (e.target.closest('[data-gsc-verify]')) {
+        const d = gscCleanDomain(document.getElementById('gscManualInput')?.value);
+        if (!d) { tcGsc.manualError = 'Enter a domain like example.com'; tcGsc.pendingDomain = ''; return renderGscWebsite(); }
+        tcGsc.manualError = '';
+        if (gscValid(gscConn(d))) {
+            tcGsc.domain = d; tcGsc.manual = false; tcGsc.pendingDomain = ''; tcGsc.typed = '';
+            showToast(`${d} is already connected`, 'success');
+            return renderGscWebsite();
+        }
+        tcGsc.pendingDomain = d;
+        gscOpenVerify(d);
+        return renderGscWebsite();
+    }
+    const v = e.target.closest('[data-gsc-verified]');
+    if (v) {
+        const d = tcGsc.pendingDomain;
+        return gscConnectFromClick(v, domains => {
+            if (domains.includes(d)) {
+                tcGsc.domain = d; tcGsc.manual = false; tcGsc.pendingDomain = ''; tcGsc.manualError = ''; tcGsc.typed = '';
+                showToast(`${d} connected`, 'success');
+            } else {
+                tcGsc.manualError = `${d} isn't verified in that Google account yet. Finish verification in Search Console, or sign in with the account that owns it.`;
+            }
+            tcGsc.home = '';
+            renderGscWebsite();
+        });
     }
 });
 
@@ -15023,52 +15105,36 @@ document.addEventListener('click', e => {
 async function initTaskGscPanel(popup, task, state) {
     const root = popup?.querySelector('#task-panel-gsc .gsc-task');
     if (!root) return;
-    state = state || { site: '', days: 28, scope: null, filter: '', limit: 25 };
+    state = state || { days: 28, scope: null, filter: '', limit: 25 };
+    const taskUrl = task.url || '';
+    const domain = gscHost(taskUrl);
     const destroyChart = () => { try { if (window.charts?.taskGsc) { window.charts.taskGsc.destroy(); window.charts.taskGsc = null; } } catch (_) {} };
-    const rerender = msg => { destroyChart(); initTaskGscPanel(popup, task, msg ? { ...state, error: msg } : state); };
+    const rerender = msg => { destroyChart(); initTaskGscPanel(popup, task, { ...state, error: msg || '' }); };
     root.onclick = e => {
         const c = e.target.closest('[data-gsc-connect]');
-        if (c) return gscConnectFromClick(c, () => rerender());
-        if (e.target.closest('[data-gsc-disconnect]')) { gscDisconnect(); rerender(); }
+        if (c) return gscConnectFromClick(c, domains => rerender(domains.includes(domain) ? '' : `That Google account doesn't have ${domain} in Search Console. Sign in with the account that owns it.`));
+        if (e.target.closest('[data-gsc-verify]')) return gscOpenVerify(domain);
+        if (e.target.closest('[data-gsc-disconnect]')) { gscForgetDomain(domain); rerender(); }
     };
-    if (!gscToken()) {
+    // Only this task's domain, with the token saved for it
+    const conn = gscConn(domain);
+    if (!gscValid(conn)) {
         destroyChart();
         root.innerHTML = gscConnectCard({
-            title: 'Keyword rankings from Google Search Console',
-            text: 'Connect to see the Google position, clicks and impressions of this task\'s keywords and every other keyword it ranks for.',
-            error: state.error
+            title: conn ? `Reconnect ${escHtml(domain)}` : `Connect ${escHtml(domain || 'this site')}`,
+            text: conn ? 'Access to this domain expired. Sign in again with its Google account.' : `Sign in with the Google account that has ${escHtml(domain)} in Search Console to see this task's keyword rankings.`,
+            error: state.error,
+            button: conn ? 'Reconnect' : 'Connect Search Console',
+            extra: state.error ? `<button type="button" class="tc-link gsc-notfound" data-gsc-verify><i class="ri-external-link-line"></i> Verify ${escHtml(domain)} in Search Console</button>` : ''
         });
         return;
     }
-    const taskUrl = task.url || '';
     let path = '/';
     try { path = new URL(/^https?:\/\//i.test(taskUrl) ? taskUrl : 'https://' + taskUrl).pathname; } catch (_) {}
     if (!state.scope) state.scope = path && path !== '/' ? 'page' : 'site';
-    root.innerHTML = '<div class="gsc-state"><span class="gsc-spinner"></span> Loading Search Console data…</div>';
-    let sites;
-    try { sites = await gscSites(); } catch (err) {
-        if (err.auth) return rerender(err.message);
-        root.innerHTML = `<div class="gsc-state tc-error">${escHtml(err.message)}</div>`;
-        return;
-    }
-    if (!root.isConnected) return;
-    if (!sites.includes(state.site)) state.site = gscMatchSite(sites, taskUrl);
-    const siteOptions = sel => sites.map(s => `<option value="${escHtml(s)}" ${s === sel ? 'selected' : ''}>${escHtml(gscSiteLabel(s))}</option>`).join('');
-    if (!state.site) {
-        root.innerHTML = `<div class="gsc-nomatch">
-            <i class="ri-search-eye-line"></i>
-            <b>No Search Console property found for ${escHtml(gscHost(taskUrl) || 'this URL')}</b>
-            <span>Add and verify the site in Google Search Console, or choose the property that covers it.</span>
-            ${sites.length ? `<select class="gsc-select" data-gsc-site><option value="">Choose a property…</option>${siteOptions('')}</select>` : ''}
-            <button type="button" class="tc-link" data-gsc-disconnect>Use another Google account</button>
-        </div>`;
-        const s = root.querySelector('[data-gsc-site]');
-        if (s) s.onchange = () => { if (s.value) { state.site = s.value; rerender(); } };
-        return;
-    }
     root.innerHTML = `
         <div class="gsc-task-bar">
-            <select class="gsc-select" data-gsc-site aria-label="Search Console property">${siteOptions(state.site)}</select>
+            <span class="gsc-domain-chip">${GSC_G_ICON}<b>${escHtml(domain)}</b></span>
             <div class="gsc-seg" role="group" aria-label="Scope">
                 <button type="button" data-scope="page" class="${state.scope === 'page' ? 'on' : ''}">This page</button>
                 <button type="button" data-scope="site" class="${state.scope === 'site' ? 'on' : ''}">Whole site</button>
@@ -15079,7 +15145,6 @@ async function initTaskGscPanel(popup, task, state) {
             <button type="button" class="tc-link" data-gsc-disconnect>Disconnect</button>
         </div>
         <div class="gsc-body"><div class="gsc-state"><span class="gsc-spinner"></span> Loading keyword data…</div></div>`;
-    root.querySelector('[data-gsc-site]').onchange = e => { state.site = e.target.value; rerender(); };
     root.querySelector('[data-gsc-days]').onchange = e => { state.days = +e.target.value; rerender(); };
     root.querySelectorAll('[data-scope]').forEach(b => b.onclick = () => { if (state.scope !== b.dataset.scope) { state.scope = b.dataset.scope; rerender(); } });
     const body = root.querySelector('.gsc-body');
@@ -15089,24 +15154,24 @@ async function initTaskGscPanel(popup, task, state) {
         if (state.scope === 'page') {
             filters = [{ dimension: 'page', operator: 'equals', expression: pageUrl }];
             // Search Console reports the canonical URL; try the other trailing-slash form when the first has no data
-            const probe = await gscQuery(state.site, { days: state.days, filters });
+            const probe = await gscQuery(conn, { days: state.days, filters });
             if (!probe.length || !probe[0].impressions) {
                 const alt = pageUrl.endsWith('/') ? pageUrl.slice(0, -1) : pageUrl + '/';
-                const altRows = await gscQuery(state.site, { days: state.days, filters: [{ dimension: 'page', operator: 'equals', expression: alt }] });
+                const altRows = await gscQuery(conn, { days: state.days, filters: [{ dimension: 'page', operator: 'equals', expression: alt }] });
                 if (altRows.length && altRows[0].impressions) filters = [{ dimension: 'page', operator: 'equals', expression: alt }];
             }
         }
         const opt = extra => ({ days: state.days, filters, ...extra });
         const [tot, daily, queries] = await Promise.all([
-            gscQuery(state.site, opt()),
-            gscQuery(state.site, opt({ dimensions: ['date'], rowLimit: 500 })),
-            gscQuery(state.site, opt({ dimensions: ['query'], rowLimit: 1000 }))
+            gscQuery(conn, opt()),
+            gscQuery(conn, opt({ dimensions: ['date'], rowLimit: 500 })),
+            gscQuery(conn, opt({ dimensions: ['query'], rowLimit: 1000 }))
         ]);
         // Task keywords outside the top 1000 get their own exact lookup
         const byKey = new Map(queries.map(r => [r.keys[0].toLowerCase(), r]));
         const taskKeywords = (task.keywords || []).map(k => String(k).trim()).filter(Boolean);
         const missing = taskKeywords.filter(k => !byKey.has(k.toLowerCase())).slice(0, 15);
-        const extra = await Promise.all(missing.map(k => gscQuery(state.site, opt({ dimensions: ['query'], rowLimit: 1, filters: [...filters, { dimension: 'query', operator: 'equals', expression: k }] })).catch(() => [])));
+        const extra = await Promise.all(missing.map(k => gscQuery(conn, opt({ dimensions: ['query'], rowLimit: 1, filters: [...filters, { dimension: 'query', operator: 'equals', expression: k }] })).catch(() => [])));
         extra.forEach(rows => rows.forEach(r => byKey.set(r.keys[0].toLowerCase(), r)));
         if (!root.isConnected) return;
         const T = tot[0] || { clicks: 0, impressions: 0, ctr: 0, position: 0 };
@@ -15836,6 +15901,37 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 #seoTaskCreator .payment-title{margin:0}
 #seoTaskCreator .payment-card.selected::after{top:50%;transform:translateY(-50%)}
 @media (max-width:768px){#seoTaskCreator .payment-options{grid-template-columns:1fr;gap:.6rem;margin-bottom:1rem}#seoTaskCreator .gsc-list{max-height:46dvh}#seoTaskCreator .gsc-toolbar select{flex:1 1 130px;padding:0 .5rem}#seoTaskCreator .gsc-toolbar #gscDays{flex:0 1 auto}}
+
+/* ---------- Search Console: accounts, domains and verification ---------- */
+.gsc-add-btn{display:inline-flex;align-items:center;gap:.35rem;flex-shrink:0;height:34px;padding:0 .75rem;border:1px solid color-mix(in srgb,var(--primary) 35%,var(--border));border-radius:10px;background:var(--card);color:var(--primary);font:600 .8rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer}
+.gsc-add-btn:hover{background:var(--glow)}
+.gsc-add-btn.busy{opacity:.6;pointer-events:none}
+.gsc-url-preview .tc-link{margin-left:auto;flex-shrink:0;font-family:'Inter',sans-serif}
+.gsc-expired{display:flex;align-items:center;gap:.5rem;padding:.6rem .75rem;border-radius:10px;background:rgba(245,158,11,.12);color:var(--text);font-size:.84rem}
+.gsc-expired i{color:#d97706}
+.gsc-expired .tc-link{margin-left:auto}
+.gsc-msg{padding:.6rem .75rem;border-radius:10px;font-size:.82rem;line-height:1.45}
+.gsc-msg.error{background:rgba(239,68,68,.1);color:var(--error,#dc2626)}
+.gsc-notfound{display:inline-flex;align-items:center;gap:.35rem;align-self:flex-start;margin-top:.35rem;padding-left:0}
+.gsc-connect-text .gsc-notfound{display:flex}
+.gsc-manual{display:flex;flex-direction:column;gap:.65rem;padding:.85rem;border:1px dashed color-mix(in srgb,var(--primary) 40%,var(--border));border-radius:14px;background:var(--card)}
+.gsc-manual-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.gsc-manual-head b{font-size:.9rem;white-space:nowrap}
+.gsc-manual-row{display:flex;gap:.5rem}
+.gsc-manual-row input{flex:1;min-width:0;height:44px;padding:0 .8rem;border:1.5px solid var(--border);border-radius:12px;background:var(--input-bg);color:var(--text);font:500 .92rem 'Inter',sans-serif;outline:none}
+.gsc-manual-row input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--glow)}
+.gsc-verify-btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;flex-shrink:0;height:44px;padding:0 1rem;border:0;border-radius:12px;background:var(--primary);color:#fff;font:600 .84rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer}
+.gsc-steps{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem;font-size:.83rem;line-height:1.45;color:var(--text-secondary)}
+.gsc-steps b{color:var(--text)}
+.gsc-connect-btn.wide{width:100%}
+.gsc-domain-chip{display:inline-flex;align-items:center;gap:.45rem;height:38px;padding:0 .8rem;border:1px solid var(--border);border-radius:10px;background:var(--bg-tertiary);font-size:.86rem;min-width:0;max-width:100%}
+.gsc-domain-chip b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:640px){
+  .gsc-manual-row{flex-direction:column}
+  .gsc-manual-row input{flex:none;width:100%}
+  .gsc-verify-btn{width:100%}
+  .gsc-task-bar .gsc-domain-chip{grid-column:1/-1}
+}
 
 /* ---------- One-line titles and labels ---------- */
 .gsc-block-head h4,.gsc-block-head>span,.gsc-panel-title b,.gsc-panel-title span,.gsc-connect-text b,.gsc-field>span,.gsc-kpi span,.gsc-legend span,
