@@ -1960,29 +1960,35 @@ from { opacity: 0; transform: translateY(6px); };
 }
 .task-done-list li i { color: var(--success); font-size: 1.05rem; margin-top: 0.05rem; }
 .task-done-list li strong { font-weight: 900; }
-.task-install-instructions {
-  background-color: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 12px;
-  padding: 1rem; margin-top: 0.75rem; font-size: 0.85rem; line-height: 1.6; color: var(--text);
-}
-.task-install-instructions p {
-  color: var(--text); margin: 0.25rem 0;
-}
-.task-install-instructions code {
-  display: block; background: #282c34; color: #f8f8f2; padding: 0.75rem; border-radius: 10px;
-  overflow-x: auto; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  margin-top: 0.5rem; font-size: 0.8rem;
-}
-.task-copy-btn {
-  margin-top: 0.65rem; appearance: none; border: 1px solid rgba(14, 165, 233, 0.55);
-  background: rgba(14, 165, 233, 0.12); color: var(--info); padding: 0.55rem 0.85rem;
-  border-radius: 999px; cursor: pointer; font-size: 0.85rem; font-weight: 900;
-  display: inline-flex; align-items: center; gap: 0.5rem; transition: var(--transition);
-}
-.task-copy-btn:hover {
-  transform: translateY(-1px); border-color: rgba(14, 165, 233, 0.75);
-  background: rgba(14, 165, 233, 0.16); box-shadow: 0 14px 40px rgba(14, 165, 233, 0.12);
-}
+.tcfg { display: flex; flex-direction: column; gap: 0.75rem; text-align: left; }
+.tcfg-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; padding: 0.85rem 1rem; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+.tcfg-row.tcfg-col { flex-direction: column; align-items: stretch; }
+.tcfg-label { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.02em; color: var(--text-secondary); }
+.tcfg-label b { min-width: 1.35rem; padding: 0 0.4rem; border-radius: 99px; background: var(--glow); color: var(--primary); font-size: 0.72rem; line-height: 1.35rem; text-align: center; }
+.tcfg-val { display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
+.tcfg-val small { font-size: 0.8rem; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.tcfg-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.tcfg-chips span { max-width: 100%; padding: 0.3rem 0.7rem; border-radius: 99px; border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border)); background: var(--glow); color: var(--text); font-size: 0.8rem; font-weight: 500; overflow-wrap: anywhere; }
+.tcfg-chips em { font-size: 0.82rem; color: var(--text-secondary); }
+.task-install-instructions { display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; border: 1px solid var(--border); border-radius: 14px; background: var(--card); color: var(--text); }
+.tii-head { display: flex; align-items: center; gap: 0.75rem; }
+.tii-ico { width: 2.4rem; height: 2.4rem; flex-shrink: 0; border-radius: 11px; display: grid; place-items: center; background: linear-gradient(135deg, #2563eb, #06b6d4); color: #fff; font-size: 1.1rem; }
+.tii-head b { display: block; font-size: 0.92rem; }
+.tii-head small { display: block; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.45; }
+.tii-code { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.55rem 0.55rem 0.85rem; border-radius: 12px; background: #0b1222; border: 1px solid rgba(148, 163, 184, 0.14); }
+.tii-code code { flex: 1; min-width: 0; color: #e2e8f0; font: 500 0.78rem/1.6 "JetBrains Mono", "SFMono-Regular", Consolas, Menlo, monospace; white-space: nowrap; overflow-x: auto; scrollbar-width: none; background: none; padding: 0; margin: 0; }
+.tii-code code::-webkit-scrollbar { display: none; }
+.task-copy-btn { flex-shrink: 0; appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; min-width: 7.2rem; height: 36px; padding: 0 0.9rem; border: 0; border-radius: 10px; background: linear-gradient(135deg, #2563eb, #06b6d4); color: #fff; font: 600 0.82rem 'Inter', sans-serif; white-space: nowrap; cursor: pointer; transition: transform 0.2s, background 0.2s, box-shadow 0.2s; }
+.task-copy-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -12px rgba(37, 99, 235, 0.8); }
 .task-copy-btn:active { transform: translateY(0); }
+.task-copy-btn.copied { background: #059669; box-shadow: none; }
+.swal2-html-container .tii-code code { display: block !important; background: none !important; color: #e2e8f0 !important; border: 0 !important; white-space: nowrap !important; overflow-x: auto !important; width: auto !important; }
+@media (max-width: 560px) {
+  .swal2-html-container .tii-code code { white-space: normal !important; word-break: break-all !important; }
+  .tii-code { flex-direction: column; align-items: stretch; padding: 0.7rem; }
+  .tii-code code { white-space: normal; word-break: break-all; }
+  .task-copy-btn { width: 100%; }
+}
 .task-budget-split {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.65rem; margin-top: 0.75rem;
 }
@@ -3365,8 +3371,6 @@ to {
 .swal2-html-container [style*="grid-template-columns"], .swal2-html-container [style*="display: grid"] { grid-template-columns: 1fr !important; gap: 0.75rem !important; }
 .swal2-html-container [style*="display: flex"] { flex-wrap: wrap !important; }
 .swal2-html-container > * { max-width: 100% !important; overflow-x: hidden !important; }
-#aiKeywordsBtn { white-space: nowrap !important; flex-shrink: 0 !important; padding: 0.5rem 0.75rem !important; font-size: 0.85rem !important; }
-#aiKeywordsBtn i { margin-right: 0.25rem !important; }
 #taskBudget { font-size: 1.1rem !important; font-weight: 600 !important; padding: 0.75rem 1rem 0.75rem 2.25rem !important; }
 .card-body > div[style*="grid-template-columns"], #current-images-container { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem !important; }
 #cancelPreviousContainer { padding: 1rem !important; margin-bottom: 1rem !important; }
@@ -4181,14 +4185,14 @@ th, td {
                     <div class="step-indicator">1</div>
                         <div class="step-info">
                             <div class="step-title">Website</div>
-                            <div class="step-description">Set up your website URL and task priority</div>
+                            <div class="step-description">Pick your site from Search Console and a plan</div>
                         </div>
                 </div>
                 <div class="progress-step" data-step="2">
                     <div class="step-indicator">2</div>
                     <div class="step-info">
                         <div class="step-title">Keywords</div>
-                        <div class="step-description">Choose target keywords for SEO</div>
+                        <div class="step-description">Pick keywords your site ranks for</div>
                     </div>
                 </div>
                 <div class="progress-step" data-step="3">
@@ -4208,7 +4212,7 @@ th, td {
                     <i class="ri-close-line"></i>
                 </button>
                 <div class="task-creator-title">Create New SEO Task</div>
-                <div class="task-creator-subtitle">Configure your SEO campaign in three simple steps</div>
+                <div class="task-creator-subtitle">Powered by your Google Search Console data</div>
             </div>
             <!-- Body -->
             <div class="task-creator-body">
@@ -4238,10 +4242,10 @@ th, td {
                 <!-- Step 1: Website & Priority -->
                 <div class="step-content active" id="step1">
                     <div class="form-group">
-                        <label class="form-label" for="taskUrl">Website URL</label>
-                        <input type="url" class="form-input" id="taskUrl" placeholder="https://example.com" inputmode="url" autocomplete="url" autocapitalize="off" spellcheck="false" enterkeyhint="next" required>
-                        <small class="tc-hint">Enter the full URL of the website or page you want to optimize</small>
-                        <div class="gsc-site-picker" id="gscSitePicker"></div>
+                        <label class="form-label">Website</label>
+                        <!-- The website comes from Google Search Console -->
+                        <div class="gsc-website" id="gscWebsite"></div>
+                        <input type="hidden" id="taskUrl">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Select Task Priority</label>
@@ -4277,23 +4281,6 @@ th, td {
                 <div class="step-content" id="step2">
                     <!-- Google Search Console: keywords the site already ranks for -->
                     <div class="gsc-card" id="gscKeywordsCard"></div>
-                    <div class="form-group tc-manual">
-                        <label class="form-label" for="keywordsInput">Add your own keywords</label>
-                        <div class="tc-kw-row">
-                            <div class="tc-kw-input">
-                                <i class="ri-search-line"></i>
-                                <input type="text" class="form-input" id="keywordsInput"
-                                       placeholder="Type a keyword and press Enter"
-                                       autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">
-                                <button type="button" class="tc-kw-add" id="addKeywordBtn" aria-label="Add keyword"><i class="ri-add-line"></i></button>
-                            </div>
-                            <button type="button" class="btn btn-secondary tc-ai-btn" id="aiKeywordsBtn" onclick="generateAIKeywords()">
-                                <i class="ri-magic-line"></i> AI Suggest
-                            </button>
-                        </div>
-                        <small class="tc-hint">Separate several keywords with commas.</small>
-                        <div id="keywordSuggestions" class="keyword-suggestions"></div>
-                    </div>
                     <div class="selected-keywords" id="selectedKeywordsSection" style="display: none;">
                         <div class="selected-keywords-header">
                             <span>Selected keywords <b id="selectedKeywordsCount">0</b></span>
@@ -9788,7 +9775,6 @@ function resetTaskCreatorState() {
     document.getElementById('createTaskBtn').style.display = 'none';
     // Clear form inputs
     document.getElementById('taskUrl').value = '';
-    document.getElementById('keywordsInput').value = '';
     document.getElementById('taskBudget').value = '150';
     // Clear selected keywords state
     taskCreatorState.selectedKeywords = [];
@@ -9832,16 +9818,12 @@ function resetTaskCreatorState() {
     if (selectedKeywordsDisplay) {
         selectedKeywordsDisplay.innerHTML = '';
     }
-    // Clear keyword suggestions (no cache)
-    const keywordSuggestions = document.getElementById('keywordSuggestions');
-    if (keywordSuggestions) {
-        keywordSuggestions.innerHTML = '';
-    }
     const body = document.querySelector('#seoTaskCreator .task-creator-body');
     if (body) body.scrollTop = 0;
     tcGsc.site = '';
-    tcGsc.filter = '';
-    renderGscSitePicker();
+    tcGsc.page = '';
+    tcGsc.rows = null;
+    renderGscWebsite();
     updateBudgetSummary();
 }
 // Show pending task alert
@@ -9889,17 +9871,13 @@ function completePendingPayment() {
 function nextStep() {
     const currentStep = taskCreatorState.currentStep;
     if (currentStep === 1) {
-        const input = document.getElementById('taskUrl');
-        const url = input.value.trim();
-        if (!url || !/^(https?:\/\/)?[^\s\/.]+(\.[^\s\/.]+)+(\/\S*)?$/i.test(url)) {
-            showToast('Please enter a valid URL', 'error');
-            input.focus();
+        if (!gscToken() || !tcGsc.site || !document.getElementById('taskUrl').value) {
+            showToast('Connect Google Search Console and choose your website', 'error');
             return;
         }
-        if (!/^https?:\/\//i.test(url)) input.value = 'https://' + url;
     } else if (currentStep === 2) {
         if (taskCreatorState.selectedKeywords.length === 0) {
-            showToast('Please select at least one keyword', 'error');
+            showToast('Select at least one keyword from Search Console', 'error');
             return;
         }
     }
@@ -10007,66 +9985,14 @@ function updateSelectedKeywords() {
     });
     updateGscSelectionSummary();
 }
-// Manual entry: Enter, comma or the + button adds; pasting a comma list adds them all
-function commitKeywordInput() {
-    const input = document.getElementById('keywordsInput');
-    const added = addKeywords(input.value.split(','));
-    if (!added && input.value.trim()) showToast('That keyword is already selected', 'info');
-    input.value = '';
-}
 document.addEventListener('DOMContentLoaded', () => {
-    const input = document.getElementById('keywordsInput');
-    if (input) {
-        input.addEventListener('keydown', e => {
-            if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); commitKeywordInput(); }
-            else if (e.key === 'Backspace' && !input.value && taskCreatorState.selectedKeywords.length) {
-                removeKeyword(taskCreatorState.selectedKeywords[taskCreatorState.selectedKeywords.length - 1]);
-            }
-        });
-        input.addEventListener('input', () => { if (input.value.includes(',')) commitKeywordInput(); });
-        input.addEventListener('blur', () => { if (input.value.trim()) commitKeywordInput(); });
-    }
-    document.getElementById('addKeywordBtn')?.addEventListener('click', () => { commitKeywordInput(); input?.focus(); });
-    const creator = document.getElementById('seoTaskCreator');
-    creator?.addEventListener('click', e => {
+    document.getElementById('seoTaskCreator')?.addEventListener('click', e => {
         const rm = e.target.closest('[data-remove-keyword]');
         if (rm) return removeKeyword(rm.dataset.removeKeyword);
         const kw = e.target.closest('[data-keyword]');
         if (kw) toggleKeyword(kw.dataset.keyword);
     });
 });
-// Generate AI keywords
-async function generateAIKeywords() {
-    const url = document.getElementById('taskUrl').value;
-    const btn = document.getElementById('aiKeywordsBtn');
-    if (!url) {
-        showToast('Please enter a URL first', 'error');
-        return;
-    }
-    btn.innerHTML = '<i class="ri-loader-4-line tc-spin"></i> Generating...';
-    btn.disabled = true;
-    const container = document.getElementById('keywordSuggestions');
-    try {
-        container.innerHTML = '<div class="tc-muted">Loading suggestions...</div>';
-        const response = await fetch(`https://keywords.seotize.net?url=${encodeURIComponent(url)}&t=${Date.now()}`, {
-            headers: { 'Session-Token': sessionToken },
-            cache: 'no-cache'
-        });
-        if (!response.ok) throw new Error('Failed to generate keywords');
-        const data = await response.json();
-        const list = (data.keywords || []).slice(0, 15);
-        container.innerHTML = list.length
-            ? `<div class="tc-sub-label"><i class="ri-magic-line"></i> AI suggestions <span>tap to add</span></div>` +
-              list.map(keyword => `<button type="button" class="keyword-suggestion ${hasKeyword(keyword) ? 'selected' : ''}" data-keyword="${escHtml(keyword)}">${escHtml(keyword)}</button>`).join('')
-            : '<div class="tc-muted">No suggestions for this URL.</div>';
-    } catch (error) {
-        container.innerHTML = '';
-        showToast('Failed to generate AI keywords', 'error');
-    } finally {
-        btn.innerHTML = '<i class="ri-magic-line"></i> AI Suggest';
-        btn.disabled = false;
-    }
-}
 // Select payment type
 function selectPaymentType(type) {
     document.querySelectorAll('.payment-type-option').forEach(opt => opt.classList.remove('active'));
@@ -10529,22 +10455,25 @@ async function viewTaskDetails(taskId) {
                   <h3 class="task-modal-section-title" style="color: var(--info);">
                     <i class="ri-settings-3-line"></i>Configuration
                   </h3>
-                  <div style="font-size: 0.9rem; line-height: 2;">
-                    <p>
-                      <strong>Priority:</strong>
-                      <span class="badge badge-${priorityBadge}">${priorityName}</span>
-                      ($${priorityRate.toFixed(3)}/click)
-                    </p>
-                    <p><strong>Keywords:</strong></p>
-                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: -0.5rem;">
-                      ${(task.keywords || []).map(k => `<span class="badge badge-primary">${escHtml(k)}</span>`).join('')}
+                  <div class="tcfg">
+                    <div class="tcfg-row">
+                      <span class="tcfg-label">Priority</span>
+                      <span class="tcfg-val"><span class="badge badge-${priorityBadge}">${priorityName}</span><small>$${priorityRate.toFixed(3)} / click</small></span>
+                    </div>
+                    <div class="tcfg-row tcfg-col">
+                      <span class="tcfg-label">Keywords <b>${(task.keywords || []).length}</b></span>
+                      <div class="tcfg-chips">${(task.keywords || []).map(k => `<span>${escHtml(k)}</span>`).join('') || '<em>No keywords</em>'}</div>
                     </div>
                     ${task.sitekey ? `
                       <div class="task-install-instructions">
-                        <p><strong>Installation Instruction:</strong></p>
-                        <p>Add the following code into your website's &lt;head&gt; section, right before &lt;/head&gt;:</p>
-                        <code id="install-code-${task._id}">&lt;script type="text/javascript" src="https://seotize.net/seotize-engine.js?id=${task.sitekey}"&gt;&lt;/script&gt;</code>
-                        <button class="task-copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('install-code-${task._id}').innerText)">Copy Code</button>
+                        <div class="tii-head">
+                          <span class="tii-ico"><i class="ri-code-s-slash-line"></i></span>
+                          <div><b>Installation</b><small>Paste this into your website's &lt;head&gt;, right before &lt;/head&gt;.</small></div>
+                        </div>
+                        <div class="tii-code">
+                          <code id="install-code-${task._id}">&lt;script type="text/javascript" src="https://seotize.net/seotize-engine.js?id=${escHtml(task.sitekey)}"&gt;&lt;/script&gt;</code>
+                          <button type="button" class="task-copy-btn" onclick="copyInstallCode(this, 'install-code-${task._id}')"><i class="ri-file-copy-line"></i><span>Copy code</span></button>
+                        </div>
                       </div>
                     ` : ''}
                   </div>
@@ -13890,6 +13819,7 @@ function deleteImageFromModal(imageId) {
 // [NEW] Payment Details Modal with auto-retry for pending status
 let paymentCheckInterval = null;
 let paymentCheckAttempts = 0;
+const PAYMENT_CHECK_SECONDS = 5;
 const MAX_PAYMENT_CHECK_ATTEMPTS = 24; // Max 2 minutes (24 * 5 seconds), then offer a manual check
 
 async function viewPaymentDetails(billingId, isAutoCheck = false, noPoll = false) {
@@ -13918,52 +13848,60 @@ async function viewPaymentDetails(billingId, isAutoCheck = false, noPoll = false
         const cp = id => `<i class="ri-file-copy-line pcp" onclick="copyToClipboard('${id}')" title="Copy"></i>`;
         const isStripe = p.payment_method?.toLowerCase()==='stripe';
         
-        // If pending and not already checking, start auto-check
+        // If pending and not already checking, start auto-check: a one-second ticker drives
+        // the countdown and progress bar, and every PAYMENT_CHECK_SECONDS it asks the server again
         if (isPending && !paymentCheckInterval && !noPoll) {
             paymentCheckAttempts = 0;
+            let countdown = PAYMENT_CHECK_SECONDS, checking = false;
+            const stop = () => { clearInterval(paymentCheckInterval); paymentCheckInterval = null; };
             paymentCheckInterval = setInterval(async () => {
-                paymentCheckAttempts++;
+                const timerEl = document.getElementById('pendingCheckTimer');
                 // Stop once the payment modal is closed (Swal.update can't register didClose)
-                if (paymentCheckAttempts >= MAX_PAYMENT_CHECK_ATTEMPTS || !document.getElementById('pendingCheckTimer')) {
-                    clearInterval(paymentCheckInterval);
-                    paymentCheckInterval = null;
+                if (!timerEl) return stop();
+                if (checking) return;
+                countdown--;
+                timerEl.textContent = Math.max(countdown, 0);
+                const bar = document.getElementById('pendingCheckBar');
+                if (bar) bar.style.width = `${(PAYMENT_CHECK_SECONDS - countdown) / PAYMENT_CHECK_SECONDS * 100}%`;
+                if (countdown > 0) return;
+                paymentCheckAttempts++;
+                if (paymentCheckAttempts > MAX_PAYMENT_CHECK_ATTEMPTS) {
+                    stop();
                     // Stop the "verifying" animation and let the user re-check by hand
                     const box = document.querySelector('.pay-pending-check');
-                    if (box) box.innerHTML = `<div class="check-title"><i class="ri-time-line"></i>Still pending</div><div class="check-desc">The provider hasn't confirmed this payment yet. It can take a few minutes.</div><button type="button" class="pay-btn" onclick="viewPaymentDetails('${billingId}')"><i class="ri-refresh-line"></i>Check again</button>`;
+                    if (box) box.innerHTML = `<div class="ppc-head"><span class="ppc-icon"><i class="ri-time-line"></i></span><div class="ppc-text"><b>Still pending</b><small>The provider hasn't confirmed it yet. This can take a few minutes.</small></div></div><button type="button" class="ppc-retry" onclick="viewPaymentDetails('${billingId}')"><i class="ri-refresh-line"></i>Check again</button>`;
                     return;
                 }
-                // Update the countdown timer
-                const timerEl = document.getElementById('pendingCheckTimer');
-                if (timerEl) {
-                    timerEl.textContent = '5';
-                    let countdown = 5;
-                    const countdownInterval = setInterval(() => {
-                        countdown--;
-                        if (timerEl) timerEl.textContent = countdown;
-                        if (countdown <= 0) clearInterval(countdownInterval);
-                    }, 1000);
-                }
-                // Re-fetch payment status
+                checking = true;
+                const box = timerEl.closest('.pay-pending-check');
+                box?.classList.add('is-checking');
                 try {
                     const { data: newP } = await api(`/get-payment-status?payment_id=${billingId}`);
                     const newStatus = (newP?.status || newP?.payment_status || '').toLowerCase();
                     if (newStatus && newStatus !== 'pending') {
-                        // Status changed! Clear interval and refresh modal
-                        clearInterval(paymentCheckInterval);
-                        paymentCheckInterval = null;
-                        paymentCheckAttempts = 0;
-                        // Re-render the open modal once, without starting a new poll
+                        // Status changed: re-render the open modal once, without starting a new poll
                         // (a stale "pending" read would otherwise restart the cycle)
+                        stop();
+                        paymentCheckAttempts = 0;
                         if (document.getElementById('pendingCheckTimer')) viewPaymentDetails(billingId, false, true);
                         // Refresh billing only if the user is still looking at it
                         if (currentPage === 'billing') loadBilling();
+                        return;
                     }
                 } catch (e) {
                     console.error('Auto-check payment status error:', e);
+                } finally {
+                    checking = false;
                 }
-            }, 5000);
+                countdown = PAYMENT_CHECK_SECONDS;
+                box?.classList.remove('is-checking');
+                const t = document.getElementById('pendingCheckTimer');
+                if (t) t.textContent = countdown;
+                const b = document.getElementById('pendingCheckBar');
+                if (b) { b.style.transition = 'none'; b.style.width = '0%'; b.offsetWidth; b.style.transition = ''; }
+            }, 1000);
         }
-        
+
         // If status changed from pending, stop checking
         if (!isPending && paymentCheckInterval) {
             clearInterval(paymentCheckInterval);
@@ -13982,23 +13920,28 @@ async function viewPaymentDetails(billingId, isAutoCheck = false, noPoll = false
 .pay-amount{margin-bottom:2rem}
 .pay-amount h2{font-size:3.5rem;font-weight:800;margin:0;letter-spacing:-2px;line-height:1}
 .pay-amount span{font-size:1rem;opacity:.7;font-weight:500;margin-left:.25rem}
-.pay-status{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.25rem;border-radius:50px;font-weight:600;font-size:.9rem;background:${sC};color:#fff;box-shadow:0 4px 15px ${sC}60;margin-top:.5rem}
+.pay-status{display:inline-flex;align-items:center;align-self:flex-start;white-space:nowrap;gap:.5rem;padding:.6rem 1.25rem;border-radius:50px;font-weight:600;font-size:.9rem;background:${sC};color:#fff;box-shadow:0 4px 15px ${sC}60;margin-top:.5rem}
 .pay-status i{font-size:1.1rem}
 .pay-status.pending i{animation:pendingSpin 1.5s linear infinite}
 @keyframes pendingSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.pay-pending-check{margin-top:1.5rem;padding:1rem;background:rgba(255,255,255,.1);border-radius:12px;text-align:center}
-.pay-pending-check .check-title{font-size:.9rem;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;justify-content:center;gap:.5rem}
-.pay-pending-check .check-title i{animation:pendingPulse 1.5s ease-in-out infinite}
-@keyframes pendingPulse{0%,100%{opacity:1}50%{opacity:.4}}
-.pay-pending-check .check-desc{font-size:.75rem;opacity:.8;margin-bottom:.75rem}
-.pay-pending-check .check-timer{display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .8rem;background:rgba(255,255,255,.15);border-radius:20px;font-size:.8rem}
+.pay-pending-check{margin-top:1.25rem;padding:.9rem 1rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:14px;display:flex;flex-direction:column;gap:.7rem;text-align:left;width:100%;box-sizing:border-box}
+.ppc-head{display:flex;align-items:center;gap:.7rem;min-width:0}
+.ppc-icon{width:2.25rem;height:2.25rem;flex-shrink:0;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;font-size:1.05rem}
+.ppc-ring{width:1.1rem;height:1.1rem;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:pendingSpin 1s linear infinite}
+.ppc-text{min-width:0}
+.ppc-text b{display:block;font-size:.92rem;font-weight:700;white-space:nowrap}
+.ppc-text small{display:block;font-size:.74rem;opacity:.8;line-height:1.35}
+.ppc-progress{height:4px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
+.ppc-progress i{display:block;height:100%;width:0;border-radius:inherit;background:#fff;transition:width 1s linear}
+.pay-pending-check .check-timer{display:inline-flex;align-items:center;gap:.4rem;align-self:flex-start;padding:.35rem .75rem;background:rgba(255,255,255,.15);border-radius:99px;font-size:.78rem;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pay-pending-check .check-timer b{display:inline-block;min-width:.7em;text-align:center}
 .pay-pending-check .check-timer i{font-size:.9rem}
-.pay-pending-loader{display:flex;justify-content:center;gap:6px;margin-top:.75rem}
-.pay-pending-loader span{width:8px;height:8px;background:rgba(255,255,255,.8);border-radius:50%;animation:pendingBounce 1.4s ease-in-out infinite}
-.pay-pending-loader span:nth-child(1){animation-delay:-0.32s}
-.pay-pending-loader span:nth-child(2){animation-delay:-0.16s}
-.pay-pending-loader span:nth-child(3){animation-delay:0s}
-@keyframes pendingBounce{0%,80%,100%{transform:scale(0);opacity:.5}40%{transform:scale(1);opacity:1}}
+.pay-pending-check .ppc-now{display:none}
+.pay-pending-check.is-checking .ppc-next{display:none}
+.pay-pending-check.is-checking .ppc-now{display:inline}
+.pay-pending-check.is-checking .check-timer i{animation:pendingSpin 1s linear infinite}
+.ppc-retry{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;height:38px;border:1px solid rgba(255,255,255,.3);border-radius:10px;background:rgba(255,255,255,.16);color:#fff;font:600 .85rem 'Inter',sans-serif;cursor:pointer}
+.ppc-retry:hover{background:rgba(255,255,255,.26)}
 .pay-actions{margin-top:auto;display:flex;flex-direction:column;gap:.75rem}
 .pay-btn{display:flex;align-items:center;gap:.75rem;padding:.9rem 1.25rem;border-radius:var(--radius,10px);font-weight:600;font-size:.95rem;text-decoration:none;background:rgba(255,255,255,.15);color:#fff;transition:.2s;border:1px solid rgba(255,255,255,.2)}
 .pay-btn:hover{background:rgba(255,255,255,.25);transform:translateX(5px)}
@@ -14031,17 +13974,16 @@ async function viewPaymentDetails(billingId, isAutoCheck = false, noPoll = false
 .pay-ref code{background:var(--bg-tertiary,#f1f5f9);padding:.4rem .6rem;border-radius:6px;font-size:.8rem;font-family:'SF Mono',Monaco,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text,#1e293b)}
 .pcp{cursor:pointer;width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:.15s;color:var(--text-secondary,#94a3b8);font-size:1.1rem}
 .pcp:hover{color:var(--primary,#2563eb);background:rgba(37,99,235,.1)}
-@media(max-width:800px){.pay-modal{width:calc(100vw - 1.5rem)!important;max-width:100%!important;border-radius:1.25rem!important;margin:.75rem!important;max-height:calc(100vh - 1.5rem)!important}.pay-wrap{grid-template-columns:1fr;display:flex;flex-direction:column}.pay-left{padding:1.25rem 1rem;flex-direction:column;align-items:center;text-align:center;gap:.5rem;flex-shrink:0}.pay-amount{margin-bottom:0}.pay-amount h2{font-size:2.25rem;letter-spacing:-1px}.pay-amount span{font-size:.85rem;opacity:.8}.pay-status{padding:.45rem 1rem;font-size:.8rem;margin-top:.25rem;border-radius:2rem}.pay-status i{font-size:.9rem}.pay-pending-check{margin-top:.75rem;padding:.75rem;border-radius:10px}.pay-pending-check .check-title{font-size:.75rem}.pay-pending-check .check-desc{font-size:.65rem;margin-bottom:.5rem}.pay-pending-check .check-timer{font-size:.7rem;padding:.3rem .6rem}.pay-pending-loader span{width:6px;height:6px}.pay-actions{margin-top:.6rem;flex-direction:row;width:100%;gap:.35rem}.pay-btn{flex:1;flex-direction:column;align-items:center;gap:.2rem;padding:.5rem .35rem;font-size:.65rem;text-align:center;border-radius:.6rem}.pay-btn i{font-size:1.1rem}.pay-right{padding:.85rem;flex:1;overflow-y:auto}.pay-section{margin-bottom:.85rem}.pay-section:last-child{margin-bottom:0}.pay-section h3{font-size:.65rem;margin-bottom:.5rem}.pay-cards{grid-template-columns:1fr 1fr;gap:.4rem}.pay-card{padding:.55rem .6rem;gap:.4rem}.pay-card-icon{width:1.85rem;height:1.85rem}.pay-card-icon i{font-size:.85rem}.pay-card label{font-size:.5rem}.pay-card strong{font-size:.7rem}.pay-timeline{grid-template-columns:1fr;gap:.4rem}.pay-time{padding:.55rem .6rem;gap:.4rem}.pay-time i{font-size:.95rem}.pay-time div label{font-size:.5rem}.pay-time div strong{font-size:.7rem}.pay-refs{gap:.35rem}.pay-ref{padding:.5rem .6rem;flex-direction:column;align-items:flex-start;gap:.3rem}.pay-ref label{font-size:.55rem}.pay-ref div{width:100%;justify-content:space-between}.pay-ref code{font-size:.6rem;padding:.2rem .35rem;max-width:calc(100% - 2.5rem)}}
+@media(max-width:800px){.pay-modal{width:calc(100vw - 1.5rem)!important;max-width:100%!important;border-radius:1.25rem!important;margin:.75rem!important;max-height:calc(100vh - 1.5rem)!important}.pay-wrap{grid-template-columns:1fr;display:flex;flex-direction:column}.pay-left{padding:1.25rem 1rem;flex-direction:column;align-items:center;text-align:center;gap:.5rem;flex-shrink:0}.pay-amount{margin-bottom:0}.pay-amount h2{font-size:2.25rem;letter-spacing:-1px}.pay-amount span{font-size:.85rem;opacity:.8}.pay-status{padding:.45rem 1rem;font-size:.8rem;margin-top:.25rem;border-radius:2rem}.pay-status i{font-size:.9rem}.pay-status{align-self:center}.pay-pending-check{margin-top:.6rem;padding:.75rem .85rem;gap:.55rem;max-width:380px}.ppc-text b{font-size:.85rem}.ppc-text small{font-size:.7rem}.pay-pending-check .check-timer{align-self:center;font-size:.72rem}.pay-actions{margin-top:.6rem;flex-direction:row;width:100%;gap:.35rem}.pay-btn{flex:1;flex-direction:column;align-items:center;gap:.2rem;padding:.5rem .35rem;font-size:.65rem;text-align:center;border-radius:.6rem}.pay-btn i{font-size:1.1rem}.pay-right{padding:.85rem;flex:1;overflow-y:auto}.pay-section{margin-bottom:.85rem}.pay-section:last-child{margin-bottom:0}.pay-section h3{font-size:.65rem;margin-bottom:.5rem}.pay-cards{grid-template-columns:1fr 1fr;gap:.4rem}.pay-card{padding:.55rem .6rem;gap:.4rem}.pay-card-icon{width:1.85rem;height:1.85rem}.pay-card-icon i{font-size:.85rem}.pay-card label{font-size:.5rem}.pay-card strong{font-size:.7rem}.pay-timeline{grid-template-columns:1fr;gap:.4rem}.pay-time{padding:.55rem .6rem;gap:.4rem}.pay-time i{font-size:.95rem}.pay-time div label{font-size:.5rem}.pay-time div strong{font-size:.7rem}.pay-refs{gap:.35rem}.pay-ref{padding:.5rem .6rem;flex-direction:column;align-items:flex-start;gap:.3rem}.pay-ref label{font-size:.55rem}.pay-ref div{width:100%;justify-content:space-between}.pay-ref code{font-size:.6rem;padding:.2rem .35rem;max-width:calc(100% - 2.5rem)}}
 </style>
 <div class="pay-wrap">
 <div class="pay-left">
 <div class="pay-amount"><h2>$${(p.amount||0).toFixed(2)}<span>${(p.currency||'USD').toUpperCase()}</span></h2></div>
 <div class="pay-status${isPending?' pending':''}"><i class="${sI}"></i>${sT}</div>
 ${isPending?`<div class="pay-pending-check">
-<div class="check-title"><i class="ri-search-eye-line"></i>Verifying Payment</div>
-<div class="check-desc">We're checking your payment status with the payment provider</div>
-<div class="check-timer"><i class="ri-refresh-line"></i>Next check in <span id="pendingCheckTimer">5</span>s</div>
-<div class="pay-pending-loader"><span></span><span></span><span></span></div>
+<div class="ppc-head"><span class="ppc-icon"><span class="ppc-ring"></span></span><div class="ppc-text"><b>Verifying payment</b><small>Checking with the payment provider</small></div></div>
+<div class="ppc-progress"><i id="pendingCheckBar"></i></div>
+<div class="check-timer"><i class="ri-refresh-line"></i><span class="ppc-next">Next check in <b id="pendingCheckTimer">${PAYMENT_CHECK_SECONDS}</b>s</span><span class="ppc-now">Checking now…</span></div>
 </div>`:''}
 ${(p.receipt_url||p.invoice_url||p.invoice_pdf)?`<div class="pay-actions">${p.receipt_url?`<a href="${p.receipt_url}" target="_blank" class="pay-btn"><i class="ri-receipt-line"></i>View Receipt</a>`:''}${p.invoice_url?`<a href="${p.invoice_url}" target="_blank" class="pay-btn"><i class="ri-file-text-line"></i>View Invoice</a>`:''}${p.invoice_pdf?`<a href="${p.invoice_pdf}" target="_blank" class="pay-btn"><i class="ri-download-line"></i>Download PDF</a>`:''}</div>`:''}
 </div>
@@ -14690,6 +14632,28 @@ function getCookie(name) {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
+// Copy the install snippet and show "Copied" on the button for a moment
+function copyInstallCode(btn, codeId) {
+    const text = document.getElementById(codeId)?.innerText || '';
+    const done = ok => {
+        if (!btn.dataset.label) btn.dataset.label = btn.innerHTML;
+        btn.classList.toggle('copied', ok);
+        btn.innerHTML = ok ? '<i class="ri-check-line"></i><span>Copied!</span>' : '<i class="ri-error-warning-line"></i><span>Copy failed</span>';
+        clearTimeout(btn._copyTimer);
+        btn._copyTimer = setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = btn.dataset.label; }, 1800);
+    };
+    const fallback = () => {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+        document.body.appendChild(ta); ta.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch (_) {}
+        ta.remove();
+        done(ok);
+    };
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(() => done(true), fallback);
+    else fallback();
+}
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
         showToast('Copied to clipboard', 'success');
@@ -14917,96 +14881,120 @@ function gscConnectFromClick(btn, after) {
     }).finally(() => { if (btn && btn.isConnected) { btn.disabled = false; btn.classList.remove('busy'); } });
 }
 
-// ---------- Task creator ----------
-const tcGsc = { site: '', days: 28, sort: 'impressions', filter: '', limit: 50, rows: null, error: '', seq: 0 };
-
-// Step 1: pick the website from Search Console
-async function renderGscSitePicker() {
-    const box = document.getElementById('gscSitePicker');
-    if (!box) return;
-    if (!gscToken()) {
-        box.innerHTML = `<button type="button" class="gsc-inline-btn" data-gsc-connect>${GSC_G_ICON}<span>Pick from Google Search Console</span></button>`;
-        return;
-    }
-    box.innerHTML = `<div class="gsc-inline-select">${GSC_G_ICON}<select id="gscSiteSelect1" aria-label="Search Console property"><option value="">Loading your Search Console sites…</option></select></div>`;
-    try {
-        const sites = await gscSites();
-        const sel = document.getElementById('gscSiteSelect1');
-        if (!sel) return;
-        if (!sites.length) { box.innerHTML = '<small class="tc-hint">No verified sites in this Google account\'s Search Console.</small>'; return; }
-        const current = gscMatchSite(sites, document.getElementById('taskUrl').value.trim());
-        sel.innerHTML = '<option value="">Choose a Search Console site…</option>' +
-            sites.map(s => `<option value="${escHtml(s)}" ${s === current ? 'selected' : ''}>${escHtml(gscSiteLabel(s))}</option>`).join('');
-        sel.onchange = () => {
-            if (!sel.value) return;
-            tcGsc.site = sel.value;
-            document.getElementById('taskUrl').value = gscSiteUrl(sel.value);
-        };
-    } catch (err) {
-        if (err.auth) renderGscSitePicker();
-        else box.innerHTML = `<small class="tc-hint tc-error">${escHtml(err.message)}</small>`;
-    }
+// ---------- Task creator: website and keywords come only from Search Console ----------
+const tcGsc = { site: '', page: '', pages: null, home: '', days: 28, sort: 'impressions', limit: 50, rows: null, seq: 0, pseq: 0 };
+const gscPath = u => { try { const x = new URL(u); return (x.pathname + x.search) || '/'; } catch (_) { return u; } };
+function tcTaskUrl() { return tcGsc.page || tcGsc.home || (tcGsc.site ? gscSiteUrl(tcGsc.site) : ''); }
+function tcSetUrl() {
+    const url = tcTaskUrl();
+    document.getElementById('taskUrl').value = url;
+    const prev = document.getElementById('gscUrlPreview');
+    if (prev) prev.textContent = url || '—';
 }
 
-// Step 2: the keywords the site already ranks for
-async function renderGscKeywordsCard(errMsg) {
-    const card = document.getElementById('gscKeywordsCard');
-    if (!card) return;
+// Step 1: connect, then choose the site and the page to promote
+async function renderGscWebsite(errMsg) {
+    const box = document.getElementById('gscWebsite');
+    if (!box) return;
     if (!gscToken()) {
-        card.innerHTML = gscConnectCard({
-            title: 'Import keywords from Google Search Console',
-            text: 'See every keyword your site already ranks for, with position, clicks and impressions, and add them in one tap. Read-only access.',
+        tcGsc.site = ''; tcGsc.page = ''; tcGsc.pages = null; tcGsc.home = '';
+        document.getElementById('taskUrl').value = '';
+        box.innerHTML = gscConnectCard({
+            title: 'Connect Google Search Console',
+            text: 'Your website and keywords come straight from Search Console, so every task targets keywords your site can really rank for. Read-only access.',
             error: errMsg
         });
         return;
     }
-    card.innerHTML = `<div class="gsc-panel">
+    box.innerHTML = `<div class="gsc-site-box">
         <div class="gsc-panel-head">
-            <div class="gsc-panel-title">${GSC_G_ICON}<div><b>Search Console keywords</b><span id="gscSelSummary">Tap keywords to add them</span></div></div>
+            <div class="gsc-panel-title">${GSC_G_ICON}<div><b>Search Console connected</b><span>Choose the site and the page to promote</span></div></div>
             <button type="button" class="tc-link" data-gsc-disconnect>Disconnect</button>
         </div>
-        <div class="gsc-toolbar">
-            <select id="gscSiteSelect2" aria-label="Search Console site"><option>Loading sites…</option></select>
-            <select id="gscDays" aria-label="Date range">
-                <option value="7">Last 7 days</option><option value="28">Last 28 days</option><option value="90">Last 3 months</option><option value="480">Last 16 months</option>
-            </select>
+        <div class="gsc-fields">
+            <label class="gsc-field"><span>Site</span><select id="gscSiteSel"><option>Loading your sites…</option></select></label>
+            <label class="gsc-field"><span>Page to promote</span><select id="gscPageSel" disabled><option value="">Whole site (homepage)</option></select></label>
+        </div>
+        <div class="gsc-url-preview"><i class="ri-links-line"></i><span id="gscUrlPreview">—</span></div>
+    </div>`;
+    const siteSel = document.getElementById('gscSiteSel');
+    try {
+        const sites = await gscSites();
+        if (!siteSel.isConnected) return;
+        if (!sites.length) {
+            box.querySelector('.gsc-fields').innerHTML = '<div class="gsc-state">This Google account has no verified sites in Search Console. Add your site at search.google.com/search-console, then come back.</div>';
+            return;
+        }
+        if (!sites.includes(tcGsc.site)) { tcGsc.site = sites[0]; tcGsc.page = ''; tcGsc.pages = null; }
+        siteSel.innerHTML = sites.map(x => `<option value="${escHtml(x)}">${escHtml(gscSiteLabel(x))}</option>`).join('');
+        siteSel.value = tcGsc.site;
+        siteSel.onchange = () => { tcGsc.site = siteSel.value; tcGsc.page = ''; tcGsc.pages = null; tcGsc.home = ''; tcGsc.rows = null; loadGscPages(); };
+        tcSetUrl();
+        loadGscPages();
+    } catch (err) {
+        if (err.auth) renderGscWebsite(err.message);
+        else box.querySelector('.gsc-fields').innerHTML = `<div class="gsc-state tc-error">${escHtml(err.message)}</div>`;
+    }
+}
+async function loadGscPages() {
+    const sel = document.getElementById('gscPageSel');
+    if (!sel || !tcGsc.site) return;
+    const seq = ++tcGsc.pseq;
+    sel.disabled = true;
+    sel.innerHTML = '<option value="">Loading pages…</option>';
+    try {
+        const rows = tcGsc.pages || await gscQuery(tcGsc.site, { days: 90, dimensions: ['page'], rowLimit: 500 });
+        if (seq !== tcGsc.pseq || !sel.isConnected) return;
+        tcGsc.pages = rows;
+        // The real homepage URL (www or not, http or https) as Search Console reports it
+        const home = rows.map(r => r.keys[0]).find(u => gscPath(u) === '/');
+        tcGsc.home = home || '';
+        const others = rows.filter(r => r.keys[0] !== home).sort((a, b) => b.clicks - a.clicks || b.impressions - a.impressions);
+        sel.innerHTML = `<option value="">Whole site (homepage)</option>` +
+            others.map(r => `<option value="${escHtml(r.keys[0])}">${escHtml(gscPath(r.keys[0]))} · ${gscNum(r.clicks)} clicks</option>`).join('');
+        if (tcGsc.page && rows.some(r => r.keys[0] === tcGsc.page)) sel.value = tcGsc.page; else tcGsc.page = '';
+        sel.disabled = false;
+        sel.onchange = () => { tcGsc.page = sel.value; tcGsc.rows = null; tcSetUrl(); };
+        tcSetUrl();
+    } catch (err) {
+        if (seq !== tcGsc.pseq) return;
+        if (err.auth) return renderGscWebsite(err.message);
+        sel.innerHTML = '<option value="">Whole site (homepage)</option>';
+        sel.disabled = false;
+        tcSetUrl();
+    }
+}
+
+// Step 2: the keywords the chosen site or page already ranks for
+function renderGscKeywordsCard(errMsg) {
+    const card = document.getElementById('gscKeywordsCard');
+    if (!card) return;
+    if (!gscToken()) {
+        card.innerHTML = gscConnectCard({ title: 'Connect Google Search Console', text: 'Keywords come from Search Console. Connect to see the keywords your site ranks for.', error: errMsg });
+        return;
+    }
+    const target = tcGsc.page ? gscPath(tcGsc.page) : 'Whole site';
+    card.innerHTML = `<div class="gsc-panel">
+        <div class="gsc-panel-head">
+            <div class="gsc-panel-title">${GSC_G_ICON}<div><b>${escHtml(gscSiteLabel(tcGsc.site))} <small>${escHtml(target)}</small></b><span id="gscSelSummary">Loading keywords…</span></div></div>
         </div>
         <div class="gsc-toolbar">
-            <div class="gsc-search"><i class="ri-search-line"></i><input type="search" id="gscFilter" placeholder="Filter keywords…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"></div>
-            <select id="gscSort" aria-label="Sort by"><option value="impressions">Most impressions</option><option value="clicks">Most clicks</option><option value="position">Best position</option></select>
+            <select id="gscDays" aria-label="Date range"><option value="7">7 days</option><option value="28">28 days</option><option value="90">3 months</option><option value="480">16 months</option></select>
+            <select id="gscSort" aria-label="Sort by"><option value="impressions">↓ Impressions</option><option value="clicks">↓ Clicks</option><option value="position">↑ Position</option></select>
             <button type="button" class="gsc-top-btn" id="gscAddTop"><i class="ri-add-circle-line"></i> Add top 10</button>
         </div>
-        <div class="gsc-list" id="gscList"><div class="gsc-state"><span class="gsc-spinner"></span> Loading sites…</div></div>
+        <div class="gsc-list" id="gscList"><div class="gsc-state"><span class="gsc-spinner"></span> Loading keywords…</div></div>
     </div>`;
     const $ = id => document.getElementById(id);
     $('gscDays').value = String(tcGsc.days);
     $('gscSort').value = tcGsc.sort;
-    $('gscFilter').value = tcGsc.filter;
-    $('gscDays').onchange = () => { tcGsc.days = +$('gscDays').value; loadGscKeywords(); };
+    $('gscDays').onchange = () => { tcGsc.days = +$('gscDays').value; tcGsc.limit = 50; loadGscKeywords(); };
     $('gscSort').onchange = () => { tcGsc.sort = $('gscSort').value; tcGsc.limit = 50; renderGscKeywordList(); };
-    $('gscFilter').oninput = () => { tcGsc.filter = $('gscFilter').value; tcGsc.limit = 50; renderGscKeywordList(); };
     $('gscAddTop').onclick = () => {
         const n = addKeywords(gscVisibleKeywords().slice(0, 10).map(r => r.keys[0]));
         showToast(n ? `Added ${n} keyword${n > 1 ? 's' : ''}` : 'Those keywords are already selected', n ? 'success' : 'info');
     };
-    try {
-        const sites = await gscSites();
-        const sel = $('gscSiteSelect2');
-        if (!sel) return;
-        if (!sites.length) {
-            $('gscList').innerHTML = '<div class="gsc-state">This Google account has no verified sites in Search Console. Add your site at search.google.com/search-console first.</div>';
-            sel.innerHTML = '<option>No sites</option>'; sel.disabled = true;
-            return;
-        }
-        if (!sites.includes(tcGsc.site)) tcGsc.site = gscMatchSite(sites, $('taskUrl').value.trim()) || sites[0];
-        sel.innerHTML = sites.map(s => `<option value="${escHtml(s)}">${escHtml(gscSiteLabel(s))}</option>`).join('');
-        sel.value = tcGsc.site;
-        sel.onchange = () => { tcGsc.site = sel.value; tcGsc.limit = 50; loadGscKeywords(); };
-        loadGscKeywords();
-    } catch (err) {
-        if (err.auth) renderGscKeywordsCard(err.message);
-        else $('gscList').innerHTML = `<div class="gsc-state tc-error">${escHtml(err.message)}</div>`;
-    }
+    loadGscKeywords();
 }
 async function loadGscKeywords() {
     const list = document.getElementById('gscList');
@@ -15015,33 +15003,28 @@ async function loadGscKeywords() {
     tcGsc.rows = null;
     list.innerHTML = '<div class="gsc-state"><span class="gsc-spinner"></span> Loading keywords…</div>';
     try {
-        const rows = await gscQuery(tcGsc.site, { days: tcGsc.days, dimensions: ['query'], rowLimit: 1000 });
+        const filters = tcGsc.page ? [{ dimension: 'page', operator: 'equals', expression: tcGsc.page }] : [];
+        const rows = await gscQuery(tcGsc.site, { days: tcGsc.days, dimensions: ['query'], rowLimit: 1000, filters });
         if (seq !== tcGsc.seq) return;
         tcGsc.rows = rows;
         renderGscKeywordList();
     } catch (err) {
         if (seq !== tcGsc.seq) return;
-        if (err.auth) renderGscKeywordsCard(err.message);
+        if (err.auth) { renderGscWebsite(err.message); renderGscKeywordsCard(err.message); }
         else list.innerHTML = `<div class="gsc-state tc-error">${escHtml(err.message)}</div>`;
     }
 }
 function gscVisibleKeywords() {
-    const f = tcGsc.filter.trim().toLowerCase();
     const k = tcGsc.sort;
-    return (tcGsc.rows || []).filter(r => !f || r.keys[0].toLowerCase().includes(f))
-        .sort((a, b) => k === 'position' ? a.position - b.position : b[k] - a[k]);
+    return (tcGsc.rows || []).slice().sort((a, b) => k === 'position' ? a.position - b.position : b[k] - a[k]);
 }
 function renderGscKeywordList() {
     const list = document.getElementById('gscList');
     if (!list || !tcGsc.rows) return;
     const rows = gscVisibleKeywords();
-    if (!tcGsc.rows.length) {
-        list.innerHTML = '<div class="gsc-state">No keyword data for this site in this period yet.</div>';
-        updateGscSelectionSummary();
-        return;
-    }
     if (!rows.length) {
-        list.innerHTML = '<div class="gsc-state">No keywords match your filter.</div>';
+        list.innerHTML = `<div class="gsc-state">No keyword data for ${tcGsc.page ? 'this page' : 'this site'} in this period.<br>Try a longer date range${tcGsc.page ? ' or the whole site' : ''}.</div>`;
+        updateGscSelectionSummary();
         return;
     }
     const shown = rows.slice(0, tcGsc.limit);
@@ -15065,19 +15048,20 @@ function updateGscSelectionSummary() {
     const el = document.getElementById('gscSelSummary');
     if (!el || !tcGsc.rows) return;
     const n = tcGsc.rows.filter(r => hasKeyword(r.keys[0])).length;
-    el.textContent = `${tcGsc.rows.length.toLocaleString()} keyword${tcGsc.rows.length === 1 ? '' : 's'} found` + (n ? ` · ${n} selected` : ' · tap to add');
+    el.textContent = `${tcGsc.rows.length.toLocaleString()} keyword${tcGsc.rows.length === 1 ? '' : 's'} found` + (n ? ` · ${n} selected` : ' · tap to select');
 }
 // Connect / disconnect buttons anywhere in the creator
 document.addEventListener('click', e => {
     const creator = document.getElementById('seoTaskCreator');
     if (!creator || !creator.contains(e.target)) return;
     const c = e.target.closest('[data-gsc-connect]');
-    if (c) return gscConnectFromClick(c, () => { renderGscSitePicker(); if (taskCreatorState.currentStep === 2) renderGscKeywordsCard(); });
+    if (c) return gscConnectFromClick(c, () => { renderGscWebsite(); if (taskCreatorState.currentStep === 2) renderGscKeywordsCard(); });
     if (e.target.closest('[data-gsc-disconnect]')) {
         gscDisconnect();
-        tcGsc.site = ''; tcGsc.rows = null;
-        renderGscSitePicker();
-        renderGscKeywordsCard();
+        tcGsc.rows = null;
+        clearSelectedKeywords();
+        renderGscWebsite();
+        if (taskCreatorState.currentStep !== 1) goToStep(1);
     }
 });
 
@@ -15901,23 +15885,9 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 #seoTaskCreator .payment-icon{grid-row:span 2;margin:0;width:2.6rem;height:2.6rem;font-size:1.3rem}
 #seoTaskCreator .payment-title{margin:0}
 #seoTaskCreator .payment-card.selected::after{top:50%;transform:translateY(-50%)}
-@media (max-width:768px){#seoTaskCreator .payment-options{grid-template-columns:1fr;gap:.6rem;margin-bottom:1rem}#seoTaskCreator .gsc-list{max-height:46dvh}#seoTaskCreator .gsc-toolbar select{flex:1 1 130px}}
+@media (max-width:768px){#seoTaskCreator .payment-options{grid-template-columns:1fr;gap:.6rem;margin-bottom:1rem}#seoTaskCreator .gsc-list{max-height:46dvh}#seoTaskCreator .gsc-toolbar select{flex:1 1 130px;padding:0 .5rem}#seoTaskCreator .gsc-toolbar #gscDays{flex:0 1 auto}}
 
-/* ---------- Manual keywords ---------- */
-.tc-kw-row{display:flex;gap:.6rem;align-items:stretch}
-.tc-kw-input{position:relative;flex:1;min-width:0}
-.tc-kw-input>i{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--text-secondary);pointer-events:none}
-#seoTaskCreator .tc-kw-input .form-input{padding-left:2.4rem;padding-right:3rem}
-.tc-kw-add{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;border-radius:9px;background:var(--primary);color:#fff;font-size:1.1rem;display:grid;place-items:center;cursor:pointer}
-.tc-kw-add:active{transform:translateY(-50%) scale(.94)}
-#seoTaskCreator .tc-ai-btn{height:46px;padding:0 1rem;border-radius:12px;white-space:nowrap;display:inline-flex;align-items:center;gap:.4rem;flex-shrink:0}
-#seoTaskCreator .keyword-suggestions{display:flex;flex-wrap:wrap;gap:.45rem;margin:.75rem 0 0}
-#seoTaskCreator .keyword-suggestions:empty{display:none}
-.tc-sub-label{width:100%;display:flex;align-items:center;gap:.4rem;font-size:.76rem;font-weight:600;color:var(--text-secondary)}
-.tc-sub-label span{font-weight:400;opacity:.8}
-#seoTaskCreator .keyword-suggestion{padding:.4rem .8rem;border:1.5px solid var(--border);background:var(--card);color:var(--text);border-radius:99px;font:500 .82rem 'Inter',sans-serif;cursor:pointer;transform:none}
-#seoTaskCreator .keyword-suggestion:hover{background:var(--card);border-color:var(--primary);color:var(--primary);transform:none}
-#seoTaskCreator .keyword-suggestion.selected{background:var(--primary);border-color:var(--primary);color:#fff}
+/* ---------- Selected keywords ---------- */
 #seoTaskCreator .selected-keywords{margin:1.1rem 0 0;padding:.85rem .9rem;border:1px solid color-mix(in srgb,var(--primary) 25%,var(--border));border-radius:14px;background:var(--glow)}
 #seoTaskCreator .selected-keywords-header{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.6rem;font-size:.82rem;font-weight:700;color:var(--text)}
 #seoTaskCreator .selected-keywords-header b{display:inline-block;min-width:1.4rem;margin-left:.3rem;padding:0 .4rem;border-radius:99px;background:var(--primary);color:#fff;font-size:.72rem;text-align:center;line-height:1.4rem}
@@ -15939,7 +15909,7 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 .gsc-connect-text em{display:block;margin-top:.35rem;font-style:normal;font-size:.8rem;font-weight:600;color:var(--error,#dc2626)}
 .gsc-connect-btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;height:44px;padding:0 1.05rem;border:1px solid #d0d5dd;border-radius:12px;background:#fff;color:#1f2430;font:600 .86rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer;transition:box-shadow .2s,transform .2s}
 .gsc-connect-btn:hover{box-shadow:0 8px 20px -10px rgba(15,23,42,.35);transform:translateY(-1px)}
-.gsc-connect-btn.busy,.gsc-inline-btn.busy{opacity:.6;pointer-events:none}
+.gsc-connect-btn.busy{opacity:.6;pointer-events:none}
 @media (max-width:640px){.gsc-connect{grid-template-columns:auto minmax(0,1fr)}.gsc-connect-btn{grid-column:1/-1;width:100%}}
 .show-sm{display:none}
 @media (max-width:640px){.show-sm{display:inline}.gsc-th .hide-sm{display:none}}
@@ -15955,11 +15925,17 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 .gsc-more small{font-weight:500;color:var(--text-secondary)}
 
 /* ---------- Search Console: task creator ---------- */
-.gsc-site-picker:empty{display:none}
-.gsc-inline-btn{display:inline-flex;align-items:center;gap:.5rem;margin-top:.7rem;padding:.55rem .85rem;border:1px dashed color-mix(in srgb,var(--primary) 40%,var(--border));border-radius:11px;background:var(--card);color:var(--text);font:600 .82rem 'Inter',sans-serif;cursor:pointer;transition:background .2s,border-color .2s}
-.gsc-inline-btn:hover{background:var(--glow);border-color:var(--primary)}
-.gsc-inline-select{display:flex;align-items:center;gap:.55rem;margin-top:.7rem;padding:0 .3rem 0 .8rem;border:1.5px solid var(--border);border-radius:12px;background:var(--input-bg)}
-.gsc-inline-select select{flex:1;min-width:0;height:42px;border:0;background:transparent;color:var(--text);font:500 .9rem 'Inter',sans-serif;outline:none;cursor:pointer}
+.gsc-site-box{display:flex;flex-direction:column;gap:.85rem;padding:1rem;border:1px solid var(--border);border-radius:16px;background:radial-gradient(120% 160% at 0% 0%,var(--glow) 0%,transparent 55%),var(--card)}
+.gsc-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:.7rem}
+.gsc-field{display:flex;flex-direction:column;gap:.35rem;min-width:0}
+.gsc-field>span{font-size:.74rem;font-weight:700;letter-spacing:.02em;color:var(--text-secondary)}
+.gsc-field select{width:100%;min-width:0;height:44px;padding:0 .75rem;border:1.5px solid var(--border);border-radius:12px;background:var(--input-bg);color:var(--text);font:500 .9rem 'Inter',sans-serif;outline:none;cursor:pointer;text-overflow:ellipsis}
+.gsc-field select:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--glow)}
+.gsc-field select:disabled{opacity:.6;cursor:progress}
+.gsc-url-preview{display:flex;align-items:center;gap:.5rem;min-width:0;padding:.55rem .75rem;border-radius:10px;background:var(--bg-tertiary);font:500 .8rem var(--font-mono);color:var(--text-secondary)}
+.gsc-url-preview span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.gsc-panel-title b small{margin-left:.35rem;font:500 .74rem var(--font-mono);color:var(--primary)}
+@media (max-width:640px){.gsc-fields{grid-template-columns:minmax(0,1fr)}.gsc-site-box{padding:.85rem}}
 .gsc-panel{display:flex;flex-direction:column;gap:.65rem;padding:1rem;border:1px solid var(--border);border-radius:16px;background:var(--card);margin-bottom:1.25rem}
 .gsc-panel-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem}
 .gsc-panel-title{display:flex;align-items:center;gap:.65rem;min-width:0}
@@ -15968,7 +15944,6 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 .gsc-panel-title span{display:block;font-size:.76rem;color:var(--text-secondary)}
 .gsc-toolbar{display:flex;gap:.5rem;flex-wrap:wrap}
 .gsc-toolbar select,.gsc-select{flex:1 1 170px;min-width:0;height:40px;padding:0 .7rem;border:1px solid var(--border);border-radius:10px;background:var(--input-bg);color:var(--text);font:500 .86rem 'Inter',sans-serif;outline:none;cursor:pointer}
-.gsc-toolbar #gscSort{flex:0 1 170px}
 .gsc-top-btn{display:inline-flex;align-items:center;gap:.35rem;height:40px;padding:0 .85rem;border:1px solid color-mix(in srgb,var(--primary) 35%,var(--border));border-radius:10px;background:var(--glow);color:var(--primary);font:600 .82rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer}
 .gsc-list{max-height:320px;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--border);border-radius:12px;background:var(--card)}
 .gsc-row{display:grid;grid-template-columns:22px minmax(0,1fr) 52px 72px 58px;gap:.65rem;align-items:center;width:100%;padding:.6rem .8rem;border:0;border-bottom:1px solid var(--border);background:transparent;color:var(--text);font:500 .86rem 'Inter',sans-serif;text-align:left;cursor:pointer;transition:background .15s}
@@ -15988,11 +15963,7 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
   .gsc-panel{padding:.8rem;border-radius:14px}
   .gsc-row{grid-template-columns:20px minmax(0,1fr) 46px 58px;gap:.5rem;padding:.65rem .65rem}
   .hide-sm{display:none!important}
-  .gsc-toolbar #gscSort{flex:1 1 140px}
   .gsc-top-btn{flex:1 1 auto;justify-content:center}
-  .tc-kw-row{flex-wrap:wrap}
-  .tc-kw-input{flex:1 1 100%}
-  #seoTaskCreator .tc-ai-btn{width:100%;justify-content:center;height:42px}
 }
 
 /* ---------- Search Console: task details tab ---------- */
