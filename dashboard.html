@@ -4238,11 +4238,10 @@ th, td {
                 <!-- Step 1: Website & Priority -->
                 <div class="step-content active" id="step1">
                     <div class="form-group">
-                        <label class="form-label">Website URL</label>
-                        <input type="url" class="form-input" id="taskUrl" placeholder="https://example.com" required>
-                        <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem;">
-                            Enter the full URL of your website that you want to optimize
-                        </small>
+                        <label class="form-label" for="taskUrl">Website URL</label>
+                        <input type="url" class="form-input" id="taskUrl" placeholder="https://example.com" inputmode="url" autocomplete="url" autocapitalize="off" spellcheck="false" enterkeyhint="next" required>
+                        <small class="tc-hint">Enter the full URL of the website or page you want to optimize</small>
+                        <div class="gsc-site-picker" id="gscSitePicker"></div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Select Task Priority</label>
@@ -4276,29 +4275,31 @@ th, td {
                 </div>
                 <!-- Step 2: Keywords -->
                 <div class="step-content" id="step2">
-                    <div class="form-group">
-                        <label class="form-label">Target Keywords</label>
-                        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="flex: 1; position: relative;">
-                                <i class="ri-search-line" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary);"></i>
+                    <!-- Google Search Console: keywords the site already ranks for -->
+                    <div class="gsc-card" id="gscKeywordsCard"></div>
+                    <div class="form-group tc-manual">
+                        <label class="form-label" for="keywordsInput">Add your own keywords</label>
+                        <div class="tc-kw-row">
+                            <div class="tc-kw-input">
+                                <i class="ri-search-line"></i>
                                 <input type="text" class="form-input" id="keywordsInput"
-                                       placeholder="Enter keywords separated by commas"
-                                       style="padding-left: 2.5rem;"
-                                       oninput="handleKeywordInput(this.value)">
+                                       placeholder="Type a keyword and press Enter"
+                                       autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">
+                                <button type="button" class="tc-kw-add" id="addKeywordBtn" aria-label="Add keyword"><i class="ri-add-line"></i></button>
                             </div>
-                            <button class="btn btn-secondary" id="aiKeywordsBtn" onclick="generateAIKeywords()">
+                            <button type="button" class="btn btn-secondary tc-ai-btn" id="aiKeywordsBtn" onclick="generateAIKeywords()">
                                 <i class="ri-magic-line"></i> AI Suggest
                             </button>
                         </div>
-                        <div id="keywordSuggestions" class="keyword-suggestions">
-                            <!-- AI suggested keywords will appear here -->
+                        <small class="tc-hint">Separate several keywords with commas.</small>
+                        <div id="keywordSuggestions" class="keyword-suggestions"></div>
+                    </div>
+                    <div class="selected-keywords" id="selectedKeywordsSection" style="display: none;">
+                        <div class="selected-keywords-header">
+                            <span>Selected keywords <b id="selectedKeywordsCount">0</b></span>
+                            <button type="button" class="tc-link" onclick="clearSelectedKeywords()">Clear all</button>
                         </div>
-                        <div class="selected-keywords" id="selectedKeywordsSection" style="display: none;">
-                            <div class="selected-keywords-header">Selected Keywords</div>
-                            <div class="keyword-tags" id="selectedKeywordsDisplay">
-                                <!-- Selected keywords will appear here -->
-                            </div>
-                        </div>
+                        <div class="keyword-tags" id="selectedKeywordsDisplay"></div>
                     </div>
                 </div>
                 <!-- Step 3: Payment -->
@@ -4900,15 +4901,10 @@ const IMAGE_DOCS = [
         { name: 'height', alias: 'h', desc: 'Target height in pixels.', values: ['pixels'], ex: 'height=600' },
         { name: 'fit', desc: 'How the image fits the width/height box.', values: ['scale-down', 'contain', 'cover', 'crop', 'pad'], ex: 'fit=cover' },
         { name: 'gravity', desc: 'Focal point used when cropping. Use XxY (0–1) for an exact point.', values: ['auto', 'face', 'left', 'right', 'top', 'bottom', 'XxY'], ex: 'gravity=0.5x0.2' },
-        { name: 'background', desc: 'Fill color used with fit=pad. Encode # as %23.', values: ['CSS color'], ex: 'background=%23ffffff' },
-        { name: 'dpr', desc: 'Device pixel ratio multiplier for width and height.', values: ['1', '2', '3'], ex: 'dpr=2', soon: true },
-        { name: 'trim', desc: 'Trim pixels from the edges (top;right;bottom;left) or trim a solid border.', values: ['top;right;bottom;left', 'border'], ex: 'trim=20;30;20;0', soon: true },
-        { name: 'fit=squeeze', desc: 'Stretch to exactly the requested width and height.', values: ['squeeze'], ex: 'fit=squeeze', soon: true }
+        { name: 'background', desc: 'Fill color used with fit=pad. Encode # as %23.', values: ['CSS color'], ex: 'background=%23ffffff' }
     ] },
     { id: 'geometry', icon: 'ri-shape-line', color: 'linear-gradient(135deg,#8b5cf6,#6d28d9)', title: 'Geometry', sub: 'Rotate, mirror and frame', opts: [
-        { name: 'rotate', desc: 'Rotate clockwise. Width and height apply after rotation.', values: ['90', '180', '270'], ex: 'rotate=90' },
-        { name: 'flip', desc: 'Mirror horizontally, vertically or both.', values: ['h', 'v', 'hv'], ex: 'flip=h', soon: true },
-        { name: 'border', desc: 'Add a border as color;width, or per side.', values: ['color;width'], ex: 'border=%23000000;10', soon: true }
+        { name: 'rotate', desc: 'Rotate clockwise. Width and height apply after rotation.', values: ['90', '180', '270'], ex: 'rotate=90' }
     ] },
     { id: 'effects', icon: 'ri-contrast-drop-2-line', color: 'linear-gradient(135deg,#f59e0b,#b45309)', title: 'Effects', sub: 'Color and detail adjustments', opts: [
         { name: 'blur', desc: 'Gaussian blur radius.', values: ['1–250'], ex: 'blur=20' },
@@ -4921,8 +4917,7 @@ const IMAGE_DOCS = [
     { id: 'output', icon: 'ri-file-settings-line', color: 'linear-gradient(135deg,#10b981,#047857)', title: 'Output', sub: 'Format, quality and metadata', opts: [
         { name: 'format', desc: 'Output format. Leave it out to serve AVIF, WebP or JPEG automatically based on the browser.', values: ['avif', 'webp', 'jpeg', 'png'], ex: 'format=webp' },
         { name: 'quality', alias: 'q', desc: 'Compression quality for lossy formats.', values: ['1–100'], ex: 'quality=80' },
-        { name: 'metadata', desc: 'Which EXIF metadata to keep.', values: ['keep', 'copyright', 'none'], ex: 'metadata=none' },
-        { name: 'anim', desc: 'Keep animation, or freeze an animated GIF on its first frame.', values: ['true', 'false'], ex: 'anim=false', soon: true }
+        { name: 'metadata', desc: 'Which EXIF metadata to keep.', values: ['keep', 'copyright', 'none'], ex: 'metadata=none' }
     ] }
 ];
 // Images section tabs: the hosted library and the URL options reference
@@ -4981,25 +4976,74 @@ async function loadImageDocs() {
 
             <section class="docs-section" id="docs-play">
                 <div class="docs-section-head"><div class="ico" style="background:linear-gradient(135deg,#06b6d4,#0e7490)"><i class="ri-equalizer-line"></i></div>
-                    <div><h3>URL builder</h3><p>Pick options and copy a ready-to-use URL${images.length ? ' for one of your images' : ''}.</p></div></div>
-                <div class="play">
-                    <div class="play-controls">
-                        ${images.length > 1 ? `<label class="full">Image<select id="pgImage">${images.slice(0, 20).map(i => `<option value="${esc(i.cdn_url.split('?')[0])}">${esc(i.original_filename || i.image_id)}</option>`).join('')}</select></label>` : ''}
-                        <label>Width<input type="number" id="pgW" min="1" max="4000" value="800"></label>
-                        <label>Height<input type="number" id="pgH" min="1" max="4000" value="500"></label>
-                        <label>Fit<select id="pgFit"><option value="">—</option><option value="cover" selected>cover</option><option>contain</option><option>scale-down</option><option>crop</option><option>pad</option></select></label>
-                        <label>Gravity<select id="pgGravity"><option value="">—</option><option>auto</option><option>face</option><option>top</option><option>bottom</option><option>left</option><option>right</option></select></label>
-                        <label>Format<select id="pgFormat"><option value="">auto</option><option>webp</option><option>avif</option><option>jpeg</option><option>png</option></select></label>
-                        <label>Rotate<select id="pgRotate"><option value="">0°</option><option>90</option><option>180</option><option>270</option></select></label>
-                        <label>Quality <span class="rv" id="pgQv">80</span><input type="range" id="pgQ" min="1" max="100" value="80"></label>
-                        <label>Blur <span class="rv" id="pgBv">0</span><input type="range" id="pgB" min="0" max="100" value="0"></label>
-                        <label>Brightness <span class="rv" id="pgBrv">1</span><input type="range" id="pgBr" min="0.2" max="2" step="0.1" value="1"></label>
-                        <label>Saturation <span class="rv" id="pgSv">1</span><input type="range" id="pgS" min="0" max="2" step="0.1" value="1"></label>
+                    <div><h3>URL builder</h3><p>Change the options, watch the image update, and copy the finished URL${images.length ? ' for one of your images' : ''}.</p></div></div>
+                <div class="pg">
+                    <div class="pg-view">
+                        <div class="pg-view-bar">
+                            <div class="pg-seg" role="group" aria-label="Preview">
+                                <button type="button" class="on" data-view="out"><i class="ri-magic-line"></i> Result</button>
+                                <button type="button" data-view="orig"><i class="ri-image-line"></i> Original</button>
+                            </div>
+                            <span class="pg-meta" id="pgMeta">Loading preview…</span>
+                        </div>
+                        <div class="pg-stage" id="pgStage">
+                            <img id="pgImg" alt="Transformed preview">
+                            <img id="pgOrig" alt="Original image" hidden>
+                            <span class="loading"></span>
+                        </div>
+                        <div class="pg-out">
+                            <div class="pg-out-label"><span>Output URL</span><small id="pgCount"></small></div>
+                            <div class="pg-out-url"><code id="pgUrl"></code></div>
+                            <div class="pg-out-actions">
+                                <button class="pg-copy" type="button" id="pgCopy"><i class="ri-file-copy-line"></i> Copy URL</button>
+                                <button class="pg-btn" type="button" id="pgCopyHtml"><i class="ri-code-s-slash-line"></i> Copy &lt;img&gt;</button>
+                                <a class="pg-btn" href="#" id="pgOpen" target="_blank" rel="noopener"><i class="ri-external-link-line"></i> Open</a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="play-preview">
-                        <div class="play-stage" id="pgStage"><img id="pgImg" alt="Transformed preview"><span class="loading"></span></div>
-                        <div class="code-line"><code id="pgUrl"></code><button class="copy-btn" type="button" id="pgCopy"><i class="ri-file-copy-line"></i> Copy URL</button></div>
-                        <div class="play-meta"><span id="pgMeta">Preview updates as you change options.</span><a href="#" id="pgOpen" target="_blank" rel="noopener" style="color:var(--primary);font-weight:600;text-decoration:none">Open in new tab <i class="ri-external-link-line"></i></a></div>
+                    <div class="pg-controls">
+                        ${images.length > 1 ? `<div class="pg-group"><div class="pg-group-title">Image</div><select id="pgImage" aria-label="Image">${images.slice(0, 20).map(i => `<option value="${esc(i.cdn_url.split('?')[0])}">${esc(i.original_filename || i.image_id)}</option>`).join('')}</select></div>` : ''}
+                        <div class="pg-group">
+                            <div class="pg-group-title">Presets</div>
+                            <div class="pg-presets" id="pgPresets">
+                                <button type="button" data-preset="thumb">Thumbnail</button>
+                                <button type="button" data-preset="avatar">Avatar</button>
+                                <button type="button" data-preset="hero">Hero banner</button>
+                                <button type="button" data-preset="social">Social card</button>
+                                <button type="button" data-preset="gray">Grayscale</button>
+                                <button type="button" data-preset="soft">Soft blur</button>
+                            </div>
+                        </div>
+                        <div class="pg-group">
+                            <div class="pg-group-title">Size &amp; crop</div>
+                            <div class="pg-grid">
+                                <label>Width<input type="number" id="pgW" min="1" max="4000" placeholder="auto" inputmode="numeric"></label>
+                                <label>Height<input type="number" id="pgH" min="1" max="4000" placeholder="auto" inputmode="numeric"></label>
+                                <label>Fit<select id="pgFit"><option value="">—</option><option>cover</option><option>contain</option><option>scale-down</option><option>crop</option><option>pad</option></select></label>
+                                <label>Gravity<select id="pgGravity"><option value="">—</option><option>auto</option><option>face</option><option>top</option><option>bottom</option><option>left</option><option>right</option></select></label>
+                                <label class="full" id="pgBgWrap" hidden>Background (fit=pad)<span class="pg-color"><input type="color" id="pgBg" value="#ffffff"><code id="pgBgv">#ffffff</code></span></label>
+                                <label class="full">Rotate<span class="pg-chips" id="pgRotate" role="group" aria-label="Rotate"><button type="button" data-v="" class="on">0°</button><button type="button" data-v="90">90°</button><button type="button" data-v="180">180°</button><button type="button" data-v="270">270°</button></span></label>
+                            </div>
+                        </div>
+                        <div class="pg-group">
+                            <div class="pg-group-title">Effects</div>
+                            <div class="pg-grid">
+                                <label>Blur <span class="rv" id="pgBv">0</span><input type="range" id="pgB" min="0" max="100" value="0"></label>
+                                <label>Sharpen <span class="rv" id="pgShv">0</span><input type="range" id="pgSh" min="0" max="10" step="0.5" value="0"></label>
+                                <label>Brightness <span class="rv" id="pgBrv">1</span><input type="range" id="pgBr" min="0.2" max="2" step="0.1" value="1"></label>
+                                <label>Contrast <span class="rv" id="pgCv">1</span><input type="range" id="pgC" min="0.2" max="2" step="0.1" value="1"></label>
+                                <label>Saturation <span class="rv" id="pgSv">1</span><input type="range" id="pgS" min="0" max="2" step="0.1" value="1"></label>
+                                <label>Gamma <span class="rv" id="pgGv">1</span><input type="range" id="pgG" min="0.2" max="2" step="0.1" value="1"></label>
+                            </div>
+                        </div>
+                        <div class="pg-group">
+                            <div class="pg-group-title">Output</div>
+                            <div class="pg-grid">
+                                <label>Format<select id="pgFormat"><option value="">auto</option><option>webp</option><option>avif</option><option>jpeg</option><option>png</option></select></label>
+                                <label>Quality <span class="rv" id="pgQv">80</span><input type="range" id="pgQ" min="1" max="100" value="80"></label>
+                            </div>
+                        </div>
+                        <button type="button" class="pg-reset" id="pgReset"><i class="ri-restart-line"></i> Reset all options</button>
                     </div>
                 </div>
             </section>
@@ -5009,8 +5053,8 @@ async function loadImageDocs() {
                 <div class="docs-section-head"><div class="ico" style="background:${g.color}"><i class="${g.icon}"></i></div><div><h3>${g.title}</h3><p>${g.sub}</p></div></div>
                 <div class="opt-grid">
                     ${g.opts.map(o => `
-                    <article class="opt${o.soon ? ' is-soon' : ''}">
-                        <div class="opt-top"><span class="opt-name">${o.name}</span>${o.alias ? `<span class="opt-alias">${o.alias}</span>` : ''}${o.soon ? '<span class="opt-soon">Coming soon</span>' : ''}</div>
+                    <article class="opt">
+                        <div class="opt-top"><span class="opt-name">${o.name}</span>${o.alias ? `<span class="opt-alias">${o.alias}</span>` : ''}</div>
                         <div class="opt-desc">${o.desc}</div>
                         <div class="opt-values">${o.values.map(v => `<span>${esc(v)}</span>`).join('')}</div>
                         <div class="opt-ex"><code>?${esc(o.ex)}</code><button class="copy-btn" type="button" data-copy="${esc(o.ex)}"><i class="ri-file-copy-line"></i> Copy</button></div>
@@ -5032,27 +5076,55 @@ async function loadImageDocs() {
 
     // Live URL builder
     const $p = id => document.getElementById(id);
-    const stage = $p('pgStage'), img = $p('pgImg');
+    const stage = $p('pgStage'), img = $p('pgImg'), orig = $p('pgOrig');
+    const DEFAULTS = { pgW: '800', pgH: '500', pgFit: 'cover', pgGravity: '', pgB: '0', pgSh: '0', pgBr: '1', pgC: '1', pgS: '1', pgG: '1', pgFormat: '', pgQ: '80', pgBg: '#ffffff' };
+    const PRESETS = {
+        thumb: { pgW: '300', pgH: '300', pgFit: 'cover', pgGravity: 'auto' },
+        avatar: { pgW: '200', pgH: '200', pgFit: 'cover', pgGravity: 'face' },
+        hero: { pgW: '1600', pgH: '600', pgFit: 'cover', pgGravity: 'auto', pgFormat: 'webp', pgQ: '80' },
+        social: { pgW: '1200', pgH: '630', pgFit: 'cover', pgGravity: 'auto', pgFormat: 'jpeg', pgQ: '85' },
+        gray: { pgS: '0' },
+        soft: { pgB: '20', pgBr: '1.1' }
+    };
+    let rotate = '', view = 'out';
     let timer = null, lastUrl = '';
+    const base = () => $p('pgImage') ? $p('pgImage').value : baseUrl;
+    function setValues(v) { Object.entries(v).forEach(([id, val]) => { if ($p(id)) $p(id).value = val; }); }
     function buildUrl() {
-        const base = $p('pgImage') ? $p('pgImage').value : baseUrl;
         const parts = [];
         const add = (k, v) => { if (v !== '' && v != null) parts.push(`${k}=${encodeURIComponent(v)}`); };
         add('width', $p('pgW').value); add('height', $p('pgH').value); add('fit', $p('pgFit').value);
-        add('gravity', $p('pgGravity').value); add('rotate', $p('pgRotate').value); add('format', $p('pgFormat').value);
-        if ($p('pgQ').value !== '80') add('quality', $p('pgQ').value);
+        add('gravity', $p('pgGravity').value);
+        if ($p('pgFit').value === 'pad') add('background', $p('pgBg').value);
+        add('rotate', rotate);
         if ($p('pgB').value !== '0') add('blur', $p('pgB').value);
+        if ($p('pgSh').value !== '0') add('sharpen', $p('pgSh').value);
         if ($p('pgBr').value !== '1') add('brightness', $p('pgBr').value);
+        if ($p('pgC').value !== '1') add('contrast', $p('pgC').value);
         if ($p('pgS').value !== '1') add('saturation', $p('pgS').value);
-        return base + (parts.length ? '?' + parts.join('&') : '');
+        if ($p('pgG').value !== '1') add('gamma', $p('pgG').value);
+        add('format', $p('pgFormat').value);
+        if ($p('pgQ').value !== '80') add('quality', $p('pgQ').value);
+        return base() + (parts.length ? '?' + parts.join('&') : '');
+    }
+    function showView() {
+        img.hidden = view !== 'out';
+        orig.hidden = view !== 'orig';
+        content.querySelectorAll('.pg-seg button').forEach(b => b.classList.toggle('on', b.dataset.view === view));
     }
     function refresh() {
-        $p('pgQv').textContent = $p('pgQ').value; $p('pgBv').textContent = $p('pgB').value;
-        $p('pgBrv').textContent = $p('pgBr').value; $p('pgSv').textContent = $p('pgS').value;
+        [['pgB', 'pgBv'], ['pgSh', 'pgShv'], ['pgBr', 'pgBrv'], ['pgC', 'pgCv'], ['pgS', 'pgSv'], ['pgG', 'pgGv'], ['pgQ', 'pgQv']].forEach(([i, o]) => { $p(o).textContent = $p(i).value; });
+        $p('pgBgWrap').hidden = $p('pgFit').value !== 'pad';
+        $p('pgBgv').textContent = $p('pgBg').value;
         const url = buildUrl();
         const [b, q] = url.split('?');
-        $p('pgUrl').innerHTML = esc(b) + (q ? '<span class="p">?</span>' + q.split('&').map(kv => { const [k, v] = kv.split('='); return `<span class="k">${esc(k)}</span>=<span class="v">${esc(decodeURIComponent(v))}</span>`; }).join('<span class="p">&amp;</span>') : '');
+        const pairs = q ? q.split('&') : [];
+        $p('pgUrl').innerHTML = `<span class="b">${esc(b)}</span>` + (q ? '<span class="p">?</span>' + pairs.map(kv => { const [k, v] = kv.split('='); return `<span class="k">${esc(k)}</span>=<span class="v">${esc(decodeURIComponent(v))}</span>`; }).join('<span class="p">&amp;</span>') : '');
+        const urlBox = $p('pgUrl').parentElement;
+        urlBox.scrollLeft = urlBox.scrollWidth;
+        $p('pgCount').textContent = pairs.length ? `${pairs.length} option${pairs.length > 1 ? 's' : ''}` : 'original';
         $p('pgOpen').href = url;
+        if (orig.dataset.src !== base()) { orig.dataset.src = base(); orig.src = base(); }
         clearTimeout(timer);
         timer = setTimeout(() => {
             if (url === lastUrl) return;
@@ -5060,15 +5132,49 @@ async function loadImageDocs() {
             stage.classList.add('busy');
             const t0 = performance.now();
             const probe = new Image();
-            probe.onload = () => { if (url !== lastUrl) return; img.src = url; stage.classList.remove('busy'); $p('pgMeta').textContent = `${probe.naturalWidth} × ${probe.naturalHeight}px · ${Math.round(performance.now() - t0)} ms`; };
-            probe.onerror = () => { if (url !== lastUrl) return; stage.classList.remove('busy'); $p('pgMeta').textContent = 'Preview unavailable for this combination.'; };
+            probe.onload = () => {
+                if (url !== lastUrl) return;
+                img.src = url;
+                stage.classList.remove('busy', 'failed');
+                $p('pgMeta').innerHTML = `<b>${probe.naturalWidth} × ${probe.naturalHeight}px</b> · ${Math.round(performance.now() - t0)} ms`;
+            };
+            probe.onerror = () => {
+                if (url !== lastUrl) return;
+                stage.classList.remove('busy');
+                stage.classList.add('failed');
+                $p('pgMeta').textContent = 'Preview unavailable for this combination';
+            };
             probe.src = url;
-        }, 350);
+        }, 300);
     }
-    ['pgImage', 'pgW', 'pgH', 'pgFit', 'pgGravity', 'pgFormat', 'pgRotate', 'pgQ', 'pgB', 'pgBr', 'pgS'].forEach(id => {
+    ['pgImage', 'pgW', 'pgH', 'pgFit', 'pgGravity', 'pgBg', 'pgFormat', 'pgQ', 'pgB', 'pgSh', 'pgBr', 'pgC', 'pgS', 'pgG'].forEach(id => {
         const el = $p(id); if (el) { el.addEventListener('input', refresh); el.addEventListener('change', refresh); }
     });
+    $p('pgRotate').addEventListener('click', e => {
+        const b = e.target.closest('button'); if (!b) return;
+        rotate = b.dataset.v;
+        $p('pgRotate').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+        refresh();
+    });
+    $p('pgPresets').addEventListener('click', e => {
+        const b = e.target.closest('[data-preset]'); if (!b) return;
+        setValues(PRESETS[b.dataset.preset]);
+        refresh();
+    });
+    content.querySelectorAll('.pg-seg button').forEach(b => b.addEventListener('click', () => { view = b.dataset.view; showView(); }));
+    $p('pgReset').addEventListener('click', () => {
+        setValues(DEFAULTS);
+        rotate = '';
+        $p('pgRotate').querySelectorAll('button').forEach(x => x.classList.toggle('on', x.dataset.v === ''));
+        refresh();
+    });
     $p('pgCopy').addEventListener('click', e => docsCopy(buildUrl(), e.currentTarget));
+    $p('pgCopyHtml').addEventListener('click', e => {
+        const w = $p('pgW').value, h = $p('pgH').value;
+        docsCopy(`<img src="${buildUrl()}"${w ? ` width="${w}"` : ''}${h ? ` height="${h}"` : ''} alt="" loading="lazy">`, e.currentTarget);
+    });
+    setValues(DEFAULTS);
+    showView();
     refresh();
 
     if (window.gsap) {
@@ -9618,22 +9724,17 @@ let taskCreatorState = {
 function openSeoTaskCreator() {
     const creator = document.getElementById('seoTaskCreator');
     creator.classList.add('active');
-    // Prevent body scrolling on mobile when modal is open
-    if (window.innerWidth <= 768) {
-        document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-    }
+    // Lock the page behind the creator. Only overflow is touched: pinning the body with
+    // position:fixed lost the scroll position and fought the mobile keyboard.
+    document.documentElement.classList.add('tc-lock');
     resetTaskCreatorState();
+    gscLoadGis().catch(() => {});
 }
 // Close the task creator
 function closeSeoTaskCreator() {
     const creator = document.getElementById('seoTaskCreator');
     creator.classList.remove('active');
-    // Re-enable body scrolling
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.width = '';
+    document.documentElement.classList.remove('tc-lock');
     // Reset and clean everything when closing
     resetTaskCreatorState();
     // Reset button state when closing
@@ -9736,6 +9837,11 @@ function resetTaskCreatorState() {
     if (keywordSuggestions) {
         keywordSuggestions.innerHTML = '';
     }
+    const body = document.querySelector('#seoTaskCreator .task-creator-body');
+    if (body) body.scrollTop = 0;
+    tcGsc.site = '';
+    tcGsc.filter = '';
+    renderGscSitePicker();
     updateBudgetSummary();
 }
 // Show pending task alert
@@ -9783,11 +9889,14 @@ function completePendingPayment() {
 function nextStep() {
     const currentStep = taskCreatorState.currentStep;
     if (currentStep === 1) {
-        const url = document.getElementById('taskUrl').value.trim();
-        if (!url) {
+        const input = document.getElementById('taskUrl');
+        const url = input.value.trim();
+        if (!url || !/^(https?:\/\/)?[^\s\/.]+(\.[^\s\/.]+)+(\/\S*)?$/i.test(url)) {
             showToast('Please enter a valid URL', 'error');
+            input.focus();
             return;
         }
+        if (!/^https?:\/\//i.test(url)) input.value = 'https://' + url;
     } else if (currentStep === 2) {
         if (taskCreatorState.selectedKeywords.length === 0) {
             showToast('Please select at least one keyword', 'error');
@@ -9810,14 +9919,8 @@ function goToStep(step) {
     // Update progress indicators
     document.querySelectorAll('.progress-step').forEach(stepEl => {
         const stepNum = parseInt(stepEl.dataset.step);
-        stepEl.classList.remove('active');
-        if (stepNum < step) {
-            stepEl.classList.add('completed');
-        } else if (stepNum === step) {
-            stepEl.classList.add('active');
-        } else {
-            stepEl.classList.remove('completed');
-        }
+        stepEl.classList.toggle('completed', stepNum < step);
+        stepEl.classList.toggle('active', stepNum === step);
     });
     // Update content
     document.querySelectorAll('.step-content').forEach(content => {
@@ -9829,6 +9932,12 @@ function goToStep(step) {
     document.getElementById('nextStepBtn').style.display = step === 3 ? 'none' : 'inline-flex';
     document.getElementById('createTaskBtn').style.display = step === 3 ? 'inline-flex' : 'none';
     taskCreatorState.currentStep = step;
+    const body = document.querySelector('#seoTaskCreator .task-creator-body');
+    if (body) body.scrollTop = 0;
+    if (step === 2) {
+        renderSelectedKeywordsOnly();
+        renderGscKeywordsCard();
+    }
     if (step === 3) {
         updateBudgetSummary();
     }
@@ -9844,73 +9953,88 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-// Add/Remove keywords
+// Keywords: one list shared by Search Console, AI suggestions and manual entry
+const escHtml = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const normKeyword = k => String(k || '').replace(/\s+/g, ' ').trim();
+function hasKeyword(keyword) {
+    const k = normKeyword(keyword).toLowerCase();
+    return taskCreatorState.selectedKeywords.some(x => x.toLowerCase() === k);
+}
+function addKeywords(list) {
+    let added = 0;
+    list.map(normKeyword).filter(Boolean).forEach(k => {
+        if (!hasKeyword(k)) { taskCreatorState.selectedKeywords.push(k); added++; }
+    });
+    if (added) updateSelectedKeywords();
+    return added;
+}
 function toggleKeyword(keyword) {
-    const index = taskCreatorState.selectedKeywords.indexOf(keyword);
-    if (index === -1) {
-        taskCreatorState.selectedKeywords.push(keyword);
-    } else {
-        taskCreatorState.selectedKeywords.splice(index, 1);
-    }
+    if (hasKeyword(keyword)) removeKeyword(keyword);
+    else addKeywords([keyword]);
+}
+function removeKeyword(keyword) {
+    const k = normKeyword(keyword).toLowerCase();
+    taskCreatorState.selectedKeywords = taskCreatorState.selectedKeywords.filter(x => x.toLowerCase() !== k);
     updateSelectedKeywords();
 }
-// Update selected keywords display
-function updateSelectedKeywords() {
+function clearSelectedKeywords() {
+    taskCreatorState.selectedKeywords = [];
+    updateSelectedKeywords();
+}
+// Selected tags only (no other list refresh)
+function renderSelectedKeywordsOnly() {
     const display = document.getElementById('selectedKeywordsDisplay');
     const section = document.getElementById('selectedKeywordsSection');
-    if (taskCreatorState.selectedKeywords.length === 0) {
-        section.style.display = 'none';
-        return;
-    }
-    section.style.display = 'block';
-    display.innerHTML = taskCreatorState.selectedKeywords.map(keyword => `
+    const list = taskCreatorState.selectedKeywords;
+    section.style.display = list.length ? 'block' : 'none';
+    document.getElementById('selectedKeywordsCount').textContent = list.length;
+    display.innerHTML = list.map(keyword => `
         <div class="keyword-tag">
-            <span class="keyword-tag-text">${keyword}</span>
-            <span class="keyword-tag-remove" onclick="removeKeyword('${keyword}')">
-                <i class="ri-delete-bin-line"></i>
-            </span>
+            <span class="keyword-tag-text">${escHtml(keyword)}</span>
+            <button type="button" class="keyword-tag-remove" data-remove-keyword="${escHtml(keyword)}" aria-label="Remove ${escHtml(keyword)}">
+                <i class="ri-close-line"></i>
+            </button>
         </div>
     `).join('');
-    // Update keyword suggestions to match selected state
-    const suggestions = document.querySelectorAll('.keyword-suggestion');
-    suggestions.forEach(sugg => {
-        const suggText = sugg.textContent.trim();
-        if (taskCreatorState.selectedKeywords.includes(suggText)) {
-            sugg.classList.add('selected');
-        } else {
-            sugg.classList.remove('selected');
-        }
-    });
 }
-// Remove keyword
-function removeKeyword(keyword) {
-    const index = taskCreatorState.selectedKeywords.indexOf(keyword);
-    if (index > -1) {
-        taskCreatorState.selectedKeywords.splice(index, 1);
-        updateSelectedKeywords();
-        syncKeywordsInput();
-        // Update suggestion state
-        const suggestions = document.querySelectorAll('.keyword-suggestion');
-        suggestions.forEach(sugg => {
-            if (sugg.textContent.trim() === keyword) {
-                sugg.classList.remove('selected');
+// Update selected keywords display and every list that marks selected keywords
+function updateSelectedKeywords() {
+    renderSelectedKeywordsOnly();
+    document.querySelectorAll('#seoTaskCreator [data-keyword]').forEach(el => {
+        const on = hasKeyword(el.dataset.keyword);
+        el.classList.toggle('selected', on);
+        el.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    updateGscSelectionSummary();
+}
+// Manual entry: Enter, comma or the + button adds; pasting a comma list adds them all
+function commitKeywordInput() {
+    const input = document.getElementById('keywordsInput');
+    const added = addKeywords(input.value.split(','));
+    if (!added && input.value.trim()) showToast('That keyword is already selected', 'info');
+    input.value = '';
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('keywordsInput');
+    if (input) {
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); commitKeywordInput(); }
+            else if (e.key === 'Backspace' && !input.value && taskCreatorState.selectedKeywords.length) {
+                removeKeyword(taskCreatorState.selectedKeywords[taskCreatorState.selectedKeywords.length - 1]);
             }
         });
+        input.addEventListener('input', () => { if (input.value.includes(',')) commitKeywordInput(); });
+        input.addEventListener('blur', () => { if (input.value.trim()) commitKeywordInput(); });
     }
-}
-// Sync keywords input field with selected keywords
-function syncKeywordsInput() {
-    const keywordsInput = document.getElementById('keywordsInput');
-    if (keywordsInput) {
-        keywordsInput.value = taskCreatorState.selectedKeywords.join(', ');
-    }
-}
-// Handle manual keyword input
-function handleKeywordInput(value) {
-    const keywords = value.split(',').map(k => k.trim()).filter(k => k);
-    taskCreatorState.selectedKeywords = keywords;
-    updateSelectedKeywords();
-}
+    document.getElementById('addKeywordBtn')?.addEventListener('click', () => { commitKeywordInput(); input?.focus(); });
+    const creator = document.getElementById('seoTaskCreator');
+    creator?.addEventListener('click', e => {
+        const rm = e.target.closest('[data-remove-keyword]');
+        if (rm) return removeKeyword(rm.dataset.removeKeyword);
+        const kw = e.target.closest('[data-keyword]');
+        if (kw) toggleKeyword(kw.dataset.keyword);
+    });
+});
 // Generate AI keywords
 async function generateAIKeywords() {
     const url = document.getElementById('taskUrl').value;
@@ -9919,27 +10043,23 @@ async function generateAIKeywords() {
         showToast('Please enter a URL first', 'error');
         return;
     }
-    btn.innerHTML = '<i class="ri-loader-line"></i> Generating...';
+    btn.innerHTML = '<i class="ri-loader-4-line tc-spin"></i> Generating...';
     btn.disabled = true;
+    const container = document.getElementById('keywordSuggestions');
     try {
-        // Clear previous suggestions (no cache)
-        const container = document.getElementById('keywordSuggestions');
-        container.innerHTML = '<div style="text-align: center; padding: 1rem; color: var(--text-secondary);">Loading suggestions...</div>';
+        container.innerHTML = '<div class="tc-muted">Loading suggestions...</div>';
         const response = await fetch(`https://keywords.seotize.net?url=${encodeURIComponent(url)}&t=${Date.now()}`, {
             headers: { 'Session-Token': sessionToken },
             cache: 'no-cache'
         });
         if (!response.ok) throw new Error('Failed to generate keywords');
         const data = await response.json();
-        // Clear and populate with fresh data
-        container.innerHTML = (data.keywords || []).slice(0, 15).map(keyword => {
-            const isSelected = taskCreatorState.selectedKeywords.includes(keyword);
-            return `<div class="keyword-suggestion ${isSelected ? 'selected' : ''}" onclick="toggleSuggestion('${keyword}', this)">
-                ${keyword}
-            </div>`;
-        }).join('');
+        const list = (data.keywords || []).slice(0, 15);
+        container.innerHTML = list.length
+            ? `<div class="tc-sub-label"><i class="ri-magic-line"></i> AI suggestions <span>tap to add</span></div>` +
+              list.map(keyword => `<button type="button" class="keyword-suggestion ${hasKeyword(keyword) ? 'selected' : ''}" data-keyword="${escHtml(keyword)}">${escHtml(keyword)}</button>`).join('')
+            : '<div class="tc-muted">No suggestions for this URL.</div>';
     } catch (error) {
-        const container = document.getElementById('keywordSuggestions');
         container.innerHTML = '';
         showToast('Failed to generate AI keywords', 'error');
     } finally {
@@ -9947,34 +10067,6 @@ async function generateAIKeywords() {
         btn.disabled = false;
     }
 }
-// Toggle keyword suggestion
-function toggleSuggestion(keyword, element) {
-    const isSelected = element.classList.contains('selected');
-    if (isSelected) {
-        element.classList.remove('selected');
-        removeKeyword(keyword);
-    } else {
-        element.classList.add('selected');
-        const index = taskCreatorState.selectedKeywords.indexOf(keyword);
-        if (index === -1) {
-            taskCreatorState.selectedKeywords.push(keyword);
-        }
-    }
-    updateSelectedKeywords();
-    syncKeywordsInput();
-}
-// Handle keywords input
-document.addEventListener('DOMContentLoaded', () => {
-    const keywordsInput = document.getElementById('keywordsInput');
-    if (keywordsInput) {
-        // Handle both change and blur events for better sync
-        keywordsInput.addEventListener('blur', (e) => {
-            const keywords = e.target.value.split(',').map(k => k.trim()).filter(k => k);
-            taskCreatorState.selectedKeywords = keywords;
-            updateSelectedKeywords();
-        });
-    }
-});
 // Select payment type
 function selectPaymentType(type) {
     document.querySelectorAll('.payment-type-option').forEach(opt => opt.classList.remove('active'));
@@ -10067,7 +10159,7 @@ async function createSeoTask(isRetry = false) {
     const paymentType = taskCreatorState.paymentType;
     const billingCycle = document.getElementById('billingCycle')?.value;
     // Validation
-    if (!url || !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(url)) {
+    if (!url || !/^(https?:\/\/)?[^\s\/.]+(\.[^\s\/.]+)+(\/\S*)?$/i.test(url)) {
         return showToast('Please enter a valid URL', 'error');
     }
     if (!keywords.length) {
@@ -10361,6 +10453,11 @@ async function viewTaskDetails(taskId) {
                     <span class="label-desktop">Analytics</span>
                     <span class="label-mobile">View Analytics</span>
                 </button>
+                <button class="task-modal-tab" type="button" data-tab="gsc" role="tab" aria-controls="task-panel-gsc">
+                    <i class="ri-google-line"></i>
+                    <span class="label-desktop">Keyword rankings</span>
+                    <span class="label-mobile">Keywords</span>
+                </button>
                 <button class="task-modal-tab" type="button" data-tab="details" role="tab" aria-controls="task-panel-details">
                     <i class="ri-list-check-2"></i>
                     <span class="label-desktop">More details</span>
@@ -10412,6 +10509,12 @@ async function viewTaskDetails(taskId) {
                         </div>
                     </div>
                 </div>
+                <div class="task-modal-panel" id="task-panel-gsc" data-panel="gsc" role="tabpanel">
+                    <div class="task-modal-section">
+                        <h3 class="task-modal-section-title" style="color: var(--primary);"><i class="ri-google-line"></i>Keyword rankings <small class="gsc-src">Google Search Console</small></h3>
+                        <div class="gsc-task"></div>
+                    </div>
+                </div>
                 <div class="task-modal-panel" id="task-panel-details" data-panel="details" role="tabpanel">
                     <div class="task-modal-section">
                         <h3 class="task-modal-section-title" style="color: var(--primary);">
@@ -10434,7 +10537,7 @@ async function viewTaskDetails(taskId) {
                     </p>
                     <p><strong>Keywords:</strong></p>
                     <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: -0.5rem;">
-                      ${(task.keywords || []).map(k => `<span class="badge badge-primary">${k}</span>`).join('')}
+                      ${(task.keywords || []).map(k => `<span class="badge badge-primary">${escHtml(k)}</span>`).join('')}
                     </div>
                     ${task.sitekey ? `
                       <div class="task-install-instructions">
@@ -10473,6 +10576,15 @@ async function viewTaskDetails(taskId) {
                     // no-op
                 }
                 setupTaskDetailsTabs({ hasAnalytics: hasAnyAnalytics });
+                // Search Console data loads the first time its tab opens
+                const popupEl = Swal.getPopup();
+                const gscTab = popupEl?.querySelector('.task-modal-tab[data-tab="gsc"]');
+                if (gscTab) gscTab.addEventListener('click', () => {
+                    if (gscTab.dataset.loaded) return;
+                    gscTab.dataset.loaded = '1';
+                    initTaskGscPanel(popupEl, task);
+                });
+                gscLoadGis().catch(() => {});
                 attachTaskModalTabAutoIconOnly(Swal.getPopup());
                 initializeTaskDoneParts(donePartsNormalized);
                 // Charts + Map (Analytics + Country visits)
@@ -10484,6 +10596,7 @@ async function viewTaskDetails(taskId) {
                 try {
                     if (window.charts?.taskModalTimeline) { window.charts.taskModalTimeline.destroy(); window.charts.taskModalTimeline = null; }
                     if (window.charts?.taskModalTrend) { window.charts.taskModalTrend.destroy(); window.charts.taskModalTrend = null; }
+                    if (window.charts?.taskGsc) { window.charts.taskGsc.destroy(); window.charts.taskGsc = null; }
                 } catch (_) {}
                 try {
                     const popup = Swal.getPopup();
@@ -14630,18 +14743,6 @@ window.addEventListener('resize', () => {
         if (sidebarToggle) sidebarToggle.style.display = 'none';
         document.getElementById('sidebar')?.classList.remove('active');
     }
-    // Handle task creator layout on resize
-    const taskCreator = document.getElementById('seoTaskCreator');
-    if (taskCreator && taskCreator.classList.contains('active')) {
-        // Force re-layout for task creator on resize
-        const container = taskCreator.querySelector('.task-creator-container');
-        if (container) {
-            container.style.display = 'none';
-            setTimeout(() => {
-                container.style.display = '';
-            }, 10);
-        }
-    }
 });
 // Close dropdown when clicking outside
 document.addEventListener('click', function(event) {
@@ -14657,6 +14758,500 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.setAttribute('data-theme', savedTheme);
     updateThemeIcon(savedTheme);
 });
+</script>
+<script>
+// ---------------------------------------------------------------------------
+// Google Search Console: read-only keyword data, fetched in the browser with the
+// user's own Google token (kept in a cookie until Google expires it).
+// ---------------------------------------------------------------------------
+const GSC_CLIENT_ID = '202412576162-796gpf0rqasgvt7ilqj11uf24498f7ua.apps.googleusercontent.com';
+const GSC_SCOPE = 'https://www.googleapis.com/auth/webmasters.readonly';
+const GSC_API = 'https://www.googleapis.com/webmasters/v3/';
+const GSC_COOKIE = 'seotize_gsc';
+const GSC_G_ICON = '<svg class="g-ico" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+const gsc = { client: null, gis: null, pending: null, sites: null, cache: new Map() };
+
+function gscToken() {
+    try {
+        const raw = getCookie(GSC_COOKIE);
+        if (!raw) return '';
+        const { t, e } = JSON.parse(decodeURIComponent(raw));
+        return t && e > Date.now() ? t : '';
+    } catch (_) { return ''; }
+}
+function gscSaveToken(token, expiresIn) {
+    const life = Math.max(60, (Number(expiresIn) || 3600) - 60);
+    const value = encodeURIComponent(JSON.stringify({ t: token, e: Date.now() + life * 1000 }));
+    document.cookie = `${GSC_COOKIE}=${value}; max-age=${life}; path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
+}
+function gscForget() {
+    document.cookie = `${GSC_COOKIE}=; max-age=0; path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
+    gsc.sites = null;
+    gsc.cache.clear();
+}
+function gscDisconnect() {
+    const t = gscToken();
+    gscForget();
+    try { if (t && window.google?.accounts?.oauth2) google.accounts.oauth2.revoke(t, () => {}); } catch (_) {}
+}
+// Google Identity Services, loaded once and early, so the sign-in popup opens straight from the click
+function gscLoadGis() {
+    if (gsc.gis) return gsc.gis;
+    gsc.gis = new Promise((resolve, reject) => {
+        const ready = () => {
+            gsc.client = google.accounts.oauth2.initTokenClient({
+                client_id: GSC_CLIENT_ID,
+                scope: GSC_SCOPE,
+                callback: r => {
+                    const p = gsc.pending; gsc.pending = null;
+                    if (!p) return;
+                    if (r.error || !r.access_token) return p.reject(new Error(r.error_description || r.error || 'Google sign-in failed'));
+                    gscSaveToken(r.access_token, r.expires_in);
+                    gsc.sites = null;
+                    gsc.cache.clear();
+                    p.resolve(r.access_token);
+                },
+                error_callback: err => {
+                    const p = gsc.pending; gsc.pending = null;
+                    if (p) p.reject(new Error(err?.type === 'popup_closed' ? 'Sign-in window was closed' : (err?.message || 'Google sign-in failed')));
+                }
+            });
+            resolve();
+        };
+        if (window.google?.accounts?.oauth2) return ready();
+        const s = document.createElement('script');
+        s.src = 'https://accounts.google.com/gsi/client';
+        s.async = true;
+        s.onload = ready;
+        s.onerror = () => { gsc.gis = null; reject(new Error('Could not load Google sign-in')); };
+        document.head.appendChild(s);
+    });
+    return gsc.gis;
+}
+function gscConnect() {
+    return new Promise((resolve, reject) => {
+        const go = () => {
+            if (gsc.pending) gsc.pending.reject(new Error('Superseded'));
+            gsc.pending = { resolve, reject };
+            gsc.client.requestAccessToken();
+        };
+        if (gsc.client) go();
+        else gscLoadGis().then(go, reject);
+    });
+}
+async function gscFetch(path, body) {
+    const token = gscToken();
+    if (!token) { const e = new Error('Not connected'); e.auth = true; throw e; }
+    const r = await fetch(GSC_API + path, {
+        method: body ? 'POST' : 'GET',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: body ? JSON.stringify(body) : undefined
+    });
+    const data = await r.json().catch(() => ({}));
+    if (r.status === 401 || data.error?.code === 401) {
+        gscForget();
+        const e = new Error('Your Google session expired. Please connect again.'); e.auth = true; throw e;
+    }
+    if (!r.ok || data.error) throw new Error(data.error?.message || 'Search Console request failed');
+    return data;
+}
+async function gscSites() {
+    if (gsc.sites) return gsc.sites;
+    const d = await gscFetch('sites');
+    gsc.sites = (d.siteEntry || []).filter(x => x.permissionLevel !== 'siteUnverifiedUser').map(x => x.siteUrl)
+        .sort((a, b) => gscSiteLabel(a).localeCompare(gscSiteLabel(b)));
+    return gsc.sites;
+}
+const gscDay = n => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
+function gscQuery(site, { days = 28, dimensions, rowLimit, filters = [] } = {}) {
+    const body = { startDate: gscDay(days), endDate: gscDay(0) };
+    if (dimensions) body.dimensions = dimensions;
+    if (rowLimit) body.rowLimit = rowLimit;
+    if (filters.length) body.dimensionFilterGroups = [{ filters }];
+    const key = site + '|' + JSON.stringify(body);
+    if (!gsc.cache.has(key)) {
+        const p = gscFetch('sites/' + encodeURIComponent(site) + '/searchAnalytics/query', body).then(d => d.rows || []);
+        p.catch(() => gsc.cache.delete(key));
+        gsc.cache.set(key, p);
+    }
+    return gsc.cache.get(key);
+}
+const gscHost = u => { try { return new URL(/^https?:\/\//i.test(u) ? u : 'https://' + u).hostname.toLowerCase().replace(/^www\./, ''); } catch (_) { return ''; } };
+const gscSiteLabel = site => site.startsWith('sc-domain:') ? site.slice(10) : site.replace(/^https?:\/\//, '').replace(/\/$/, '');
+const gscSiteUrl = site => site.startsWith('sc-domain:') ? 'https://' + site.slice(10) : site;
+// The property that covers a URL: the longest matching URL-prefix property wins over a domain property
+function gscMatchSite(sites, url) {
+    const host = gscHost(url);
+    if (!host) return '';
+    const full = (/^https?:\/\//i.test(url) ? url : 'https://' + url).toLowerCase().replace('://www.', '://');
+    let best = '', bestLen = -1;
+    sites.forEach(s => {
+        let len = -1;
+        if (s.startsWith('sc-domain:')) {
+            const d = s.slice(10).toLowerCase().replace(/^www\./, '');
+            if (host === d || host.endsWith('.' + d)) len = d.length;
+        } else {
+            const pre = s.toLowerCase().replace('://www.', '://');
+            if (full.startsWith(pre) || full + '/' === pre) len = 1000 + pre.length;
+        }
+        if (len > bestLen) { best = s; bestLen = len; }
+    });
+    return best;
+}
+const gscPos = n => n ? n.toFixed(1).replace(/\.0$/, '') : '–';
+const gscPct = n => (n * 100).toFixed(1) + '%';
+const gscNum = n => Math.round(n || 0).toLocaleString();
+const gscBadge = p => `<span class="gsc-pos ${p <= 3 ? 'g' : p <= 10 ? 'bl' : p <= 20 ? 'a' : 'x'}">${gscPos(p)}</span>`;
+function gscConnectCard({ title, text, compact, error }) {
+    return `<div class="gsc-connect${compact ? ' compact' : ''}">
+        <div class="gsc-connect-ico">${GSC_G_ICON}</div>
+        <div class="gsc-connect-text"><b>${title}</b><span>${text}</span>${error ? `<em>${escHtml(error)}</em>` : ''}</div>
+        <button type="button" class="gsc-connect-btn" data-gsc-connect>${GSC_G_ICON}<span>Connect Search Console</span></button>
+    </div>`;
+}
+// Runs the Google sign-in from a click, then calls `after`
+function gscConnectFromClick(btn, after) {
+    if (btn) { btn.disabled = true; btn.classList.add('busy'); }
+    gscConnect().then(() => after(), err => {
+        if (err.message !== 'Superseded' && err.message !== 'Sign-in window was closed') showToast(err.message, 'error');
+    }).finally(() => { if (btn && btn.isConnected) { btn.disabled = false; btn.classList.remove('busy'); } });
+}
+
+// ---------- Task creator ----------
+const tcGsc = { site: '', days: 28, sort: 'impressions', filter: '', limit: 50, rows: null, error: '', seq: 0 };
+
+// Step 1: pick the website from Search Console
+async function renderGscSitePicker() {
+    const box = document.getElementById('gscSitePicker');
+    if (!box) return;
+    if (!gscToken()) {
+        box.innerHTML = `<button type="button" class="gsc-inline-btn" data-gsc-connect>${GSC_G_ICON}<span>Pick from Google Search Console</span></button>`;
+        return;
+    }
+    box.innerHTML = `<div class="gsc-inline-select">${GSC_G_ICON}<select id="gscSiteSelect1" aria-label="Search Console property"><option value="">Loading your Search Console sites…</option></select></div>`;
+    try {
+        const sites = await gscSites();
+        const sel = document.getElementById('gscSiteSelect1');
+        if (!sel) return;
+        if (!sites.length) { box.innerHTML = '<small class="tc-hint">No verified sites in this Google account\'s Search Console.</small>'; return; }
+        const current = gscMatchSite(sites, document.getElementById('taskUrl').value.trim());
+        sel.innerHTML = '<option value="">Choose a Search Console site…</option>' +
+            sites.map(s => `<option value="${escHtml(s)}" ${s === current ? 'selected' : ''}>${escHtml(gscSiteLabel(s))}</option>`).join('');
+        sel.onchange = () => {
+            if (!sel.value) return;
+            tcGsc.site = sel.value;
+            document.getElementById('taskUrl').value = gscSiteUrl(sel.value);
+        };
+    } catch (err) {
+        if (err.auth) renderGscSitePicker();
+        else box.innerHTML = `<small class="tc-hint tc-error">${escHtml(err.message)}</small>`;
+    }
+}
+
+// Step 2: the keywords the site already ranks for
+async function renderGscKeywordsCard(errMsg) {
+    const card = document.getElementById('gscKeywordsCard');
+    if (!card) return;
+    if (!gscToken()) {
+        card.innerHTML = gscConnectCard({
+            title: 'Import keywords from Google Search Console',
+            text: 'See every keyword your site already ranks for, with position, clicks and impressions, and add them in one tap. Read-only access.',
+            error: errMsg
+        });
+        return;
+    }
+    card.innerHTML = `<div class="gsc-panel">
+        <div class="gsc-panel-head">
+            <div class="gsc-panel-title">${GSC_G_ICON}<div><b>Search Console keywords</b><span id="gscSelSummary">Tap keywords to add them</span></div></div>
+            <button type="button" class="tc-link" data-gsc-disconnect>Disconnect</button>
+        </div>
+        <div class="gsc-toolbar">
+            <select id="gscSiteSelect2" aria-label="Search Console site"><option>Loading sites…</option></select>
+            <select id="gscDays" aria-label="Date range">
+                <option value="7">Last 7 days</option><option value="28">Last 28 days</option><option value="90">Last 3 months</option><option value="480">Last 16 months</option>
+            </select>
+        </div>
+        <div class="gsc-toolbar">
+            <div class="gsc-search"><i class="ri-search-line"></i><input type="search" id="gscFilter" placeholder="Filter keywords…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"></div>
+            <select id="gscSort" aria-label="Sort by"><option value="impressions">Most impressions</option><option value="clicks">Most clicks</option><option value="position">Best position</option></select>
+            <button type="button" class="gsc-top-btn" id="gscAddTop"><i class="ri-add-circle-line"></i> Add top 10</button>
+        </div>
+        <div class="gsc-list" id="gscList"><div class="gsc-state"><span class="gsc-spinner"></span> Loading sites…</div></div>
+    </div>`;
+    const $ = id => document.getElementById(id);
+    $('gscDays').value = String(tcGsc.days);
+    $('gscSort').value = tcGsc.sort;
+    $('gscFilter').value = tcGsc.filter;
+    $('gscDays').onchange = () => { tcGsc.days = +$('gscDays').value; loadGscKeywords(); };
+    $('gscSort').onchange = () => { tcGsc.sort = $('gscSort').value; tcGsc.limit = 50; renderGscKeywordList(); };
+    $('gscFilter').oninput = () => { tcGsc.filter = $('gscFilter').value; tcGsc.limit = 50; renderGscKeywordList(); };
+    $('gscAddTop').onclick = () => {
+        const n = addKeywords(gscVisibleKeywords().slice(0, 10).map(r => r.keys[0]));
+        showToast(n ? `Added ${n} keyword${n > 1 ? 's' : ''}` : 'Those keywords are already selected', n ? 'success' : 'info');
+    };
+    try {
+        const sites = await gscSites();
+        const sel = $('gscSiteSelect2');
+        if (!sel) return;
+        if (!sites.length) {
+            $('gscList').innerHTML = '<div class="gsc-state">This Google account has no verified sites in Search Console. Add your site at search.google.com/search-console first.</div>';
+            sel.innerHTML = '<option>No sites</option>'; sel.disabled = true;
+            return;
+        }
+        if (!sites.includes(tcGsc.site)) tcGsc.site = gscMatchSite(sites, $('taskUrl').value.trim()) || sites[0];
+        sel.innerHTML = sites.map(s => `<option value="${escHtml(s)}">${escHtml(gscSiteLabel(s))}</option>`).join('');
+        sel.value = tcGsc.site;
+        sel.onchange = () => { tcGsc.site = sel.value; tcGsc.limit = 50; loadGscKeywords(); };
+        loadGscKeywords();
+    } catch (err) {
+        if (err.auth) renderGscKeywordsCard(err.message);
+        else $('gscList').innerHTML = `<div class="gsc-state tc-error">${escHtml(err.message)}</div>`;
+    }
+}
+async function loadGscKeywords() {
+    const list = document.getElementById('gscList');
+    if (!list || !tcGsc.site) return;
+    const seq = ++tcGsc.seq;
+    tcGsc.rows = null;
+    list.innerHTML = '<div class="gsc-state"><span class="gsc-spinner"></span> Loading keywords…</div>';
+    try {
+        const rows = await gscQuery(tcGsc.site, { days: tcGsc.days, dimensions: ['query'], rowLimit: 1000 });
+        if (seq !== tcGsc.seq) return;
+        tcGsc.rows = rows;
+        renderGscKeywordList();
+    } catch (err) {
+        if (seq !== tcGsc.seq) return;
+        if (err.auth) renderGscKeywordsCard(err.message);
+        else list.innerHTML = `<div class="gsc-state tc-error">${escHtml(err.message)}</div>`;
+    }
+}
+function gscVisibleKeywords() {
+    const f = tcGsc.filter.trim().toLowerCase();
+    const k = tcGsc.sort;
+    return (tcGsc.rows || []).filter(r => !f || r.keys[0].toLowerCase().includes(f))
+        .sort((a, b) => k === 'position' ? a.position - b.position : b[k] - a[k]);
+}
+function renderGscKeywordList() {
+    const list = document.getElementById('gscList');
+    if (!list || !tcGsc.rows) return;
+    const rows = gscVisibleKeywords();
+    if (!tcGsc.rows.length) {
+        list.innerHTML = '<div class="gsc-state">No keyword data for this site in this period yet.</div>';
+        updateGscSelectionSummary();
+        return;
+    }
+    if (!rows.length) {
+        list.innerHTML = '<div class="gsc-state">No keywords match your filter.</div>';
+        return;
+    }
+    const shown = rows.slice(0, tcGsc.limit);
+    list.innerHTML = `<div class="gsc-row gsc-row-head" aria-hidden="true"><span></span><span>Keyword</span><span>Position</span><span>Impr.</span><span class="hide-sm">Clicks</span></div>` +
+        shown.map(r => {
+            const k = r.keys[0], on = hasKeyword(k);
+            return `<button type="button" class="gsc-row${on ? ' selected' : ''}" data-keyword="${escHtml(k)}" aria-pressed="${on}">
+                <span class="gsc-check"><i class="ri-check-line"></i></span>
+                <span class="gsc-kw">${escHtml(k)}</span>
+                ${gscBadge(r.position)}
+                <span class="gsc-num">${gscNum(r.impressions)}</span>
+                <span class="gsc-num hide-sm">${gscNum(r.clicks)}</span>
+            </button>`;
+        }).join('') +
+        (rows.length > shown.length ? `<button type="button" class="gsc-more" id="gscMore">Show more <small>(${rows.length - shown.length} left)</small></button>` : '');
+    const more = document.getElementById('gscMore');
+    if (more) more.onclick = () => { tcGsc.limit += 100; renderGscKeywordList(); };
+    updateGscSelectionSummary();
+}
+function updateGscSelectionSummary() {
+    const el = document.getElementById('gscSelSummary');
+    if (!el || !tcGsc.rows) return;
+    const n = tcGsc.rows.filter(r => hasKeyword(r.keys[0])).length;
+    el.textContent = `${tcGsc.rows.length.toLocaleString()} keyword${tcGsc.rows.length === 1 ? '' : 's'} found` + (n ? ` · ${n} selected` : ' · tap to add');
+}
+// Connect / disconnect buttons anywhere in the creator
+document.addEventListener('click', e => {
+    const creator = document.getElementById('seoTaskCreator');
+    if (!creator || !creator.contains(e.target)) return;
+    const c = e.target.closest('[data-gsc-connect]');
+    if (c) return gscConnectFromClick(c, () => { renderGscSitePicker(); if (taskCreatorState.currentStep === 2) renderGscKeywordsCard(); });
+    if (e.target.closest('[data-gsc-disconnect]')) {
+        gscDisconnect();
+        tcGsc.site = ''; tcGsc.rows = null;
+        renderGscSitePicker();
+        renderGscKeywordsCard();
+    }
+});
+
+// ---------- Task details: keyword analytics tab ----------
+async function initTaskGscPanel(popup, task, state) {
+    const root = popup?.querySelector('#task-panel-gsc .gsc-task');
+    if (!root) return;
+    state = state || { site: '', days: 28, scope: null, filter: '', limit: 25 };
+    const destroyChart = () => { try { if (window.charts?.taskGsc) { window.charts.taskGsc.destroy(); window.charts.taskGsc = null; } } catch (_) {} };
+    const rerender = msg => { destroyChart(); initTaskGscPanel(popup, task, msg ? { ...state, error: msg } : state); };
+    root.onclick = e => {
+        const c = e.target.closest('[data-gsc-connect]');
+        if (c) return gscConnectFromClick(c, () => rerender());
+        if (e.target.closest('[data-gsc-disconnect]')) { gscDisconnect(); rerender(); }
+    };
+    if (!gscToken()) {
+        destroyChart();
+        root.innerHTML = gscConnectCard({
+            title: 'Keyword rankings from Google Search Console',
+            text: 'Connect to see the Google position, clicks and impressions of this task\'s keywords and every other keyword it ranks for.',
+            error: state.error
+        });
+        return;
+    }
+    const taskUrl = task.url || '';
+    let path = '/';
+    try { path = new URL(/^https?:\/\//i.test(taskUrl) ? taskUrl : 'https://' + taskUrl).pathname; } catch (_) {}
+    if (!state.scope) state.scope = path && path !== '/' ? 'page' : 'site';
+    root.innerHTML = '<div class="gsc-state"><span class="gsc-spinner"></span> Loading Search Console data…</div>';
+    let sites;
+    try { sites = await gscSites(); } catch (err) {
+        if (err.auth) return rerender(err.message);
+        root.innerHTML = `<div class="gsc-state tc-error">${escHtml(err.message)}</div>`;
+        return;
+    }
+    if (!root.isConnected) return;
+    if (!sites.includes(state.site)) state.site = gscMatchSite(sites, taskUrl);
+    const siteOptions = sel => sites.map(s => `<option value="${escHtml(s)}" ${s === sel ? 'selected' : ''}>${escHtml(gscSiteLabel(s))}</option>`).join('');
+    if (!state.site) {
+        root.innerHTML = `<div class="gsc-nomatch">
+            <i class="ri-search-eye-line"></i>
+            <b>No Search Console property found for ${escHtml(gscHost(taskUrl) || 'this URL')}</b>
+            <span>Add and verify the site in Google Search Console, or choose the property that covers it.</span>
+            ${sites.length ? `<select class="gsc-select" data-gsc-site><option value="">Choose a property…</option>${siteOptions('')}</select>` : ''}
+            <button type="button" class="tc-link" data-gsc-disconnect>Use another Google account</button>
+        </div>`;
+        const s = root.querySelector('[data-gsc-site]');
+        if (s) s.onchange = () => { if (s.value) { state.site = s.value; rerender(); } };
+        return;
+    }
+    root.innerHTML = `
+        <div class="gsc-task-bar">
+            <select class="gsc-select" data-gsc-site aria-label="Search Console property">${siteOptions(state.site)}</select>
+            <div class="gsc-seg" role="group" aria-label="Scope">
+                <button type="button" data-scope="page" class="${state.scope === 'page' ? 'on' : ''}">This page</button>
+                <button type="button" data-scope="site" class="${state.scope === 'site' ? 'on' : ''}">Whole site</button>
+            </div>
+            <select class="gsc-select" data-gsc-days aria-label="Date range">
+                ${[[7, 'Last 7 days'], [28, 'Last 28 days'], [90, 'Last 3 months'], [480, 'Last 16 months']].map(([v, l]) => `<option value="${v}" ${v === state.days ? 'selected' : ''}>${l}</option>`).join('')}
+            </select>
+            <button type="button" class="tc-link" data-gsc-disconnect>Disconnect</button>
+        </div>
+        <div class="gsc-body"><div class="gsc-state"><span class="gsc-spinner"></span> Loading keyword data…</div></div>`;
+    root.querySelector('[data-gsc-site]').onchange = e => { state.site = e.target.value; rerender(); };
+    root.querySelector('[data-gsc-days]').onchange = e => { state.days = +e.target.value; rerender(); };
+    root.querySelectorAll('[data-scope]').forEach(b => b.onclick = () => { if (state.scope !== b.dataset.scope) { state.scope = b.dataset.scope; rerender(); } });
+    const body = root.querySelector('.gsc-body');
+    try {
+        const pageUrl = /^https?:\/\//i.test(taskUrl) ? taskUrl : 'https://' + taskUrl;
+        let filters = [];
+        if (state.scope === 'page') {
+            filters = [{ dimension: 'page', operator: 'equals', expression: pageUrl }];
+            // Search Console reports the canonical URL; try the other trailing-slash form when the first has no data
+            const probe = await gscQuery(state.site, { days: state.days, filters });
+            if (!probe.length || !probe[0].impressions) {
+                const alt = pageUrl.endsWith('/') ? pageUrl.slice(0, -1) : pageUrl + '/';
+                const altRows = await gscQuery(state.site, { days: state.days, filters: [{ dimension: 'page', operator: 'equals', expression: alt }] });
+                if (altRows.length && altRows[0].impressions) filters = [{ dimension: 'page', operator: 'equals', expression: alt }];
+            }
+        }
+        const opt = extra => ({ days: state.days, filters, ...extra });
+        const [tot, daily, queries] = await Promise.all([
+            gscQuery(state.site, opt()),
+            gscQuery(state.site, opt({ dimensions: ['date'], rowLimit: 500 })),
+            gscQuery(state.site, opt({ dimensions: ['query'], rowLimit: 1000 }))
+        ]);
+        // Task keywords outside the top 1000 get their own exact lookup
+        const byKey = new Map(queries.map(r => [r.keys[0].toLowerCase(), r]));
+        const taskKeywords = (task.keywords || []).map(k => String(k).trim()).filter(Boolean);
+        const missing = taskKeywords.filter(k => !byKey.has(k.toLowerCase())).slice(0, 15);
+        const extra = await Promise.all(missing.map(k => gscQuery(state.site, opt({ dimensions: ['query'], rowLimit: 1, filters: [...filters, { dimension: 'query', operator: 'equals', expression: k }] })).catch(() => [])));
+        extra.forEach(rows => rows.forEach(r => byKey.set(r.keys[0].toLowerCase(), r)));
+        if (!root.isConnected) return;
+        const T = tot[0] || { clicks: 0, impressions: 0, ctr: 0, position: 0 };
+        const tracked = taskKeywords.map(k => ({ k, r: byKey.get(k.toLowerCase()) }));
+        const ranking = tracked.filter(t => t.r);
+        const avgTracked = ranking.length ? ranking.reduce((s, t) => s + t.r.position, 0) / ranking.length : 0;
+        body.innerHTML = `
+            <div class="gsc-kpis">
+                <div class="gsc-kpi k1"><span>Clicks</span><b>${gscNum(T.clicks)}</b></div>
+                <div class="gsc-kpi k2"><span>Impressions</span><b>${gscNum(T.impressions)}</b></div>
+                <div class="gsc-kpi k3"><span>Average CTR</span><b>${gscPct(T.ctr || 0)}</b></div>
+                <div class="gsc-kpi k4"><span>Average position</span><b>${gscPos(T.position)}</b></div>
+            </div>
+            <div class="gsc-chart-card">
+                <div class="gsc-legend"><span><i style="background:#2563eb"></i>Clicks</span><span><i style="background:#a855f7"></i>Impressions</span></div>
+                <div class="gsc-chart">${daily.length ? '<canvas id="taskGscChart"></canvas>' : '<div class="gsc-state">No data for this period</div>'}</div>
+            </div>
+            <div class="gsc-block">
+                <div class="gsc-block-head"><h4><i class="ri-focus-3-line"></i> Task keywords</h4>
+                    <span>${ranking.length} of ${tracked.length} ranking${ranking.length ? ` · avg. position ${gscPos(avgTracked)}` : ''}</span></div>
+                ${tracked.length ? `<div class="gsc-table">${gscTableHead('Keyword')}${tracked.map(({ k, r }) => r ? gscTableRow(k, r) :
+                    `<div class="gsc-tr nr"><span class="gsc-td-k">${escHtml(k)}</span><span class="gsc-not">Not ranking</span><span class="gsc-td">–</span><span class="gsc-td">–</span><span class="gsc-td hide-sm">–</span></div>`).join('')}</div>`
+                    : '<div class="gsc-state">This task has no keywords.</div>'}
+            </div>
+            <div class="gsc-block">
+                <div class="gsc-block-head"><h4><i class="ri-list-unordered"></i> All keywords <small>(${queries.length.toLocaleString()})</small></h4>
+                    <div class="gsc-search"><i class="ri-search-line"></i><input type="search" data-gsc-filter placeholder="Search or check a keyword…" value="${escHtml(state.filter)}" autocomplete="off" spellcheck="false"></div></div>
+                <div class="gsc-verdict" data-gsc-verdict></div>
+                <div class="gsc-table" data-gsc-all></div>
+            </div>`;
+        const allBox = body.querySelector('[data-gsc-all]'), verdict = body.querySelector('[data-gsc-verdict]');
+        const renderAll = () => {
+            const f = state.filter.trim().toLowerCase();
+            const rows = queries.filter(r => !f || r.keys[0].toLowerCase().includes(f)).sort((a, b) => b.clicks - a.clicks || b.impressions - a.impressions);
+            const exact = f && byKey.get(f);
+            verdict.className = 'gsc-verdict' + (f ? (exact ? ' ok' : ' no') : '');
+            verdict.innerHTML = !f ? '' : exact
+                ? `<b>#${gscPos(exact.position)}</b> Ranks for “${escHtml(f)}” · page ${Math.ceil(exact.position / 10)} · ${gscNum(exact.clicks)} clicks · ${gscNum(exact.impressions)} impressions`
+                : `<b>Not ranking</b> No Google impressions for “${escHtml(f)}” in this period${rows.length ? ` · ${rows.length} related keyword${rows.length > 1 ? 's' : ''} below` : ''}`;
+            const shown = rows.slice(0, state.limit);
+            allBox.innerHTML = rows.length
+                ? gscTableHead('Keyword') + shown.map(r => gscTableRow(r.keys[0], r)).join('') +
+                  (rows.length > shown.length ? `<button type="button" class="gsc-more" data-gsc-more>Show more <small>(${rows.length - shown.length} left)</small></button>` : '')
+                : `<div class="gsc-state">${queries.length ? 'No keywords match your search.' : 'No keyword data for this period yet.'}</div>`;
+            const more = allBox.querySelector('[data-gsc-more]');
+            if (more) more.onclick = () => { state.limit += 50; renderAll(); };
+        };
+        body.querySelector('[data-gsc-filter]').oninput = e => { state.filter = e.target.value; state.limit = 25; renderAll(); };
+        renderAll();
+        if (daily.length && window.Chart) {
+            destroyChart();
+            const ctx = body.querySelector('#taskGscChart');
+            const g = ctx.getContext('2d').createLinearGradient(0, 0, 0, 220);
+            g.addColorStop(0, 'rgba(37,99,235,.25)'); g.addColorStop(1, 'rgba(37,99,235,0)');
+            const muted = getComputedStyle(document.body).getPropertyValue('--text-secondary').trim() || '#64748b';
+            window.charts = window.charts || {};
+            window.charts.taskGsc = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: daily.map(r => new Date(r.keys[0] + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+                    datasets: [
+                        { label: 'Clicks', data: daily.map(r => r.clicks), borderColor: '#2563eb', backgroundColor: g, fill: true, tension: .35, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 4, yAxisID: 'y' },
+                        { label: 'Impressions', data: daily.map(r => r.impressions), borderColor: '#a855f7', borderDash: [5, 4], tension: .35, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, yAxisID: 'y1' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: muted, maxTicksLimit: 7, maxRotation: 0 } },
+                        y: { beginAtZero: true, grid: { color: 'rgba(148,163,184,.15)' }, ticks: { color: muted, precision: 0, maxTicksLimit: 5 } },
+                        y1: { beginAtZero: true, position: 'right', grid: { display: false }, ticks: { color: muted, precision: 0, maxTicksLimit: 5 } }
+                    }
+                }
+            });
+        }
+    } catch (err) {
+        if (err.auth) return rerender(err.message);
+        if (root.isConnected) body.innerHTML = `<div class="gsc-state tc-error">${escHtml(err.message)}</div>`;
+    }
+}
+const gscTableHead = first => `<div class="gsc-tr gsc-th"><span>${first}</span><span><span class="hide-sm">Position</span><span class="show-sm">Pos.</span></span><span>Clicks</span><span>Impr.</span><span class="hide-sm">CTR</span></div>`;
+const gscTableRow = (k, r) => `<div class="gsc-tr"><span class="gsc-td-k">${escHtml(k)}</span>${gscBadge(r.position)}<span class="gsc-td">${gscNum(r.clicks)}</span><span class="gsc-td">${gscNum(r.impressions)}</span><span class="gsc-td hide-sm">${gscPct(r.ctr)}</span></div>`;
 </script>
 <style>
 @media (max-width: 480px) {
@@ -14942,34 +15537,69 @@ tbody tr:hover{background:var(--card-hover)}
 .opt-top{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 .opt-name{font-family:var(--font-mono);font-weight:600;font-size:.92rem;color:var(--text)}
 .opt-alias{font-family:var(--font-mono);font-size:.72rem;padding:.12rem .45rem;border-radius:6px;background:var(--bg-tertiary);color:var(--text-secondary)}
-.opt-soon{margin-left:auto;font-size:.64rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:.18rem .5rem;border-radius:99px;background:rgba(217,119,6,.14);color:#d97706}
 .opt-desc{font-size:.84rem;color:var(--text-secondary);line-height:1.5}
 .opt-values{display:flex;flex-wrap:wrap;gap:.3rem}
 .opt-values span{font-family:var(--font-mono);font-size:.72rem;padding:.16rem .45rem;border-radius:6px;background:var(--glow);color:var(--primary)}
 .opt-ex{display:flex;align-items:center;gap:.5rem;margin-top:auto;padding:.45rem .45rem .45rem .7rem;border-radius:11px;background:var(--bg-tertiary);border:1px solid var(--border)}
 .opt-ex code{flex:1;min-width:0;font-family:var(--font-mono);font-size:.8rem;color:var(--text);overflow-x:auto;white-space:nowrap;scrollbar-width:none}
 .opt-ex code::-webkit-scrollbar{display:none}
-.opt.is-soon{opacity:.82}
-/* Playground */
-.play{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:1.1rem;padding:1.2rem;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card)}
-.play-controls{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;align-content:start}
-.play-controls label{display:flex;flex-direction:column;gap:.35rem;font-size:.76rem;font-weight:600;color:var(--text-secondary)}
-.play-controls label.full{grid-column:1/-1}
-.play-controls input,.play-controls select{padding:.6rem .7rem;border-radius:10px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);font:500 .86rem 'Inter',sans-serif;outline:none;width:100%}
-.play-controls input:focus,.play-controls select:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--glow)}
-.play-controls input[type=range]{padding:0;accent-color:var(--primary);height:30px}
-.play-controls .rv{font-family:var(--font-mono);color:var(--primary)}
-.play-preview{display:flex;flex-direction:column;gap:.7rem;min-width:0}
-.play-stage{position:relative;flex:1;min-height:260px;border-radius:16px;overflow:hidden;border:1px solid var(--border);background:repeating-conic-gradient(var(--bg-tertiary) 0 25%,var(--card) 0 50%) 0 0/18px 18px;display:grid;place-items:center}
-.play-stage img{max-width:100%;max-height:340px;transition:opacity .3s}
-.play-stage .loading{position:absolute;inset:auto 0 0 0;height:3px;background:linear-gradient(90deg,#2563eb,#06b6d4);transform-origin:left;transform:scaleX(0)}
-.play-stage.busy .loading{animation:load 1s ease-in-out infinite}
+/* URL builder */
+.pg{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);gap:1.1rem;align-items:start;padding:1.1rem;border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--card)}
+.pg [hidden]{display:none!important}
+.pg-view{position:sticky;top:84px;display:flex;flex-direction:column;gap:.75rem;min-width:0}
+.pg-view-bar{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
+.pg-seg{display:inline-flex;padding:3px;border-radius:11px;background:var(--bg-tertiary);border:1px solid var(--border)}
+.pg-seg button{display:inline-flex;align-items:center;gap:.35rem;border:0;background:transparent;padding:.42rem .8rem;border-radius:8px;color:var(--text-secondary);font:600 .8rem 'Inter',sans-serif;cursor:pointer}
+.pg-seg button.on{background:var(--card);color:var(--primary);box-shadow:0 1px 3px rgba(15,23,42,.12)}
+.pg-meta{font-size:.78rem;color:var(--text-secondary);font-variant-numeric:tabular-nums}
+.pg-meta b{color:var(--text);font-weight:700}
+.pg-stage{position:relative;height:clamp(300px,52vh,540px);border-radius:16px;overflow:hidden;border:1px solid var(--border);background:repeating-conic-gradient(var(--bg-tertiary) 0 25%,var(--card) 0 50%) 0 0/20px 20px;display:grid;place-items:center;padding:12px}
+.pg-stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;box-shadow:0 10px 30px -18px rgba(15,23,42,.6);transition:opacity .25s}
+.pg-stage.busy img{opacity:.55}
+.pg-stage.failed img:not([hidden]){opacity:.25}
+.pg-stage .loading{position:absolute;inset:auto 0 0 0;height:3px;background:linear-gradient(90deg,#2563eb,#06b6d4);transform-origin:left;transform:scaleX(0)}
+.pg-stage.busy .loading{animation:load 1s ease-in-out infinite}
 @keyframes load{0%{transform:scaleX(0)}60%{transform:scaleX(.8)}100%{transform:scaleX(1);opacity:0}}
-.play-meta{font-size:.76rem;color:var(--text-secondary);display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.pg-out{display:flex;flex-direction:column;gap:.55rem;padding:.8rem;border-radius:14px;background:#0b1222;color:#e2e8f0;border:1px solid rgba(148,163,184,.14)}
+.pg-out-label{display:flex;align-items:center;justify-content:space-between;gap:.5rem;font:700 .68rem var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:#94a3b8}
+.pg-out-label small{font-weight:500;letter-spacing:.04em;text-transform:none;color:#64748b}
+.pg-out-url{max-height:5.4em;overflow-y:auto;padding:.1rem 0;font:500 .82rem/1.6 var(--font-mono);word-break:break-all;scrollbar-width:thin}
+.pg-out-url .b{color:#cbd5e1}.pg-out-url .k{color:#93c5fd}.pg-out-url .v{color:#fbbf24}.pg-out-url .p{color:#64748b}
+.pg-out-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+.pg-copy,.pg-btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;height:38px;padding:0 .9rem;border-radius:10px;font:600 .82rem 'Inter',sans-serif;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .2s,transform .2s}
+.pg-copy{flex:1 1 140px;border:0;background:linear-gradient(135deg,#2563eb,#06b6d4);color:#fff}
+.pg-copy:hover{transform:translateY(-1px)}
+.pg-copy.done,.pg-btn.done{background:#059669;color:#fff}
+.pg-btn{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#e2e8f0}
+.pg-btn:hover{background:rgba(255,255,255,.12)}
+.pg-controls{display:flex;flex-direction:column;gap:.7rem;min-width:0}
+.pg-group{padding:.85rem;border:1px solid var(--border);border-radius:14px;background:var(--bg-secondary)}
+.pg-group-title{margin-bottom:.6rem;font:700 .68rem var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--text-tertiary)}
+.pg-group>select{width:100%}
+.pg-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem .75rem}
+.pg-grid label{display:flex;flex-direction:column;gap:.3rem;min-width:0;font-size:.76rem;font-weight:600;color:var(--text-secondary)}
+.pg-grid label.full{grid-column:1/-1}
+.pg-controls input:not([type=range]):not([type=color]),.pg-controls select{width:100%;height:38px;padding:0 .65rem;border-radius:10px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);font:500 .86rem 'Inter',sans-serif;outline:none}
+.pg-controls input:focus,.pg-controls select:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--glow)}
+.pg-controls input[type=range]{width:100%;height:24px;padding:0;accent-color:var(--primary);cursor:pointer}
+.pg-controls .rv{font-family:var(--font-mono);color:var(--primary);margin-left:.25rem}
+.pg-color{display:flex;align-items:center;gap:.5rem}
+.pg-color input{width:44px;height:34px;padding:0;border:1px solid var(--border);border-radius:8px;background:none;cursor:pointer}
+.pg-color code{font-family:var(--font-mono);font-size:.8rem;color:var(--text)}
+.pg-chips,.pg-presets{display:flex;flex-wrap:wrap;gap:.4rem}
+.pg-chips button,.pg-presets button{padding:.4rem .7rem;border:1px solid var(--border);border-radius:99px;background:var(--card);color:var(--text);font:600 .78rem 'Inter',sans-serif;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.pg-chips button:hover,.pg-presets button:hover{border-color:var(--primary);color:var(--primary)}
+.pg-chips button.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.pg-reset{align-self:flex-start;display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .8rem;border:1px dashed var(--border);border-radius:10px;background:transparent;color:var(--text-secondary);font:600 .8rem 'Inter',sans-serif;cursor:pointer}
+.pg-reset:hover{color:var(--primary);border-color:var(--primary)}
+/* overflow:hidden on these turns them into scroll boxes and stops the preview from sticking */
+html:has(.pg),html:has(.pg) body,.main-content:has(.pg),.content:has(.pg){overflow-x:clip!important;overflow-y:visible!important}
+@media (max-width:1100px){.pg{grid-template-columns:minmax(0,1fr)}.pg-view{top:76px;z-index:5;background:var(--card);padding-bottom:.6rem;border-bottom:1px solid var(--border)}.pg-stage{height:clamp(200px,34vh,380px)}}
+@media (max-width:520px){.pg{padding:.75rem;border-radius:18px}.pg-view{top:60px;gap:.5rem;padding-top:.4rem}.pg-view-bar{flex-wrap:nowrap}.pg-seg button{padding:.35rem .6rem;font-size:.76rem}.pg-meta{font-size:.72rem;text-align:right}.pg-stage{height:24vh;min-height:150px;padding:8px;border-radius:12px}.pg-out{padding:.55rem .6rem;gap:.45rem;border-radius:12px}.pg-out-label{display:none}.pg-out-url{max-height:none;white-space:nowrap;overflow-x:auto;overflow-y:hidden;word-break:normal;font-size:.74rem;scrollbar-width:none}.pg-out-url::-webkit-scrollbar{display:none}.pg-out-actions{flex-wrap:nowrap;gap:.4rem}.pg-copy,.pg-btn{height:34px;font-size:.76rem}.pg-btn{padding:0 .6rem}.pg-copy{flex:1 1 auto}.pg-group{padding:.7rem}}
 .docs-tip{display:flex;gap:.7rem;align-items:flex-start;padding:.9rem 1rem;border-radius:14px;border:1px solid color-mix(in srgb,var(--primary) 30%,var(--border));background:var(--glow);font-size:.86rem;color:var(--text)}
 .docs-tip i{color:var(--primary);font-size:1.15rem;margin-top:.05rem}
-@media (max-width:1100px){.docs{grid-template-columns:1fr}.docs-toc{position:static;flex-direction:row;overflow-x:auto;padding:.5rem;scrollbar-width:none}.docs-toc small{display:none}.docs-toc a{flex-shrink:0}.play{grid-template-columns:1fr}}
-@media (max-width:520px){.opt-grid{grid-template-columns:1fr}.play-controls{grid-template-columns:1fr 1fr}.docs-hero{padding:1.3rem}}
+@media (max-width:1100px){.docs{grid-template-columns:1fr}.docs-toc{position:static;flex-direction:row;overflow-x:auto;padding:.5rem;scrollbar-width:none}.docs-toc small{display:none}.docs-toc a{flex-shrink:0}}
+@media (max-width:520px){.opt-grid{grid-template-columns:1fr}.docs-hero{padding:1.3rem}}
 
 /* ---------- Article modal: single AI action ---------- */
 .ai-hero-btn{width:100%;display:flex;align-items:center;gap:.85rem;padding:.9rem 1rem;border:0;border-radius:16px;cursor:pointer;text-align:left;color:#fff;background:radial-gradient(120% 160% at 0% 0%,#2563eb 0%,#1e3a8a 60%,#0b1222 100%);box-shadow:0 14px 30px -16px rgba(37,99,235,.7);transition:transform .3s var(--ease),box-shadow .3s}
@@ -14980,8 +15610,8 @@ tbody tr:hover{background:var(--card-hover)}
 .ai-hero-btn small{display:block;font-size:.76rem;color:#c7d2fe}
 .ai-hero-btn.generating .ai-ico i{animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.docs>*,.play>*,.play-controls>*,.opt{min-width:0}
-@media (max-width:1100px){.docs{grid-template-columns:minmax(0,1fr)}.play{grid-template-columns:minmax(0,1fr)}}
+.docs>*,.pg>*,.opt{min-width:0}
+@media (max-width:1100px){.docs{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:768px){
   .stats-grid{grid-template-columns:1fr 1fr!important;gap:.7rem}
   .stat-card{flex-direction:column;align-items:flex-start;gap:.7rem;padding:1rem}
@@ -15183,6 +15813,250 @@ tbody tr:hover{background:var(--card-hover)}
   .pa-pagination .pagination{padding:0 1rem 1rem}
 }
 
+</style>
+<style id="task-creator-2026">
+/* =====================================================================
+   SEO task creator — final layout layer (desktop dialog, mobile sheet)
+   and the Google Search Console pieces (creator + task details).
+   ===================================================================== */
+html.tc-lock,html.tc-lock body{overflow:hidden!important}
+#seoTaskCreator{overscroll-behavior:contain}
+#seoTaskCreator .step-content{animation:tcIn .25s ease!important}
+@keyframes tcIn{from{opacity:0}to{opacity:1}}
+@keyframes tcSpin{to{transform:rotate(360deg)}}
+.tc-spin{display:inline-block;animation:tcSpin 1s linear infinite}
+#seoTaskCreator .form-group{margin-bottom:1.25rem}
+#seoTaskCreator .form-group:last-child{margin-bottom:0}
+#seoTaskCreator .form-label{display:block;margin-bottom:.5rem;font-weight:600;font-size:.88rem;color:var(--text)}
+#seoTaskCreator .form-input{width:100%;height:46px;padding:0 .9rem;border:1.5px solid var(--border);border-radius:12px;background:var(--input-bg);color:var(--text);font:500 .95rem 'Inter',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s}
+#seoTaskCreator .form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--glow)}
+.tc-hint{display:block;margin-top:.45rem;font-size:.78rem;line-height:1.4;color:var(--text-secondary)}
+.tc-error{color:var(--error,#dc2626)!important}
+.tc-muted{color:var(--text-secondary);font-size:.85rem;padding:.35rem 0}
+.tc-link{border:0;background:none;padding:.25rem .35rem;color:var(--primary);font:600 .8rem 'Inter',sans-serif;cursor:pointer;white-space:nowrap;border-radius:6px}
+.tc-link:hover{background:var(--glow)}
+
+/* ---------- Desktop / tablet dialog ---------- */
+@media (min-width:769px){
+  #seoTaskCreator.active{display:flex;align-items:center;justify-content:center;padding:2vh 2vw}
+  #seoTaskCreator .task-creator-container{width:min(1080px,96vw);max-width:none;height:min(760px,94dvh);max-height:none;border-radius:24px;display:flex;flex-direction:row;overflow:hidden}
+  #seoTaskCreator .task-creator-sidebar{width:250px;flex-shrink:0;padding:1.75rem 1.25rem;gap:0;overflow-y:auto}
+  #seoTaskCreator .progress-steps{margin:0}
+  #seoTaskCreator .progress-step{margin-bottom:1.1rem;padding:.4rem;border-radius:14px}
+  #seoTaskCreator .step-indicator{width:2.5rem;height:2.5rem;margin-right:.85rem;flex-shrink:0}
+  #seoTaskCreator .step-title{font-size:.95rem}
+  #seoTaskCreator .step-description{font-size:.76rem;line-height:1.4}
+  #seoTaskCreator .task-creator-main{min-width:0;min-height:0;display:flex;flex-direction:column}
+  #seoTaskCreator .task-creator-header{padding:1.3rem 4.5rem 1.1rem 1.75rem;flex-shrink:0}
+  #seoTaskCreator .task-creator-title{font-size:1.35rem;margin-bottom:.2rem;line-height:1.25}
+  #seoTaskCreator .task-creator-close{top:1.1rem;right:1.25rem;width:2.4rem;height:2.4rem;font-size:1.15rem}
+  #seoTaskCreator .task-creator-body{flex:1;min-height:0;padding:1.5rem 1.75rem;overflow-y:auto;overscroll-behavior:contain}
+  #seoTaskCreator .task-creator-footer{padding:.9rem 1.75rem;flex-shrink:0}
+  #seoTaskCreator .priority-options{margin-bottom:0;gap:.85rem}
+  #seoTaskCreator .priority-option{min-height:0;padding:1.1rem 1rem;gap:.15rem}
+  #seoTaskCreator .priority-option:hover{transform:translateY(-2px)}
+  #seoTaskCreator .payment-type-toggle{margin-bottom:1.25rem}
+  #seoTaskCreator .payment-options{margin-bottom:1.25rem;gap:.85rem}
+  #seoTaskCreator .billing-cycle-options{gap:.85rem;margin-bottom:1.25rem}
+  #seoTaskCreator .billing-option{min-height:0;padding:1.1rem 1rem 1rem;gap:.55rem}
+  #seoTaskCreator .billing-option:hover{transform:translateY(-2px)}
+  #seoTaskCreator .billing-option.selected::after{top:auto;bottom:.8rem;right:.8rem}
+  #seoTaskCreator .billing-option{padding-top:1.5rem}
+  #seoTaskCreator .billing-cycle-options .billing-badge{top:-.7rem;right:1rem;padding:.2rem .65rem;font-size:.68rem}
+  #seoTaskCreator .billing-cycle-options{padding-top:.7rem}
+  #seoTaskCreator .budget-calculator{margin-bottom:0;padding:1.1rem}
+}
+
+#seoTaskCreator .task-creator-footer button{white-space:nowrap}
+@media (min-width:769px) and (max-width:1000px){
+  #seoTaskCreator .task-creator-sidebar{width:210px;padding:1.5rem 1rem}
+  #seoTaskCreator .step-indicator{width:2.2rem;height:2.2rem;margin-right:.65rem}
+  #seoTaskCreator .footer-info{display:none}
+  #seoTaskCreator .task-creator-footer{justify-content:flex-end}
+}
+
+/* ---------- Mobile: full-screen sheet — header, steps, scrolling body, footer ---------- */
+@media (max-width:768px){
+  #seoTaskCreator.active{display:block}
+  #seoTaskCreator .task-creator-container{position:fixed;inset:0;width:100%;max-width:none;height:100%;height:100dvh;max-height:none;border-radius:0;display:flex;flex-direction:column;overflow:hidden;transform:none}
+  /* Let the header, body and footer join the column so the header sits above the steps */
+  #seoTaskCreator .task-creator-main{display:contents}
+  #seoTaskCreator .task-creator-header{order:0;position:relative;flex-shrink:0;padding:calc(.75rem + env(safe-area-inset-top)) 3.5rem .7rem 1rem;border-bottom:0;background:var(--bg-secondary)}
+  #seoTaskCreator .task-creator-title{font-size:1.05rem;padding-right:0;margin:0 0 .15rem}
+  #seoTaskCreator .task-creator-subtitle{font-size:.74rem}
+  #seoTaskCreator .task-creator-close{top:calc(.7rem + env(safe-area-inset-top))!important;right:.85rem!important;width:2.2rem!important;height:2.2rem!important}
+  #seoTaskCreator .task-creator-sidebar{order:1;flex-shrink:0;padding:0 .85rem .75rem!important;border-bottom:1px solid var(--border);background:var(--bg-secondary);box-shadow:none}
+  #seoTaskCreator .progress-steps{min-height:0!important;margin:0!important;gap:.45rem}
+  #seoTaskCreator .progress-step{padding:.5rem .25rem}
+  #seoTaskCreator .task-creator-body{order:2;flex:1 1 auto;min-height:0;max-height:none!important;padding:1rem 1rem 1.5rem;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:var(--bg-primary,var(--bg))}
+  #seoTaskCreator .step-content,#seoTaskCreator .step-content.active{height:auto;overflow:visible;padding:0}
+  #seoTaskCreator .task-creator-footer{order:3;position:relative;flex-shrink:0;padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom))}
+  /* 16px stops iOS from zooming the page when a field gets focus */
+  #seoTaskCreator input,#seoTaskCreator select,#seoTaskCreator textarea{font-size:16px!important}
+  #seoTaskCreator .form-input{height:46px}
+}
+
+#seoTaskCreator .payment-card{display:grid!important;grid-template-columns:auto 1fr;column-gap:.85rem;align-items:center;padding:.9rem 3rem .9rem 1rem;text-align:left}
+#seoTaskCreator .payment-card[style*="display: none"]{display:none!important}
+#seoTaskCreator .payment-icon{grid-row:span 2;margin:0;width:2.6rem;height:2.6rem;font-size:1.3rem}
+#seoTaskCreator .payment-title{margin:0}
+#seoTaskCreator .payment-card.selected::after{top:50%;transform:translateY(-50%)}
+@media (max-width:768px){#seoTaskCreator .payment-options{grid-template-columns:1fr;gap:.6rem;margin-bottom:1rem}#seoTaskCreator .gsc-list{max-height:46dvh}#seoTaskCreator .gsc-toolbar select{flex:1 1 130px}}
+
+/* ---------- Manual keywords ---------- */
+.tc-kw-row{display:flex;gap:.6rem;align-items:stretch}
+.tc-kw-input{position:relative;flex:1;min-width:0}
+.tc-kw-input>i{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--text-secondary);pointer-events:none}
+#seoTaskCreator .tc-kw-input .form-input{padding-left:2.4rem;padding-right:3rem}
+.tc-kw-add{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;border-radius:9px;background:var(--primary);color:#fff;font-size:1.1rem;display:grid;place-items:center;cursor:pointer}
+.tc-kw-add:active{transform:translateY(-50%) scale(.94)}
+#seoTaskCreator .tc-ai-btn{height:46px;padding:0 1rem;border-radius:12px;white-space:nowrap;display:inline-flex;align-items:center;gap:.4rem;flex-shrink:0}
+#seoTaskCreator .keyword-suggestions{display:flex;flex-wrap:wrap;gap:.45rem;margin:.75rem 0 0}
+#seoTaskCreator .keyword-suggestions:empty{display:none}
+.tc-sub-label{width:100%;display:flex;align-items:center;gap:.4rem;font-size:.76rem;font-weight:600;color:var(--text-secondary)}
+.tc-sub-label span{font-weight:400;opacity:.8}
+#seoTaskCreator .keyword-suggestion{padding:.4rem .8rem;border:1.5px solid var(--border);background:var(--card);color:var(--text);border-radius:99px;font:500 .82rem 'Inter',sans-serif;cursor:pointer;transform:none}
+#seoTaskCreator .keyword-suggestion:hover{background:var(--card);border-color:var(--primary);color:var(--primary);transform:none}
+#seoTaskCreator .keyword-suggestion.selected{background:var(--primary);border-color:var(--primary);color:#fff}
+#seoTaskCreator .selected-keywords{margin:1.1rem 0 0;padding:.85rem .9rem;border:1px solid color-mix(in srgb,var(--primary) 25%,var(--border));border-radius:14px;background:var(--glow)}
+#seoTaskCreator .selected-keywords-header{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.6rem;font-size:.82rem;font-weight:700;color:var(--text)}
+#seoTaskCreator .selected-keywords-header b{display:inline-block;min-width:1.4rem;margin-left:.3rem;padding:0 .4rem;border-radius:99px;background:var(--primary);color:#fff;font-size:.72rem;text-align:center;line-height:1.4rem}
+#seoTaskCreator .keyword-tags{display:flex;flex-wrap:wrap;gap:.4rem;max-height:180px;overflow-y:auto}
+#seoTaskCreator .keyword-tag{display:inline-flex;align-items:center;gap:.35rem;max-width:100%;padding:.28rem .3rem .28rem .7rem;border:1px solid var(--border);border-radius:99px;background:var(--card);color:var(--text);font-size:.82rem;font-weight:500}
+#seoTaskCreator .keyword-tag-text{margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#seoTaskCreator .keyword-tag-remove{width:22px;height:22px;flex-shrink:0;border:0;border-radius:50%;background:var(--bg-tertiary);color:var(--text-secondary);display:grid;place-items:center;font-size:.8rem;cursor:pointer;transform:none}
+#seoTaskCreator .keyword-tag-remove:hover{background:var(--error,#dc2626);color:#fff;transform:none}
+
+/* ---------- Search Console: shared ---------- */
+.g-ico{width:18px;height:18px;flex:none;display:block}
+.gsc-spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;display:inline-block;animation:tcSpin .8s linear infinite;flex:none}
+.gsc-state{display:flex;align-items:center;justify-content:center;gap:.55rem;padding:1.4rem 1rem;text-align:center;color:var(--text-secondary);font-size:.85rem;line-height:1.45}
+.gsc-connect{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:.9rem 1rem;padding:1.1rem 1.15rem;border:1px solid var(--border);border-radius:16px;background:radial-gradient(120% 160% at 0% 0%,var(--glow) 0%,transparent 55%),var(--card);margin-bottom:1.25rem;text-align:left}
+.gsc-connect-ico{width:46px;height:46px;border-radius:13px;background:#fff;border:1px solid #e5e9f0;display:grid;place-items:center;box-shadow:0 6px 16px -10px rgba(15,23,42,.35)}
+.gsc-connect-ico .g-ico{width:24px;height:24px}
+.gsc-connect-text b{display:block;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.15rem}
+.gsc-connect-text span{display:block;font-size:.82rem;line-height:1.45;color:var(--text-secondary)}
+.gsc-connect-text em{display:block;margin-top:.35rem;font-style:normal;font-size:.8rem;font-weight:600;color:var(--error,#dc2626)}
+.gsc-connect-btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;height:44px;padding:0 1.05rem;border:1px solid #d0d5dd;border-radius:12px;background:#fff;color:#1f2430;font:600 .86rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer;transition:box-shadow .2s,transform .2s}
+.gsc-connect-btn:hover{box-shadow:0 8px 20px -10px rgba(15,23,42,.35);transform:translateY(-1px)}
+.gsc-connect-btn.busy,.gsc-inline-btn.busy{opacity:.6;pointer-events:none}
+@media (max-width:640px){.gsc-connect{grid-template-columns:auto minmax(0,1fr)}.gsc-connect-btn{grid-column:1/-1;width:100%}}
+.show-sm{display:none}
+@media (max-width:640px){.show-sm{display:inline}.gsc-th .hide-sm{display:none}}
+.gsc-pos{display:inline-block;justify-self:start;min-width:42px;padding:.15rem .4rem;border-radius:7px;text-align:center;font-weight:700;font-size:.76rem;font-variant-numeric:tabular-nums}
+.gsc-pos.g{background:#dcfae6;color:#067647}.gsc-pos.bl{background:#e0eaff;color:#3538cd}.gsc-pos.a{background:#fef0c7;color:#b54708}.gsc-pos.x{background:#f2f4f7;color:#475467}
+[data-theme="dark"] .gsc-pos.g{background:rgba(16,185,129,.18);color:#6ee7b7}[data-theme="dark"] .gsc-pos.bl{background:rgba(99,102,241,.22);color:#c7d2fe}[data-theme="dark"] .gsc-pos.a{background:rgba(245,158,11,.18);color:#fcd34d}[data-theme="dark"] .gsc-pos.x{background:rgba(148,163,184,.16);color:#cbd5e1}
+.gsc-search{position:relative;flex:1 1 200px;min-width:0}
+.gsc-search i{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--text-secondary);pointer-events:none}
+.gsc-search input{width:100%;height:40px;padding:0 .75rem 0 2.1rem;border:1px solid var(--border);border-radius:10px;background:var(--input-bg);color:var(--text);font:500 .86rem 'Inter',sans-serif;outline:none}
+.gsc-search input:focus,.gsc-toolbar select:focus,.gsc-select:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--glow)}
+.gsc-more{display:block;width:100%;padding:.7rem;border:0;background:transparent;color:var(--primary);font:600 .82rem 'Inter',sans-serif;cursor:pointer}
+.gsc-more:hover{background:var(--glow)}
+.gsc-more small{font-weight:500;color:var(--text-secondary)}
+
+/* ---------- Search Console: task creator ---------- */
+.gsc-site-picker:empty{display:none}
+.gsc-inline-btn{display:inline-flex;align-items:center;gap:.5rem;margin-top:.7rem;padding:.55rem .85rem;border:1px dashed color-mix(in srgb,var(--primary) 40%,var(--border));border-radius:11px;background:var(--card);color:var(--text);font:600 .82rem 'Inter',sans-serif;cursor:pointer;transition:background .2s,border-color .2s}
+.gsc-inline-btn:hover{background:var(--glow);border-color:var(--primary)}
+.gsc-inline-select{display:flex;align-items:center;gap:.55rem;margin-top:.7rem;padding:0 .3rem 0 .8rem;border:1.5px solid var(--border);border-radius:12px;background:var(--input-bg)}
+.gsc-inline-select select{flex:1;min-width:0;height:42px;border:0;background:transparent;color:var(--text);font:500 .9rem 'Inter',sans-serif;outline:none;cursor:pointer}
+.gsc-panel{display:flex;flex-direction:column;gap:.65rem;padding:1rem;border:1px solid var(--border);border-radius:16px;background:var(--card);margin-bottom:1.25rem}
+.gsc-panel-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem}
+.gsc-panel-title{display:flex;align-items:center;gap:.65rem;min-width:0}
+.gsc-panel-title .g-ico{width:28px;height:28px;padding:5px;border-radius:9px;background:#fff;border:1px solid #e5e9f0;box-sizing:border-box}
+.gsc-panel-title b{display:block;font-size:.93rem;color:var(--text)}
+.gsc-panel-title span{display:block;font-size:.76rem;color:var(--text-secondary)}
+.gsc-toolbar{display:flex;gap:.5rem;flex-wrap:wrap}
+.gsc-toolbar select,.gsc-select{flex:1 1 170px;min-width:0;height:40px;padding:0 .7rem;border:1px solid var(--border);border-radius:10px;background:var(--input-bg);color:var(--text);font:500 .86rem 'Inter',sans-serif;outline:none;cursor:pointer}
+.gsc-toolbar #gscSort{flex:0 1 170px}
+.gsc-top-btn{display:inline-flex;align-items:center;gap:.35rem;height:40px;padding:0 .85rem;border:1px solid color-mix(in srgb,var(--primary) 35%,var(--border));border-radius:10px;background:var(--glow);color:var(--primary);font:600 .82rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer}
+.gsc-list{max-height:320px;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--border);border-radius:12px;background:var(--card)}
+.gsc-row{display:grid;grid-template-columns:22px minmax(0,1fr) 52px 72px 58px;gap:.65rem;align-items:center;width:100%;padding:.6rem .8rem;border:0;border-bottom:1px solid var(--border);background:transparent;color:var(--text);font:500 .86rem 'Inter',sans-serif;text-align:left;cursor:pointer;transition:background .15s}
+.gsc-row:last-of-type{border-bottom:0}
+.gsc-row:hover{background:var(--bg-tertiary)}
+.gsc-row.selected{background:var(--glow)}
+.gsc-row-head{position:sticky;top:0;z-index:1;background:var(--bg-tertiary);cursor:default;padding-top:.45rem;padding-bottom:.45rem;font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-secondary)}
+.gsc-row-head:hover{background:var(--bg-tertiary)}
+.gsc-row-head span:nth-child(n+4),.gsc-num{text-align:right}
+.gsc-check{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border);display:grid;place-items:center;color:#fff;font-size:.8rem;background:var(--card);transition:all .15s}
+.gsc-check i{opacity:0}
+.gsc-row.selected .gsc-check{background:var(--primary);border-color:var(--primary)}
+.gsc-row.selected .gsc-check i{opacity:1}
+.gsc-kw{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gsc-num{font-variant-numeric:tabular-nums;color:var(--text-secondary);font-size:.82rem}
+@media (max-width:520px){
+  .gsc-panel{padding:.8rem;border-radius:14px}
+  .gsc-row{grid-template-columns:20px minmax(0,1fr) 46px 58px;gap:.5rem;padding:.65rem .65rem}
+  .hide-sm{display:none!important}
+  .gsc-toolbar #gscSort{flex:1 1 140px}
+  .gsc-top-btn{flex:1 1 auto;justify-content:center}
+  .tc-kw-row{flex-wrap:wrap}
+  .tc-kw-input{flex:1 1 100%}
+  #seoTaskCreator .tc-ai-btn{width:100%;justify-content:center;height:42px}
+}
+
+/* ---------- Search Console: task details tab ---------- */
+.gsc-src{margin-left:.4rem;font-size:.7rem;font-weight:600;color:var(--text-secondary);letter-spacing:0;text-transform:none}
+.gsc-task{display:flex;flex-direction:column;gap:.9rem;text-align:left}
+.gsc-task .gsc-connect{margin:0}
+.gsc-task-bar{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.gsc-task-bar .gsc-select{flex:1 1 180px;max-width:300px}
+.gsc-task-bar .tc-link{margin-left:auto}
+.gsc-seg{display:inline-flex;padding:3px;border-radius:11px;background:var(--bg-tertiary);border:1px solid var(--border)}
+.gsc-seg button{border:0;background:transparent;padding:.45rem .8rem;border-radius:8px;color:var(--text-secondary);font:600 .8rem 'Inter',sans-serif;cursor:pointer;white-space:nowrap}
+.gsc-seg button.on{background:var(--card);color:var(--primary);box-shadow:0 1px 3px rgba(15,23,42,.12)}
+.gsc-body{display:flex;flex-direction:column;gap:.9rem}
+.gsc-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem}
+.gsc-kpi{padding:.8rem .9rem;border:1px solid var(--border);border-radius:14px;background:var(--card)}
+.gsc-kpi span{display:block;font-size:.74rem;color:var(--text-secondary)}
+.gsc-kpi b{display:block;margin-top:.2rem;font-size:1.35rem;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.gsc-kpi.k1 b{color:#2563eb}.gsc-kpi.k2 b{color:#a855f7}.gsc-kpi.k3 b{color:#059669}.gsc-kpi.k4 b{color:#ea580c}
+.gsc-chart-card,.gsc-block{padding:.85rem .9rem;border:1px solid var(--border);border-radius:14px;background:var(--card)}
+.gsc-legend{display:flex;gap:1rem;margin-bottom:.4rem;font-size:.76rem;color:var(--text-secondary)}
+.gsc-legend i{display:inline-block;width:14px;height:3px;margin-right:.4rem;border-radius:2px;vertical-align:middle}
+.gsc-chart{position:relative;height:220px}
+.gsc-block-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap;margin-bottom:.65rem}
+.gsc-block-head h4{display:flex;align-items:center;gap:.4rem;margin:0;font-size:.92rem;font-weight:700;color:var(--text)}
+.gsc-block-head h4 small{font-weight:500;color:var(--text-secondary)}
+.gsc-block-head>span{font-size:.78rem;color:var(--text-secondary)}
+.gsc-block-head .gsc-search{flex:0 1 280px}
+.gsc-table{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.gsc-tr{display:grid;grid-template-columns:minmax(0,1fr) 70px 64px 84px 64px;gap:.6rem;align-items:center;padding:.55rem .8rem;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--text)}
+.gsc-tr:last-child{border-bottom:0}
+.gsc-th{background:var(--bg-tertiary);font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-secondary)}
+.gsc-th span:nth-child(n+3),.gsc-td{text-align:right}
+.gsc-td{font-variant-numeric:tabular-nums;color:var(--text-secondary)}
+.gsc-td-k{overflow-wrap:anywhere;font-weight:500}
+.gsc-not{justify-self:start;padding:.15rem .45rem;border-radius:7px;background:#fee4e2;color:#b42318;font-size:.7rem;font-weight:700;white-space:nowrap}
+[data-theme="dark"] .gsc-not{background:rgba(239,68,68,.16);color:#fca5a5}
+.gsc-verdict{display:none;margin-bottom:.65rem;padding:.75rem .9rem;border-radius:12px;color:#fff;font-size:.85rem;line-height:1.4}
+.gsc-verdict b{font-size:1.15rem;margin-right:.4rem}
+.gsc-verdict.ok{display:block;background:linear-gradient(135deg,#059669,#10b981)}
+.gsc-verdict.no{display:block;background:linear-gradient(135deg,#dc2626,#f97316)}
+.gsc-nomatch{display:flex;flex-direction:column;align-items:center;gap:.55rem;padding:1.5rem 1rem;text-align:center}
+.gsc-nomatch>i{font-size:2rem;color:var(--text-secondary)}
+.gsc-nomatch b{font-size:.95rem;color:var(--text)}
+.gsc-nomatch span{font-size:.84rem;color:var(--text-secondary);max-width:440px}
+.gsc-nomatch .gsc-select{width:100%;max-width:320px;flex:none}
+@media (max-width:640px){
+  .gsc-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .gsc-kpi b{font-size:1.15rem}
+  .gsc-chart{height:180px}
+  .gsc-task-bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.5rem}
+  .gsc-task-bar .gsc-select{max-width:none;width:100%}
+  .gsc-task-bar .gsc-select[data-gsc-site],.gsc-seg{grid-column:1/-1}
+  .gsc-seg{display:flex;width:100%}.gsc-seg button{flex:1 1 0;min-width:0}
+  #task-panel-gsc .task-modal-section{padding:.75rem}
+  .gsc-src{display:none}
+  .gsc-tr{grid-template-columns:minmax(0,1fr) 44px 42px 54px;gap:.4rem;padding:.55rem .6rem;font-size:.8rem}
+  .gsc-th{font-size:.6rem;letter-spacing:.02em}
+  .gsc-th span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gsc-tr.nr .gsc-td{display:none}
+  .gsc-tr.nr .gsc-not{grid-column:2/-1;justify-self:end}
+  .gsc-pos{min-width:0;width:100%}
+  .gsc-chart-card,.gsc-block{padding:.7rem}
+  .gsc-block-head .gsc-search{flex:1 1 100%}
+}
 </style>
 </body>
 </html>
