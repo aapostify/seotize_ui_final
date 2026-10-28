@@ -4885,18 +4885,20 @@ function imagesTabs(active) {
         <button type="button" role="tab" class="${active === 'docs' ? 'active' : ''}" aria-selected="${active === 'docs'}" onclick="navigateTo('image-docs')"><i class="ri-code-s-slash-line"></i> URL options &amp; docs</button>
     </div>`;
 }
+// Set by the image details "URL options" button so the builder opens on that image
+let docsPreferredImage = '';
 const DOCS_DEMO_IMAGE = 'https://image-api.seotize.net/image-cdn/e380574d-86ba-45f4-877f-c8a384ea637c';
 
 function docsCopy(text, btn) {
-    const done = () => {
-        if (!btn) return;
-        const old = btn.innerHTML;
-        btn.classList.add('done');
-        btn.innerHTML = '<i class="ri-check-line"></i> Copied';
-        setTimeout(() => { btn.classList.remove('done'); btn.innerHTML = old; }, 1400);
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => { copyToClipboard(text); done(); });
-    else { copyToClipboard(text); done(); }
+    copyText(text).then(ok => {
+        if (!btn) return showToast(ok ? 'Copied to clipboard' : 'Failed to copy to clipboard', ok ? 'success' : 'error');
+        // Keep the original label even when clicked again while it still says "Copied"
+        if (!btn.dataset.label) btn.dataset.label = btn.innerHTML;
+        btn.classList.toggle('done', ok);
+        btn.innerHTML = ok ? '<i class="ri-check-line"></i> Copied' : '<i class="ri-error-warning-line"></i> Failed';
+        clearTimeout(btn._copyTimer);
+        btn._copyTimer = setTimeout(() => { btn.classList.remove('done'); btn.innerHTML = btn.dataset.label; }, 1400);
+    });
 }
 
 async function loadImageDocs() {
@@ -4910,7 +4912,9 @@ async function loadImageDocs() {
         if (seq !== pageLoadSeq) return;
     }
     const images = (currentData.images || []).filter(i => i && i.cdn_url);
-    const baseUrl = images.length ? images[0].cdn_url.split('?')[0] : DOCS_DEMO_IMAGE;
+    const preferred = images.find(i => i.cdn_url.split('?')[0] === docsPreferredImage);
+    docsPreferredImage = '';
+    const baseUrl = preferred ? preferred.cdn_url.split('?')[0] : images.length ? images[0].cdn_url.split('?')[0] : DOCS_DEMO_IMAGE;
     const esc = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const fullEx = `${baseUrl}?width=800&height=600&fit=cover&format=webp&quality=80`;
 
@@ -5132,6 +5136,7 @@ async function loadImageDocs() {
         docsCopy(`<img src="${buildUrl()}"${w ? ` width="${w}"` : ''}${h ? ` height="${h}"` : ''} alt="" loading="lazy">`, e.currentTarget);
     });
     setValues(DEFAULTS);
+    if ($p('pgImage')) $p('pgImage').value = baseUrl;
     showView();
     refresh();
 
@@ -5204,6 +5209,28 @@ function updateUserInfo() {
     if (desktopCountEl) desktopCountEl.textContent = totalSessions;
     const mobileCountEl = document.getElementById('sessionCountMobile');
     if (mobileCountEl) mobileCountEl.textContent = totalSessions;
+}
+// Chart.js comes from jsDelivr in <head>; if that was blocked or failed, load it from
+// another CDN and then draw. Every chart goes through this, so none stays blank.
+const CHART_JS_FALLBACKS = [
+    'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js',
+    'https://unpkg.com/chart.js@4.4.0/dist/chart.umd.min.js'
+];
+let chartJsLoading = null;
+function withChart(draw) {
+    if (window.Chart) return draw();
+    if (!chartJsLoading) {
+        chartJsLoading = CHART_JS_FALLBACKS.reduce((prev, src) => prev.catch(() => new Promise((resolve, reject) => {
+            if (window.Chart) return resolve();
+            const s = document.createElement('script');
+            s.src = src; s.async = true; s.setAttribute('data-cfasync', 'false');
+            s.onload = () => window.Chart ? resolve() : reject(new Error('Chart.js missing'));
+            s.onerror = () => { s.remove(); reject(new Error('Could not load ' + src)); };
+            document.head.appendChild(s);
+        })), Promise.reject(new Error('start')));
+        chartJsLoading.catch(err => { chartJsLoading = null; console.error('Chart.js could not be loaded:', err.message); });
+    }
+    chartJsLoading.then(() => draw(), () => {});
 }
 // API Helper
 async function api(endpoint, options = {}) {
@@ -5556,7 +5583,8 @@ async function loadDashboard(page = 1) {
                         <span style="font-weight: 600; font-size: 0.8rem; color: var(--text);">$${availableCharge.toFixed(2)}</span>
                     </div>
                 </div>
-                <!-- Budget Progress -->
+                <!-- Budget Progress (active tasks) or set-up hint (unverified) -->
+                ${!isVerified ? `<div class="task-setup-strip compact"><i class="ri-shield-keyhole-line"></i><div><b>Not active yet</b><small>Add the script to your site and verify to start.</small></div></div>` : `
                 <div style="margin-bottom: 0.75rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                         <span style="font-size: 0.75rem; color: var(--text-secondary);">Budget Remaining</span>
@@ -5566,14 +5594,21 @@ async function loadDashboard(page = 1) {
                         <div class="progress-fill" style="width: ${progressBarWidth}%; height: 100%; background: ${progressColor}; transition: width 0.3s ease, background-color 0.3s ease;"></div>
                     </div>
                 </div>
+                `}
                 <!-- Actions -->
                 <div style="display: flex; gap: 0.5rem;">
                     <button class="btn btn-sm" onclick="event.stopPropagation(); viewTaskDetails('${task._id}')" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem;">
                         <i class="ri-eye-line"></i> Details
                     </button>
+                    ${isVerified ? `
                     <button class="btn btn-sm btn-recharge-task" onclick="event.stopPropagation(); rechargeTask('${task._id}')" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem;">
                         <i class="ri-wallet-line"></i> Recharge
                     </button>
+                    ` : `
+                    <button class="btn btn-sm btn-setup-task" onclick="event.stopPropagation(); viewTaskDetails('${task._id}')" style="flex: 1; font-size: 0.75rem; padding: 0.4rem 0.8rem;">
+                        <i class="ri-tools-line"></i> Set up
+                    </button>
+                    `}
                 </div>
             </div>
             `;
@@ -5710,18 +5745,26 @@ async function loadTasks(page = 1) {
             <div class="task-stat-value">$${task.available_charge.toFixed(2)}</div>
             </div>
             </div>
+            ${isVerified ? `
             <div class="task-progress">
             <div class="progress-bar">
             <div class="progress-fill" style="width: ${task.remaining_percentage}%; background: ${task.remaining_percentage >= 100 ? '#8b5cf6' : task.remaining_percentage >= 10 ? '#10b981' : '#ef4444'}; transition: width 0.3s ease, background-color 0.3s ease;"></div>
             </div>
             </div>
+            ` : `<div class="task-setup-strip"><i class="ri-shield-keyhole-line"></i><div><b>Not active yet</b><small>Add the script to your site and verify to start.</small></div></div>`}
             <div class="task-actions">
             <button class="btn btn-sm" onclick="event.stopPropagation(); viewTaskDetails('${task._id}')">
             <i class="ri-eye-line"></i> Details
             </button>
+            ${isVerified ? `
             <button class="btn btn-sm btn-recharge-task" onclick="event.stopPropagation(); rechargeTask('${task._id}')">
             <i class="ri-wallet-line"></i> Recharge
             </button>
+            ` : `
+            <button class="btn btn-sm btn-setup-task" onclick="event.stopPropagation(); viewTaskDetails('${task._id}')">
+            <i class="ri-tools-line"></i> Set up
+            </button>
+            `}
             </div>
             <div class="task-actions task-actions-secondary ${isVerified ? 'task-actions-delete-only' : ''}" style="margin-top: 8px;">
             <button class="btn btn-sm btn-danger btn-delete-task-desktop" onclick="event.stopPropagation(); deleteTask('${task._id}')" style="background: var(--danger); color: white;">
@@ -10357,22 +10400,7 @@ async function viewTaskDetails(taskId) {
                     <i class="ri-wallet-3-line"></i> Recharge
                 </button>
             </div>
-            ` : `
-            <div class="task-activate">
-                <div class="ta-head">
-                    <span class="ta-ico"><i class="ri-shield-keyhole-line"></i></span>
-                    <div><b>Activate this task</b><small>Visits start once the Seotize script is on your site and verified.</small></div>
-                </div>
-                <ol class="ta-steps">
-                    <li><span>1</span><div><b>Add the script</b><small>Copy the install code from Configuration into your site's &lt;head&gt;.</small></div></li>
-                    <li><span>2</span><div><b>Verify</b><small>We check that the script is live on ${escHtml(task.url)}.</small></div></li>
-                </ol>
-                <div class="ta-actions">
-                    <button type="button" class="ta-btn ghost" data-goto-config><i class="ri-code-s-slash-line"></i> Install code</button>
-                    <button type="button" class="ta-btn" onclick="Swal.close(); verifyTask('${task._id}')"><i class="ri-shield-check-line"></i> Verify now</button>
-                </div>
-            </div>
-            `}
+            ` : ''}
             <div class="task-modal-tabs" role="tablist" aria-label="Task details sections">
                 <button class="task-modal-tab" type="button" data-tab="analytics" role="tab" aria-controls="task-panel-analytics">
                     <i class="ri-line-chart-line"></i>
@@ -10456,6 +10484,35 @@ async function viewTaskDetails(taskId) {
                     <i class="ri-settings-3-line"></i>Configuration
                   </h3>
                   <div class="tcfg">
+                    ${!isVerified ? `
+                      <div class="task-activate">
+                        <div class="ta-head">
+                          <span class="ta-ico"><i class="ri-shield-keyhole-line"></i></span>
+                          <div><b>Activate this task</b><small>Visits start once the Seotize script is on your site and verified.</small></div>
+                        </div>
+                        <ol class="ta-steps">
+                          <li>
+                            <span class="ta-num">1</span>
+                            <div class="ta-body">
+                              <b>Add the script to your site</b>
+                              <small>Paste it into the &lt;head&gt; of ${escHtml(task.url)}, right before &lt;/head&gt;.</small>
+                              ${task.sitekey ? `<div class="tii-code">
+                          <code id="install-code-${task._id}">&lt;script type="text/javascript" src="https://seotize.net/seotize-engine.js?id=${escHtml(task.sitekey || '')}"&gt;&lt;/script&gt;</code>
+                          <button type="button" class="task-copy-btn" onclick="copyInstallCode(this, 'install-code-${task._id}')"><i class="ri-file-copy-line"></i><span>Copy code</span></button>
+                        </div>` : '<small class="tc-error">The install code isn\'t available yet. Please refresh in a moment.</small>'}
+                            </div>
+                          </li>
+                          <li>
+                            <span class="ta-num">2</span>
+                            <div class="ta-body">
+                              <b>Verify the task</b>
+                              <small>We check that the script is live, then the task starts.</small>
+                              <button type="button" class="ta-btn" onclick="Swal.close(); verifyTask('${task._id}')"><i class="ri-shield-check-line"></i> Verify now</button>
+                            </div>
+                          </li>
+                        </ol>
+                      </div>
+                    ` : ''}
                     <div class="tcfg-row">
                       <span class="tcfg-label">Priority</span>
                       <span class="tcfg-val"><span class="badge badge-${priorityBadge}">${priorityName}</span><small>$${priorityRate.toFixed(3)} / click</small></span>
@@ -10464,14 +10521,14 @@ async function viewTaskDetails(taskId) {
                       <span class="tcfg-label">Keywords <b>${(task.keywords || []).length}</b></span>
                       <div class="tcfg-chips">${(task.keywords || []).map(k => `<span>${escHtml(k)}</span>`).join('') || '<em>No keywords</em>'}</div>
                     </div>
-                    ${task.sitekey ? `
+                    ${isVerified && task.sitekey ? `
                       <div class="task-install-instructions">
                         <div class="tii-head">
                           <span class="tii-ico"><i class="ri-code-s-slash-line"></i></span>
                           <div><b>Installation</b><small>Paste this into your website's &lt;head&gt;, right before &lt;/head&gt;.</small></div>
                         </div>
                         <div class="tii-code">
-                          <code id="install-code-${task._id}">&lt;script type="text/javascript" src="https://seotize.net/seotize-engine.js?id=${escHtml(task.sitekey)}"&gt;&lt;/script&gt;</code>
+                          <code id="install-code-${task._id}">&lt;script type="text/javascript" src="https://seotize.net/seotize-engine.js?id=${escHtml(task.sitekey || '')}"&gt;&lt;/script&gt;</code>
                           <button type="button" class="task-copy-btn" onclick="copyInstallCode(this, 'install-code-${task._id}')"><i class="ri-file-copy-line"></i><span>Copy code</span></button>
                         </div>
                       </div>
@@ -10510,10 +10567,6 @@ async function viewTaskDetails(taskId) {
                 // Unverified tasks open on Configuration, where the install code is
                 const cfgTab = popupEl?.querySelector('.task-modal-tab[data-tab="config"]');
                 if (!isVerified && cfgTab) cfgTab.click();
-                popupEl?.querySelectorAll('[data-goto-config]').forEach(b => b.addEventListener('click', () => {
-                    cfgTab?.click();
-                    popupEl.querySelector('#task-panel-config .task-install-instructions')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }));
                 const gscTab = popupEl?.querySelector('.task-modal-tab[data-tab="gsc"]');
                 if (gscTab) gscTab.addEventListener('click', () => {
                     if (gscTab.dataset.loaded) return;
@@ -10849,6 +10902,7 @@ function initializeTaskDoneParts(donePartsNormalized) {
 }
 // [NEW] Helper function to initialize charts inside the task modal
 function initializeTaskAnalyticsCharts(sortedDates) {
+    if (!window.Chart) return withChart(() => initializeTaskAnalyticsCharts(sortedDates));
     const isDark = document.body.getAttribute('data-theme') === 'dark';
     const textColor = isDark ? '#a0a0a0' : '#6c757d';
     const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
@@ -11026,6 +11080,9 @@ function initializeTaskCountryMap(countryVisits) {
     const HOVER_FILL = '#34d399';
     const BASE_EDGE = '#334155';
     container.innerHTML = `<div id="taskCountryMapCanvas" style="width:100%;height:100%;"></div>`;
+    // The map libraries load asynchronously; only the latest call may draw, and only while its canvas is on the page
+    const canvas = container.firstElementChild;
+    const token = container.__mapToken = {};
     const ready = () =>
         typeof window.am5 !== 'undefined' &&
         typeof window.am5map !== 'undefined' &&
@@ -11064,7 +11121,8 @@ function initializeTaskCountryMap(countryVisits) {
         return blend(s[idx], s[idx + 1], localT);
     }
     function boot() {
-        const root = am5.Root.new("taskCountryMapCanvas");
+        if (container.__mapToken !== token || !canvas.isConnected) return;
+        const root = am5.Root.new(canvas);
         container.__am5root = root;
         if (typeof am5themes_Animated !== 'undefined') {
             root.setThemes([ am5themes_Animated.new(root) ]);
@@ -11121,11 +11179,11 @@ function initializeTaskCountryMap(countryVisits) {
                     if (ready() || tries++ > 40) {
                         clearInterval(t);
                         if (ready()) boot();
-                        else console.error('amCharts libs not ready (task map).');
+                        else { console.error('amCharts libs not ready (task map).'); mapUnavailable(container, canvas, token); }
                     }
                 }, 100);
             })
-            .catch(err => console.error('Task map libs failed to load:', err));
+            .catch(err => { console.error('Task map libs failed to load:', err); mapUnavailable(container, canvas, token); });
     }
 }
 // Recharge Task
@@ -11677,21 +11735,23 @@ function adBreakdown(title, icon, data, kind) {
             </div>`).join('')}</div>` : '<div class="artb-empty">No data yet</div>'}
     </div>`;
 }
-function renderArticleViewsChart(viewsByDate, range) {
-    const canvas = document.getElementById('articleViewsChart');
-    if (!canvas || !window.Chart) return;
+// Views line chart with a 7 / 30 / all-time range; used by the article and image details
+function renderArticleViewsChart(viewsByDate, range, ids = { canvas: 'articleViewsChart', foot: 'articleChartFoot', key: 'articleViews' }) {
+    const canvas = document.getElementById(ids.canvas);
+    if (!canvas) return;
+    if (!window.Chart) return withChart(() => renderArticleViewsChart(viewsByDate, range, ids));
     window.charts = window.charts || {};
-    try { if (window.charts.articleViews) window.charts.articleViews.destroy(); } catch (_) {}
+    try { if (window.charts[ids.key]) window.charts[ids.key].destroy(); } catch (_) {}
     const series = adDailySeries(viewsByDate, range === 'all' ? 'all' : Number(range));
     const total = series.reduce((a, [, v]) => a + v, 0);
     const best = series.reduce((b, cur) => cur[1] > (b ? b[1] : -1) ? cur : b, null);
     const fmtDay = k => new Date(k + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const foot = document.getElementById('articleChartFoot');
+    const foot = document.getElementById(ids.foot);
     if (foot) foot.innerHTML = `<span><b>${formatNumber(total)}</b> views</span><span><b>${series.length ? (total / series.length).toFixed(1) : 0}</b> per day</span>${best && best[1] ? `<span>Best day <b>${fmtDay(best[0])}</b> · ${formatNumber(best[1])}</span>` : ''}`;
     const muted = getComputedStyle(document.body).getPropertyValue('--text-secondary').trim() || '#64748b';
     const g = canvas.getContext('2d').createLinearGradient(0, 0, 0, 240);
     g.addColorStop(0, 'rgba(37,99,235,.28)'); g.addColorStop(1, 'rgba(37,99,235,0)');
-    window.charts.articleViews = new Chart(canvas, {
+    window.charts[ids.key] = new Chart(canvas, {
         type: 'line',
         data: { labels: series.map(([k]) => fmtDay(k)), datasets: [{ label: 'Views', data: series.map(([, v]) => v), borderColor: '#2563eb', backgroundColor: g, fill: true, tension: .35, borderWidth: 2.5, pointRadius: series.length > 40 ? 0 : 2.5, pointHoverRadius: 5, pointBackgroundColor: '#2563eb' }] },
         options: {
@@ -13468,176 +13528,89 @@ async function showImageDetails(imageId) {
         });
     });
     const sortedDates = Object.entries(viewsByDate).sort(([a], [b]) => new Date(a) - new Date(b));
-    const topCountries = Object.entries(countries).sort(([,a], [,b]) => b - a).slice(0, 5);
-    const topBrowsers = Object.entries(browsers).sort(([,a], [,b]) => b - a).slice(0, 5);
-    const topDevices = Object.entries(devices).sort(([,a], [,b]) => b - a).slice(0, 5);
     const hasAnalytics = sortedDates.length > 0;
     // Format dates and stats
     const uploadDate = new Date(image.upload_date);
     const formattedDate = uploadDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     const totalViews = image.total_views || 0;
     const countryCount = Object.keys(countries).length;
-    const browserCount = Object.keys(browsers).length;
-    const last7Views = sortedDates.slice(-7).reduce((sum, [, v]) => sum + v, 0);
-    // Truncate filename for display
-    const displayFilename = image.original_filename.length > 35
-        ? image.original_filename.substring(0, 32) + '...'
-        : image.original_filename;
+    const name = image.original_filename || image.image_id;
+    const url = image.cdn_url;
+    // This week against the week before, and an average over every day since the first view
+    const daySeries = adDailySeries(viewsByDate, 14);
+    const prev7 = daySeries.slice(0, 7).reduce((a, [, v]) => a + v, 0);
+    const week7 = daySeries.slice(7).reduce((a, [, v]) => a + v, 0);
+    const weekTrend = prev7 ? Math.round((week7 - prev7) / prev7 * 100) : null;
+    const allDays = adDailySeries(viewsByDate, 'all');
+    const dailyAvg = allDays.length ? allDays.reduce((a, [, v]) => a + v, 0) / allDays.length : 0;
+    const dailyAvgLabel = dailyAvg >= 10 ? formatNumber(Math.round(dailyAvg)) : dailyAvg.toFixed(1);
+    const copyRow = (label, value) => `<div class="imgd-field"><label>${label}</label><div class="imgd-copy-row"><code title="${escHtml(value)}">${escHtml(value)}</code><button type="button" class="imgd-copy" data-copy="${escHtml(value)}"><i class="ri-file-copy-line"></i><span>Copy</span></button></div></div>`;
     // --- 2. Construct Modal HTML ---
     const modalHtml = `
-    <div class="image-details-modal-container">
-        <!-- Hero Section: Image at Top -->
-        <div class="image-hero-section">
-            <div class="image-hero-preview">
-                <img src="${image.cdn_url}" alt="${image.original_filename}" class="image-hero-img" onclick="window.open('${image.cdn_url}', '_blank')" title="Click to view full size">
+    <div class="imgd">
+        <div class="imgd-top">
+            <div class="imgd-preview">
+                <img src="${escHtml(url)}" alt="${escHtml(name)}" data-open="${escHtml(url)}" title="Open full size">
+                <a class="imgd-zoom" href="${escHtml(url)}" target="_blank" rel="noopener" title="Open full size" aria-label="Open full size"><i class="ri-fullscreen-line"></i></a>
             </div>
-            <div class="image-info-bar">
-                <div class="image-info-left">
-                    <h3 class="image-filename">
-                        <i class="ri-image-line"></i>
-                        <span title="${image.original_filename}">${displayFilename}</span>
-                    </h3>
-                    <div class="image-meta-row">
-                        <span class="image-meta-chip"><i class="ri-calendar-line"></i> ${formattedDate}</span>
-                        ${image.file_size ? `<span class="image-meta-chip"><i class="ri-hard-drive-2-line"></i> ${formatFileSize(image.file_size)}</span>` : ''}
-                        <span class="image-meta-chip"><i class="ri-eye-line"></i> ${formatNumber(totalViews)} views</span>
-                        <button type="button" class="image-meta-chip image-meta-id" onclick="copyToClipboard('${image.image_id}')" title="Copy image ID: ${image.image_id}">
-                            <i class="ri-key-2-line"></i> <code>${image.image_id.substring(0, 8)}</code> <i class="ri-file-copy-line"></i>
-                        </button>
-                    </div>
+            <div class="imgd-info">
+                <span class="imgd-kicker">Hosted image</span>
+                <h3 class="imgd-name">${escHtml(name)}</h3>
+                <div class="imgd-chips">
+                    <span><i class="ri-calendar-line"></i>${formattedDate}</span>
+                    ${image.file_size ? `<span><i class="ri-hard-drive-2-line"></i>${formatFileSize(image.file_size)}</span>` : ''}
+                    <span class="imgd-dims" hidden><i class="ri-aspect-ratio-line"></i><b></b></span>
+                    <span><i class="ri-eye-line"></i>${formatNumber(totalViews)} views</span>
                 </div>
-                <div class="image-actions-bar">
-                    <button class="image-action-btn btn-copy" onclick="copyToClipboard('${image.cdn_url}')" title="Copy CDN URL">
-                        <i class="ri-file-copy-line"></i>
-                        <span>Copy URL</span>
-                    </button>
-                    <button class="image-action-btn btn-open" onclick="window.open('${image.cdn_url}', '_blank')" title="Open Full Size">
-                        <i class="ri-external-link-line"></i>
-                        <span>Open</span>
-                    </button>
-                    <button class="image-action-btn btn-delete" onclick="Swal.close(); deleteImage('${image.image_id}')" title="Delete Image">
-                        <i class="ri-delete-bin-line"></i>
-                        <span>Delete</span>
-                    </button>
+                ${copyRow('CDN URL', url)}
+                ${copyRow('Image ID', image.image_id)}
+                <div class="imgd-actions">
+                    <a class="imgd-btn" href="${escHtml(url)}" target="_blank" rel="noopener"><i class="ri-external-link-line"></i><span>Open</span></a>
+                    <button type="button" class="imgd-btn" data-url-options><i class="ri-equalizer-line"></i><span>URL options</span></button>
+                    <button type="button" class="imgd-btn danger" data-delete><i class="ri-delete-bin-line"></i><span>Delete</span></button>
                 </div>
             </div>
-            <div class="image-cdn-row">
-                <span class="image-cdn-label">CDN URL</span>
-                <code class="image-cdn-url" title="${image.cdn_url}">${image.cdn_url}</code>
-                <button type="button" class="image-cdn-copy" onclick="copyToClipboard('${image.cdn_url}')" title="Copy CDN URL" aria-label="Copy CDN URL"><i class="ri-file-copy-line"></i></button>
+        </div>
+        <div class="artd-kpis">
+            <div class="artd-kpi"><span class="artd-kpi-ico g"><i class="ri-eye-line"></i></span><div><b>${formatNumber(totalViews)}</b><small>Total views</small></div></div>
+            <div class="artd-kpi"><span class="artd-kpi-ico b"><i class="ri-calendar-event-line"></i></span><div><b>${formatNumber(week7)}${weekTrend !== null ? `<em class="${weekTrend >= 0 ? 'up' : 'down'}">${weekTrend >= 0 ? '+' : ''}${weekTrend}%</em>` : ''}</b><small>Last 7 days</small></div></div>
+            <div class="artd-kpi"><span class="artd-kpi-ico c"><i class="ri-bar-chart-2-line"></i></span><div><b>${dailyAvgLabel}</b><small>Daily average</small></div></div>
+            <div class="artd-kpi"><span class="artd-kpi-ico o"><i class="ri-earth-line"></i></span><div><b>${countryCount}</b><small>Countries</small></div></div>
+        </div>
+        ${hasAnalytics ? `
+        <div class="artd-analytics">
+            <div class="artd-card">
+                <div class="artd-card-head">
+                    <h4><i class="ri-line-chart-line"></i> Views over time</h4>
+                    <div class="gsc-seg" role="group" aria-label="Range" data-chart-range>
+                        <button type="button" data-range="7">7 days</button>
+                        <button type="button" data-range="30" class="on">30 days</button>
+                        <button type="button" data-range="all">All time</button>
+                    </div>
+                </div>
+                <div class="artd-chart"><canvas id="imageViewsChart"></canvas></div>
+                <div class="artd-chart-foot" id="imageChartFoot"></div>
+            </div>
+            <div class="artd-breakdowns">
+                ${adBreakdown('Top countries', 'ri-earth-line', countries, 'country')}
+                ${adBreakdown('Browsers', 'ri-window-line', browsers, 'browser')}
+                ${adBreakdown('Devices', 'ri-device-line', devices, 'device')}
             </div>
         </div>
-        <!-- Stats Grid -->
-        <div class="image-stats-grid">
-            <div class="image-stat-card">
-                <div class="stat-value" style="color: var(--success);">${formatNumber(totalViews)}</div>
-                <div class="stat-label">Total Views</div>
-            </div>
-            <div class="image-stat-card">
-                <div class="stat-value" style="color: var(--primary);">${formatNumber(last7Views)}</div>
-                <div class="stat-label">Last 7 Days</div>
-            </div>
-            <div class="image-stat-card">
-                <div class="stat-value" style="color: var(--info);">${countryCount}</div>
-                <div class="stat-label">Countries</div>
-            </div>
-            <div class="image-stat-card">
-                <div class="stat-value" style="color: var(--warning);">${browserCount}</div>
-                <div class="stat-label">Browsers</div>
-            </div>
+        ` : `
+        <div class="image-empty-state">
+            <i class="ri-bar-chart-line"></i>
+            <h4>No analytics yet</h4>
+            <p>Views, countries and devices will appear once the image is viewed.</p>
         </div>
-        <!-- Tabs -->
-        <div class="image-modal-tabs" role="tablist">
-            <button class="image-modal-tab active" type="button" data-tab="analytics" role="tab">
-                <i class="ri-line-chart-line"></i> Analytics
-            </button>
-            <button class="image-modal-tab" type="button" data-tab="traffic" role="tab">
-                <i class="ri-pie-chart-line"></i> Traffic
-            </button>
-        </div>
-        <!-- Panels -->
-        <div class="image-modal-panels">
-            <!-- Analytics Panel -->
-            <div class="image-modal-panel" id="image-panel-analytics" data-panel="analytics" role="tabpanel">
-                ${hasAnalytics ? `
-                    <div class="image-analytics-content">
-                        <div class="image-chart-card">
-                            <div class="chart-header"><i class="ri-line-chart-line"></i> Views Over Time</div>
-                            <div class="chart-body"><canvas id="imageViewsTimelineChart"></canvas></div>
-                        </div>
-                        <div class="image-chart-card">
-                            <div class="chart-header"><i class="ri-earth-line"></i> Top Countries</div>
-                            <div class="chart-body"><canvas id="imageCountriesChart"></canvas></div>
-                        </div>
-                    </div>
-                ` : `
-                    <div class="image-empty-state">
-                        <i class="ri-bar-chart-line"></i>
-                        <h4>No Analytics Yet</h4>
-                        <p>Analytics will appear once the image receives views.</p>
-                    </div>
-                `}
-            </div>
-            <!-- Traffic Panel -->
-            <div class="image-modal-panel" id="image-panel-traffic" data-panel="traffic" role="tabpanel" hidden>
-                ${hasAnalytics ? `
-                    <div class="image-traffic-content">
-                        <div class="image-traffic-card">
-                            <div class="card-header"><i class="ri-window-line"></i> Browsers</div>
-                            <div class="card-body">
-                                <div class="image-traffic-list">
-                                    ${topBrowsers.length > 0 ? topBrowsers.map(b => `
-                                        <div class="image-traffic-item">
-                                            <span class="item-name">${b[0]}</span>
-                                            <span class="badge badge-primary">${formatNumber(b[1])}</span>
-                                        </div>
-                                    `).join('') : '<div class="image-traffic-item"><span class="item-name">No data</span><span>—</span></div>'}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="image-traffic-card">
-                            <div class="card-header"><i class="ri-device-line"></i> Devices</div>
-                            <div class="card-body">
-                                <div class="image-traffic-list">
-                                    ${topDevices.length > 0 ? topDevices.map(d => `
-                                        <div class="image-traffic-item">
-                                            <span class="item-name">${d[0]}</span>
-                                            <span class="badge badge-warning">${formatNumber(d[1])}</span>
-                                        </div>
-                                    `).join('') : '<div class="image-traffic-item"><span class="item-name">No data</span><span>—</span></div>'}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="image-traffic-card">
-                            <div class="card-header"><i class="ri-earth-line"></i> Countries</div>
-                            <div class="card-body">
-                                <div class="image-traffic-list">
-                                    ${topCountries.length > 0 ? topCountries.map(c => `
-                                        <div class="image-traffic-item">
-                                            <span class="item-name">${c[0]}</span>
-                                            <span class="badge badge-success">${formatNumber(c[1])}</span>
-                                        </div>
-                                    `).join('') : '<div class="image-traffic-item"><span class="item-name">No data</span><span>—</span></div>'}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                ` : `
-                    <div class="image-empty-state">
-                        <i class="ri-pie-chart-line"></i>
-                        <h4>No Traffic Data</h4>
-                        <p>Traffic breakdown will appear once the image receives views.</p>
-                    </div>
-                `}
-            </div>
-        </div>
+        `}
     </div>`;
     // --- 3. Fire Modal ---
     Swal.fire({
         html: modalHtml,
         showCloseButton: true,
         showConfirmButton: false,
-        width: 'min(900px, 96vw)',
+        width: 'min(1000px, 96vw)',
         customClass: {
             popup: 'swal2-toast image-details-swal',
             closeButton: 'swal2-close'
@@ -13645,100 +13618,30 @@ async function showImageDetails(imageId) {
         showClass: { popup: 'swal2-show-super-fast' },
         hideClass: { popup: 'swal2-hide-super-fast' },
         didOpen: () => {
-            setupImageDetailsTabs();
+            const popup = Swal.getPopup();
+            popup.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => docsCopy(b.dataset.copy, b)));
+            const img = popup.querySelector('.imgd-preview img');
+            const showDims = () => {
+                const dims = popup.querySelector('.imgd-dims');
+                if (dims && img.naturalWidth) { dims.querySelector('b').textContent = `${img.naturalWidth} × ${img.naturalHeight}px`; dims.hidden = false; }
+            };
+            if (img.complete) showDims(); else img.addEventListener('load', showDims, { once: true });
+            img.addEventListener('click', () => window.open(img.dataset.open, '_blank', 'noopener'));
+            popup.querySelector('[data-url-options]').addEventListener('click', () => { docsPreferredImage = url.split('?')[0]; Swal.close(); navigateTo('image-docs'); });
+            popup.querySelector('[data-delete]').addEventListener('click', () => { Swal.close(); deleteImage(image.image_id); });
             if (hasAnalytics) {
-                initializeImageAnalyticsCharts(sortedDates, topCountries);
+                const draw = range => {
+                    popup.querySelectorAll('[data-chart-range] button').forEach(b => b.classList.toggle('on', b.dataset.range === range));
+                    renderArticleViewsChart(viewsByDate, range, { canvas: 'imageViewsChart', foot: 'imageChartFoot', key: 'imageViews' });
+                };
+                popup.querySelectorAll('[data-chart-range] button').forEach(b => b.addEventListener('click', () => draw(b.dataset.range)));
+                setTimeout(() => draw('30'), 60);
             }
+        },
+        willClose: () => {
+            try { if (window.charts?.imageViews) { window.charts.imageViews.destroy(); window.charts.imageViews = null; } } catch (_) {}
         }
     });
-}
-// Setup image details tabs
-function setupImageDetailsTabs() {
-    const popup = Swal.getPopup();
-    if (!popup) return;
-    const tabs = Array.from(popup.querySelectorAll('.image-modal-tab'));
-    const panels = Array.from(popup.querySelectorAll('.image-modal-panel'));
-    if (tabs.length === 0 || panels.length === 0) return;
-    const activate = (name) => {
-        tabs.forEach(btn => {
-            const isActive = btn.dataset.tab === name;
-            btn.classList.toggle('active', isActive);
-            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-        });
-        panels.forEach(panel => {
-            const isPanelActive = panel.dataset.panel === name;
-            if (isPanelActive) {
-                panel.removeAttribute('hidden');
-                panel.classList.remove('panel-in');
-                panel.offsetWidth;
-                panel.classList.add('panel-in');
-            } else {
-                panel.setAttribute('hidden', '');
-            }
-        });
-    };
-    tabs.forEach(btn => {
-        btn.addEventListener('click', () => {
-            activate(btn.dataset.tab);
-        });
-    });
-    activate('analytics');
-}
-// [NEW] Helper function to initialize charts inside the modal
-function initializeImageAnalyticsCharts(sortedDates, topCountries) {
-    const isDark = document.body.getAttribute('data-theme') === 'dark';
-    const textColor = isDark ? '#a0a0a0' : '#6c757d';
-    const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
-    // Views Timeline Chart (Line Chart)
-    const timelineCtx = document.getElementById('imageViewsTimelineChart');
-    if (timelineCtx) {
-        new Chart(timelineCtx, {
-            type: 'line',
-            data: {
-                labels: sortedDates.map(([date]) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
-                datasets: [{
-                    label: 'Views',
-                    data: sortedDates.map(([, views]) => views),
-                    borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false }, title: { display: true, text: 'Views Over Time', color: textColor } },
-                scales: {
-                    x: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } },
-                    y: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor }, beginAtZero: true }
-                }
-            }
-        });
-    }
-    // Top Countries Chart (Bar Chart - better for ranking)
-    const countriesCtx = document.getElementById('imageCountriesChart');
-    if (countriesCtx) {
-        new Chart(countriesCtx, {
-            type: 'bar',
-            data: {
-                labels: topCountries.map(([country]) => country),
-                    datasets: [{
-                        label: 'Views',
-                        data: topCountries.map(([, views]) => views),
-                        backgroundColor: '#10b981',
-                        borderRadius: 4
-                    }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false, indexAxis: 'y', // Horizontal bars
-                plugins: { legend: { display: false }, title: { display: true, text: 'Top 5 Countries', color: textColor } },
-                scales: {
-                    x: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor }, beginAtZero: true },
-                    y: { ticks: { color: textColor, font: { size: 10 } }, grid: { display: false } }
-                }
-            }
-        });
-    }
 }
 // [NEW] Improved delete function with confirmation via SweetAlert2
 async function deleteImage(imageId) {
@@ -13978,6 +13881,7 @@ ${(p.invoice_number||p.invoice_number_stripe||p.transaction_id||p.task_id||p.sub
 }
 // Charts
 function initializeCharts(user) {
+    if (!window.Chart) return withChart(() => initializeCharts(user));
     const isDark = document.body.getAttribute('data-theme') === 'dark';
     const textColor = isDark ? '#e2e8f0' : '#1e293b';
     const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
@@ -14142,6 +14046,11 @@ function generateTaskChartData(user) {
         tasks: [user.usage_summary?.active_tasks || 0]
     };
 }
+// Shown in place of a world map whose libraries could not load (blocked or offline)
+function mapUnavailable(container, canvas, token) {
+  if (container.__mapToken !== token || !canvas.isConnected) return;
+  container.innerHTML = '<div class="map-unavailable"><i class="ri-map-2-line"></i><b>Map couldn\'t load</b><span>Your browser or network blocked the map. The numbers below are still up to date.</span></div>';
+}
 // amCharts v5 World Map - Theme-aware modern design, only shows task data
 function initializeCountryMap(user) {
   const container = document.getElementById('countryMap');
@@ -14216,6 +14125,9 @@ function initializeCountryMap(user) {
   
   // Set container background based on theme - ocean color
   container.innerHTML = `<div id="countryMapCanvas" style="width:100%;height:100%;border-radius:var(--radius);overflow:hidden;background:${colors.ocean};"></div>`;
+  // The map libraries load asynchronously; only the latest call may draw, and only while its canvas is on the page
+  const canvas = container.firstElementChild;
+  const token = container.__mapToken = {};
   
   // ---- Helpers ----
   const ready = () =>
@@ -14249,7 +14161,8 @@ function initializeCountryMap(user) {
   }
   
   function boot() {
-    const root = am5.Root.new("countryMapCanvas");
+    if (container.__mapToken !== token || !canvas.isConnected) return;
+    const root = am5.Root.new(canvas);
     container.__am5root = root;
     
     // Disable amCharts logo
@@ -14477,11 +14390,11 @@ function initializeCountryMap(user) {
           if (ready() || tries++ > 40) {
             clearInterval(t);
             if (ready()) boot();
-            else console.error('amCharts libs not ready.');
+            else { console.error('amCharts libs not ready.'); mapUnavailable(container, canvas, token); }
           }
         }, 100);
       })
-      .catch(err => console.error('Map libs failed to load:', err));
+      .catch(err => { console.error('Map libs failed to load:', err); mapUnavailable(container, canvas, token); });
   }
 }
 function updateCharts() {
@@ -14591,16 +14504,9 @@ function getCookie(name) {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
-// Copy the install snippet and show "Copied" on the button for a moment
-function copyInstallCode(btn, codeId) {
-    const text = document.getElementById(codeId)?.innerText || '';
-    const done = ok => {
-        if (!btn.dataset.label) btn.dataset.label = btn.innerHTML;
-        btn.classList.toggle('copied', ok);
-        btn.innerHTML = ok ? '<i class="ri-check-line"></i><span>Copied!</span>' : '<i class="ri-error-warning-line"></i><span>Copy failed</span>';
-        clearTimeout(btn._copyTimer);
-        btn._copyTimer = setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = btn.dataset.label; }, 1800);
-    };
+// Copies text with the Clipboard API, or a hidden textarea where that API is missing or refused.
+// Resolves to true when the text was copied.
+function copyText(text) {
     const fallback = () => {
         const ta = document.createElement('textarea');
         ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
@@ -14608,17 +14514,26 @@ function copyInstallCode(btn, codeId) {
         let ok = false;
         try { ok = document.execCommand('copy'); } catch (_) {}
         ta.remove();
-        done(ok);
+        return ok;
     };
-    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(() => done(true), fallback);
-    else fallback();
+    try {
+        if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text).then(() => true, fallback);
+    } catch (_) {}
+    return Promise.resolve(fallback());
+}
+// Copy the install snippet and show "Copied" on the button for a moment
+function copyInstallCode(btn, codeId) {
+    const text = document.getElementById(codeId)?.innerText || '';
+    copyText(text).then(ok => {
+        if (!btn.dataset.label) btn.dataset.label = btn.innerHTML;
+        btn.classList.toggle('copied', ok);
+        btn.innerHTML = ok ? '<i class="ri-check-line"></i><span>Copied!</span>' : '<i class="ri-error-warning-line"></i><span>Copy failed</span>';
+        clearTimeout(btn._copyTimer);
+        btn._copyTimer = setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = btn.dataset.label; }, 1800);
+    });
 }
 function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        showToast('Copied to clipboard', 'success');
-    }).catch(() => {
-        showToast('Failed to copy to clipboard', 'error');
-    });
+    copyText(text).then(ok => showToast(ok ? 'Copied to clipboard' : 'Failed to copy to clipboard', ok ? 'success' : 'error'));
 }
 function formatFileSize(bytes) {
     if (bytes === 0) return '0 Bytes';
@@ -15200,7 +15115,8 @@ async function initTaskGscPanel(popup, task, state) {
         };
         body.querySelector('[data-gsc-filter]').oninput = e => { state.filter = e.target.value; state.limit = 25; renderAll(); };
         renderAll();
-        if (daily.length && window.Chart) {
+        if (daily.length) withChart(() => {
+            if (!body.isConnected) return;
             destroyChart();
             const ctx = body.querySelector('#taskGscChart');
             const g = ctx.getContext('2d').createLinearGradient(0, 0, 0, 220);
@@ -15226,7 +15142,7 @@ async function initTaskGscPanel(popup, task, state) {
                     }
                 }
             });
-        }
+        });
     } catch (err) {
         if (err.auth) return rerender(err.message);
         if (root.isConnected) body.innerHTML = `<div class="gsc-state tc-error">${escHtml(err.message)}</div>`;
@@ -15913,10 +15829,10 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 }
 
 /* ---------- Usage rows: label and percentage stay on one line ---------- */
-.usage-category>div:first-child{gap:.5rem}
-.usage-category>div:first-child>div{min-width:0;flex-wrap:nowrap}
+.usage-category>div:first-child{gap:.5rem;flex-wrap:nowrap}
+.usage-category>div:first-child>div{flex-shrink:0;flex-wrap:nowrap}
 .usage-category>div:first-child i{flex-shrink:0}
-.usage-category>div:first-child span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.usage-category>div:first-child span{white-space:nowrap}
 .usage-category>div:last-child{gap:.5rem;flex-wrap:wrap}
 .usage-category>div:last-child span{white-space:nowrap}
 
@@ -15956,6 +15872,11 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
   #content .stats-grid .stat-value{font-size:1.2rem!important;line-height:1.15}
   #content .stats-grid .stat-label{font-size:.72rem!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
+@media (max-width:400px){
+  #content .stats-grid .stat-card{gap:.5rem!important;padding:.8rem .65rem!important}
+  #content .stats-grid .stat-card>.stat-icon{width:32px;height:32px;font-size:.9rem;border-radius:10px}
+  #content .stats-grid .stat-label{font-size:.68rem!important}
+}
 
 /* ---------- Install code wraps instead of scrolling sideways ---------- */
 .swal2-html-container .tii-code code{white-space:pre-wrap!important;word-break:normal!important;overflow-wrap:anywhere!important;overflow:visible!important}
@@ -15965,6 +15886,60 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 .article-details-swal .artd-head{padding-right:2.75rem}
 @media (max-width:640px){.article-details-swal .artd-head{padding-right:2.25rem}}
 
+/* ---------- Image details ---------- */
+.swal2-popup.image-details-swal{width:min(1000px,96vw)!important;max-width:96vw!important}
+.imgd{display:flex;flex-direction:column;gap:1rem;text-align:left}
+.imgd-top{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:1.1rem;align-items:stretch}
+.imgd-preview{position:relative;min-height:280px;border-radius:16px;overflow:hidden;border:1px solid var(--border);background:repeating-conic-gradient(var(--bg-tertiary) 0 25%,var(--card) 0 50%) 0 0/18px 18px;display:grid;place-items:center;padding:12px}
+.imgd-preview img{max-width:100%;max-height:360px;object-fit:contain;border-radius:8px;cursor:zoom-in;box-shadow:0 12px 30px -18px rgba(15,23,42,.6)}
+.imgd-zoom{position:absolute;right:10px;bottom:10px;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(15,23,42,.65);color:#fff;font-size:1.05rem;text-decoration:none;backdrop-filter:blur(6px)}
+.imgd-info{display:flex;flex-direction:column;gap:.75rem;min-width:0}
+.imgd-kicker{font:700 .64rem var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--primary)}
+.imgd-name{margin:-.4rem 2.25rem 0 0;font:700 1.12rem/1.35 var(--font-display);letter-spacing:-.01em;color:var(--text);overflow-wrap:anywhere}
+.imgd-chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.imgd-chips span{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .6rem;border:1px solid var(--border);border-radius:99px;background:var(--bg-tertiary);font-size:.78rem;color:var(--text-secondary);white-space:nowrap}
+.imgd-chips span[hidden]{display:none}
+.imgd-chips b{color:var(--text);font-weight:600}
+.imgd-field{display:flex;flex-direction:column;gap:.3rem;min-width:0}
+.imgd-field label{font-size:.72rem;font-weight:700;letter-spacing:.02em;color:var(--text-secondary)}
+.imgd-copy-row{display:flex;align-items:center;gap:.5rem;min-width:0;padding:.35rem .35rem .35rem .75rem;border:1px solid var(--border);border-radius:12px;background:var(--bg-tertiary)}
+.imgd-copy-row code{flex:1;min-width:0;font:500 .78rem var(--font-mono);color:var(--text);background:none!important;border:0!important;padding:0!important}
+.swal2-html-container .imgd-copy-row code{display:block!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;word-wrap:normal!important;overflow-wrap:normal!important;max-width:100%!important}
+.imgd-copy{flex-shrink:0;display:inline-flex;align-items:center;gap:.3rem;height:32px;padding:0 .75rem;border:0;border-radius:9px;background:var(--primary);color:#fff;font:600 .78rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer}
+.imgd-copy.done{background:#059669}
+.imgd-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;margin-top:auto}
+.imgd-btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;height:40px;padding:0 .7rem;border:1px solid var(--border);border-radius:11px;background:var(--card);color:var(--text);font:600 .82rem 'Inter',sans-serif;text-decoration:none;white-space:nowrap;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.imgd-btn:hover{border-color:var(--primary);color:var(--primary)}
+.imgd-btn.danger{color:var(--error,#dc2626);border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.06)}
+.imgd-btn.danger:hover{background:var(--error,#dc2626);border-color:var(--error,#dc2626);color:#fff}
+.imgd .artd-kpis{margin:0}
+@media (max-width:760px){
+  .imgd-top{grid-template-columns:minmax(0,1fr)}
+  .imgd-preview{min-height:200px}
+  .imgd-preview img{max-height:280px}
+  .imgd-name{margin:0;font-size:1rem}
+}
+@media (max-width:520px){.imgd-actions{grid-template-columns:1fr 1fr}.imgd-btn.danger{grid-column:1/-1}}
+
+/* ---------- World map fallback ---------- */
+.map-unavailable{height:100%;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.35rem;padding:1rem;border-radius:var(--radius);background:var(--bg-tertiary);text-align:center;color:var(--text-secondary)}
+.map-unavailable i{font-size:1.8rem;opacity:.6}
+.map-unavailable b{color:var(--text);font-size:.92rem}
+.map-unavailable span{font-size:.8rem;max-width:300px;line-height:1.45}
+
+/* ---------- Task cards: unverified tasks show set-up instead of recharge ---------- */
+.task-setup-strip{display:flex;align-items:center;gap:.65rem;margin:.75rem 0;padding:.65rem .8rem;border:1px solid rgba(245,158,11,.4);border-radius:12px;background:rgba(245,158,11,.1);text-align:left}
+.task-setup-strip>i{width:32px;height:32px;flex-shrink:0;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:1rem}
+.task-setup-strip>div{min-width:0}
+.task-setup-strip b{display:block;font-size:.84rem;color:var(--text);white-space:nowrap}
+.task-setup-strip small{display:block;font-size:.76rem;line-height:1.35;color:var(--text-secondary)}
+.task-setup-strip.compact{margin:0 0 .75rem}
+.btn.btn-setup-task{background:linear-gradient(135deg,#f59e0b,#d97706)!important;border-color:transparent!important;color:#fff!important}
+.btn.btn-setup-task:hover{filter:brightness(1.05)}
+/* Unverified cards stay readable: only the numbers are muted, the set-up actions are not */
+.task-card.unverified{opacity:1!important;border:1px dashed rgba(245,158,11,.55)!important}
+.task-card.unverified .task-stats,.task-card.unverified .task-url-wrapper{opacity:.7}
+
 /* ---------- Task details: activation card for unverified tasks ---------- */
 .task-activate{display:flex;flex-direction:column;gap:.9rem;margin:1rem 0;padding:1.1rem 1.2rem;border:1px solid rgba(245,158,11,.4);border-radius:18px;background:radial-gradient(120% 160% at 0% 0%,rgba(245,158,11,.14) 0%,transparent 55%),var(--card);text-align:left}
 .ta-head{display:flex;align-items:center;gap:.8rem;min-width:0}
@@ -15972,20 +15947,21 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 .ta-head>div{min-width:0}
 .ta-head b{display:block;font-size:1rem;color:var(--text);white-space:nowrap}
 .ta-head small{display:block;font-size:.82rem;color:var(--text-secondary);line-height:1.4}
-.ta-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
-.ta-steps li{display:flex;align-items:flex-start;gap:.6rem;min-width:0;padding:.7rem .8rem;border:1px solid var(--border);border-radius:13px;background:var(--bg-secondary)}
-.ta-steps li>span{width:24px;height:24px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;background:var(--glow);color:var(--primary);font-size:.78rem;font-weight:800}
-.ta-steps li>div{min-width:0}
-.ta-steps b{display:block;font-size:.86rem;color:var(--text);white-space:nowrap}
-.ta-steps small{display:block;font-size:.78rem;line-height:1.4;color:var(--text-secondary);overflow-wrap:anywhere}
-.ta-actions{display:flex;gap:.6rem;justify-content:flex-end}
-.ta-btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;height:42px;padding:0 1.1rem;border:0;border-radius:12px;background:linear-gradient(135deg,#2563eb,#1e40af);color:#fff;font:700 .86rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer}
-.ta-btn.ghost{background:var(--bg-tertiary);color:var(--text);border:1px solid var(--border)}
+.ta-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+.ta-steps li{display:flex;align-items:flex-start;gap:.7rem;min-width:0;padding:.8rem .85rem;border:1px solid var(--border);border-radius:14px;background:var(--bg-secondary)}
+.ta-num{width:26px;height:26px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;background:var(--glow);color:var(--primary);font-size:.8rem;font-weight:800}
+.ta-body{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:.3rem}
+.ta-body>b{font-size:.9rem;color:var(--text);white-space:nowrap}
+.ta-body>small{font-size:.8rem;line-height:1.45;color:var(--text-secondary);overflow-wrap:anywhere}
+.ta-body .tii-code{align-self:stretch;margin-top:.35rem}
+.ta-body .ta-btn{margin-top:.35rem}
+.ta-btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;height:40px;padding:0 1.1rem;border:0;border-radius:12px;background:linear-gradient(135deg,#2563eb,#1e40af);color:#fff;font:700 .86rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer}
 .ta-btn:hover{filter:brightness(1.05)}
+.tcfg .task-activate{margin:0}
 @media (max-width:640px){
-  .task-activate{padding:.95rem}
-  .ta-steps{grid-template-columns:1fr}
-  .ta-actions .ta-btn{flex:1}
+  .task-activate{padding:.9rem}
+  .ta-steps li{padding:.7rem}
+  .ta-body .ta-btn{align-self:stretch}
 }
 
 /* ---------- Article details: stats, analytics and breakdowns ---------- */
