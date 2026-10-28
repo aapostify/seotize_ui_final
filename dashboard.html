@@ -4297,6 +4297,11 @@ th, td {
                                 <button type="button" class="kwc-no" id="kwCheckNo"><i class="ri-close-line"></i> No</button>
                             </div>
                             <button type="button" class="tc-link kwc-again" id="kwCheckAgain"><i class="ri-external-link-line"></i> Open the Google results again</button>
+                            <div class="kwc-private">
+                                <i class="ri-spy-line"></i>
+                                <span>For results not affected by your Google account, paste the link into a private <span class="kwc-desk">window (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>, on Mac <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>).</span><span class="kwc-mob">tab in your browser.</span></span>
+                                <button type="button" class="kwc-copy" id="kwCheckCopy"><i class="ri-file-copy-line"></i><span>Copy link</span></button>
+                            </div>
                         </div>
                         <div class="kwc-msg" id="kwCheckMsg" hidden></div>
                     </div>
@@ -10051,8 +10056,11 @@ function showKeywordCheckMsg(text, kind) {
     msg.textContent = text;
     msg.hidden = false;
 }
+// pws=0 turns off Google's personalised results. Websites can't open an incognito window,
+// so the card also offers the link to paste into a private window.
+const googleSearchUrl = keyword => 'https://www.google.com/search?q=' + encodeURIComponent(keyword) + '&pws=0&num=10';
 function openGoogleFor(keyword) {
-    window.open('https://www.google.com/search?q=' + encodeURIComponent(keyword), '_blank', 'noopener');
+    window.open(googleSearchUrl(keyword), '_blank', 'noopener');
 }
 document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('kwCheckInput');
@@ -10075,6 +10083,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // A different keyword needs its own check
     input.addEventListener('input', () => { if (kwCheckPending && normKeyword(input.value) !== kwCheckPending) resetKeywordCheck(true); });
     document.getElementById('kwCheckAgain').addEventListener('click', () => { if (kwCheckPending) openGoogleFor(kwCheckPending); });
+    document.getElementById('kwCheckCopy').addEventListener('click', e => { if (kwCheckPending) docsCopy(googleSearchUrl(kwCheckPending), e.currentTarget); });
     document.getElementById('kwCheckYes').addEventListener('click', () => {
         const kw = kwCheckPending;
         if (!kw) return;
@@ -15660,7 +15669,9 @@ html:has(.pg),html:has(.pg) body,.main-content:has(.pg),.content:has(.pg){overfl
 .artd-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:.5rem}
 .artd-title{margin:0;font:700 1.15rem/1.35 var(--font-display);letter-spacing:-.015em;color:var(--text);overflow-wrap:anywhere}
 .artd-meta{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem .9rem}
-.artd-meta .article-header-meta{flex:0 1 auto;gap:.35rem .9rem;font-size:.78rem}
+.artd-meta .article-header-meta{flex:0 1 auto;display:flex;flex-wrap:wrap;gap:.35rem;margin:0}
+.artd-meta .article-header-meta span{display:inline-flex;align-items:center;gap:.3rem;height:26px;padding:0 .6rem;border:1px solid var(--border);border-radius:99px;background:var(--bg-tertiary);font-size:.76rem;font-weight:500;color:var(--text-secondary);white-space:nowrap}
+.artd-meta .article-header-meta i{font-size:.85rem;color:var(--primary);opacity:1}
 .artd-domain.article-modal-url-pill{gap:.4rem;padding:.2rem .65rem .2rem .25rem;font-size:.78rem;max-width:100%}
 .artd-domain .pa-fav{width:22px;height:22px}
 .artd-domain>i{font-size:.85rem;opacity:.8}
@@ -15679,12 +15690,11 @@ html:has(.pg),html:has(.pg) body,.main-content:has(.pg),.content:has(.pg){overfl
   .artd-domain.article-modal-url-pill{grid-area:domain;justify-self:start;max-width:100%;overflow:hidden;margin-top:.1rem}
   .artd-domain.article-modal-url-pill span:not(.pa-fav){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .artd-title{grid-area:title;font-size:1.05rem;line-height:1.35}
-  .artd-meta .article-header-meta{grid-area:meta;display:flex;flex-wrap:wrap;gap:.25rem .75rem;margin:0;font-size:.74rem}
-  .artd-meta .article-header-meta{gap:.25rem .45rem}
-  .artd-meta .article-header-meta span{white-space:nowrap}
+  .artd-meta .article-header-meta{grid-area:meta;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.3rem}
+  .artd-meta .article-header-meta span{justify-content:center;height:26px;padding:0 .3rem;font-size:.72rem;overflow:hidden}
   .artd-meta .article-header-meta i{display:none}
-  .artd-meta .article-header-meta span+span::before{content:"·";margin-right:.45rem;color:var(--text-tertiary)}
   .artd-actions{grid-area:actions;width:auto;gap:.35rem;margin-right:2.4rem}
+@media (max-width:340px){.artd-meta .article-header-meta span{font-size:.66rem}}
   .artd-btn{width:36px;height:36px;padding:0;justify-content:center;border-radius:10px}
   .artd-btn span{display:none}
   .article-details-swal .artd-head{padding-right:0}
@@ -15977,6 +15987,17 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 .article-details-swal .artd-head{padding-right:2.75rem}
 @media (max-width:640px){.article-details-swal .artd-head{padding-right:2.25rem}}
 
+/* ---------- Article editor: fits the window on desktop, the content box takes the spare height ---------- */
+@media (min-width:1025px){
+  .swal2-popup.article-modal-swal .article-modal-wrapper{height:calc(90vh - 80px);max-height:calc(90vh - 80px);overflow:hidden;grid-template-rows:minmax(0,1fr)}
+  .swal2-popup.article-modal-swal .article-main-content,.swal2-popup.article-modal-swal .article-sidebar{min-height:0}
+  .swal2-popup.article-modal-swal .article-main-content form{flex:1;min-height:0}
+  .swal2-popup.article-modal-swal .article-section:has(#article-body){flex:1;min-height:0;display:flex;flex-direction:column}
+  .swal2-popup.article-modal-swal .body-editor-container{flex:1;min-height:0}
+  .swal2-popup.article-modal-swal #article-body{flex:1;min-height:180px;max-height:none;resize:none}
+}
+@media (min-width:1025px) and (max-height:780px){.swal2-popup.article-modal-swal #article-body{min-height:130px}}
+
 /* ---------- Image details ---------- */
 .swal2-popup.image-details-swal{width:min(1000px,96vw)!important;max-width:96vw!important}
 .imgd{display:flex;flex-direction:column;gap:1rem;text-align:left}
@@ -16183,6 +16204,16 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 .kwc-no{border:1px solid var(--border);background:var(--card);color:var(--text)}
 .kwc-no:hover{border-color:var(--error,#dc2626);color:var(--error,#dc2626)}
 .kwc-again{align-self:flex-start;display:inline-flex;align-items:center;gap:.3rem;padding-left:0}
+.kwc-private{display:flex;align-items:center;gap:.55rem;padding:.55rem .65rem;border-radius:10px;background:var(--card);border:1px dashed var(--border);font-size:.76rem;line-height:1.45;color:var(--text-secondary)}
+.kwc-private>i{flex-shrink:0;font-size:1rem;color:var(--text-tertiary)}
+.kwc-private>span{flex:1;min-width:0}
+.kwc-private kbd{padding:0 .3rem;border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;background:var(--bg-tertiary);font:600 .68rem var(--font-mono);color:var(--text)}
+.kwc-copy{flex-shrink:0;display:inline-flex;align-items:center;gap:.3rem;height:32px;padding:0 .7rem;border:1px solid var(--border);border-radius:9px;background:var(--bg-tertiary);color:var(--text);font:600 .76rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer}
+.kwc-copy:hover{border-color:var(--primary);color:var(--primary)}
+.kwc-copy.done{background:#059669;border-color:#059669;color:#fff}
+.kwc-mob{display:none}
+@media (max-width:768px){.kwc-desk{display:none}.kwc-mob{display:inline}}
+@media (max-width:520px){.kwc-private{flex-wrap:wrap}.kwc-copy{width:100%;justify-content:center}}
 .kwc-msg{padding:.6rem .75rem;border-radius:10px;font-size:.8rem;line-height:1.45}
 .kwc-msg.ok{background:rgba(16,185,129,.12);color:#047857}
 .kwc-msg.warn{background:rgba(245,158,11,.14);color:#92400e}
