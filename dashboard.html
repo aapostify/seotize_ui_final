@@ -4297,11 +4297,6 @@ th, td {
                                 <button type="button" class="kwc-no" id="kwCheckNo"><i class="ri-close-line"></i> No</button>
                             </div>
                             <button type="button" class="tc-link kwc-again" id="kwCheckAgain"><i class="ri-external-link-line"></i> Open the Google results again</button>
-                            <div class="kwc-private">
-                                <i class="ri-spy-line"></i>
-                                <span>For results not affected by your Google account, paste the link into a private <span class="kwc-desk">window (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>, on Mac <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>).</span><span class="kwc-mob">tab in your browser.</span></span>
-                                <button type="button" class="kwc-copy" id="kwCheckCopy"><i class="ri-file-copy-line"></i><span>Copy link</span></button>
-                            </div>
                         </div>
                         <div class="kwc-msg" id="kwCheckMsg" hidden></div>
                     </div>
@@ -10056,11 +10051,8 @@ function showKeywordCheckMsg(text, kind) {
     msg.textContent = text;
     msg.hidden = false;
 }
-// pws=0 turns off Google's personalised results. Websites can't open an incognito window,
-// so the card also offers the link to paste into a private window.
-const googleSearchUrl = keyword => 'https://www.google.com/search?q=' + encodeURIComponent(keyword) + '&pws=0&num=10';
 function openGoogleFor(keyword) {
-    window.open(googleSearchUrl(keyword), '_blank', 'noopener');
+    window.open('https://www.google.com/search?q=' + encodeURIComponent(keyword), '_blank', 'noopener');
 }
 document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('kwCheckInput');
@@ -10083,7 +10075,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // A different keyword needs its own check
     input.addEventListener('input', () => { if (kwCheckPending && normKeyword(input.value) !== kwCheckPending) resetKeywordCheck(true); });
     document.getElementById('kwCheckAgain').addEventListener('click', () => { if (kwCheckPending) openGoogleFor(kwCheckPending); });
-    document.getElementById('kwCheckCopy').addEventListener('click', e => { if (kwCheckPending) docsCopy(googleSearchUrl(kwCheckPending), e.currentTarget); });
     document.getElementById('kwCheckYes').addEventListener('click', () => {
         const kw = kwCheckPending;
         if (!kw) return;
@@ -16204,16 +16195,6 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 .kwc-no{border:1px solid var(--border);background:var(--card);color:var(--text)}
 .kwc-no:hover{border-color:var(--error,#dc2626);color:var(--error,#dc2626)}
 .kwc-again{align-self:flex-start;display:inline-flex;align-items:center;gap:.3rem;padding-left:0}
-.kwc-private{display:flex;align-items:center;gap:.55rem;padding:.55rem .65rem;border-radius:10px;background:var(--card);border:1px dashed var(--border);font-size:.76rem;line-height:1.45;color:var(--text-secondary)}
-.kwc-private>i{flex-shrink:0;font-size:1rem;color:var(--text-tertiary)}
-.kwc-private>span{flex:1;min-width:0}
-.kwc-private kbd{padding:0 .3rem;border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;background:var(--bg-tertiary);font:600 .68rem var(--font-mono);color:var(--text)}
-.kwc-copy{flex-shrink:0;display:inline-flex;align-items:center;gap:.3rem;height:32px;padding:0 .7rem;border:1px solid var(--border);border-radius:9px;background:var(--bg-tertiary);color:var(--text);font:600 .76rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer}
-.kwc-copy:hover{border-color:var(--primary);color:var(--primary)}
-.kwc-copy.done{background:#059669;border-color:#059669;color:#fff}
-.kwc-mob{display:none}
-@media (max-width:768px){.kwc-desk{display:none}.kwc-mob{display:inline}}
-@media (max-width:520px){.kwc-private{flex-wrap:wrap}.kwc-copy{width:100%;justify-content:center}}
 .kwc-msg{padding:.6rem .75rem;border-radius:10px;font-size:.8rem;line-height:1.45}
 .kwc-msg.ok{background:rgba(16,185,129,.12);color:#047857}
 .kwc-msg.warn{background:rgba(245,158,11,.14);color:#92400e}
