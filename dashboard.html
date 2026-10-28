@@ -4280,6 +4280,26 @@ th, td {
                 <div class="step-content" id="step2">
                     <!-- Google Search Console: keywords the site already ranks for -->
                     <div class="gsc-card" id="gscKeywordsCard"></div>
+                    <!-- A keyword that isn't in the list: check it on Google, add it only if the site is on page 1 -->
+                    <div class="kwc" id="kwCheck">
+                        <div class="kwc-head">
+                            <span class="kwc-ico"><i class="ri-search-eye-line"></i></span>
+                            <div><b>Add a keyword yourself</b><small>Search it on Google, then add it if your site shows on page 1.</small></div>
+                        </div>
+                        <div class="kwc-row">
+                            <div class="kwc-input"><i class="ri-search-line"></i><input type="text" id="kwCheckInput" placeholder="Type a keyword" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"></div>
+                            <button type="button" class="kwc-search" id="kwCheckSearch"><svg class="g-ico" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg><span>Search Google</span></button>
+                        </div>
+                        <div class="kwc-ask" id="kwCheckAsk" hidden>
+                            <div class="kwc-q"><b>Is <span id="kwCheckSite"></span> on page 1 for “<span id="kwCheckKw"></span>”?</b><small>Look through the first 10 results in the Google tab we just opened.</small></div>
+                            <div class="kwc-answers">
+                                <button type="button" class="kwc-yes" id="kwCheckYes"><i class="ri-check-line"></i> Yes, add it</button>
+                                <button type="button" class="kwc-no" id="kwCheckNo"><i class="ri-close-line"></i> No</button>
+                            </div>
+                            <button type="button" class="tc-link kwc-again" id="kwCheckAgain"><i class="ri-external-link-line"></i> Open the Google results again</button>
+                        </div>
+                        <div class="kwc-msg" id="kwCheckMsg" hidden></div>
+                    </div>
                     <div class="selected-keywords" id="selectedKeywordsSection" style="display: none;">
                         <div class="selected-keywords-header">
                             <span>Selected keywords <b id="selectedKeywordsCount">0</b></span>
@@ -4351,12 +4371,12 @@ th, td {
                         <div class="budget-input-group">
                             <div class="budget-field">
                                 <label>Total Budget</label>
-                                <input type="number" id="taskBudget" value="150" min="10" onchange="updateBudgetSummary()">
+                                <input type="number" id="taskBudget" value="50" min="10" onchange="updateBudgetSummary()">
                                 <span class="currency-symbol">$</span>
                             </div>
                             <div class="budget-field">
                                 <label>Estimated Clicks</label>
-                                <input type="text" id="estimatedClicks" readonly value="1,250">
+                                <input type="text" id="estimatedClicks" readonly value="416">
                                 <span class="currency-symbol">
                                     <i class="ri-mouse-line"></i>
                                 </span>
@@ -5727,6 +5747,7 @@ async function loadTasks(page = 1) {
             </div>
             <span class="task-status ${statusClass}">${statusText}</span>
             </div>
+            ${isVerified ? `
             <div class="task-stats">
             <div class="task-stat">
             <div class="task-stat-label">Keywords</div>
@@ -5745,37 +5766,38 @@ async function loadTasks(page = 1) {
             <div class="task-stat-value">$${task.available_charge.toFixed(2)}</div>
             </div>
             </div>
-            ${isVerified ? `
             <div class="task-progress">
             <div class="progress-bar">
             <div class="progress-fill" style="width: ${task.remaining_percentage}%; background: ${task.remaining_percentage >= 100 ? '#8b5cf6' : task.remaining_percentage >= 10 ? '#10b981' : '#ef4444'}; transition: width 0.3s ease, background-color 0.3s ease;"></div>
             </div>
             </div>
-            ` : `<div class="task-setup-strip"><i class="ri-shield-keyhole-line"></i><div><b>Not active yet</b><small>Add the script to your site and verify to start.</small></div></div>`}
             <div class="task-actions">
             <button class="btn btn-sm" onclick="event.stopPropagation(); viewTaskDetails('${task._id}')">
             <i class="ri-eye-line"></i> Details
             </button>
-            ${isVerified ? `
             <button class="btn btn-sm btn-recharge-task" onclick="event.stopPropagation(); rechargeTask('${task._id}')">
             <i class="ri-wallet-line"></i> Recharge
             </button>
-            ` : `
-            <button class="btn btn-sm btn-setup-task" onclick="event.stopPropagation(); viewTaskDetails('${task._id}')">
-            <i class="ri-tools-line"></i> Set up
-            </button>
-            `}
             </div>
-            <div class="task-actions task-actions-secondary ${isVerified ? 'task-actions-delete-only' : ''}" style="margin-top: 8px;">
+            <div class="task-actions task-actions-secondary task-actions-delete-only" style="margin-top: 8px;">
             <button class="btn btn-sm btn-danger btn-delete-task-desktop" onclick="event.stopPropagation(); deleteTask('${task._id}')" style="background: var(--danger); color: white;">
             <i class="ri-delete-bin-line"></i> Delete
             </button>
-            ${!isVerified ? `
-            <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); verifyTask('${task._id}')" style="background: var(--warning); color: white;">
-            <i class="ri-shield-check-line"></i> Verify Task
-            </button>
-            ` : ''}
             </div>
+            ` : `
+            <div class="tcu-facts">
+            <span><i class="ri-key-2-line"></i><b>${task.keywords_count}</b> keyword${task.keywords_count === 1 ? '' : 's'}</span>
+            <span><i class="ri-wallet-3-line"></i><b>$${task.available_charge.toFixed(2)}</b> budget</span>
+            </div>
+            <div class="tcu-setup">
+            <div class="tcu-note"><i class="ri-shield-keyhole-line"></i><div><b>Not active yet</b><small>Add the script, then verify.</small></div></div>
+            <div class="tcu-actions">
+            <button type="button" class="tcu-btn primary" onclick="event.stopPropagation(); viewTaskDetails('${task._id}')"><i class="ri-tools-line"></i>Set up</button>
+            <button type="button" class="tcu-btn" onclick="event.stopPropagation(); verifyTask('${task._id}')"><i class="ri-shield-check-line"></i>Verify</button>
+            <button type="button" class="tcu-btn icon danger btn-delete-task-desktop" onclick="event.stopPropagation(); deleteTask('${task._id}')" title="Delete task" aria-label="Delete task"><i class="ri-delete-bin-line"></i></button>
+            </div>
+            </div>
+            `}
             </div>
             `;
         }).join('')}
@@ -9687,7 +9709,7 @@ function setZoom(scale) {
 }
 // Update order summary
 function updateOrderSummary() {
-    const budget = parseFloat(document.getElementById('taskBudget')?.value || 150);
+    const budget = parseFloat(document.getElementById('taskBudget')?.value || 50);
     const priority = currentData.taskPriority;
     const keywordCount = currentData.selectedKeywords.length;
     const locationCount = currentData.selectedLocations.length;
@@ -9796,7 +9818,7 @@ function resetTaskCreatorState() {
     document.getElementById('createTaskBtn').style.display = 'none';
     // Clear form inputs
     document.getElementById('taskUrl').value = '';
-    document.getElementById('taskBudget').value = '150';
+    document.getElementById('taskBudget').value = '50';
     // Clear selected keywords state
     taskCreatorState.selectedKeywords = [];
     // Reset priority selection
@@ -9840,6 +9862,7 @@ function resetTaskCreatorState() {
     }
     const body = document.querySelector('#seoTaskCreator .task-creator-body');
     if (body) body.scrollTop = 0;
+    resetKeywordCheck();
     tcGsc.home = '';
     tcGsc.manual = false;
     tcGsc.pendingDomain = '';
@@ -10008,6 +10031,61 @@ function updateSelectedKeywords() {
     });
     updateGscSelectionSummary();
 }
+// Manual keyword check: open the Google results, then add the keyword only when the user
+// confirms their site is on page 1
+let kwCheckPending = '';
+function resetKeywordCheck(keepInput) {
+    kwCheckPending = '';
+    const input = document.getElementById('kwCheckInput');
+    if (input && !keepInput) input.value = '';
+    const ask = document.getElementById('kwCheckAsk');
+    if (ask) ask.hidden = true;
+    const msg = document.getElementById('kwCheckMsg');
+    if (msg) { msg.hidden = true; msg.className = 'kwc-msg'; msg.textContent = ''; }
+}
+function showKeywordCheckMsg(text, kind) {
+    const msg = document.getElementById('kwCheckMsg');
+    msg.className = 'kwc-msg ' + kind;
+    msg.textContent = text;
+    msg.hidden = false;
+}
+function openGoogleFor(keyword) {
+    window.open('https://www.google.com/search?q=' + encodeURIComponent(keyword), '_blank', 'noopener');
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('kwCheckInput');
+    if (!input) return;
+    const search = () => {
+        const kw = normKeyword(input.value);
+        if (!kw) { input.focus(); return showToast('Type a keyword first', 'error'); }
+        if (hasKeyword(kw)) { resetKeywordCheck(); return showToast('That keyword is already selected', 'info'); }
+        openGoogleFor(kw);
+        kwCheckPending = kw;
+        document.getElementById('kwCheckKw').textContent = kw;
+        document.getElementById('kwCheckSite').textContent = (typeof tcGsc !== 'undefined' && tcGsc.domain) || 'your site';
+        document.getElementById('kwCheckMsg').hidden = true;
+        const ask = document.getElementById('kwCheckAsk');
+        ask.hidden = false;
+        ask.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+    document.getElementById('kwCheckSearch').addEventListener('click', search);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); search(); } });
+    // A different keyword needs its own check
+    input.addEventListener('input', () => { if (kwCheckPending && normKeyword(input.value) !== kwCheckPending) resetKeywordCheck(true); });
+    document.getElementById('kwCheckAgain').addEventListener('click', () => { if (kwCheckPending) openGoogleFor(kwCheckPending); });
+    document.getElementById('kwCheckYes').addEventListener('click', () => {
+        const kw = kwCheckPending;
+        if (!kw) return;
+        addKeywords([kw]);
+        resetKeywordCheck();
+        showKeywordCheckMsg(`“${kw}” was added to your keywords.`, 'ok');
+    });
+    document.getElementById('kwCheckNo').addEventListener('click', () => {
+        const kw = kwCheckPending;
+        resetKeywordCheck(true);
+        showKeywordCheckMsg(`“${kw}” wasn't added. Only keywords where your site is already on page 1 can be used — try a more specific phrase.`, 'warn');
+    });
+});
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('seoTaskCreator')?.addEventListener('click', e => {
         const rm = e.target.closest('[data-remove-keyword]');
@@ -10064,7 +10142,7 @@ function selectBillingCycle(cycle, element) {
 }
 // Update budget summary
 function updateBudgetSummary() {
-    const budget = parseFloat(document.getElementById('taskBudget').value || 150);
+    const budget = parseFloat(document.getElementById('taskBudget').value || 50);
     const priority = taskCreatorState.taskPriority;
     const rates = { basic: 0.10, standard: 0.12, premium: 0.15 };
     const rate = rates[priority] || 0.12;
@@ -15591,12 +15669,23 @@ html:has(.pg),html:has(.pg) body,.main-content:has(.pg),.content:has(.pg){overfl
 .artd-btn.danger:hover{background:var(--error);border-color:var(--error);color:#fff}
 .artd-btn i{font-size:1rem}
 @media (max-width:640px){
-  .artd-head{flex-wrap:wrap;align-items:flex-start;gap:.75rem}
-  .artd-cover{width:64px;height:52px;border-radius:12px}
-  .artd-main{flex:1 1 calc(100% - 80px)}
-  .artd-title{font-size:1rem}
-  .artd-actions{width:100%}
-  .artd-btn{flex:1;justify-content:center}
+  /* Phone: cover + domain, then the full title, then one meta line with icon buttons */
+  .artd-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"cover . actions" "title title title" "domain domain domain" "meta meta meta";align-items:center;gap:.55rem .65rem;padding-bottom:.9rem}
+  .artd-main,.artd-meta{display:contents}
+  .artd-cover{grid-area:cover;width:44px;height:44px;border-radius:12px}
+  .artd-cover>i{font-size:1.1rem}
+  .artd-domain.article-modal-url-pill{grid-area:domain;justify-self:start;max-width:100%;overflow:hidden;margin-top:.1rem}
+  .artd-domain.article-modal-url-pill span:not(.pa-fav){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .artd-title{grid-area:title;font-size:1.05rem;line-height:1.35}
+  .artd-meta .article-header-meta{grid-area:meta;display:flex;flex-wrap:wrap;gap:.25rem .75rem;margin:0;font-size:.74rem}
+  .artd-meta .article-header-meta{gap:.25rem .45rem}
+  .artd-meta .article-header-meta span{white-space:nowrap}
+  .artd-meta .article-header-meta i{display:none}
+  .artd-meta .article-header-meta span+span::before{content:"·";margin-right:.45rem;color:var(--text-tertiary)}
+  .artd-actions{grid-area:actions;width:auto;gap:.35rem;margin-right:2.4rem}
+  .artd-btn{width:36px;height:36px;padding:0;justify-content:center;border-radius:10px}
+  .artd-btn span{display:none}
+  .article-details-swal .artd-head{padding-right:0}
 }
 
 /* ---------- Image upload modal ---------- */
@@ -15937,8 +16026,26 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 .btn.btn-setup-task{background:linear-gradient(135deg,#f59e0b,#d97706)!important;border-color:transparent!important;color:#fff!important}
 .btn.btn-setup-task:hover{filter:brightness(1.05)}
 /* Unverified cards stay readable: only the numbers are muted, the set-up actions are not */
-.task-card.unverified{opacity:1!important;border:1px dashed rgba(245,158,11,.55)!important}
-.task-card.unverified .task-stats,.task-card.unverified .task-url-wrapper{opacity:.7}
+.task-card.unverified{opacity:1!important;border:1px dashed rgba(245,158,11,.55)!important;display:flex;flex-direction:column}
+.task-card.unverified .task-header{margin-bottom:.6rem}
+.task-card.unverified .task-url{color:var(--text)}
+.tcu-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem;margin-bottom:.8rem}
+.tcu-facts span{display:flex;align-items:center;justify-content:center;gap:.25rem;min-width:0;padding:.35rem .3rem;border-radius:10px;background:var(--bg-tertiary);font-size:.75rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden}
+.tcu-facts b{color:var(--text);font-weight:700}
+.tcu-setup{margin-top:auto;display:flex;flex-direction:column;gap:.65rem;padding:.75rem;border:1px solid rgba(245,158,11,.35);border-radius:14px;background:rgba(245,158,11,.08)}
+.tcu-note{display:flex;align-items:center;gap:.6rem;min-width:0}
+.tcu-note>i{width:30px;height:30px;flex-shrink:0;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:.95rem}
+.tcu-note>div{min-width:0}
+.tcu-note b{display:block;font-size:.84rem;color:var(--text);white-space:nowrap}
+.tcu-note small{display:block;font-size:.75rem;line-height:1.35;color:var(--text-secondary)}
+.tcu-actions{display:flex;gap:.45rem}
+.tcu-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:.35rem;height:36px;padding:0 .7rem;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);font:600 .8rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer;transition:filter .2s,border-color .2s}
+.tcu-btn:hover{border-color:#d97706}
+.tcu-btn.primary{border:0;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}
+.tcu-btn.primary:hover{filter:brightness(1.05)}
+.tcu-btn.icon{flex:0 0 36px;padding:0}
+.tcu-btn.danger{color:var(--error,#dc2626);border-color:rgba(239,68,68,.3)}
+.tcu-btn.danger:hover{background:var(--error,#dc2626);color:#fff;border-color:var(--error,#dc2626)}
 
 /* ---------- Task details: activation card for unverified tasks ---------- */
 .task-activate{display:flex;flex-direction:column;gap:.9rem;margin:1rem 0;padding:1.1rem 1.2rem;border:1px solid rgba(245,158,11,.4);border-radius:18px;background:radial-gradient(120% 160% at 0% 0%,rgba(245,158,11,.14) 0%,transparent 55%),var(--card);text-align:left}
@@ -16043,6 +16150,42 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
   .bc-radio{position:static}
   .bc-body{padding-right:0}
   .bc-name{font-size:.95rem}
+}
+
+/* ---------- Manual keyword check ---------- */
+#seoTaskCreator .kwc{display:flex;flex-direction:column;gap:.7rem;margin:0 0 1.25rem;padding:1rem;border:1px solid var(--border);border-radius:16px;background:var(--card)}
+.kwc-head{display:flex;align-items:center;gap:.65rem;min-width:0}
+.kwc-ico{width:34px;height:34px;flex-shrink:0;border-radius:10px;display:grid;place-items:center;background:var(--glow);color:var(--primary);font-size:1.05rem}
+.kwc-head>div{min-width:0}
+.kwc-head b{display:block;font-size:.92rem;color:var(--text);white-space:nowrap}
+.kwc-head small{display:block;font-size:.78rem;line-height:1.4;color:var(--text-secondary)}
+.kwc-row{display:flex;gap:.5rem}
+.kwc-input{position:relative;flex:1;min-width:0}
+.kwc-input>i{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--text-secondary);pointer-events:none}
+.kwc-input input{width:100%;height:44px;padding:0 .8rem 0 2.3rem;border:1.5px solid var(--border);border-radius:12px;background:var(--input-bg);color:var(--text);font:500 .92rem 'Inter',sans-serif;outline:none}
+.kwc-input input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--glow)}
+.kwc-search{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;flex-shrink:0;height:44px;padding:0 1rem;border:1px solid #d0d5dd;border-radius:12px;background:#fff;color:#1f2430;font:600 .86rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer}
+.kwc-search:hover{box-shadow:0 8px 20px -10px rgba(15,23,42,.35)}
+.kwc-ask{display:flex;flex-direction:column;gap:.6rem;padding:.85rem;border:1px solid color-mix(in srgb,var(--primary) 35%,var(--border));border-radius:13px;background:var(--glow)}
+.kwc-ask[hidden],.kwc-msg[hidden]{display:none}
+.kwc-q b{display:block;font-size:.88rem;line-height:1.4;color:var(--text);overflow-wrap:anywhere}
+.kwc-q small{display:block;margin-top:.15rem;font-size:.78rem;color:var(--text-secondary)}
+.kwc-answers{display:flex;gap:.5rem}
+.kwc-yes,.kwc-no{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:.35rem;height:40px;border-radius:11px;font:700 .84rem 'Inter',sans-serif;white-space:nowrap;cursor:pointer}
+.kwc-yes{border:0;background:linear-gradient(135deg,#10b981,#047857);color:#fff}
+.kwc-no{border:1px solid var(--border);background:var(--card);color:var(--text)}
+.kwc-no:hover{border-color:var(--error,#dc2626);color:var(--error,#dc2626)}
+.kwc-again{align-self:flex-start;display:inline-flex;align-items:center;gap:.3rem;padding-left:0}
+.kwc-msg{padding:.6rem .75rem;border-radius:10px;font-size:.8rem;line-height:1.45}
+.kwc-msg.ok{background:rgba(16,185,129,.12);color:#047857}
+.kwc-msg.warn{background:rgba(245,158,11,.14);color:#92400e}
+[data-theme="dark"] .kwc-msg.ok{color:#6ee7b7}
+[data-theme="dark"] .kwc-msg.warn{color:#fcd34d}
+@media (max-width:520px){
+  .kwc-row{flex-direction:column}
+  .kwc-input{flex:none;width:100%}
+  .kwc-search{width:100%}
+  #seoTaskCreator .kwc{padding:.85rem}
 }
 
 /* ---------- Selected keywords ---------- */
