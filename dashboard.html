@@ -11661,20 +11661,20 @@ function adBreakdown(title, icon, data, kind) {
             const flag = /^[A-Z]{2}$/.test(cc) ? String.fromCodePoint(...[...cc].map(ch => 0x1F1E6 + ch.charCodeAt(0) - 65)) : '🌐';
             let name = cc;
             try { name = (/^[A-Z]{2}$/.test(cc) && names?.of(cc)) || cc; } catch (_) {}
-            return `<span class="adb-flag">${flag}</span><span class="adb-name">${escHtml(name)}</span>`;
+            return `<span class="artb-flag">${flag}</span><span class="artb-name">${escHtml(name)}</span>`;
         }
         const ico = kind === 'device'
             ? ({ desktop: 'ri-computer-line', mobile: 'ri-smartphone-line', tablet: 'ri-tablet-line' }[String(k).toLowerCase()] || 'ri-device-line')
             : 'ri-global-line';
-        return `<i class="${ico} adb-ico"></i><span class="adb-name">${escHtml(String(k).charAt(0).toUpperCase() + String(k).slice(1))}</span>`;
+        return `<i class="${ico} artb-ico"></i><span class="artb-name">${escHtml(String(k).charAt(0).toUpperCase() + String(k).slice(1))}</span>`;
     };
-    return `<div class="ad-card">
-        <div class="ad-card-head"><h4><i class="${icon}"></i> ${title}</h4><span>${rows.length}</span></div>
-        ${rows.length ? `<div class="adb-list">${rows.slice(0, 6).map(([k, v]) => `
-            <div class="adb-row">
-                <div class="adb-top">${label(k)}<span class="adb-val">${formatNumber(v)} <small>${total ? Math.round(v / total * 100) : 0}%</small></span></div>
-                <div class="adb-bar"><i style="width:${Math.max(3, v / max * 100)}%"></i></div>
-            </div>`).join('')}</div>` : '<div class="adb-empty">No data yet</div>'}
+    return `<div class="artd-card">
+        <div class="artd-card-head"><h4><i class="${icon}"></i> ${title}</h4><span>${rows.length}</span></div>
+        ${rows.length ? `<div class="artb-list">${rows.slice(0, 6).map(([k, v]) => `
+            <div class="artb-row">
+                <div class="artb-top">${label(k)}<span class="artb-val">${formatNumber(v)} <small>${total ? Math.round(v / total * 100) : 0}%</small></span></div>
+                <div class="artb-bar"><i style="width:${Math.max(3, v / max * 100)}%"></i></div>
+            </div>`).join('')}</div>` : '<div class="artb-empty">No data yet</div>'}
     </div>`;
 }
 function renderArticleViewsChart(viewsByDate, range) {
@@ -11743,26 +11743,30 @@ async function viewArticle(articleId) {
         const totalViews = article.total_views || 0;
         const countryCount = Object.keys(countries).length;
         const last7Views = sortedDates.slice(-7).reduce((sum, [, v]) => sum + v, 0);
-        const avgViews = sortedDates.length > 0 ? Math.round(sortedDates.reduce((sum, [, v]) => sum + v, 0) / sortedDates.length) : 0;
         // This week against the week before, from a gap-free daily series
         const daySeries = adDailySeries(viewsByDate, 14);
         const prev7Views = daySeries.slice(0, 7).reduce((a, [, v]) => a + v, 0);
         const week7Views = daySeries.slice(7).reduce((a, [, v]) => a + v, 0);
-        const weekTrend = prev7Views ? Math.round((week7Views - prev7Views) / prev7Views * 100) : (week7Views ? 100 : 0);
+        // Only compare when the week before had views; otherwise there is nothing to compare against
+        const weekTrend = prev7Views ? Math.round((week7Views - prev7Views) / prev7Views * 100) : null;
+        // Average over every day since the first view, the same way the chart counts it
+        const allDays = adDailySeries(viewsByDate, 'all');
+        const dailyAvg = allDays.length ? allDays.reduce((a, [, v]) => a + v, 0) / allDays.length : 0;
+        const dailyAvgLabel = dailyAvg >= 10 ? formatNumber(Math.round(dailyAvg)) : dailyAvg.toFixed(1);
         const imageCount = hasImages ? article.images.length : 0;
         // --- Build new responsive HTML for Swal with Tabs ---
         const modalHtml = `
         <div class="article-details-modal-container">
             <!-- Header Section -->
-            <div class="ad-head">
-                <div class="ad-cover">
+            <div class="artd-head">
+                <div class="artd-cover">
                     ${coverUrl ? `<img src="${escapeHtml(coverUrl)}" alt="" onerror="this.remove()">` : ''}
                     <i class="ri-article-line"></i>
                 </div>
-                <div class="ad-main">
-                    <h3 class="ad-title" title="${escapeHtml(article.subject)}">${escapeHtml(article.subject || 'Untitled article')}</h3>
-                    <div class="ad-meta">
-                        <a class="ad-domain article-modal-url-pill" href="https://${escapeHtml(cleanDomain)}" target="_blank" rel="noopener noreferrer" title="Open ${escapeHtml(cleanDomain)}">
+                <div class="artd-main">
+                    <h3 class="artd-title" title="${escapeHtml(article.subject)}">${escapeHtml(article.subject || 'Untitled article')}</h3>
+                    <div class="artd-meta">
+                        <a class="artd-domain article-modal-url-pill" href="https://${escapeHtml(cleanDomain)}" target="_blank" rel="noopener noreferrer" title="Open ${escapeHtml(cleanDomain)}">
                             <span class="pa-fav">${escapeHtml((cleanDomain[0] || '?').toUpperCase())}</span>
                             <span>${escapeHtml(cleanDomain)}</span>
                             <i class="ri-external-link-line"></i>
@@ -11774,21 +11778,21 @@ async function viewArticle(articleId) {
                         </div>
                     </div>
                 </div>
-                <div class="ad-actions">
-                    <button type="button" class="ad-btn" onclick="Swal.close(); showArticleModal('${articleId}')" title="Edit article">
+                <div class="artd-actions">
+                    <button type="button" class="artd-btn" onclick="Swal.close(); showArticleModal('${articleId}')" title="Edit article">
                         <i class="ri-edit-line"></i><span>Edit</span>
                     </button>
-                    <button type="button" class="ad-btn danger" onclick="event.stopPropagation(); confirmDeleteArticle('${articleId}')" title="Delete article">
+                    <button type="button" class="artd-btn danger" onclick="event.stopPropagation(); confirmDeleteArticle('${articleId}')" title="Delete article">
                         <i class="ri-delete-bin-line"></i><span>Delete</span>
                     </button>
                 </div>
             </div>
             <!-- Stats -->
-            <div class="ad-kpis">
-                <div class="ad-kpi"><span class="ad-kpi-ico g"><i class="ri-eye-line"></i></span><div><b>${formatNumber(totalViews)}</b><small>Total views</small></div></div>
-                <div class="ad-kpi"><span class="ad-kpi-ico b"><i class="ri-calendar-event-line"></i></span><div><b>${formatNumber(week7Views)}${(week7Views || prev7Views) ? `<em class="${weekTrend >= 0 ? 'up' : 'down'}">${weekTrend >= 0 ? '+' : ''}${weekTrend}%</em>` : ''}</b><small>Last 7 days</small></div></div>
-                <div class="ad-kpi"><span class="ad-kpi-ico c"><i class="ri-bar-chart-2-line"></i></span><div><b>${formatNumber(avgViews)}</b><small>Daily average</small></div></div>
-                <div class="ad-kpi"><span class="ad-kpi-ico o"><i class="ri-earth-line"></i></span><div><b>${countryCount}</b><small>Countries</small></div></div>
+            <div class="artd-kpis">
+                <div class="artd-kpi"><span class="artd-kpi-ico g"><i class="ri-eye-line"></i></span><div><b>${formatNumber(totalViews)}</b><small>Total views</small></div></div>
+                <div class="artd-kpi"><span class="artd-kpi-ico b"><i class="ri-calendar-event-line"></i></span><div><b>${formatNumber(week7Views)}${weekTrend !== null ? `<em class="${weekTrend >= 0 ? 'up' : 'down'}">${weekTrend >= 0 ? '+' : ''}${weekTrend}%</em>` : ''}</b><small>Last 7 days</small></div></div>
+                <div class="artd-kpi"><span class="artd-kpi-ico c"><i class="ri-bar-chart-2-line"></i></span><div><b>${dailyAvgLabel}</b><small>Daily average</small></div></div>
+                <div class="artd-kpi"><span class="artd-kpi-ico o"><i class="ri-earth-line"></i></span><div><b>${countryCount}</b><small>Countries</small></div></div>
             </div>
             <!-- Tabs Navigation -->
             <div class="article-modal-tabs" role="tablist" aria-label="Article details sections">
@@ -11798,7 +11802,7 @@ async function viewArticle(articleId) {
                 </button>
                 <button class="article-modal-tab" type="button" data-tab="images" role="tab" aria-controls="article-panel-images">
                     <i class="ri-image-line"></i>
-                    <span class="label-desktop">Images${imageCount ? ` <em class="ad-tab-count">${imageCount}</em>` : ''}</span>
+                    <span class="label-desktop">Images${imageCount ? ` <em class="artd-tab-count">${imageCount}</em>` : ''}</span>
                 </button>
                 <button class="article-modal-tab" type="button" data-tab="content" role="tab" aria-controls="article-panel-content">
                     <i class="ri-file-text-line"></i>
@@ -11810,20 +11814,20 @@ async function viewArticle(articleId) {
                 <!-- Analytics Panel -->
                 <div class="article-modal-panel" id="article-panel-analytics" data-panel="analytics" role="tabpanel">
                     ${haveStats ? `
-                        <div class="ad-analytics">
-                            <div class="ad-card">
-                                <div class="ad-card-head">
+                        <div class="artd-analytics">
+                            <div class="artd-card">
+                                <div class="artd-card-head">
                                     <h4><i class="ri-line-chart-line"></i> Views over time</h4>
-                                    <div class="gsc-seg" role="group" aria-label="Range" data-ad-range>
+                                    <div class="gsc-seg" role="group" aria-label="Range" data-chart-range>
                                         <button type="button" data-range="7">7 days</button>
                                         <button type="button" data-range="30" class="on">30 days</button>
                                         <button type="button" data-range="all">All time</button>
                                     </div>
                                 </div>
-                                <div class="ad-chart"><canvas id="articleViewsChart"></canvas></div>
-                                <div class="ad-chart-foot" id="articleChartFoot"></div>
+                                <div class="artd-chart"><canvas id="articleViewsChart"></canvas></div>
+                                <div class="artd-chart-foot" id="articleChartFoot"></div>
                             </div>
-                            <div class="ad-breakdowns">
+                            <div class="artd-breakdowns">
                                 ${adBreakdown('Top countries', 'ri-earth-line', countries, 'country')}
                                 ${adBreakdown('Browsers', 'ri-window-line', browsers, 'browser')}
                                 ${adBreakdown('Devices', 'ri-device-line', devices, 'device')}
@@ -11920,10 +11924,10 @@ async function viewArticle(articleId) {
                 if (haveStats) {
                     const popup = Swal.getPopup();
                     const draw = range => {
-                        popup.querySelectorAll('[data-ad-range] button').forEach(b => b.classList.toggle('on', b.dataset.range === range));
+                        popup.querySelectorAll('[data-chart-range] button').forEach(b => b.classList.toggle('on', b.dataset.range === range));
                         renderArticleViewsChart(viewsByDate, range);
                     };
-                    popup.querySelectorAll('[data-ad-range] button').forEach(b => b.addEventListener('click', () => draw(b.dataset.range)));
+                    popup.querySelectorAll('[data-chart-range] button').forEach(b => b.addEventListener('click', () => draw(b.dataset.range)));
                     // After the tab panel has its size
                     setTimeout(() => draw('30'), 60);
                 }
@@ -15653,30 +15657,30 @@ html:has(.pg),html:has(.pg) body,.main-content:has(.pg),.content:has(.pg){overfl
 .pay-pending-check .pay-btn{margin-top:.75rem;border:0;cursor:pointer;font:inherit}
 
 /* ---------- Article details header ---------- */
-.ad-head{display:flex;align-items:center;gap:1rem;padding:0 0 1rem;margin:0 0 1rem;border-bottom:1px solid var(--border);text-align:left}
-.ad-cover{position:relative;width:96px;height:72px;flex-shrink:0;border-radius:14px;overflow:hidden;display:grid;place-items:center;background:radial-gradient(120% 140% at 0% 0%,#2563eb 0%,#1e3a8a 55%,#0b1222 100%)}
-.ad-cover>i{font-size:1.6rem;color:rgba(255,255,255,.4)}
-.ad-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.ad-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:.5rem}
-.ad-title{margin:0;font:700 1.15rem/1.35 var(--font-display);letter-spacing:-.015em;color:var(--text);overflow-wrap:anywhere}
-.ad-meta{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem .9rem}
-.ad-meta .article-header-meta{flex:0 1 auto;gap:.35rem .9rem;font-size:.78rem}
-.ad-domain.article-modal-url-pill{gap:.4rem;padding:.2rem .65rem .2rem .25rem;font-size:.78rem;max-width:100%}
-.ad-domain .pa-fav{width:22px;height:22px}
-.ad-domain>i{font-size:.85rem;opacity:.8}
-.ad-actions{display:flex;gap:.5rem;flex-shrink:0}
-.ad-btn{height:38px;display:inline-flex;align-items:center;gap:.35rem;padding:0 .9rem;border:1px solid var(--border);border-radius:11px;background:var(--bg-tertiary);color:var(--text);font:600 .8rem 'Inter',sans-serif;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
-.ad-btn:hover{border-color:var(--primary);color:var(--primary)}
-.ad-btn.danger{color:var(--error);background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3)}
-.ad-btn.danger:hover{background:var(--error);border-color:var(--error);color:#fff}
-.ad-btn i{font-size:1rem}
+.artd-head{display:flex;align-items:center;gap:1rem;padding:0 0 1rem;margin:0 0 1rem;border-bottom:1px solid var(--border);text-align:left}
+.artd-cover{position:relative;width:96px;height:72px;flex-shrink:0;border-radius:14px;overflow:hidden;display:grid;place-items:center;background:radial-gradient(120% 140% at 0% 0%,#2563eb 0%,#1e3a8a 55%,#0b1222 100%)}
+.artd-cover>i{font-size:1.6rem;color:rgba(255,255,255,.4)}
+.artd-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.artd-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:.5rem}
+.artd-title{margin:0;font:700 1.15rem/1.35 var(--font-display);letter-spacing:-.015em;color:var(--text);overflow-wrap:anywhere}
+.artd-meta{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem .9rem}
+.artd-meta .article-header-meta{flex:0 1 auto;gap:.35rem .9rem;font-size:.78rem}
+.artd-domain.article-modal-url-pill{gap:.4rem;padding:.2rem .65rem .2rem .25rem;font-size:.78rem;max-width:100%}
+.artd-domain .pa-fav{width:22px;height:22px}
+.artd-domain>i{font-size:.85rem;opacity:.8}
+.artd-actions{display:flex;gap:.5rem;flex-shrink:0}
+.artd-btn{height:38px;display:inline-flex;align-items:center;gap:.35rem;padding:0 .9rem;border:1px solid var(--border);border-radius:11px;background:var(--bg-tertiary);color:var(--text);font:600 .8rem 'Inter',sans-serif;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.artd-btn:hover{border-color:var(--primary);color:var(--primary)}
+.artd-btn.danger{color:var(--error);background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3)}
+.artd-btn.danger:hover{background:var(--error);border-color:var(--error);color:#fff}
+.artd-btn i{font-size:1rem}
 @media (max-width:640px){
-  .ad-head{flex-wrap:wrap;align-items:flex-start;gap:.75rem}
-  .ad-cover{width:64px;height:52px;border-radius:12px}
-  .ad-main{flex:1 1 calc(100% - 80px)}
-  .ad-title{font-size:1rem}
-  .ad-actions{width:100%}
-  .ad-btn{flex:1;justify-content:center}
+  .artd-head{flex-wrap:wrap;align-items:flex-start;gap:.75rem}
+  .artd-cover{width:64px;height:52px;border-radius:12px}
+  .artd-main{flex:1 1 calc(100% - 80px)}
+  .artd-title{font-size:1rem}
+  .artd-actions{width:100%}
+  .artd-btn{flex:1;justify-content:center}
 }
 
 /* ---------- Image upload modal ---------- */
@@ -15958,8 +15962,8 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 .tii-code{align-items:center}
 
 /* ---------- Article details: room for the close button ---------- */
-.article-details-swal .ad-head{padding-right:2.75rem}
-@media (max-width:640px){.article-details-swal .ad-head{padding-right:2.25rem}}
+.article-details-swal .artd-head{padding-right:2.75rem}
+@media (max-width:640px){.article-details-swal .artd-head{padding-right:2.25rem}}
 
 /* ---------- Task details: activation card for unverified tasks ---------- */
 .task-activate{display:flex;flex-direction:column;gap:.9rem;margin:1rem 0;padding:1.1rem 1.2rem;border:1px solid rgba(245,158,11,.4);border-radius:18px;background:radial-gradient(120% 160% at 0% 0%,rgba(245,158,11,.14) 0%,transparent 55%),var(--card);text-align:left}
@@ -15985,48 +15989,48 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
 }
 
 /* ---------- Article details: stats, analytics and breakdowns ---------- */
-.ad-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.65rem;margin:0 0 1rem;text-align:left}
-.ad-kpi{display:flex;align-items:center;gap:.7rem;min-width:0;padding:.85rem .9rem;border:1px solid var(--border);border-radius:16px;background:var(--card)}
-.ad-kpi>div{min-width:0}
-.ad-kpi b{display:flex;align-items:baseline;gap:.4rem;font:800 1.35rem/1.1 var(--font-display);letter-spacing:-.02em;color:var(--text);white-space:nowrap}
-.ad-kpi b em{font:700 .7rem 'Inter',sans-serif;font-style:normal;padding:.1rem .35rem;border-radius:6px}
-.ad-kpi b em.up{background:rgba(16,185,129,.14);color:#059669}
-.ad-kpi b em.down{background:rgba(239,68,68,.12);color:#dc2626}
-.ad-kpi small{display:block;margin-top:.15rem;font-size:.74rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ad-kpi-ico{width:38px;height:38px;flex-shrink:0;border-radius:11px;display:grid;place-items:center;color:#fff;font-size:1.05rem}
-.ad-kpi-ico.g{background:linear-gradient(135deg,#10b981,#047857)}.ad-kpi-ico.b{background:linear-gradient(135deg,#2563eb,#1e40af)}.ad-kpi-ico.c{background:linear-gradient(135deg,#06b6d4,#0e7490)}.ad-kpi-ico.o{background:linear-gradient(135deg,#f59e0b,#b45309)}
-.ad-tab-count{display:inline-block;min-width:1.2rem;margin-left:.25rem;padding:0 .35rem;border-radius:99px;background:var(--glow);color:var(--primary);font-style:normal;font-size:.7rem;line-height:1.2rem;text-align:center}
-.ad-analytics{display:flex;flex-direction:column;gap:.85rem;text-align:left}
-.ad-card{min-width:0;padding:.9rem 1rem;border:1px solid var(--border);border-radius:16px;background:var(--card)}
-.ad-card-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap;margin-bottom:.7rem}
-.ad-card-head h4{display:flex;align-items:center;gap:.4rem;margin:0;font-size:.92rem;font-weight:700;color:var(--text);white-space:nowrap}
-.ad-card-head h4 i{color:var(--primary)}
-.ad-card-head>span{min-width:1.5rem;padding:0 .45rem;border-radius:99px;background:var(--bg-tertiary);color:var(--text-secondary);font-size:.72rem;font-weight:700;line-height:1.4rem;text-align:center}
-.ad-chart{position:relative;height:240px}
-.ad-chart-foot{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;margin-top:.6rem;font-size:.8rem;color:var(--text-secondary)}
-.ad-chart-foot span{white-space:nowrap}
-.ad-chart-foot b{color:var(--text)}
-.ad-breakdowns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.85rem}
-.adb-list{display:flex;flex-direction:column;gap:.6rem}
-.adb-row{display:flex;flex-direction:column;gap:.3rem;min-width:0}
-.adb-top{display:flex;align-items:center;gap:.45rem;min-width:0;font-size:.84rem;color:var(--text)}
-.adb-flag{font-size:1rem;line-height:1}
-.adb-ico{color:var(--text-secondary);font-size:1rem}
-.adb-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
-.adb-val{flex-shrink:0;font-weight:700;font-variant-numeric:tabular-nums}
-.adb-val small{font-weight:500;color:var(--text-secondary)}
-.adb-bar{height:6px;border-radius:99px;background:var(--bg-tertiary);overflow:hidden}
-.adb-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#2563eb,#06b6d4)}
-.adb-empty{padding:1rem 0;text-align:center;font-size:.84rem;color:var(--text-secondary)}
-@media (max-width:900px){.ad-breakdowns{grid-template-columns:minmax(0,1fr)}}
+.artd-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.65rem;margin:0 0 1rem;text-align:left}
+.artd-kpi{display:flex;align-items:center;gap:.7rem;min-width:0;padding:.85rem .9rem;border:1px solid var(--border);border-radius:16px;background:var(--card)}
+.artd-kpi>div{min-width:0}
+.artd-kpi b{display:flex;align-items:baseline;gap:.4rem;font:800 1.35rem/1.1 var(--font-display);letter-spacing:-.02em;color:var(--text);white-space:nowrap}
+.artd-kpi b em{font:700 .7rem 'Inter',sans-serif;font-style:normal;padding:.1rem .35rem;border-radius:6px}
+.artd-kpi b em.up{background:rgba(16,185,129,.14);color:#059669}
+.artd-kpi b em.down{background:rgba(239,68,68,.12);color:#dc2626}
+.artd-kpi small{display:block;margin-top:.15rem;font-size:.74rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.artd-kpi-ico{width:38px;height:38px;flex-shrink:0;border-radius:11px;display:grid;place-items:center;color:#fff;font-size:1.05rem}
+.artd-kpi-ico.g{background:linear-gradient(135deg,#10b981,#047857)}.artd-kpi-ico.b{background:linear-gradient(135deg,#2563eb,#1e40af)}.artd-kpi-ico.c{background:linear-gradient(135deg,#06b6d4,#0e7490)}.artd-kpi-ico.o{background:linear-gradient(135deg,#f59e0b,#b45309)}
+.artd-tab-count{display:inline-block;min-width:1.2rem;margin-left:.25rem;padding:0 .35rem;border-radius:99px;background:var(--glow);color:var(--primary);font-style:normal;font-size:.7rem;line-height:1.2rem;text-align:center}
+.artd-analytics{display:flex;flex-direction:column;gap:.85rem;text-align:left}
+.artd-card{min-width:0;padding:.9rem 1rem;border:1px solid var(--border);border-radius:16px;background:var(--card)}
+.artd-card-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap;margin-bottom:.7rem}
+.artd-card-head h4{display:flex;align-items:center;gap:.4rem;margin:0;font-size:.92rem;font-weight:700;color:var(--text);white-space:nowrap}
+.artd-card-head h4 i{color:var(--primary)}
+.artd-card-head>span{min-width:1.5rem;padding:0 .45rem;border-radius:99px;background:var(--bg-tertiary);color:var(--text-secondary);font-size:.72rem;font-weight:700;line-height:1.4rem;text-align:center}
+.artd-chart{position:relative;height:240px}
+.artd-chart-foot{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;margin-top:.6rem;font-size:.8rem;color:var(--text-secondary)}
+.artd-chart-foot span{white-space:nowrap}
+.artd-chart-foot b{color:var(--text)}
+.artd-breakdowns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.85rem}
+.artb-list{display:flex;flex-direction:column;gap:.6rem}
+.artb-row{display:flex;flex-direction:column;gap:.3rem;min-width:0}
+.artb-top{display:flex;align-items:center;gap:.45rem;min-width:0;font-size:.84rem;color:var(--text)}
+.artb-flag{font-size:1rem;line-height:1}
+.artb-ico{color:var(--text-secondary);font-size:1rem}
+.artb-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.artb-val{flex-shrink:0;font-weight:700;font-variant-numeric:tabular-nums}
+.artb-val small{font-weight:500;color:var(--text-secondary)}
+.artb-bar{height:6px;border-radius:99px;background:var(--bg-tertiary);overflow:hidden}
+.artb-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#2563eb,#06b6d4)}
+.artb-empty{padding:1rem 0;text-align:center;font-size:.84rem;color:var(--text-secondary)}
+@media (max-width:900px){.artd-breakdowns{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:640px){
-  .ad-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
-  .ad-kpi{padding:.7rem .75rem;gap:.55rem;border-radius:14px}
-  .ad-kpi-ico{width:32px;height:32px;font-size:.92rem;border-radius:10px}
-  .ad-kpi b{font-size:1.1rem}
-  .ad-card{padding:.8rem}
-  .ad-card-head .gsc-seg{width:100%}.ad-card-head .gsc-seg button{flex:1}
-  .ad-chart{height:190px}
+  .artd-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
+  .artd-kpi{padding:.7rem .75rem;gap:.55rem;border-radius:14px}
+  .artd-kpi-ico{width:32px;height:32px;font-size:.92rem;border-radius:10px}
+  .artd-kpi b{font-size:1.1rem}
+  .artd-card{padding:.8rem}
+  .artd-card-head .gsc-seg{width:100%}.artd-card-head .gsc-seg button{flex:1}
+  .artd-chart{height:190px}
 }
 
 /* ---------- One-line titles and labels ---------- */
