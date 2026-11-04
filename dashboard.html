@@ -4684,21 +4684,16 @@ function showSessionsModal() {
 }
 // [NEW] Updated to work with SweetAlert2
 async function revokeSession(token) {
-    Swal.fire({
-        title: 'Revoke this session?',
-        text: "The user logged in on that device will be signed out.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: 'var(--error)',
-        confirmButtonText: 'Yes, revoke it!',
-        customClass: { popup: 'swal2-toast' }
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Revoking...',
-                didOpen: () => Swal.showLoading(),
-                customClass: { popup: 'swal2-toast' }
-            });
+    confirmDialog({
+        tone: 'warning',
+        icon: 'ri-logout-box-r-line',
+        title: 'Sign out this device?',
+        message: 'Whoever is logged in on that device will be signed out right away.',
+        confirmText: 'Sign it out',
+        confirmIcon: 'ri-logout-box-r-line'
+    }).then(async (ok) => {
+        if (ok) {
+            showBusy('Signing out device…');
             try {
                 // The API endpoint for revoking a single session is the logout endpoint with that session's token.
                 await fetch(`${API_BASE}/logout`, {
@@ -4714,7 +4709,7 @@ async function revokeSession(token) {
                 showSessionsModal(); // Refresh the main sessions modal
                 updateUserInfo(); // Update session count badges
             } catch (error) {
-                Swal.fire('Error!', 'Failed to revoke session: ' + error.message, 'error');
+                noticeDialog({ tone: 'error', title: 'Couldn\'t sign it out', message: 'Failed to revoke session: ' + error.message });
             }
         }
     });
@@ -4736,25 +4731,18 @@ async function revokeAllSessions() {
         return;
     }
     // 3. Ask for confirmation first
-    Swal.fire({
-        title: `Revoke all ${total} other sessions?`,
-        text: "You will be logged out from all other devices immediately.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: 'var(--error)',
-        confirmButtonText: 'Yes, revoke all!',
-        customClass: { popup: 'swal2-toast' }
-    }).then(async (result) => {
+    confirmDialog({
+        tone: 'warning',
+        icon: 'ri-shield-keyhole-line',
+        title: `Sign out ${total} other ${total === 1 ? 'device' : 'devices'}?`,
+        message: 'Every other device will be logged out immediately. This device stays signed in.',
+        confirmText: 'Sign out all',
+        confirmIcon: 'ri-logout-box-r-line'
+    }).then(async (ok) => {
         // 4. If user confirms, start the loop
-        if (result.isConfirmed) {
-            // Open the progress modal. We will update this modal's title.
-            Swal.fire({
-                title: `Revoking 1 of ${total}...`,
-                didOpen: () => Swal.showLoading(),
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                customClass: { popup: 'swal2-toast' }
-            });
+        if (ok) {
+            // Open the progress card. We will update its text as we go.
+            showBusy(`Signing out 1 of ${total}…`, { text: 'Keep this window open' });
             let successCount = 0;
             let failCount = 0;
             const tokensToRevoke = sessionsToRevoke.map(s => s.token);
@@ -4763,9 +4751,7 @@ async function revokeAllSessions() {
             for (let i = 0; i < total; i++) {
                 const token = tokensToRevoke[i];
                 // Update progress title
-                Swal.update({
-                    title: `Revoking ${i + 1} of ${total}...`
-                });
+                updateBusy(`Signing out ${i + 1} of ${total}…`);
                 try {
                     // Call the single-revoke endpoint (which is /logout with that session's token)
                     // We use fetch directly here since api() helper might not be set up for this
@@ -5293,6 +5279,120 @@ async function api(endpoint, options = {}) {
     } finally {
         clearTimeout(timer);
     }
+}
+// ---------- Dialogs: confirm, busy, notice ----------
+// One look for every "are you sure?", "working on it" and "it failed" popup.
+// On phones the confirm and notice dialogs open as a bottom sheet with
+// full-width buttons; on desktop they are a compact centered card.
+const DLG_ICONS = {
+    danger: 'ri-delete-bin-6-line',
+    warning: 'ri-error-warning-line',
+    primary: 'ri-question-line',
+    success: 'ri-checkbox-circle-line',
+    error: 'ri-close-circle-line',
+    info: 'ri-information-line'
+};
+const DLG_ANIM = {
+    showClass: { popup: 'dlg-show', backdrop: 'swal2-backdrop-show' },
+    hideClass: { popup: 'dlg-hide', backdrop: 'swal2-backdrop-hide' }
+};
+function dlgEsc(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function dlgBody({ tone, icon, title, message, subject, subjectIcon, note }) {
+    return `<div class="dlg dlg-${tone}">
+        <span class="dlg-handle" aria-hidden="true"></span>
+        <div class="dlg-ico"><i class="${icon || DLG_ICONS[tone] || DLG_ICONS.info}"></i></div>
+        <h3 class="dlg-title">${dlgEsc(title)}</h3>
+        ${message ? `<p class="dlg-msg">${dlgEsc(message)}</p>` : ''}
+        ${subject ? `<div class="dlg-subject" title="${dlgEsc(subject)}"><i class="${subjectIcon || 'ri-file-text-line'}"></i><span>${dlgEsc(subject)}</span></div>` : ''}
+        ${note ? `<p class="dlg-note"><i class="ri-information-line"></i><span>${dlgEsc(note)}</span></p>` : ''}
+    </div>`;
+}
+// Resolves true when the user confirms, false on cancel / Esc / backdrop.
+function confirmDialog({ tone = 'danger', icon = '', title = 'Are you sure?', message = '', subject = '', subjectIcon = '', note = '', confirmText = 'Confirm', confirmIcon = '', cancelText = 'Cancel' } = {}) {
+    return Swal.fire({
+        html: dlgBody({ tone, icon, title, message, subject, subjectIcon, note }),
+        showCancelButton: true,
+        reverseButtons: true,
+        focusCancel: tone === 'danger' || tone === 'warning',
+        buttonsStyling: false,
+        confirmButtonText: `${confirmIcon ? `<i class="${confirmIcon}"></i>` : ''}<span>${dlgEsc(confirmText)}</span>`,
+        cancelButtonText: dlgEsc(cancelText),
+        customClass: {
+            container: 'dlg-container',
+            popup: 'dlg-swal',
+            htmlContainer: 'dlg-html',
+            actions: 'dlg-actions',
+            confirmButton: `dlg-btn dlg-btn-${tone}`,
+            cancelButton: 'dlg-btn dlg-btn-ghost'
+        },
+        ...DLG_ANIM
+    }).then(r => !!r.isConfirmed);
+}
+// Single-button message, e.g. an error after an action failed.
+function noticeDialog({ tone = 'error', icon = '', title = '', message = '', subject = '', subjectIcon = '', note = '', buttonText = 'Got it' } = {}) {
+    return Swal.fire({
+        html: dlgBody({ tone, icon, title, message, subject, subjectIcon, note }),
+        buttonsStyling: false,
+        confirmButtonText: dlgEsc(buttonText),
+        customClass: {
+            container: 'dlg-container',
+            popup: 'dlg-swal',
+            htmlContainer: 'dlg-html',
+            actions: 'dlg-actions dlg-actions-single',
+            confirmButton: 'dlg-btn dlg-btn-primary'
+        },
+        ...DLG_ANIM
+    });
+}
+// Blocking "working on it" card. Pass `steps` to show a short checklist that
+// moves along while the request runs (the last step spins until closed).
+let busyStepTimer = null;
+function showBusy(title, { text = '', icon = 'ri-loader-4-line', steps = null, stepMs = 1400 } = {}) {
+    clearInterval(busyStepTimer);
+    return Swal.fire({
+        html: `<div class="busy" role="status" aria-live="polite">
+            <div class="busy-spin"><span class="busy-ring"></span><i class="${icon}"></i></div>
+            <h3 class="busy-title">${dlgEsc(title)}</h3>
+            <p class="busy-text"${text ? '' : ' hidden'}>${dlgEsc(text)}</p>
+            ${steps && steps.length ? `<ol class="busy-steps">${busyStepsHtml(steps)}</ol>`
+                : '<div class="busy-bar"><i></i></div>'}
+        </div>`,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        customClass: { container: 'dlg-container busy-container', popup: 'dlg-swal busy-swal', htmlContainer: 'dlg-html' },
+        showClass: { popup: 'busy-show', backdrop: 'swal2-backdrop-show' },
+        hideClass: { popup: 'busy-hide', backdrop: 'swal2-backdrop-hide' },
+        didOpen: popup => { busyStepTimer = runBusySteps(popup, stepMs); },
+        willClose: () => clearInterval(busyStepTimer)
+    });
+}
+// Walk a .busy-steps checklist: each step turns "done" and the next one starts.
+// The last step keeps spinning until the work finishes. Returns the timer id.
+function busyStepsHtml(steps) {
+    return steps.map((s, i) => `<li class="${i === 0 ? 'on' : ''}"><span class="busy-dot"><i class="ri-check-line"></i></span><span>${dlgEsc(s)}</span></li>`).join('');
+}
+function runBusySteps(root, stepMs = 1400) {
+    const items = root.querySelectorAll('.busy-steps li');
+    if (items.length < 2) return null;
+    let i = 0;
+    const timer = setInterval(() => {
+        if (i >= items.length - 1) { clearInterval(timer); return; }
+        items[i].classList.replace('on', 'done');
+        items[++i].classList.add('on');
+    }, stepMs);
+    return timer;
+}
+// Change the text of an open busy card (e.g. "Revoking 2 of 5...").
+function updateBusy(title, text) {
+    const popup = Swal.getPopup();
+    if (!popup) return;
+    const t = popup.querySelector('.busy-title');
+    if (t && title != null) t.textContent = title;
+    const p = popup.querySelector('.busy-text');
+    if (p && text != null) { p.textContent = text; p.hidden = !text; }
 }
 // Helper function to format numbers with K/M abbreviations
 function formatNumber(num) {
@@ -6436,36 +6536,22 @@ async function processPackagePurchase() {
     
     // Check if user has active plan
     if (currentPlan && currentPlan.current_plan && currentPlan.current_plan !== 'free') {
-        const result = await Swal.fire({
-            title: 'Active Plan Detected',
-            html: `
-                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                    You currently have an active <strong>${hostingPackages[currentPlan.current_plan]?.name || currentPlan.current_plan}</strong> plan.
-                </p>
-                <p style="color: var(--text-secondary); font-size: 0.875rem;">
-                    Would you like to cancel your current plan and purchase the new one?
-                </p>
-            `,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: 'var(--primary)',
-            cancelButtonColor: 'var(--bg-tertiary)',
-            confirmButtonText: 'Yes, Replace Plan',
-            cancelButtonText: 'Keep Current Plan',
-            customClass: { popup: 'swal2-toast' }
+        const ok = await confirmDialog({
+            tone: 'primary',
+            icon: 'ri-exchange-line',
+            title: 'Replace your current plan?',
+            message: 'Your current plan will be cancelled and the new one purchased.',
+            subject: `Current plan: ${hostingPackages[currentPlan.current_plan]?.name || currentPlan.current_plan}`,
+            subjectIcon: 'ri-vip-crown-line',
+            confirmText: 'Replace plan',
+            cancelText: 'Keep current plan'
         });
         
-        if (!result.isConfirmed) return;
+        if (!ok) return;
     }
     
     // Show loading
-    Swal.fire({
-        title: 'Processing...',
-        html: 'Preparing your payment...',
-        didOpen: () => Swal.showLoading(),
-        allowOutsideClick: false,
-        customClass: { popup: 'swal2-toast' }
-    });
+    showBusy('Preparing your payment…', { icon: 'ri-secure-payment-line', text: 'This only takes a moment' });
     
     try {
         const response = await api('/hosting/buy-package', {
@@ -8990,49 +9076,33 @@ function switchSubPanel(panel, btn) {
 async function confirmCancelHostingSubscription() {
     closeModal();
     
-    const result = await Swal.fire({
-        title: 'Cancel Hosting Subscription?',
-        html: `
-            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                Are you sure you want to cancel your hosting subscription?
-            </p>
-            <p style="color: var(--text-secondary); font-size: 0.875rem;">
-                Your plan will remain active until the end of the current billing period.
-            </p>
-        `,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: 'var(--bg-tertiary)',
-        confirmButtonText: 'Yes, Cancel Subscription',
-        cancelButtonText: 'Keep Subscription',
-        customClass: { popup: 'swal2-toast' }
+    const ok = await confirmDialog({
+        tone: 'danger',
+        icon: 'ri-server-line',
+        title: 'Cancel hosting subscription?',
+        message: 'Your plan stays active until the end of the current billing period.',
+        confirmText: 'Cancel subscription',
+        cancelText: 'Keep subscription'
     });
     
-    if (result.isConfirmed) {
-        Swal.fire({
-            title: 'Cancelling...',
-            didOpen: () => Swal.showLoading(),
-            allowOutsideClick: false,
-            customClass: { popup: 'swal2-toast' }
-        });
+    if (ok) {
+        showBusy('Cancelling subscription…');
         
         try {
             await api('/hosting/cancel-subscription');
-            Swal.fire({
-                icon: 'success',
-                title: 'Subscription Cancelled',
-                text: 'Your hosting subscription has been cancelled. You\'ll retain access until the end of your billing period.',
-                customClass: { popup: 'swal2-toast' }
+            noticeDialog({
+                tone: 'success',
+                title: 'Subscription cancelled',
+                message: 'Your hosting subscription has been cancelled. You\'ll keep access until the end of your billing period.',
+                buttonText: 'Done'
             });
             loadBilling(); // Reload the billing page
         } catch (error) {
             console.error('Failed to cancel hosting subscription:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Cancellation Failed',
-                text: error.message || 'Failed to cancel subscription. Please try again.',
-                customClass: { popup: 'swal2-toast' }
+            noticeDialog({
+                tone: 'error',
+                title: 'Couldn\'t cancel the subscription',
+                message: error.message || 'Failed to cancel subscription. Please try again.'
             });
         }
     }
@@ -9042,55 +9112,38 @@ async function confirmCancelHostingSubscription() {
 async function confirmCancelTaskSubscription(billingId, taskDescription) {
     closeModal();
     
-    const result = await Swal.fire({
-        title: 'Cancel Task Subscription?',
-        html: `
-            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                Are you sure you want to cancel the subscription for:
-            </p>
-            <p style="color: var(--text); font-weight: 600; margin-bottom: 1rem;">
-                ${taskDescription}
-            </p>
-            <p style="color: var(--text-secondary); font-size: 0.875rem;">
-                The task will remain active until the end of the current billing period.
-            </p>
-        `,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: 'var(--bg-tertiary)',
-        confirmButtonText: 'Yes, Cancel Subscription',
-        cancelButtonText: 'Keep Subscription',
-        customClass: { popup: 'swal2-toast' }
+    const ok = await confirmDialog({
+        tone: 'danger',
+        icon: 'ri-repeat-line',
+        title: 'Cancel task subscription?',
+        message: 'The task stays active until the end of the current billing period.',
+        subject: String(taskDescription || '').replace(/<[^>]*>/g, ''),
+        subjectIcon: 'ri-task-line',
+        confirmText: 'Cancel subscription',
+        cancelText: 'Keep subscription'
     });
     
-    if (result.isConfirmed) {
-        Swal.fire({
-            title: 'Cancelling...',
-            didOpen: () => Swal.showLoading(),
-            allowOutsideClick: false,
-            customClass: { popup: 'swal2-toast' }
-        });
+    if (ok) {
+        showBusy('Cancelling subscription…');
         
         try {
             await api('/tasks/cancel-subscription', {
                 method: 'POST',
                 body: JSON.stringify({ billing_id: billingId })
             });
-            Swal.fire({
-                icon: 'success',
-                title: 'Task Subscription Cancelled',
-                text: 'The task subscription has been cancelled. It will remain active until the end of the billing period.',
-                customClass: { popup: 'swal2-toast' }
+            noticeDialog({
+                tone: 'success',
+                title: 'Task subscription cancelled',
+                message: 'The task stays active until the end of the billing period.',
+                buttonText: 'Done'
             });
             loadBilling(); // Reload the billing page
         } catch (error) {
             console.error('Failed to cancel task subscription:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Cancellation Failed',
-                text: error.message || 'Failed to cancel task subscription. Please try again.',
-                customClass: { popup: 'swal2-toast' }
+            noticeDialog({
+                tone: 'error',
+                title: 'Couldn\'t cancel the subscription',
+                message: error.message || 'Failed to cancel task subscription. Please try again.'
             });
         }
     }
@@ -10252,17 +10305,15 @@ async function createSeoTask(isRetry = false) {
             createBtn.innerHTML = '<i class="ri-check-line"></i> Create Task';
             createBtn.disabled = false;
             // Show confirmation dialog for cancelling previous task
-            const result = await Swal.fire({
-                title: 'Pending Payment Active',
-                text: 'You have a pending payment that needs to be completed. Would you like to cancel it and create a new task?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Cancel & Create New',
-                cancelButtonText: 'No, Keep Existing'
+            const ok = await confirmDialog({
+                tone: 'warning',
+                icon: 'ri-time-line',
+                title: 'You have a pending payment',
+                message: 'A previous task is still waiting for payment. Cancel it and create this new task instead?',
+                confirmText: 'Cancel it & create new',
+                cancelText: 'Keep existing'
             });
-            if (result.isConfirmed) {
+            if (ok) {
                 // Set cancel_previous to true and retry
                 taskCreatorState.cancelPrevious = true;
                 // Show loading state again and retry
@@ -11336,26 +11387,18 @@ async function deleteTask(taskId) {
         // Find the task to show its URL in the confirmation modal
         const task = currentData.tasks.find(t => t._id === taskId);
         const taskUrl = task ? task.url : 'this task';
-        // Show confirmation dialog
-        const result = await Swal.fire({
-            icon: 'warning',
-            title: 'Delete Task?',
-            html: `
-                <p class="mb-2">Are you sure you want to delete this task?</p>
-                <p class="text-muted small">Task: <strong>${taskUrl}</strong></p>
-                <p class="text-danger mt-3"><i class="ri-alert-line"></i> This action cannot be undone!</p>
-            `,
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Delete',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#ef4444',
-            cancelButtonColor: '#6b7280',
-            reverseButtons: true
+        const ok = await confirmDialog({
+            tone: 'danger',
+            title: 'Delete this task?',
+            message: 'The task stops running and its history is removed. This can\'t be undone.',
+            subject: taskUrl,
+            subjectIcon: 'ri-links-line',
+            confirmText: 'Delete task',
+            confirmIcon: 'ri-delete-bin-line',
+            cancelText: 'Keep it'
         });
-        // If user cancelled, return early
-        if (!result.isConfirmed) {
-            return;
-        }
+        if (!ok) return;
+        showBusy('Deleting task…');
         // Make the delete request
         const response = await api('/delete-task', {
             method: 'DELETE',
@@ -11363,19 +11406,8 @@ async function deleteTask(taskId) {
         });
         // Handle the response structure: {status: "success", code: 200, data: {message, task_id}}
         if (response && response.status === 'success' && response.data) {
-            // Show success message
-            await Swal.fire({
-                icon: 'success',
-                title: 'Task Deleted!',
-                html: `
-                    <p class="mb-2">${response.data.message || 'Task has been deleted successfully.'}</p>
-                    <p class="text-muted small">Task ID: ${response.data.task_id || taskId}</p>
-                `,
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#10b981',
-                timer: 3000,
-                timerProgressBar: true
-            });
+            Swal.close();
+            showToast(response.data.message || 'Task deleted successfully', 'success');
             // Refresh the current view to show updated list
             try {
                 if (document.querySelector('.nav-item[data-page="tasks"]')?.classList.contains('active')) {
@@ -11392,13 +11424,10 @@ async function deleteTask(taskId) {
         }
     } catch (error) {
         console.error('Delete task error:', error);
-        // Show error with Swal
-        await Swal.fire({
-            icon: 'error',
-            title: 'Delete Failed',
-            text: error.message || 'Failed to delete task. Please try again.',
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#ef4444'
+        await noticeDialog({
+            tone: 'error',
+            title: 'Couldn\'t delete the task',
+            message: error.message || 'Failed to delete task. Please try again.'
         });
     }
 }
@@ -11564,16 +11593,15 @@ async function processRecharge(taskId, amount, provider, cancelPrevious = false)
         }
     } catch (error) {
         if (error.message === 'A pending recharge exists for this task') {
-            const result = await Swal.fire({
-                title: 'Pending Recharge',
-                text: 'You have a pending recharge for this task. Replace it?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Replace',
-                cancelButtonText: 'Cancel',
-                customClass: { popup: 'swal2-toast' }
+            const ok = await confirmDialog({
+                tone: 'warning',
+                icon: 'ri-time-line',
+                title: 'Replace pending recharge?',
+                message: 'This task already has a recharge waiting for payment. Replace it with this one?',
+                confirmText: 'Replace recharge',
+                cancelText: 'Keep existing'
             });
-            if (result.isConfirmed) {
+            if (ok) {
                 await processRecharge(taskId, amount, provider, true);
             }
         } else {
@@ -11626,12 +11654,7 @@ async function showDomainModal() {
         // This block runs only if preConfirm validation passes
         if (result.isConfirmed) {
             const url = result.value;
-            Swal.fire({
-                title: 'Adding Domain...',
-                didOpen: () => Swal.showLoading(),
-                allowOutsideClick: false,
-                customClass: { popup: 'swal2-toast' }
-            });
+            showBusy('Adding domain…', { text: url });
             try {
                 const response = await api('/add-domain', {
                     method: 'POST',
@@ -11673,30 +11696,25 @@ async function verifyDomain(url) {
     }
 }
 function confirmDeleteDomain(domain) {
-    Swal.fire({
-        title: 'Delete Domain?',
-        html: `<p style="margin: 0;">Are you sure you want to remove <strong>${domain}</strong> from your account?</p>
-               <span style="display: block; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">If the domain was verified, related articles will also be removed.</span>`,
-        icon: 'warning',
-        showCancelButton: true,
-        focusCancel: true,
-        confirmButtonText: 'Delete',
-        confirmButtonColor: '#d33',
-        cancelButtonText: 'Cancel',
-        customClass: { popup: 'swal2-toast' }
-    }).then((result) => {
-        if (result.isConfirmed) {
+    confirmDialog({
+        tone: 'danger',
+        icon: 'ri-global-line',
+        title: 'Remove this domain?',
+        message: 'It will be removed from your account.',
+        subject: domain,
+        subjectIcon: 'ri-global-line',
+        note: 'If the domain was verified, its articles are deleted too.',
+        confirmText: 'Remove domain',
+        confirmIcon: 'ri-delete-bin-line',
+        cancelText: 'Keep it'
+    }).then((ok) => {
+        if (ok) {
             deleteDomain(domain);
         }
     });
 }
 async function deleteDomain(domain) {
-    Swal.fire({
-        title: 'Deleting domain...',
-        didOpen: () => Swal.showLoading(),
-        allowOutsideClick: false,
-        customClass: { popup: 'swal2-toast' }
-    });
+    showBusy('Removing domain…', { text: domain });
     try {
         await api('/delete-domain', {
             method: 'POST',
@@ -12152,12 +12170,7 @@ async function showArticleModal(articleId = null) {
     const isEdit = !!articleId;
     let articleData = null;
     if (isEdit) {
-        Swal.fire({
-            title: 'Loading Article...',
-            didOpen: () => Swal.showLoading(),
-            allowOutsideClick: false,
-            customClass: { popup: 'swal2-toast' }
-        });
+        showBusy('Opening article…', { icon: 'ri-article-line' });
         try {
             const response = await api(`/dashboard/articles?article_id=${articleId}`);
             articleData = response.data.article;
@@ -12504,88 +12517,149 @@ async function showArticleModal(articleId = null) {
         }
         .img-btn.view { background: var(--primary); }
         .img-btn.delete { background: var(--error); }
-        .upload-area {
-            border: 2px dashed var(--border);
-            border-radius: var(--radius);
-            padding: 1.25rem;
-            text-align: center;
-            background: var(--bg-tertiary);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: var(--card-hover);
-        }
-        .upload-area.dragover {
-            border-color: var(--success);
-            background: rgba(16, 185, 129, 0.1);
-        }
-        .upload-icon {
-            font-size: 2rem;
-            color: var(--text-tertiary);
-            margin-bottom: 0.5rem;
-        }
+        /* Image box: previews sit inside it, the first image is the cover */
         .preview-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 0.5rem;
-            margin-top: 0.65rem;
+            padding: 0.5rem;
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            background: var(--bg-tertiary);
+            transition: border-color .2s, background .2s;
         }
+        .preview-grid.dragover { border-color: var(--success); background: rgba(16, 185, 129, 0.08); }
+        .upload-area {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            min-height: 0;
+            aspect-ratio: 4 / 3;
+            border: 1.5px dashed var(--border);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--text-secondary);
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .2s, background .2s, color .2s, transform .2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .upload-area:hover, .upload-area:focus-visible { border-color: var(--primary); color: var(--primary); outline: none; }
+        .upload-area:active { transform: scale(0.98); }
+        .upload-area.is-invalid { border-color: var(--error); background: rgba(239, 68, 68, 0.06); }
+        .upload-icon {
+            width: 44px; height: 44px;
+            border-radius: 14px;
+            display: grid; place-items: center;
+            background: var(--gradient-primary, linear-gradient(135deg, #2563eb, #06b6d4));
+            color: #fff;
+            font-size: 1.35rem;
+            box-shadow: 0 10px 22px -12px rgba(37, 99, 235, .7);
+        }
+        .upload-copy, .upload-icon { display: none; }
+        .upload-add { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; font-size: 0.75rem; font-weight: 600; }
+        .upload-add i { font-size: 1.4rem; }
+        /* Empty box: one big inviting drop target */
+        .upload-area:only-child {
+            grid-column: 1 / -1;
+            aspect-ratio: auto;
+            padding: 1.5rem 1rem;
+            border: 0;
+            background: transparent;
+            color: var(--text-secondary);
+        }
+        .upload-area:only-child .upload-icon, .upload-area:only-child .upload-copy { display: grid; }
+        .upload-area:only-child .upload-copy { display: block; }
+        .upload-area:only-child .upload-add { display: none; }
+        .upload-area:only-child:hover { background: var(--card); }
+        .upload-title { font-size: 0.85rem; color: var(--text); }
+        .upload-title b { color: var(--primary); font-weight: 700; }
+        .upload-hint { font-size: 0.7rem; color: var(--text-tertiary); margin-top: 0.2rem; }
+        .preview-grid.full .upload-area { display: none; }
+        .upl-section-head { flex-direction: row !important; align-items: center !important; }
+        .upl-count {
+            font-size: 0.72rem; font-weight: 700; color: var(--text-secondary);
+            padding: 0.15rem 0.55rem; border-radius: 99px; background: var(--bg-tertiary); border: 1px solid var(--border);
+        }
+        .upl-tip { display: flex; align-items: center; gap: 0.35rem; margin-top: 0.5rem; font-size: 0.7rem; color: var(--text-tertiary); }
         .preview-item {
             position: relative;
-            aspect-ratio: 1;
-            border-radius: var(--radius-sm);
+            aspect-ratio: 4 / 3;
+            border-radius: 12px;
             overflow: hidden;
-            border: 2px solid var(--success);
+            background: #0f172a;
+            isolation: isolate;
+            box-shadow: 0 6px 16px -10px rgba(15, 23, 42, .6);
+        }
+        /* Blurred copy fills the frame, the real image is shown whole on top */
+        .preview-item::before {
+            content: '';
+            position: absolute; inset: -12px;
+            background: var(--pv) center / cover no-repeat;
+            filter: blur(14px) brightness(.75) saturate(1.2);
+            z-index: -1;
         }
         .preview-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            width: 100%; height: 100%;
+            object-fit: contain;
+            display: block;
+            transition: opacity .3s;
         }
-        .preview-remove {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            background: var(--error);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .preview-item:first-child { grid-column: 1 / -1; aspect-ratio: 16 / 10; }
+        .preview-item:first-child::after {
+            content: 'Cover';
+            position: absolute; left: 8px; bottom: 8px;
+            padding: 0.15rem 0.55rem;
+            border-radius: 99px;
+            background: rgba(15, 23, 42, .7);
+            backdrop-filter: blur(6px);
+            color: #fff; font-size: 0.68rem; font-weight: 700; letter-spacing: .02em;
+        }
+        .pv-tag {
+            position: absolute; left: 8px; top: 8px;
+            display: inline-flex; align-items: center; gap: 0.2rem;
+            padding: 0.15rem 0.5rem; border-radius: 99px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff; font-size: 0.66rem; font-weight: 700;
+        }
+        .pv-actions { position: absolute; top: 6px; right: 6px; display: flex; gap: 0.3rem; z-index: 2; }
+        .preview-remove, .preview-refresh {
+            width: 30px; height: 30px;
+            display: grid; place-items: center;
+            padding: 0;
+            border: 0; border-radius: 9px;
+            background: rgba(15, 23, 42, .65);
+            backdrop-filter: blur(6px);
+            color: #fff; font-size: 0.95rem;
             cursor: pointer;
-            font-size: 0.7rem;
-            z-index: 2;
+            transition: background .2s, transform .2s;
         }
-        .preview-refresh {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.7rem;
-            z-index: 2;
-            transition: var(--transition);
+        .preview-remove:hover { background: var(--error); }
+        .preview-refresh:hover { background: var(--primary); }
+        .preview-refresh:disabled i { animation: spin 1s linear infinite; }
+        .preview-item.loading img { opacity: 0; }
+        .preview-item.loading::before, .preview-item.skeleton {
+            background: linear-gradient(110deg, var(--bg-secondary) 30%, var(--card) 50%, var(--bg-secondary) 70%) 0 0 / 250% 100%;
+            filter: none;
+            animation: pvShimmer 1.3s linear infinite;
         }
-        .preview-refresh:hover {
-            transform: rotate(180deg);
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        .preview-item.skeleton { box-shadow: none; border: 1px solid var(--border); }
+        .preview-item.skeleton:first-child::after { display: none; }
+        @keyframes pvShimmer { to { background-position: -250% 0; } }
+        .pv-sk, .pv-broken {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem;
+            font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-align: center; padding: 0.5rem;
         }
-        .preview-refresh.loading {
-            animation: spin 1s linear infinite;
-        }
+        .pv-sk i { font-size: 1.6rem; color: var(--primary); animation: pvPulse 1.4s ease-in-out infinite; }
+        @keyframes pvPulse { 50% { opacity: .45; transform: scale(.92); } }
+        .pv-broken { display: none; color: #e2e8f0; }
+        .pv-broken i { font-size: 1.5rem; opacity: .8; }
+        .preview-item.broken .pv-broken { display: flex; }
+        .preview-item.broken img { opacity: 0; }
         .title-meta-row {
             display: flex;
             justify-content: space-between;
@@ -12607,33 +12681,76 @@ async function showArticleModal(articleId = null) {
             color: var(--text-tertiary);
             margin-top: 0.35rem;
         }
+        /* AI generation: banner above the editor + skeleton over the content box */
         .generation-status {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: var(--radius);
-            padding: 0.85rem;
-            margin-top: 0.75rem;
             display: none;
+            position: relative;
+            overflow: hidden;
             align-items: center;
-            gap: 0.65rem;
+            gap: 0.75rem;
+            margin-bottom: 0.65rem;
+            padding: 0.75rem 0.85rem 0.95rem;
+            border-radius: 14px;
+            border: 1px solid rgba(118, 75, 162, 0.35);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.12), rgba(118, 75, 162, 0.12));
         }
-        .generation-status.active {
-            display: flex;
+        .generation-status.active { display: flex; animation: genIn .3s ease; }
+        @keyframes genIn { from { opacity: 0; transform: translateY(-4px); } }
+        .gen-orb {
+            flex: none;
+            width: 36px; height: 36px;
+            border-radius: 12px;
+            display: grid; place-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff; font-size: 1.05rem;
+            box-shadow: 0 0 0 0 rgba(118, 75, 162, .5);
+            animation: genGlow 1.8s ease-out infinite;
         }
-        .status-spinner {
-            width: 18px;
-            height: 18px;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        @keyframes genGlow { 70% { box-shadow: 0 0 0 10px rgba(118, 75, 162, 0); } 100% { box-shadow: 0 0 0 0 rgba(118, 75, 162, 0); } }
+        .gen-copy { min-width: 0; flex: 1; }
+        .status-text { font-size: 0.84rem; font-weight: 600; color: var(--text); line-height: 1.35; overflow-wrap: anywhere; }
+        .gen-sub { font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.15rem; }
+        .gen-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(118, 75, 162, .15); overflow: hidden; }
+        .gen-bar i { position: absolute; top: 0; bottom: 0; width: 40%; border-radius: 3px; background: linear-gradient(90deg, #667eea, #764ba2); animation: genBar 1.4s ease-in-out infinite; }
+        @keyframes genBar { from { left: -40%; } to { left: 100%; } }
+        .body-editor-container { position: relative; }
+        .gen-skeleton {
+            display: none;
+            position: absolute; inset: 0;
+            z-index: 3;
+            flex-direction: column; gap: 0.6rem;
+            padding: 1.1rem;
+            border-radius: inherit;
+            background: var(--bg-tertiary);
         }
-        .status-text {
-            flex: 1;
-            font-size: 0.8rem;
-            color: var(--text);
-            font-weight: 500;
+        .body-editor-container.is-generating .gen-skeleton { display: flex; }
+        .gen-skeleton .sk {
+            display: block; height: 10px; border-radius: 6px;
+            background: linear-gradient(110deg, var(--border) 30%, var(--card) 50%, var(--border) 70%) 0 0 / 250% 100%;
+            animation: pvShimmer 1.3s linear infinite;
         }
+        .gen-skeleton .sk.h { height: 16px; margin-top: 0.35rem; }
+        .gen-skeleton .w95 { width: 95%; } .gen-skeleton .w90 { width: 90%; } .gen-skeleton .w80 { width: 80%; }
+        .gen-skeleton .w70 { width: 70%; } .gen-skeleton .w55 { width: 55%; } .gen-skeleton .w40 { width: 40%; }
+        .gen-skeleton-label {
+            margin-top: auto; align-self: center;
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.4rem 0.85rem; border-radius: 99px;
+            background: var(--card); border: 1px solid var(--border);
+            font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);
+        }
+        .gen-skeleton-label i { color: #764ba2; }
+        .article-modal-wrapper .is-invalid { border-color: var(--error) !important; box-shadow: 0 0 0 3px rgba(239, 68, 68, .15) !important; }
+        .art-error {
+            display: flex; align-items: flex-start; gap: 0.45rem;
+            margin-bottom: 0.65rem; padding: 0.6rem 0.75rem;
+            border-radius: 10px;
+            background: rgba(239, 68, 68, .08); border: 1px solid rgba(239, 68, 68, .3);
+            color: var(--error); font-size: 0.8rem; font-weight: 500; line-height: 1.4;
+        }
+        .art-error[hidden] { display: none; }
+        .art-error i { flex: none; font-size: 1rem; margin-top: 1px; }
+        .article-actions button:disabled { opacity: .6; cursor: not-allowed; transform: none !important; }
         /* Mobile Responsive */
         @media (max-width: 1024px) {
             .article-modal-wrapper {
@@ -12641,6 +12758,29 @@ async function showArticleModal(articleId = null) {
                 gap: 1rem;
                 max-height: calc(85vh - 80px);
             }
+            /* One column on phones/tablets: Domain, Title, Images, Content, then usage + actions.
+               The images come right after the title so the AI cover shows up near the top. */
+            .article-modal-wrapper { display: flex; flex-direction: column; gap: 0.85rem; }
+            .article-main-content, .article-main-content form, .article-sidebar { display: contents; }
+            .art-sec-domain { order: 1; }
+            .art-sec-title { order: 2; }
+            .art-sec-current { order: 3; }
+            .art-sec-upload { order: 4; }
+            .art-sec-content { order: 5; }
+            #usage-section { order: 6; }
+            .article-section.action-buttons-wrapper {
+                order: 7;
+                position: sticky; bottom: 0; z-index: 4;
+                margin-top: 0;
+                box-shadow: 0 -10px 24px -14px rgba(15, 23, 42, .35);
+            }
+            .article-section.action-buttons-wrapper:hover { box-shadow: 0 -10px 24px -14px rgba(15, 23, 42, .35); }
+            .article-section.action-buttons-wrapper { padding: 0.6rem !important; border-radius: 16px; }
+            .article-modal-wrapper .article-actions { flex-direction: row-reverse; gap: 0.5rem; }
+            .article-modal-wrapper .article-actions button { padding: 0.8rem 1rem; }
+            .article-modal-wrapper .article-actions .btn-save { flex: 1 1 auto; }
+            .article-modal-wrapper .article-actions .btn-cancel { flex: 0 0 auto; width: auto; }
+            .preview-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
             .article-sidebar {
                 border-left: none;
                 border-top: 2px solid var(--border);
@@ -12719,10 +12859,13 @@ async function showArticleModal(articleId = null) {
                 margin-bottom: 0 !important;
             }
             .article-modal-swal .swal2-html-container {
-                max-height: 75vh !important;
+                max-height: none !important;
+                overflow: visible !important;
                 padding: 0.25rem !important;
-                padding-bottom: 1rem !important;
+                padding-bottom: 0 !important;
             }
+            /* The editor scrolls inside itself so the sticky Create/Cancel bar is never cut off */
+            .article-modal-wrapper { max-height: calc(90vh - 75px) !important; max-height: calc(90dvh - 75px) !important; }
             #ai-generate-all-btn {
                 font-size: 0.65rem !important;
                 padding: 0.25rem 0.4rem !important;
@@ -12797,7 +12940,7 @@ async function showArticleModal(articleId = null) {
     <div class="article-modal-wrapper">
         <div class="article-main-content">
             <form id="articleForm">
-                <div class="article-section">
+                <div class="article-section art-sec-domain">
                     <div class="section-label-row">
                         <label class="form-label" for="article-url" style="margin-bottom: 0;"><i class="ri-global-line"></i> Domain</label>
                     </div>
@@ -12808,7 +12951,7 @@ async function showArticleModal(articleId = null) {
                         `).join('')}
                     </select>
                 </div>
-                <div class="article-section">
+                <div class="article-section art-sec-title">
                     <div class="section-label-row">
                         <label class="form-label" for="article-subject" style="margin-bottom: 0;"><i class="ri-text"></i> Title</label>
                         <button type="button" class="ai-btn" id="ai-generate-all-btn">
@@ -12822,11 +12965,24 @@ async function showArticleModal(articleId = null) {
                         <div class="char-count"><span id="title-count">0</span>/200</div>
                     </div>
                 </div>
-                <div class="article-section">
+                <div class="article-section art-sec-content">
                     <div class="section-label-row">
                         <label class="form-label" for="article-body" style="margin-bottom: 0;"><i class="ri-file-text-line"></i> Content</label>
                     </div>
+                    <div class="generation-status" id="gen-status" role="status" aria-live="polite">
+                        <div class="gen-orb"><i class="ri-sparkling-2-fill"></i></div>
+                        <div class="gen-copy">
+                            <div class="status-text" id="gen-status-text">Generating content...</div>
+                            <div class="gen-sub">Title, content and a cover image · usually 20–60 seconds</div>
+                        </div>
+                        <div class="gen-bar"><i></i></div>
+                    </div>
                     <div class="body-editor-container">
+                        <div class="gen-skeleton" aria-hidden="true">
+                            <span class="sk w40 h"></span><span class="sk w95"></span><span class="sk w90"></span><span class="sk w70"></span>
+                            <span class="sk w55 h"></span><span class="sk w95"></span><span class="sk w80"></span>
+                            <div class="gen-skeleton-label"><i class="ri-quill-pen-line"></i> Writing your article…</div>
+                        </div>
                         <div class="editor-toolbar">
                             <button type="button" class="editor-btn" data-tag="h1">
                                 <i class="ri-h-1"></i> H1
@@ -12851,10 +13007,6 @@ async function showArticleModal(articleId = null) {
                             placeholder="<h1>Main Heading</h1>&#10;<p>Your content here...</p>&#10;&#10;<h2>Subheading</h2>&#10;<p>More content...</p>">${articleData ? articleData.body : ''}</textarea>
                     </div>
                     <div class="char-count"><span id="body-count">0</span> characters</div>
-                    <div class="generation-status" id="gen-status">
-                        <div class="status-spinner"></div>
-                        <div class="status-text" id="gen-status-text">Generating content...</div>
-                    </div>
                 </div>
                 <input type="hidden" id="delete-images" name="delete_image_ids" value="">
                 <input type="hidden" id="image-urls" name="image_urls" value="">
@@ -12862,7 +13014,7 @@ async function showArticleModal(articleId = null) {
         </div>
         <div class="article-sidebar">
             ${isEdit && articleData && articleData.images && articleData.images.length > 0 ? `
-            <div class="article-section">
+            <div class="article-section art-sec-current">
                 <div class="section-header">
                     <h3 class="section-title"><i class="ri-image-line"></i> Current (${articleData.images.length})</h3>
                 </div>
@@ -12905,17 +13057,23 @@ async function showArticleModal(articleId = null) {
                 </div>
             </div>
             ` : ''}
-            <div class="article-section">
-                <div class="section-header">
-                    <h3 class="section-title"><i class="ri-upload-line"></i> ${isEdit ? 'Add New' : 'Upload'}</h3>
+            <div class="article-section art-sec-upload">
+                <div class="section-header upl-section-head">
+                    <h3 class="section-title"><i class="ri-image-add-line"></i> ${isEdit ? 'Add images' : 'Images'}</h3>
+                    <span class="upl-count" id="upl-count" hidden>0 / 10</span>
                 </div>
-                <div class="upload-area" id="upload-zone" onclick="document.getElementById('file-input').click()">
-                    <input type="file" id="file-input" name="image_data" multiple accept="image/*" style="display:none;">
-                    <div class="upload-icon"><i class="ri-upload-cloud-line"></i></div>
-                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Click or drop images</div>
-                    <div style="font-size: 0.65rem; color: var(--text-tertiary); margin-top: 0.25rem;">Max 10 files, 5MB each</div>
+                <div id="preview-container" class="preview-grid">
+                    <div class="upload-area" id="upload-zone" role="button" tabindex="0" aria-label="Upload images">
+                        <input type="file" id="file-input" name="image_data" multiple accept="image/*" style="display:none;">
+                        <div class="upload-icon"><i class="ri-upload-cloud-2-line"></i></div>
+                        <div class="upload-copy">
+                            <div class="upload-title"><b>Tap to upload</b><span class="upload-drop"> or drop images</span></div>
+                            <div class="upload-hint">Up to 10 images · 5MB each</div>
+                        </div>
+                        <div class="upload-add"><i class="ri-add-line"></i><span>Add</span></div>
+                    </div>
                 </div>
-                <div id="preview-container" class="preview-grid"></div>
+                <div class="upl-tip"><i class="ri-information-line"></i> The first image is the article's cover.</div>
             </div>
             <div class="article-section" id="usage-section" style="display: block;">
                 <div class="section-header">
@@ -12939,6 +13097,7 @@ async function showArticleModal(articleId = null) {
                 </div>
             </div>
             <div class="article-section action-buttons-wrapper">
+                <div class="art-error" id="art-error" role="alert" hidden><i class="ri-error-warning-line"></i><span></span></div>
                 <div class="article-actions">
                     <button type="button" class="btn-save" id="article-save-btn">
                         <i class="ri-save-line"></i> ${isEdit ? 'Update Article' : 'Create Article'}
@@ -12948,6 +13107,14 @@ async function showArticleModal(articleId = null) {
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="art-saving" id="art-saving" hidden>
+        <div class="busy" role="status" aria-live="polite">
+            <div class="busy-spin"><span class="busy-ring"></span><i class="ri-article-line"></i></div>
+            <h3 class="busy-title">${isEdit ? 'Saving your changes…' : 'Publishing your article…'}</h3>
+            <p class="busy-text">Please keep this window open</p>
+            <ol class="busy-steps" id="art-saving-steps"></ol>
         </div>
     </div>
     `;
@@ -12976,8 +13143,54 @@ async function showArticleModal(articleId = null) {
             titleInput.addEventListener('input', updateCounters);
             bodyInput.addEventListener('input', updateCounters);
             updateCounters();
-            // File input
+            // Images: previews live in the upload box, the first one is the cover
             const fileInput = document.getElementById('file-input');
+            const previewBox = document.getElementById('preview-container');
+            const zone = document.getElementById('upload-zone');
+            const imageCount = () => window.articleFiles.length + window.imageUrls.length;
+            const syncImages = () => {
+                const n = imageCount();
+                const counter = document.getElementById('upl-count');
+                counter.textContent = `${n} / 10`;
+                counter.hidden = n === 0;
+                previewBox.classList.toggle('full', n >= 10);
+            };
+            window.addArticlePreview = ({ src, name = '', ai = false, url = '', file = null }) => {
+                const div = document.createElement('div');
+                div.className = 'preview-item loading' + (ai ? ' ai' : '');
+                div.style.setProperty('--pv', `url("${src}")`);
+                div.innerHTML = `
+                    <img alt="">
+                    ${ai ? '<span class="pv-tag"><i class="ri-sparkling-2-fill"></i> AI</span>' : ''}
+                    <div class="pv-broken"><i class="ri-image-line"></i><span>${ai ? 'Still rendering, tap reload' : 'Preview unavailable'}</span></div>
+                    <div class="pv-actions">
+                        ${ai ? '<button type="button" class="preview-refresh" title="Reload image" aria-label="Reload image"><i class="ri-refresh-line"></i></button>' : ''}
+                        <button type="button" class="preview-remove" title="Remove image" aria-label="Remove image"><i class="ri-close-line"></i></button>
+                    </div>`;
+                const img = div.querySelector('img');
+                img.alt = name || 'Article image';
+                img.onload = () => div.classList.remove('loading', 'broken');
+                img.onerror = () => { div.classList.remove('loading'); div.classList.add('broken'); };
+                img.src = src;
+                div.querySelector('.preview-remove').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (file) {
+                        window.articleFiles = window.articleFiles.filter(f => f !== file);
+                        try { URL.revokeObjectURL(src); } catch (_) {}
+                    }
+                    if (url) {
+                        window.imageUrls = window.imageUrls.filter(u => u !== url);
+                        document.getElementById('image-urls').value = window.imageUrls.join(',');
+                    }
+                    div.remove();
+                    syncImages();
+                });
+                const refreshBtn = div.querySelector('.preview-refresh');
+                if (refreshBtn) refreshBtn.addEventListener('click', (e) => { e.stopPropagation(); window.refreshAiImage(url, refreshBtn); });
+                previewBox.insertBefore(div, zone);
+                syncImages();
+                return div;
+            };
             fileInput.addEventListener('change', (e) => {
                 Array.from(e.target.files).forEach(file => {
                     if (!file.type.startsWith('image/')) return;
@@ -12985,40 +13198,34 @@ async function showArticleModal(articleId = null) {
                         showToast(file.name + ' exceeds 5MB', 'error');
                         return;
                     }
-                    const totalImages = window.articleFiles.length + window.imageUrls.length;
-                    if (totalImages >= 10) {
+                    if (imageCount() >= 10) {
                         showToast('Max 10 images', 'warning');
                         return;
                     }
                     window.articleFiles.push(file);
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        const div = document.createElement('div');
-                        div.className = 'preview-item';
-                        div.innerHTML = `
-                            <img src="${ev.target.result}" alt="${file.name}">
-                            <button type="button" class="preview-remove" onclick="window.removePreview('${file.name}', this)">
-                                <i class="ri-close-line"></i>
-                            </button>
-                        `;
-                        document.getElementById('preview-container').appendChild(div);
-                    };
-                    reader.readAsDataURL(file);
+                    window.addArticlePreview({ src: URL.createObjectURL(file), name: file.name, file });
                 });
                 fileInput.value = '';
+                document.getElementById('art-error').hidden = true;
+                zone.classList.remove('is-invalid');
             });
-            // Drag & drop
-            const zone = document.getElementById('upload-zone');
+            zone.addEventListener('click', () => fileInput.click());
+            zone.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+            });
+            // Drag & drop anywhere on the image box
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => {
-                zone.addEventListener(e, (ev) => { ev.preventDefault(); ev.stopPropagation(); }, false);
+                previewBox.addEventListener(e, (ev) => { ev.preventDefault(); ev.stopPropagation(); }, false);
             });
-            ['dragenter', 'dragover'].forEach(e => zone.addEventListener(e, () => zone.classList.add('dragover')));
-            ['dragleave', 'drop'].forEach(e => zone.addEventListener(e, () => zone.classList.remove('dragover')));
-            zone.addEventListener('drop', (e) => {
+            ['dragenter', 'dragover'].forEach(e => previewBox.addEventListener(e, () => previewBox.classList.add('dragover')));
+            ['dragleave', 'drop'].forEach(e => previewBox.addEventListener(e, () => previewBox.classList.remove('dragover')));
+            previewBox.addEventListener('drop', (e) => {
                 const dt = e.dataTransfer;
+                if (!dt || !dt.files || !dt.files.length) return;
                 fileInput.files = dt.files;
                 fileInput.dispatchEvent(new Event('change'));
             });
+            syncImages();
             // Helper: Update usage display
 // Helper: Update usage display
             window.updateUsageDisplay = (usage) => {
@@ -13099,18 +13306,22 @@ async function showArticleModal(articleId = null) {
             // Helper: Show status
             window.showGenStatus = (text) => {
                 const status = document.getElementById('gen-status');
-                const statusText = document.getElementById('gen-status-text');
-                statusText.textContent = text;
+                document.getElementById('gen-status-text').textContent = text;
                 status.classList.add('active');
+                document.querySelector('.article-modal-wrapper .body-editor-container')?.classList.add('is-generating');
+                // A placeholder tile where the AI cover image will land
+                if (!previewBox.querySelector('.preview-item.skeleton')) {
+                    const sk = document.createElement('div');
+                    sk.className = 'preview-item skeleton';
+                    sk.innerHTML = '<div class="pv-sk"><i class="ri-image-ai-line"></i><span>Creating cover image…</span></div>';
+                    previewBox.insertBefore(sk, zone);
+                }
             };
             // Helper: Hide status
             window.hideGenStatus = () => {
                 document.getElementById('gen-status').classList.remove('active');
-            };
-            // Global functions
-            window.removePreview = (name, btn) => {
-                window.articleFiles = window.articleFiles.filter(f => f.name !== name);
-                btn.closest('.preview-item').remove();
+                document.querySelector('.article-modal-wrapper .body-editor-container')?.classList.remove('is-generating');
+                previewBox.querySelectorAll('.preview-item.skeleton').forEach(el => el.remove());
             };
             window.toggleDeleteImage = (id) => {
                 const item = document.querySelector(`[data-id="${id}"]`);
@@ -13196,22 +13407,10 @@ async function showArticleModal(articleId = null) {
                         }
                         // Handle AI-generated image URL
                         if (data.data.image_url) {
+                            window.hideGenStatus();
                             window.imageUrls.push(data.data.image_url);
                             document.getElementById('image-urls').value = window.imageUrls.join(',');
-                            // Add preview
-                            const div = document.createElement('div');
-                            div.className = 'preview-item';
-                            div.dataset.isAiGenerated = 'true';
-                            div.innerHTML = `
-                                <img src="${data.data.image_url}" alt="AI Generated">
-                                <button type="button" class="preview-refresh" onclick="window.refreshAiImage('${data.data.image_url}', this)" title="Reload image">
-                                    <i class="ri-refresh-line"></i>
-                                </button>
-                                <button type="button" class="preview-remove" onclick="window.removeUrlPreview('${data.data.image_url}', this)">
-                                    <i class="ri-close-line"></i>
-                                </button>
-                            `;
-                            document.getElementById('preview-container').appendChild(div);
+                            window.addArticlePreview({ src: data.data.image_url, name: 'AI generated cover', ai: true, url: data.data.image_url });
                         }
                         // Update usage
                         if (data.data && data.data.usage) {
@@ -13230,37 +13429,27 @@ async function showArticleModal(articleId = null) {
                     window.hideGenStatus();
                 }
             });
-            // Remove URL preview
-            window.removeUrlPreview = (url, btn) => {
-                window.imageUrls = window.imageUrls.filter(u => u !== url);
-                document.getElementById('image-urls').value = window.imageUrls.join(',');
-                btn.closest('.preview-item').remove();
-            };
-            // Refresh AI-generated image (reload the same image)
+            // Reload an AI image (the CDN can take a moment to render it)
             window.refreshAiImage = (imageUrl, btn) => {
                 const previewItem = btn.closest('.preview-item');
                 const img = previewItem.querySelector('img');
-                const refreshIcon = btn.querySelector('i');
                 btn.disabled = true;
-                refreshIcon.classList.add('loading');
-                // Add cache-busting parameter to force reload
+                previewItem.classList.add('loading');
                 const url = new URL(imageUrl);
                 url.searchParams.set('t', Date.now());
-                // Create a temporary image to test if it loads
                 const tempImg = new Image();
                 tempImg.onload = () => {
-                    // Image loaded successfully, update the main image
                     img.src = url.toString();
-                    showToast('Image reloaded successfully!', 'success');
+                    previewItem.style.setProperty('--pv', `url("${url.toString()}")`);
+                    previewItem.classList.remove('broken');
                     btn.disabled = false;
-                    refreshIcon.classList.remove('loading');
                 };
                 tempImg.onerror = () => {
-                    showToast('Failed to reload image', 'error');
+                    showToast('The image is not ready yet. Try again in a few seconds.', 'warning');
+                    previewItem.classList.remove('loading');
+                    previewItem.classList.add('broken');
                     btn.disabled = false;
-                    refreshIcon.classList.remove('loading');
                 };
-                // Start loading the image
                 tempImg.src = url.toString();
             };
             // Custom save button handler
@@ -13272,17 +13461,32 @@ async function showArticleModal(articleId = null) {
                 Swal.clickCancel();
             });
         },
-        preConfirm: () => {
+        preConfirm: async () => {
+            const errorBox = document.getElementById('art-error');
+            const fail = (msg, fieldId) => {
+                errorBox.querySelector('span').textContent = msg;
+                errorBox.hidden = false;
+                const field = fieldId && document.getElementById(fieldId);
+                if (field) {
+                    field.classList.add('is-invalid');
+                    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (field.focus) field.focus({ preventScroll: true });
+                    const clear = () => { field.classList.remove('is-invalid'); errorBox.hidden = true; };
+                    field.addEventListener('input', clear, { once: true });
+                    field.addEventListener('change', clear, { once: true });
+                }
+                return false;
+            };
+            errorBox.hidden = true;
             const url = document.getElementById('article-url').value;
             const subject = document.getElementById('article-subject').value.trim();
             const body = document.getElementById('article-body').value.trim();
-            if (!url) { Swal.showValidationMessage('Select a domain'); return false; }
-            if (!subject) { Swal.showValidationMessage('Enter a title'); return false; }
-            if (!body) { Swal.showValidationMessage('Enter content'); return false; }
+            if (!url) return fail('Select a domain for this article.', 'article-url');
+            if (!subject) return fail('Add a title for this article.', 'article-subject');
+            if (!body) return fail('Add some content, or use Generate by AI.', 'article-body');
             // Validate that we have at least one image (file or URL)
             if (window.articleFiles.length === 0 && window.imageUrls.length === 0 && !isEdit) {
-                Swal.showValidationMessage('At least one image is required');
-                return false;
+                return fail('Add at least one image. It becomes the cover.', 'upload-zone');
             }
             const formData = new FormData();
             formData.append('url', url);
@@ -13291,27 +13495,46 @@ async function showArticleModal(articleId = null) {
             if (window.deleteImageIds.length) formData.append('delete_image_ids', window.deleteImageIds.join(','));
             if (window.imageUrls.length) formData.append('image_urls', window.imageUrls.join(','));
             window.articleFiles.forEach(f => formData.append('image_data', f));
-            return formData;
-        }
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            Swal.fire({ title: isEdit ? 'Updating...' : 'Creating...', didOpen: () => Swal.showLoading(), allowOutsideClick: false });
+            // Saving overlay inside the editor, so a failure keeps everything the user wrote
+            const files = window.articleFiles.length;
+            const steps = [];
+            if (files) steps.push(`Uploading ${files} image${files === 1 ? '' : 's'}`);
+            steps.push(isEdit ? 'Saving your changes' : 'Saving the article');
+            steps.push(`Publishing to ${url}`);
+            const overlay = document.getElementById('art-saving');
+            overlay.querySelector('#art-saving-steps').innerHTML = busyStepsHtml(steps);
+            overlay.hidden = false;
+            const saveBtn = document.getElementById('article-save-btn');
+            saveBtn.disabled = true;
+            const stepTimer = runBusySteps(overlay, 1500);
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 120000);
             try {
                 const endpoint = isEdit ? `/edit-article/${articleId}` : '/add-article';
                 const method = isEdit ? 'PUT' : 'POST';
                 const response = await fetch(`${API_BASE}${endpoint}`, {
                     method,
                     headers: { 'Session-Token': sessionToken },
-                    body: result.value
+                    body: formData,
+                    signal: controller.signal
                 });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error?.message || data.message || 'Failed');
-                Swal.close();
-                showToast(`Article ${isEdit ? 'updated' : 'created'}!`, 'success');
-                loadArticles();
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.error?.message || data.message || 'Failed to save the article');
+                return true;
             } catch (error) {
-                Swal.fire({ icon: 'error', title: 'Failed', text: error.message, customClass: { popup: 'swal2-toast' } });
+                overlay.hidden = true;
+                saveBtn.disabled = false;
+                const msg = error.name === 'AbortError' ? 'The server took too long to respond. Please try again.' : (error.message || 'Failed to save the article');
+                return fail(msg);
+            } finally {
+                clearTimeout(timeout);
+                clearInterval(stepTimer);
             }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            showToast(`Article ${isEdit ? 'updated' : 'created'}!`, 'success');
+            loadArticles();
         }
     });
 }
@@ -13407,43 +13630,24 @@ function showInstallInstructions(domain) {
         showConfirmButton: false,
     });
 }
-// Custom delete confirmation modal
-function confirmDeleteArticle(articleId) {
-    Swal.fire({
-        title: '<i class="ri-error-warning-line" style="color: var(--danger); font-size: 2.5rem;"></i>',
-        html: `
-            <div style="text-align: center;">
-                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem; font-weight: 700; color: var(--text);">Delete Article?</h3>
-                <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">This action cannot be undone. The article and all its data will be permanently removed.</p>
-            </div>
-        `,
-        showCancelButton: true,
-        confirmButtonText: '<i class="ri-delete-bin-line"></i> Delete',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: 'var(--danger)',
-        cancelButtonColor: 'var(--bg-tertiary)',
-        reverseButtons: true,
-        customClass: {
-            popup: 'swal2-toast',
-            confirmButton: 'btn btn-danger',
-            cancelButton: 'btn'
-        },
-        buttonsStyling: false,
-        focusCancel: true
-    }).then((result) => {
-        if (result.isConfirmed) {
-            deleteArticle(articleId);
-        }
+// Delete article: confirm, then delete
+async function confirmDeleteArticle(articleId) {
+    const article = (currentData.articles || []).find(a => String(a.article_id) === String(articleId));
+    const ok = await confirmDialog({
+        tone: 'danger',
+        title: 'Delete this article?',
+        message: 'The article, its images and its view stats will be permanently removed. This can\'t be undone.',
+        subject: article?.subject || '',
+        subjectIcon: 'ri-article-line',
+        confirmText: 'Delete article',
+        confirmIcon: 'ri-delete-bin-line',
+        cancelText: 'Keep it'
     });
+    if (ok) deleteArticle(articleId);
 }
 async function deleteArticle(articleId) {
     try {
-        Swal.fire({
-            title: 'Deleting...',
-            didOpen: () => Swal.showLoading(),
-            allowOutsideClick: false,
-            customClass: { popup: 'swal2-toast' }
-        });
+        showBusy('Deleting article…', { text: 'Removing it from your blog' });
         await api(`/delete-article/${articleId}`, { method: 'DELETE' });
         Swal.close();
         showToast('Article deleted successfully', 'success');
@@ -13725,18 +13929,21 @@ async function showImageDetails(imageId) {
 }
 // [NEW] Improved delete function with confirmation via SweetAlert2
 async function deleteImage(imageId) {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: 'var(--error)',
-        cancelButtonColor: 'var(--secondary)',
-        confirmButtonText: 'Yes, delete it!',
-        customClass: { popup: 'swal2-toast' } // Use our theme
-    }).then(async (result) => {
-        if (result.isConfirmed) {
+    const image = (currentData.images || []).find(i => i && i.image_id === imageId);
+    confirmDialog({
+        tone: 'danger',
+        icon: 'ri-image-line',
+        title: 'Delete this image?',
+        message: 'Its CDN link stops working everywhere it is used. This can\'t be undone.',
+        subject: image?.filename || image?.name || '',
+        subjectIcon: 'ri-image-2-line',
+        confirmText: 'Delete image',
+        confirmIcon: 'ri-delete-bin-line',
+        cancelText: 'Keep it'
+    }).then(async (ok) => {
+        if (ok) {
             try {
+                showBusy('Deleting image…');
                 await api('/images', {
                     method: 'DELETE',
                     body: JSON.stringify({ image_ids: [imageId] })
@@ -13746,6 +13953,7 @@ async function deleteImage(imageId) {
                 Swal.close();
                 loadImages(paginationState.images.page); // Reload current page
             } catch (error) {
+                Swal.close();
                 showToast('Failed to delete image: ' + error.message, 'error');
             }
         }
@@ -15806,6 +16014,94 @@ html:has(.pg),html:has(.pg) body,.main-content:has(.pg),.content:has(.pg){overfl
   .pa-pagination .pagination{padding:0 1rem 1rem}
 }
 
+
+/* ---------- Dialogs: confirm / notice / busy ---------- */
+.dlg-container{padding:16px!important}
+.swal2-popup.dlg-swal{width:min(420px,100%)!important;max-width:100%!important;padding:1.6rem 1.5rem 1.35rem!important;border-radius:22px!important;background:var(--card)!important;border:1px solid var(--border)!important;box-shadow:0 30px 70px -24px rgba(15,23,42,.45),0 0 0 1px rgba(15,23,42,.02)!important;color:var(--text)}
+.dlg-swal .swal2-html-container.dlg-html,.dlg-swal .swal2-html-container{margin:0!important;padding:0!important;overflow:visible!important;text-align:center!important}
+.dlg{display:flex;flex-direction:column;align-items:center;text-align:center;--tone:var(--primary);--tone-soft:rgba(37,99,235,.1)}
+.dlg-danger,.dlg-error{--tone:var(--error);--tone-soft:rgba(239,68,68,.1)}
+.dlg-warning{--tone:#f59e0b;--tone-soft:rgba(245,158,11,.12)}
+.dlg-success{--tone:var(--success);--tone-soft:rgba(16,185,129,.12)}
+.dlg-handle{display:none}
+.dlg-ico{position:relative;width:60px;height:60px;border-radius:20px;display:grid;place-items:center;margin-bottom:1rem;background:var(--tone-soft);color:var(--tone);font-size:1.7rem}
+.dlg-ico::after{content:'';position:absolute;inset:-6px;border-radius:24px;border:1px solid var(--tone-soft)}
+.dlg-title{margin:0;font:700 1.15rem/1.3 'Inter',sans-serif;letter-spacing:-.01em;color:var(--text)}
+.dlg-msg{margin:.5rem 0 0;font-size:.9rem;line-height:1.55;color:var(--text-secondary);max-width:34ch}
+.dlg-subject{display:flex;align-items:center;gap:.5rem;width:100%;max-width:100%;margin-top:1rem;padding:.65rem .8rem;border-radius:12px;background:var(--bg-tertiary);border:1px solid var(--border);font-size:.84rem;font-weight:600;color:var(--text);text-align:left;box-sizing:border-box}
+.dlg-subject i{flex:none;color:var(--tone);font-size:1rem}
+.dlg-subject span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dlg-note{display:flex;align-items:flex-start;gap:.4rem;width:100%;margin:.65rem 0 0;padding:.55rem .75rem;border-radius:10px;background:var(--tone-soft);color:var(--text);font-size:.8rem;line-height:1.45;text-align:left;box-sizing:border-box}
+.dlg-note i{flex:none;color:var(--tone);margin-top:1px}
+.swal2-actions.dlg-actions{width:100%!important;margin:1.4rem 0 0!important;padding:0!important;display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;justify-content:stretch!important;gap:.6rem!important}
+.swal2-popup.dlg-swal .swal2-actions .dlg-btn{flex:1 1 0!important;min-width:0!important;height:46px!important;margin:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:.4rem!important;padding:0 1rem!important;border-radius:13px!important;border:1px solid transparent!important;font:600 .9rem 'Inter',sans-serif!important;cursor:pointer!important;white-space:nowrap!important;transition:transform .15s,box-shadow .2s,background .2s,border-color .2s!important;-webkit-tap-highlight-color:transparent!important}
+.swal2-popup.dlg-swal .swal2-actions .dlg-btn span{overflow:hidden!important;text-overflow:ellipsis!important}
+.swal2-popup.dlg-swal .swal2-actions .dlg-btn i{font-size:1.05rem!important}
+.swal2-popup.dlg-swal .swal2-actions .dlg-btn:active{transform:scale(.97)!important}
+.swal2-popup.dlg-swal .swal2-actions .dlg-btn:focus-visible{outline:none!important;box-shadow:0 0 0 3px var(--glow-strong,rgba(37,99,235,.32))!important}
+.swal2-popup.dlg-swal .swal2-actions .dlg-btn-ghost{background:var(--bg-tertiary)!important;border-color:var(--border)!important;color:var(--text)!important}
+.swal2-popup.dlg-swal .swal2-actions .dlg-btn-ghost:hover{border-color:var(--text-tertiary)!important}
+.swal2-popup.dlg-swal .swal2-actions .dlg-btn-danger{background:linear-gradient(135deg,#ef4444,#dc2626)!important;color:#fff!important;box-shadow:0 12px 24px -14px rgba(220,38,38,.9)!important}
+.swal2-popup.dlg-swal .swal2-actions .dlg-btn-danger:hover{box-shadow:0 14px 28px -12px rgba(220,38,38,.9)!important}
+.swal2-popup.dlg-swal .swal2-actions .dlg-btn-danger:focus-visible{box-shadow:0 0 0 3px rgba(239,68,68,.35)!important}
+.swal2-popup.dlg-swal .swal2-actions .dlg-btn-warning{background:linear-gradient(135deg,#f59e0b,#d97706)!important;color:#fff!important;box-shadow:0 12px 24px -14px rgba(217,119,6,.9)!important}
+.swal2-popup.dlg-swal .swal2-actions .dlg-btn-primary,.swal2-popup.dlg-swal .swal2-actions .dlg-btn-success,.swal2-popup.dlg-swal .swal2-actions .dlg-btn-info{background:var(--gradient-primary)!important;color:#fff!important;box-shadow:0 12px 24px -14px var(--glow-strong,rgba(37,99,235,.6))!important}
+.swal2-popup.dlg-swal .swal2-actions.dlg-actions-single .dlg-btn{flex:1 1 100%!important}
+.dlg-show{animation:dlgIn .22s cubic-bezier(.2,.9,.3,1.2) both}
+.dlg-hide{animation:dlgOut .15s ease-in both}
+@keyframes dlgIn{from{opacity:0;transform:translateY(8px) scale(.96)}}
+@keyframes dlgOut{to{opacity:0;transform:scale(.96)}}
+/* Phones: confirm + notice open as a bottom sheet, thumb-friendly stacked buttons */
+@media (max-width:560px){
+  .dlg-container:not(.busy-container){padding:0!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;align-items:stretch!important}
+  .dlg-container:not(.busy-container) .swal2-popup.dlg-swal{width:100%!important;max-height:92vh;overflow-y:auto;margin:0!important;border-radius:26px 26px 0 0!important;border-width:1px 0 0!important;padding:.6rem 1.25rem calc(1.1rem + env(safe-area-inset-bottom,0px))!important}
+  .dlg-container:not(.busy-container) .dlg-handle{display:block;width:40px;height:5px;border-radius:99px;background:var(--border);margin:0 auto 1.1rem}
+  .dlg-container:not(.busy-container) .dlg-ico{width:54px;height:54px;border-radius:18px;font-size:1.5rem;margin-bottom:.85rem}
+  .dlg-container:not(.busy-container) .dlg-msg{max-width:none}
+  .dlg-container:not(.busy-container) .swal2-actions.dlg-actions{flex-direction:column-reverse!important;gap:.55rem!important;margin-top:1.25rem!important}
+.dlg-container:not(.busy-container) .swal2-popup.dlg-swal .swal2-actions .dlg-btn{flex:none!important;width:100%!important;height:52px!important;font-size:.95rem!important;border-radius:15px!important}
+  .dlg-container:not(.busy-container) .dlg-show{animation:sheetIn .3s cubic-bezier(.2,.8,.2,1) both}
+  .dlg-container:not(.busy-container) .dlg-hide{animation:sheetOut .2s ease-in both}
+}
+@keyframes sheetIn{from{transform:translateY(100%)}}
+@keyframes sheetOut{to{transform:translateY(100%)}}
+/* Busy card */
+.swal2-popup.busy-swal{width:min(340px,100%)!important;padding:1.75rem 1.5rem 1.5rem!important}
+.busy{display:flex;flex-direction:column;align-items:center;text-align:center}
+.busy-spin{position:relative;width:64px;height:64px;display:grid;place-items:center;margin-bottom:1rem}
+.busy-ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 25%,#2563eb 60%,#06b6d4);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));animation:busySpin .9s linear infinite}
+.busy-spin::before{content:'';position:absolute;inset:0;border-radius:50%;border:5px solid var(--bg-tertiary)}
+.busy-spin i{position:relative;font-size:1.45rem;color:var(--primary)}
+.busy-spin i.ri-loader-4-line{animation:busySpin 1.2s linear infinite}
+@keyframes busySpin{to{transform:rotate(360deg)}}
+.busy-title{margin:0;font:700 1.05rem/1.3 'Inter',sans-serif;color:var(--text)}
+.busy-text{margin:.35rem 0 0;font-size:.84rem;color:var(--text-secondary);max-width:100%;overflow-wrap:anywhere}
+.busy-text[hidden]{display:none}
+.busy-bar{position:relative;width:100%;height:4px;margin-top:1.1rem;border-radius:99px;background:var(--bg-tertiary);overflow:hidden}
+.busy-bar i{position:absolute;top:0;bottom:0;width:35%;border-radius:99px;background:linear-gradient(90deg,#2563eb,#06b6d4);animation:busyBar 1.3s ease-in-out infinite}
+@keyframes busyBar{from{left:-35%}to{left:100%}}
+.busy-steps{list-style:none;width:100%;margin:1.2rem 0 0;padding:0;display:flex;flex-direction:column;gap:.5rem;text-align:left}
+.busy-steps li{display:flex;align-items:center;gap:.65rem;padding:.55rem .7rem;border-radius:12px;border:1px solid var(--border);background:var(--bg-tertiary);font-size:.84rem;font-weight:500;color:var(--text-tertiary);transition:color .25s,background .25s,border-color .25s;min-width:0}
+.busy-steps li>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.busy-dot{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--border);background:var(--card);color:transparent;font-size:.8rem;box-sizing:border-box}
+.busy-steps li.on{color:var(--text);border-color:rgba(37,99,235,.35);background:var(--glow,rgba(37,99,235,.08))}
+.busy-steps li.on .busy-dot{border-color:var(--bg-tertiary);border-top-color:var(--primary);animation:busySpin .8s linear infinite}
+.busy-steps li.done{color:var(--text-secondary)}
+.busy-steps li.done .busy-dot{border-color:var(--success);background:var(--success);color:#fff}
+.busy-show{animation:dlgIn .2s ease-out both}
+.busy-hide{animation:dlgOut .15s ease-in both}
+@media (prefers-reduced-motion:reduce){.dlg-show,.dlg-hide,.busy-show,.busy-hide,.dlg-container .dlg-show,.dlg-container .dlg-hide{animation-duration:.01ms!important}}
+
+/* ---------- Article editor: saving overlay + touch-friendly current images ---------- */
+.swal2-popup.article-modal-swal{position:relative}
+.swal2-popup.article-modal-swal .swal2-html-container{position:static!important}
+.art-saving{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:1.25rem;border-radius:inherit;background:color-mix(in srgb,var(--card) 82%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:genIn .2s ease}
+.art-saving[hidden]{display:none}
+.art-saving .busy{width:min(340px,100%);padding:1.6rem 1.4rem 1.4rem;border-radius:22px;background:var(--card);border:1px solid var(--border);box-shadow:0 30px 70px -24px rgba(15,23,42,.45)}
+@media (hover:none){
+  .article-modal-wrapper .image-overlay{opacity:1;align-items:flex-end;justify-content:flex-end;padding:6px;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.55))}
+  .article-modal-wrapper .image-item:hover{transform:none}
+}
 </style>
 <style id="task-creator-2026">
 /* =====================================================================
@@ -15986,6 +16282,7 @@ html.tc-lock,html.tc-lock body{overflow:hidden!important}
   .swal2-popup.article-modal-swal .article-section:has(#article-body){flex:1;min-height:0;display:flex;flex-direction:column}
   .swal2-popup.article-modal-swal .body-editor-container{flex:1;min-height:0}
   .swal2-popup.article-modal-swal #article-body{flex:1;min-height:180px;max-height:none;resize:none}
+  .swal2-popup.article-modal-swal .article-sidebar .action-buttons-wrapper{position:sticky;bottom:0;z-index:4;box-shadow:0 -12px 24px -18px rgba(15,23,42,.35)}
 }
 @media (min-width:1025px) and (max-height:780px){.swal2-popup.article-modal-swal #article-body{min-height:130px}}
 
