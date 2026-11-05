@@ -57,8 +57,15 @@
             .toc { position: static; }
         }
         @media (max-width: 768px) {
-            .legal-wrap { padding: 2rem 1.5rem 3rem; }
-            .legal-content { padding: 1.5rem; }
+            .legal-wrap { padding: 1rem 1.1rem 3rem; gap: 1rem; }
+            .toc { padding: .8rem .9rem; border-radius: 14px; max-height: none; }
+            .toc h4 { margin-bottom: .5rem; font-size: .7rem; }
+            .toc ol { flex-direction: row; gap: .4rem; overflow-x: auto; scrollbar-width: none; margin: 0 -.9rem; padding: 0 .9rem .1rem; }
+            .toc ol::-webkit-scrollbar { display: none; }
+            .toc li { flex-shrink: 0; }
+            .toc a { white-space: nowrap; font-size: .8rem; padding: .35rem .7rem; border-radius: 99px; border: 1px solid var(--border); background: var(--bg); }
+            .legal-content { padding: 1.25rem; }
+            .legal-section h2 { font-size: 1.15rem; }
         }
         @media (max-width: 480px) {
         }
